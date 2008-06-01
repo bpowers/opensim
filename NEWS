@@ -1,0 +1,10 @@
+Preview 1 (0.1.0) (2008-03-30 Bobby Powers <bobbypowers@gmail.com>)
+===========================================================
+This is the first preview release of OpenSim.  The main feature that
+is complete is outputting Python code from XML input files.  The
+included example file, 'simplepopulation.osm', can be opened, parsed,
+and output in Python or in (incomplete and broken) LLVM-IR.  As the 
+release name suggests, this is a preview intended to show that we're
+working and making progress significant progress.  Release early, 
+release often!
+

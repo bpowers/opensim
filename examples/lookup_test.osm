@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opensim markup="1.0">
+<model>
+  <name>Lookup Table Test</name>
+
+  <var>
+    <name>some_table</name>
+    <equation>
+      [(0,0),(7,85),(30,13),(50,40),(100,23)]
+    </equation>
+  </var>
+
+  <var>
+    <name>looked_up</name>
+    <equation>
+      some_table(time)
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_start</name>
+    <equation>
+      0
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_end</name>
+    <equation>
+      100
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_timestep</name>
+    <equation>
+      1
+    </equation>
+  </var>
+
+</model>
+</opensim>

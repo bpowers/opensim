@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opensim markup="1.0">
+<model>
+  <name>Simple Population</name>
+  <var>
+    <name>some_rate</name>
+    <type>auxiliary</type>
+    <equation>
+      .3 * random
+    </equation>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>deaths</name>
+    <type>auxiliary</type>
+    <equation>
+      18.3 * 7 + .1 * population
+    </equation>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>births</name>
+    <type>auxiliary</type>
+    <equation>
+      birth_rate * population + 4.7
+    </equation>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>random</name>
+    <type>auxiliary</type>
+    <equation>
+      birth_rate * 7
+    </equation>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>population</name>
+    <type>stock</type>
+    <equation>
+      births - deaths
+    </equation>
+    <initial>30</initial>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>birth_rate</name>
+    <type>constant</type>
+    <equation>
+      .3
+    </equation>
+    <units>individuals</units>
+  </var>
+  <var>
+    <name>OS_start</name>
+    <type>constant</type>
+    <equation>
+      0
+    </equation>
+  </var>
+  <var>
+    <name>OS_end</name>
+    <type>constant</type>
+    <equation>
+      50
+    </equation>
+  </var>
+  <var>
+    <name>OS_timestep</name>
+    <type>constant</type>
+    <equation>
+      1
+    </equation>
+  </var>
+</model>
+<!-- all the information below is for the visual display of the model -->
+<layout>
+</layout>
+</opensim>

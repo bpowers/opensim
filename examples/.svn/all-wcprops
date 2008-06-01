@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/!svn/ver/58/trunk/examples
+END
+rabbit.osm
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/!svn/ver/66/trunk/examples/rabbit.osm
+END
+simplePopulation.osm
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/!svn/ver/48/trunk/examples/simplePopulation.osm
+END
+otherPopulation.osm
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/!svn/ver/39/trunk/examples/otherPopulation.osm
+END
+infection.osm
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/!svn/ver/58/trunk/examples/infection.osm
+END
