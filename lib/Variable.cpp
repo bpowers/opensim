@@ -33,7 +33,7 @@ OpenSim::Variable::EquationTokens()
   // lazy tokenization.
   if ((equation != "") && (tokens.size() == 0)) tokenize();
   
-  return tokens;
+  return vector<OpenSim::EquToken>(tokens);
 }
 
 
