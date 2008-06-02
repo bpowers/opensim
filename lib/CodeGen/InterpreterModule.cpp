@@ -33,6 +33,8 @@
 #include "../AST/General.h"
 
 #include <cstdlib>
+#include <algorithm>
+using std::max;
 using std::string;
 using std::vector;
 using std::map;
@@ -81,16 +83,16 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   
   
   string headers = "time";
-  for (map<string, VariableAST *>::iterator itr = vars.begin();
-       itr != vars.end(); itr++)
+  vector<VariableAST *> body = node->Integrator()->Body();
+  for (vector<VariableAST *>::iterator itr = body.begin();
+       itr != body.end(); ++itr)
   {
-    VariableAST *v_ast = itr->second;
+    VariableAST *v_ast = *itr;
     Variable *v = v_ast->Data();
 
     if (v->Type() == var_stock || v->Type() == var_aux)
       headers += "," + v->Name();
   }
-  
   headers += "\n";
   
   fprintf(simout, headers.c_str());
@@ -112,7 +114,6 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   string format = "";
   for (int i=0; i<node->Body().size(); ++i)
     format += "%d,";
-  
   format += "\n";
   
   for (double time = start; time <= end; time += timestep)
@@ -274,8 +275,19 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST, name ''\n",
-          node->FunctionName().c_str());
+  if (node->FunctionName() == "MAX")
+  {
+    const std::vector<ExprAST *> args = node->Args();
+    
+    if (args.size() != 2)
+    {
+      fprintf(stderr, "Error: MAX function takes 2, not %d, arguments.\n", 
+              args.size());
+      return 0;
+    }
+    
+    return max(args[0]->Codegen(this), args[1]->Codegen(this));
+  }
   
   return 0;
 }

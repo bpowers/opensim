@@ -14,7 +14,8 @@
   <var>
     <name>fox_consumption_of_rabbits</name>
     <equation>
-      fox_population * fox_food_requirements * fox_consumption_lookup[rabbit_crowding]
+      fox_population * fox_food_requirements 
+	* fox_rabbit_consumption_lookup[rabbit_crowding]
     </equation>
   </var>
 
@@ -77,7 +78,7 @@
   <var>
     <name>fox_food_availability</name>
     <equation>
-      fox_consumption_of_rabbits/(fox_population * fox_food_requirements)
+      fox_consumption_of_rabbits/fox_population/fox_food_requirements
     </equation>
   </var>
 
