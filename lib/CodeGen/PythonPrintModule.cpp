@@ -251,3 +251,13 @@ OpenSim::PythonPrintModule::visit(OpenSim::LookupRefAST *node)
   
   return 0;
 }
+
+
+
+double
+OpenSim::PythonPrintModule::visit(OpenSim::FunctionRefAST *node)
+{
+  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST\n");
+  
+  return 0;
+}

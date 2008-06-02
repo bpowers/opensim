@@ -61,6 +61,7 @@ namespace OpenSim
     virtual double visit(OpenSim::VarRefAST *node);
     virtual double visit(OpenSim::LookupAST *node);
     virtual double visit(OpenSim::LookupRefAST *node);
+    virtual double visit(OpenSim::FunctionRefAST *node);
   };
 }
 

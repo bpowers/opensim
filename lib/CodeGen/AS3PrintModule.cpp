@@ -225,3 +225,13 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
   
   return 0;
 }
+
+
+
+double
+OpenSim::AS3PrintModule::visit(OpenSim::FunctionRefAST *node)
+{
+  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST\n");
+  
+  return 0;
+}

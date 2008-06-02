@@ -226,7 +226,7 @@ OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 {
-  //fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
+  fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
   
   return 0;
 }
@@ -266,7 +266,16 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
     }
   }
   
-  //fprintf(stderr, "Warning: visit unimplemented for LookupRefAST\n");
+  return 0;
+}
+
+
+
+double
+OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
+{
+  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST, name ''\n",
+          node->FunctionName().c_str());
   
   return 0;
 }

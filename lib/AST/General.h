@@ -105,5 +105,22 @@ namespace OpenSim
     double Codegen(ASTConsumer *owner);
     std::string TableName() {return name;}
   };
+  
+  
+  
+  /// VarExprAST - Expression class for var/in
+  class FunctionRefAST : public ExprAST {
+    std::string f_name;
+    std::vector<ExprAST *> args;
+  public:
+    ExprAST *ref;
+    FunctionRefAST(std::string FnName, std::vector<ExprAST *>FnArgs) 
+      : f_name(FnName), args(FnArgs) {}
+    
+    double Codegen(ASTConsumer *owner);
+    std::string FunctionName() {return f_name;}
+    const std::vector<ExprAST *> Args() {return args;}
+  };
 }
+
 #endif // OSIM_GENERAL_H

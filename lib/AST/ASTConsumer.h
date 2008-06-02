@@ -41,6 +41,7 @@ namespace OpenSim
   class VarRefAST;
   class LookupAST;
   class LookupRefAST;
+  class FunctionRefAST;
   
   class ASTConsumer
   {
@@ -59,6 +60,7 @@ namespace OpenSim
     virtual double visit(OpenSim::VarRefAST *node) = 0;
     virtual double visit(OpenSim::LookupAST *node) = 0;
     virtual double visit(OpenSim::LookupRefAST *node) = 0;
+    virtual double visit(OpenSim::FunctionRefAST *node) = 0;
   };
 }
 
