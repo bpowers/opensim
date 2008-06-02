@@ -28,6 +28,7 @@
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
+#include "../AST/LookupAST.h"
 #include "../AST/General.h"
 
 #include "PythonPrintModule.h"
@@ -35,7 +36,6 @@
 #include "AS3PrintModule.h"
 
 #include <cstdio>
-#include <utility>
 using std::pair;
 using std::string;
 using std::vector;
@@ -201,7 +201,7 @@ OpenSim::SimBuilder::ParseBinOpRHS(int ExprPrec, ExprAST *LHS)
     // If this is a binop that binds at least as tightly as the current binop,
     // consume it, otherwise we are done.
     if (TokPrec < ExprPrec) return LHS;
-
+    
     // Okay, we know this is a binop.
     char BinOp = CurTok.Op;
     getNextToken();  // eat binop
@@ -227,7 +227,8 @@ OpenSim::SimBuilder::ParseBinOpRHS(int ExprPrec, ExprAST *LHS)
 
 
 ExprAST *
-OpenSim::SimBuilder::ParseUnary() {
+OpenSim::SimBuilder::ParseUnary() 
+{
   // If the current token is not an operator, it must be a primary expr.
   if (CurTok.Type != tok_operator)
     return ParsePrimary();
@@ -311,9 +312,13 @@ OpenSim::SimBuilder::ParseUnary() {
         // eat the ','
         getNextToken();
       }
+      
+      return new LookupAST(CurVar, tuples);
     }
     
-    // this is probably where support for 
+    // shouldn't reach here.
+    fprintf(stderr, "Error: '[' in a weird and undefined place.\n");
+    return 0;
   }
   
   if (ExprAST *Operand = ParseUnary())
@@ -361,37 +366,51 @@ ExprAST *
 OpenSim::SimBuilder::ParseIdentifierExpr() 
 {
   std::string IdName = CurTok.Identifier;
+  bool table_function = false;
+  char close_op = ')';
   
   // eat identifier.
   getNextToken();  
   
-  if (CurTok.Op != '(') // Simple variable ref.
-    return ParseVarRefExpr(IdName);
-  
-  // okay, we have a call in parenthesis.
-  getNextToken();  // eat (
-  std::vector<ExprAST*> Args;
-  if (CurTok.Op != ')') 
+  // its a simple variable reference if we don't have brackets
+  if (CurTok.Op != '(' && CurTok.Op != '[') 
   {
-    while (1) 
-    {
-      ExprAST *Arg = ParseExpression();
-      if (!Arg) return 0;
-      Args.push_back(Arg);
-      
-      if (CurTok.Op == ')') break;
-      
-      if (CurTok.Op != ',')
-      {
-        fprintf(stdout, "Error: expected ')' while parsing %c.", CurTok.Op);
-        return 0;
-      }
-      getNextToken();
-    }
+    return ParseVarRefExpr(IdName);
   }
   
-  // Eat the ')'.
+  if (CurTok.Op == '[') 
+  {
+    fprintf(stderr, "Info: Got a table call!\n");
+    table_function = true;
+    close_op = ']';
+  }
+  
+  std::vector<ExprAST*> Args;
+  
+  // okay, we have a call in parenthesis, eat the opening bracket
   getNextToken();
+  while (CurTok.Op != close_op) 
+  {
+    fprintf(stderr, "Info: in while!\n");
+    ExprAST *Arg = ParseExpression();
+    if (!Arg) return 0;
+    Args.push_back(Arg);
+    
+    if (CurTok.Op == close_op) break;
+    
+    if (CurTok.Op != ',')
+    {
+      fprintf(stdout, "Error: expected ')' while parsing %c.", CurTok.Op);
+      return 0;
+    }
+    getNextToken();
+  }
+  
+  fprintf(stderr, "Info: before gnt!\n");
+  // Eat the closing bracket
+  getNextToken();
+  
+  fprintf(stderr, "Info: before integ!\n");
   
   // build "stock + change*dt"
   if (IdName == "INTEG")
@@ -410,6 +429,13 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     
     return new BinaryExprAST('+', stock_call, change);
   }
+  
+  if (table_function)
+  {
+    fprintf(stderr, "Info: table function call!\n");
+  }
+  
+  fprintf(stderr, "Info: wtf!\n");
 }
 
 
@@ -457,6 +483,8 @@ ExprAST *
 OpenSim::SimBuilder::ParseExpression() 
 {
   ExprAST *LHS = ParseUnary();
+  
+  fprintf(stderr, "Info: okay now I',m stumped!\n");
   if (!LHS) return 0;
   
   return ParseBinOpRHS(0, LHS);

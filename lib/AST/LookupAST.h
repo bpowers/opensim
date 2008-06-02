@@ -32,7 +32,7 @@
 #include "General.h"
 #include "ASTConsumer.h"
 #include "../CodeGen/InterpreterModule.h"
-
+#include <utility>
 
 namespace OpenSim
 {
@@ -40,16 +40,18 @@ namespace OpenSim
     {
     protected:
       OpenSim::Variable *var;
+      std::vector< std::pair<double, double> > tuples;
       
     public:
-      LookupAST(OpenSim::Variable *varData) 
-      : var(varData) {}
+      LookupAST(OpenSim::Variable *varData, 
+                std::vector< std::pair<double, double> > lookup_data) 
+      : var(varData), tuples(lookup_data) {}
       ~LookupAST() {}
       
       void SetData(OpenSim::Variable *newData);
       OpenSim::Variable *Data();
       
-      
+      const std::vector< std::pair<double, double> > Table();
       
       double Codegen(OpenSim::ASTConsumer *owner);
     };

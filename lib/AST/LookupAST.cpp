@@ -45,6 +45,12 @@ OpenSim::LookupAST::Data()
 
 
 
+const std::vector< std::pair<double, double> > 
+OpenSim::LookupAST::Table()
+{
+  return tuples;
+}
+
 double
 OpenSim::LookupAST::Codegen(ASTConsumer *owner)
 {

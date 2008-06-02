@@ -14,7 +14,7 @@
   <var>
     <name>looked_up</name>
     <equation>
-      some_table(time)
+      some_table[time]
     </equation>
   </var>
 
