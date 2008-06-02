@@ -51,4 +51,5 @@ namespace OpenSim
     std::vector<OpenSim::VariableAST *> Body();
   };
 }
+
 #endif // OSIM_EULERAST_H

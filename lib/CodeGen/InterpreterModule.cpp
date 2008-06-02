@@ -43,13 +43,16 @@ using std::pair;
 using OpenSim::VariableAST;
 using OpenSim::Variable;
 
+
 OpenSim::InterpreterModule::InterpreterModule()
 {
 }
 
 
 
-OpenSim::InterpreterModule::~InterpreterModule() {}
+OpenSim::InterpreterModule::~InterpreterModule() 
+{
+}
 
 
 
@@ -80,7 +83,6 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
     if (v->Type() == var_stock)
       vals[v->Name()] = v_ast->Initial()->Codegen(this);
   }
-  
   
   string headers = "time";
   vector<VariableAST *> body = node->Integrator()->Body();

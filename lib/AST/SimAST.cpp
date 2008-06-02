@@ -62,4 +62,3 @@ OpenSim::SimAST::Initial()
 {
   return initial;
 }
-

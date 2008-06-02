@@ -56,6 +56,3 @@ OpenSim::LookupAST::Codegen(ASTConsumer *owner)
 {
   return owner->visit(this);
 }
-
-
-

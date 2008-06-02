@@ -76,4 +76,3 @@ OpenSim::FunctionRefAST::Codegen(ASTConsumer *owner)
 {
   return owner->visit(this);
 }
-

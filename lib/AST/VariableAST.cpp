@@ -29,6 +29,7 @@
 using OpenSim::ASTConsumer;
 using OpenSim::Variable;
 
+
 void 
 OpenSim::VariableAST::SetData(OpenSim::Variable *newData)
 {
@@ -50,6 +51,3 @@ OpenSim::VariableAST::Codegen(ASTConsumer *owner)
 {
   return owner->visit(this);
 }
-
-
-

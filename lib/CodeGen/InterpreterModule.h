@@ -67,4 +67,3 @@ namespace OpenSim
 }
 
 #endif // OSIM_INTERPRETERMODULE_H
-

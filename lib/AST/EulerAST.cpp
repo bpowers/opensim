@@ -52,4 +52,3 @@ OpenSim::EulerAST::Codegen(OpenSim::ASTConsumer *owner)
 {
   return owner->visit(this);
 }
-
