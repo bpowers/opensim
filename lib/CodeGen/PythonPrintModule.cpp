@@ -30,8 +30,10 @@
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
 #include "../AST/General.h"
+#include "../AST/LookupAST.h"
 
 #include <cstdlib>
+using std::pair;
 using std::string;
 using std::vector;
 using std::map;
@@ -71,19 +73,37 @@ import math\n\
 def frange(lim_start, lim_end, increment = 1.):\n\
   lim_start = float(lim_start)\n\
   count = int(math.ceil(lim_end - lim_start)/increment + 1)\n\
-  return (lim_start + n*increment for n in range(count))\n\n\n");
+  return (lim_start + n*increment for n in range(count))\n\
+\n\
+\n\
+# simple lookup table implementation\n\
+def sim_lookup(table, index):\n\
+\n\
+  if len(table) is 0: return 0\n\
+\n\
+  # if the request is outside the min or max, then we return\n\
+  # the nearest element of the array\n\
+  if   index < table[0][0]:  return table[0][1]\n\
+  elif index > table[-1][0]: return table[-1][1]\n\
+\n\
+  for i in range(0, len(table)):\n\
+    x, y = table[i]\n\
+\n\
+    if index == x: return y\n\
+    if index < x:\n\
+      # slope = deltaY/deltaX\n\
+      slope = (y - table[i-1][1])/(x - table[i-1][0])\n\
+      return (index-table[i-1][0])*slope + table[i-1][1]\n\n\n");
   
   vars = node->NamedVars();
-  string headers = "print('time";
   
-  for (map<string, VariableAST *>::iterator itr = vars.begin(); 
-       itr != vars.end(); itr++) 
+  for (int i=0; i < node->Initial().size(); i++) 
   {
-    VariableAST *v_ast = itr->second;
+    VariableAST *v_ast = node->Initial()[i];
     Variable *v = v_ast->Data();
     
     // define constants at the top of the file
-    if (v->Type() == var_const)
+    if (v->Type() == var_const || v->Type() == var_lookup)
     {
       string constant = v->Name() + " = ";
       fprintf(simout, constant.c_str());
@@ -91,13 +111,6 @@ def frange(lim_start, lim_end, increment = 1.):\n\
       v_ast->AST()->Codegen(this);
       
       fprintf(simout, "\n");
-    }
-    
-    // we want to add the name of aux and stock variables to
-    // the headers 
-    if (v->Type() == var_aux)
-    {
-      headers += "," + v->Name();
     }
     
     // define constants at the top of the file
@@ -109,12 +122,20 @@ def frange(lim_start, lim_end, increment = 1.):\n\
       v_ast->Initial()->Codegen(this);
       
       fprintf(simout, "\n");
-      
-      headers += "," + v->Name();
     }
   }
   
-  
+  string headers = "print('time";
+  vector<VariableAST *> body = node->Integrator()->Body();
+  for (vector<VariableAST *>::iterator itr = body.begin();
+       itr != body.end(); ++itr)
+  {
+    VariableAST *v_ast = *itr;
+    Variable *v = v_ast->Data();
+    
+    if (v->Type() == var_stock || v->Type() == var_aux)
+      headers += "," + v->Name();
+  }
   headers += "')\n\n";
   fprintf(simout, headers.c_str());
   
@@ -237,7 +258,19 @@ OpenSim::PythonPrintModule::visit(OpenSim::UnaryExprAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::LookupAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
+  const std::vector< std::pair<double, double> > table = node->Table();
+  
+  fprintf(simout, "[");
+  
+  for (int i=0; i<table.size(); i++)
+  {
+    fprintf(simout, "(%f, %f)", table[i].first, table[i].second);
+    
+    if (i<table.size()-1)
+      fprintf(simout, ", ");
+  }
+  
+  fprintf(simout, "]");
   
   return 0;
 }
@@ -247,7 +280,9 @@ OpenSim::PythonPrintModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupRefAST\n");
+  fprintf(simout, "sim_lookup(%s, ", node->TableName().c_str());
+  node->ref->Codegen(this);
+  fprintf(simout, ")");
   
   return 0;
 }
@@ -257,7 +292,28 @@ OpenSim::PythonPrintModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::FunctionRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST\n");
+  if (node->FunctionName() == "MAX")
+  {
+    const std::vector<ExprAST *> args = node->Args();
+    
+    if (args.size() != 2)
+    {
+      fprintf(stderr, "Error: MAX function takes 2, not %d, arguments.\n", 
+              args.size());
+      return 0;
+    }
+    
+    fprintf(simout, "max(");
+    args[0]->Codegen(this);
+    fprintf(simout, ",");
+    args[1]->Codegen(this);
+    fprintf(simout, ")");
+    
+    return 0;
+  }
+  
+  fprintf(stderr, "Error: Unknown function '%s' referenced.\n", 
+          node->FunctionName().c_str());
   
   return 0;
 }

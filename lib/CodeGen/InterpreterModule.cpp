@@ -291,5 +291,8 @@ OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
     return max(args[0]->Codegen(this), args[1]->Codegen(this));
   }
   
+  fprintf(stderr, "Error: Unknown function '%s' referenced.\n", 
+          node->FunctionName().c_str());
+  
   return 0;
 }
