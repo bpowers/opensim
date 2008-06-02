@@ -443,8 +443,10 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     
     return new LookupRefAST(IdName, Args[0]);
   }
-        
-  return 0;
+  
+  fprintf(stderr, "Info: Call to function '%s'\n", IdName.c_str());
+  // if we get here, we must have a function call.
+  return new FunctionRefAST(IdName, Args);
 }
 
 
