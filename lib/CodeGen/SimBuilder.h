@@ -93,6 +93,7 @@ namespace OpenSim
     OpenSim::ExprAST *ParseBinOpRHS(int ExprPrec, OpenSim::ExprAST *LHS);
     OpenSim::ExprAST *ParsePrimary();
     OpenSim::ExprAST *ParseUnary();
+    OpenSim::ExprAST *ParseTable();
     OpenSim::ExprAST *ParseNumberExpr();
     OpenSim::ExprAST *ParseExpression();
     OpenSim::ExprAST *ParseIdentifierExpr();

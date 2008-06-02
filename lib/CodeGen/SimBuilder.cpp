@@ -239,90 +239,98 @@ OpenSim::SimBuilder::ParseUnary()
   
   if (cur_op == '[')
   {
-    if (toks.size() == CurVar->EquationTokens().size()-2)
-    {
-      // valid lookup value, start parsing it.
-      vector< pair<double, double> > tuples;
-      
-      // for well formed entries, should have n entries with the format
-      // (index,value)
-      
-      while (CurTok.Type == tok_operator && CurTok.Op == '(') 
-      {
-        double x, y;
-        
-        // get the index of the tuple
-        getNextToken();
-        if (CurTok.Type != tok_number)
-        {
-          fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
-                  CurTok.Identifier.c_str());
-          break;
-        }
-      
-        x = CurTok.NumVal;
-        
-        // get the comma in the tuple
-        getNextToken();
-        if (CurTok.Type != tok_operator || CurTok.Op != ',')
-        {
-          fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
-                  CurTok.Identifier.c_str());
-          break;
-        }
-        
-        // get the index of the tuple
-        getNextToken();
-        if (CurTok.Type != tok_number)
-        {
-          fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
-                  CurTok.Identifier.c_str());
-          break;
-        }
-        
-        y = CurTok.NumVal;
-        
-        // get the closing parenthesis
-        getNextToken();
-        if (CurTok.Type != tok_operator || CurTok.Op != ')')
-        {
-          fprintf(stderr, "Error: Expecting a ')' in lookup, not '%s'\n",
-                  CurTok.Identifier.c_str());
-          break;
-        }
-        
-        // add our parsed data to the list
-        tuples.push_back(pair<double, double>(x, y));
-        
-        // FIXME: remove debug info
-        //fprintf(stdout, "Info: parsed the tuple (%f, %f)\n", x, y);
-        
-        // get the comma in the tuple
-        getNextToken();
-        if (CurTok.Type != tok_operator || CurTok.Op != ',')
-        {
-          // its not an error if its the closing bracket
-          if (CurTok.Type != tok_operator || CurTok.Op != ']')
-            fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
-                    CurTok.Identifier.c_str());
-          
-          break;
-        }
-        
-        // eat the ','
-        getNextToken();
-      }
-      
-      return new LookupAST(CurVar, tuples);
-    }
-    
-    // shouldn't reach here.
-    fprintf(stderr, "Error: '[' in a weird and undefined place.\n");
-    return 0;
+    return ParseTable();
   }
   
   if (ExprAST *Operand = ParseUnary())
     return new UnaryExprAST(cur_op, Operand);
+  return 0;
+}
+
+
+
+ExprAST *
+OpenSim::SimBuilder::ParseTable()
+{
+  if (toks.size() == CurVar->EquationTokens().size()-2)
+  {
+    // valid lookup value, start parsing it.
+    vector< pair<double, double> > tuples;
+    
+    // for well formed entries, should have n entries with the format
+    // (index,value)
+    
+    while (CurTok.Type == tok_operator && CurTok.Op == '(') 
+    {
+      double x, y;
+      
+      // get the index of the tuple
+      getNextToken();
+      if (CurTok.Type != tok_number)
+      {
+        fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
+                CurTok.Identifier.c_str());
+        break;
+      }
+      
+      x = CurTok.NumVal;
+      
+      // get the comma in the tuple
+      getNextToken();
+      if (CurTok.Type != tok_operator || CurTok.Op != ',')
+      {
+        fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
+                CurTok.Identifier.c_str());
+        break;
+      }
+      
+      // get the index of the tuple
+      getNextToken();
+      if (CurTok.Type != tok_number)
+      {
+        fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
+                CurTok.Identifier.c_str());
+        break;
+      }
+      
+      y = CurTok.NumVal;
+      
+      // get the closing parenthesis
+      getNextToken();
+      if (CurTok.Type != tok_operator || CurTok.Op != ')')
+      {
+        fprintf(stderr, "Error: Expecting a ')' in lookup, not '%s'\n",
+                CurTok.Identifier.c_str());
+        break;
+      }
+      
+      // add our parsed data to the list
+      tuples.push_back(pair<double, double>(x, y));
+      
+      // FIXME: remove debug info
+      //fprintf(stdout, "Info: parsed the tuple (%f, %f)\n", x, y);
+      
+      // get the comma in the tuple
+      getNextToken();
+      if (CurTok.Type != tok_operator || CurTok.Op != ',')
+      {
+        // its not an error if its the closing bracket
+        if (CurTok.Type != tok_operator || CurTok.Op != ']')
+          fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
+                  CurTok.Identifier.c_str());
+        
+        break;
+      }
+      
+      // eat the ','
+      getNextToken();
+    }
+    
+    return new LookupAST(CurVar, tuples);
+  }
+  
+  // shouldn't reach here.
+  fprintf(stderr, "Error: '[' in a weird and undefined place.\n");
   return 0;
 }
 
