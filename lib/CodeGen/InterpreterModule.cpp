@@ -29,12 +29,14 @@
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
+#include "../AST/LookupAST.h"
 #include "../AST/General.h"
 
 #include <cstdlib>
 using std::string;
 using std::vector;
 using std::map;
+using std::pair;
 
 using OpenSim::VariableAST;
 using OpenSim::Variable;
@@ -115,6 +117,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   
   for (double time = start; time <= end; time += timestep)
   {
+    vals["time"] = time;
     fprintf(simout, "%f", time);
     
     vector<VariableAST *> body = node->Body();
@@ -223,7 +226,7 @@ OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
+  //fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
   
   return 0;
 }
@@ -233,7 +236,37 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupRefAST\n");
+  LookupAST *lookup = (LookupAST *) vars[node->TableName()]->AST();
+  
+  const vector< pair<double, double> > table = lookup->Table();
+
+  if (table.size() == 0) return 0;
+  
+  double index = node->ref->Codegen(this);
+  
+  // if the request is outside the min or max, then we return 
+  // the nearest element of the array
+  if (index < table[0].first)
+    return table[0].second;
+  else if (index > table[table.size()-1].first)
+    return table[table.size()-1].second;
+  
+  for (int i=0; i < table.size(); i++)
+  {
+    if (index == table[i].first)
+      return table[i].second;
+    
+    if (index < table[i].first)
+    {
+      // slope = deltaY/deltaX
+      float slope = (table[i].second - table[i-1].second)
+                    /(table[i].first - table[i-1].first);
+      
+      return (index-table[i-1].first)*slope + table[i-1].second;
+    }
+  }
+  
+  //fprintf(stderr, "Warning: visit unimplemented for LookupRefAST\n");
   
   return 0;
 }

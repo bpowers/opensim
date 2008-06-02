@@ -75,8 +75,7 @@ namespace OpenSim
   public:
     char Op;
     ExprAST *RHS;
-    UnaryExprAST(char op, ExprAST *rhs) 
-    : Op(op), RHS(rhs) {}
+    UnaryExprAST(char op, ExprAST *rhs) : Op(op), RHS(rhs) {}
     
     double Codegen(ASTConsumer *owner);
   };
@@ -99,10 +98,12 @@ namespace OpenSim
   class LookupRefAST : public ExprAST {
     std::string name;
   public:
-    LookupRefAST(const std::string refVar) : name(refVar) {}
+    ExprAST *ref;
+    LookupRefAST(std::string tableVar, ExprAST *refVar) 
+      : name(tableVar), ref(refVar) {}
     
     double Codegen(ASTConsumer *owner);
-    std::string Name() {return name;}
+    std::string TableName() {return name;}
   };
 }
 #endif // OSIM_GENERAL_H

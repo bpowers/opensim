@@ -380,7 +380,6 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
   
   if (CurTok.Op == '[') 
   {
-    fprintf(stderr, "Info: Got a table call!\n");
     table_function = true;
     close_op = ']';
   }
@@ -391,7 +390,6 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
   getNextToken();
   while (CurTok.Op != close_op) 
   {
-    fprintf(stderr, "Info: in while!\n");
     ExprAST *Arg = ParseExpression();
     if (!Arg) return 0;
     Args.push_back(Arg);
@@ -406,11 +404,8 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     getNextToken();
   }
   
-  fprintf(stderr, "Info: before gnt!\n");
   // Eat the closing bracket
   getNextToken();
-  
-  fprintf(stderr, "Info: before integ!\n");
   
   // build "stock + change*dt"
   if (IdName == "INTEG")
@@ -432,10 +427,16 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
   
   if (table_function)
   {
-    fprintf(stderr, "Info: table function call!\n");
+    if (Args.size() != 1)
+    {
+      fprintf(stderr, "Error: Table functions take 1 argument.\n");
+      return 0;
+    }
+    
+    return new LookupRefAST(IdName, Args[0]);
   }
-  
-  fprintf(stderr, "Info: wtf!\n");
+        
+  return 0;
 }
 
 
@@ -443,6 +444,9 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
 ExprAST *
 OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 {
+  // FIXME: dirty hack to get time references working...
+  if (IdName == "time") return new VarRefAST("time");
+  
   // FIXME: this is where error checking code goez
   Variable *requestedVar = vars[IdName];
   
@@ -483,8 +487,6 @@ ExprAST *
 OpenSim::SimBuilder::ParseExpression() 
 {
   ExprAST *LHS = ParseUnary();
-  
-  fprintf(stderr, "Info: okay now I',m stumped!\n");
   if (!LHS) return 0;
   
   return ParseBinOpRHS(0, LHS);
@@ -528,7 +530,8 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
     CurVarInitial = 0;
   }
   
-  if (!(newNode->Data()->Type() == var_const))
+  if (!(newNode->Data()->Type() == var_const) 
+      && !(newNode->Data()->Type() == var_lookup))
     body.push_back(newNode);
   varASTs[var->Name()] = newNode;
 

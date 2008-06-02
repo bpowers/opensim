@@ -114,6 +114,9 @@ OpenSim::Variable::tokenize()
       newTok.Op = lastChar;
       newTok.Identifier = "";
       
+      
+      if ((tokens.size() == 0) && (newTok.Op == '[')) type = var_lookup;
+
       // prime lastChar
       // ** FIXME - this could cause problems if the string ends
       // on an operator?

@@ -1,6 +1,5 @@
-AM_CXXFLAGS           = $(OPENSIM_XML2_CXXFLAGS)
+AM_CXXFLAGS           = $(OPENSIM_XML2_CXXFLAGS) -ggdb
 AM_LDFLAGS            = $(OPENSIM_XML2_LDFLAGS)
-
 
 INCLUDES              = -I$(top_builddir) -I$(top_srcdir)
 
