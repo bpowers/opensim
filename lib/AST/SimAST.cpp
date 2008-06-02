@@ -28,8 +28,10 @@
 #include "EulerAST.h"
 
 OpenSim::SimAST::SimAST(OpenSim::EulerAST *intLoop, 
+                        std::vector<OpenSim::VariableAST * > initialASTs,
                         std::map<std::string, OpenSim::VariableAST *> named)
 {
+  initial = initialASTs;
   integrator = intLoop;
   namedVars = named;
 }
@@ -52,5 +54,12 @@ double
 OpenSim::SimAST::Codegen(OpenSim::ASTConsumer *owner)
 {
   return owner->visit(this);
+}
+
+
+std::vector<OpenSim::VariableAST *> 
+OpenSim::SimAST::Initial()
+{
+  return initial;
 }
 

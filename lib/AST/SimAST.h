@@ -39,9 +39,11 @@ namespace OpenSim
   {
     OpenSim::EulerAST *integrator;
     std::map<std::string, OpenSim::VariableAST *> namedVars;
+    std::vector<OpenSim::VariableAST *> initial;
     
   public:
     SimAST(OpenSim::EulerAST *intLoop, 
+           std::vector<OpenSim::VariableAST * > initialASTs,
            std::map<std::string, OpenSim::VariableAST *> named);
     
     
@@ -53,6 +55,7 @@ namespace OpenSim
     OpenSim::EulerAST *Integrator() {return integrator;}
     
     std::map<std::string, OpenSim::VariableAST *> NamedVars();
+    std::vector<OpenSim::VariableAST *> Initial();
   };
 }
 

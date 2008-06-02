@@ -139,10 +139,9 @@ OpenSim::SimBuilder::InitializeModule()
     ProcessVar(var);
   }
   
-  
   // these are the root AST nodes.
   EulerAST *integrate = new EulerAST(body);
-  root = new SimAST(integrate, varASTs);
+  root = new SimAST(integrate, initial, varASTs);
 }
 
 
@@ -444,7 +443,6 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     return new LookupRefAST(IdName, Args[0]);
   }
   
-  fprintf(stderr, "Info: Call to function '%s'\n", IdName.c_str());
   // if we get here, we must have a function call.
   return new FunctionRefAST(IdName, Args);
 }
@@ -460,7 +458,7 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
   // FIXME: this is where error checking code goez
   Variable *requestedVar = vars[IdName];
   
-  if ((requestedVar->Type() == var_aux) && IsUnparsedTL(IdName))
+  if ((requestedVar->Type() != var_stock) && IsUnparsedTL(IdName))
   {
     for (vector<Variable *>::iterator itr = topLevelVars.begin();
          itr != topLevelVars.end(); ++itr)
@@ -540,9 +538,15 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
     CurVarInitial = 0;
   }
   
-  if (!(newNode->Data()->Type() == var_const) 
-      && !(newNode->Data()->Type() == var_lookup))
+  if (newNode->Data()->Type() == var_aux
+      || newNode->Data()->Type() == var_stock)
     body.push_back(newNode);
+  
+  if (newNode->Data()->Type() == var_const
+      || newNode->Data()->Type() == var_lookup
+      || newNode->Data()->Type() == var_stock)
+    initial.push_back(newNode);
+  
   varASTs[var->Name()] = newNode;
 
   return val ? true : false;

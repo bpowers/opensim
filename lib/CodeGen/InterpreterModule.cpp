@@ -64,35 +64,35 @@ double
 OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 {
   vars = node->NamedVars();
-  string headers = "time";
   
-  for (map<string, VariableAST *>::iterator itr = vars.begin(); 
-       itr != vars.end(); itr++) 
+  for (int i=0; i < node->Initial().size(); i++) 
   {
-    VariableAST *v_ast = itr->second;
+    VariableAST *v_ast = node->Initial()[i];
     Variable *v = v_ast->Data();
-    
     
     // define constants at the top of the file
     if (v->Type() == var_const)
-    {
       vals[v->Name()] = v_ast->AST()->Codegen(this);
-    }
-    
-    if (v->Type() == var_aux)
-    {
-      headers += "," + v->Name();
-    }
     
     // define constants at the top of the file
     if (v->Type() == var_stock)
-    {
       vals[v->Name()] = v_ast->Initial()->Codegen(this);
+  }
+  
+  
+  string headers = "time";
+  for (map<string, VariableAST *>::iterator itr = vars.begin();
+       itr != vars.end(); itr++)
+  {
+    VariableAST *v_ast = itr->second;
+    Variable *v = v_ast->Data();
+
+    if (v->Type() == var_stock || v->Type() == var_aux)
       headers += "," + v->Name();
-    }
   }
   
   headers += "\n";
+  
   fprintf(simout, headers.c_str());
   
   node->Integrator()->Codegen(this);

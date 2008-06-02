@@ -59,6 +59,10 @@ namespace OpenSim
     /// order in which they need to be solved, back to front.
     std::vector<OpenSim::VariableAST *> body;
     
+    /// A vector of all of the top level variable AST nodes, in the
+    /// order in which they need to be solved, back to front.
+    std::vector<OpenSim::VariableAST *> initial;
+    
     /// Pointer to the root of the constructed model AST.
     OpenSim::SimAST *root;
     
