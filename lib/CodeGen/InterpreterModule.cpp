@@ -112,6 +112,11 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   double start = vars["OS_start"]->Codegen(this);
   double end = vars["OS_end"]->Codegen(this);
   double timestep = vars["OS_timestep"]->Codegen(this);
+  double savestep = vars["OS_savestep"]->Codegen(this);
+  
+  int save_count = 0;
+  int save_iterations = savestep/timestep;
+  bool do_save = true;
   
   string format = "";
   for (int i=0; i<node->Body().size(); ++i)
@@ -121,17 +126,20 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   for (double time = start; time <= end; time += timestep)
   {
     vals["time"] = time;
-    fprintf(simout, "%f", time);
+    if (do_save)
+      fprintf(simout, "%f", time);
     
     vector<VariableAST *> body = node->Body();
     for (vector<VariableAST *>::iterator itr = body.begin();
          itr != body.end(); ++itr)
     {
       (*itr)->Codegen(this);
-      fprintf(simout, ",%f", vals[(*itr)->Data()->Name()]);
+      if (do_save)
+        fprintf(simout, ",%f", vals[(*itr)->Data()->Name()]);
     }
     
-    fprintf(simout, "\n");
+    if (do_save)
+      fprintf(simout, "\n");
     
     for (map<string, VariableAST *>::iterator itr = vars.begin(); 
          itr != vars.end(); itr++) 
@@ -144,6 +152,17 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
         vals[v->Name()] = vals[v->Name() + "_NEXT"];
       }
     }
+    
+    // figure out if we should save things the next time around
+    // save every n iterations, and also on the last iteration
+    save_count++;
+    if (save_count >= save_iterations || time + timestep > end)
+    {
+      do_save = true;
+      save_count = 0;
+    }
+    else
+      do_save = false;
   }
   
   return 0;
