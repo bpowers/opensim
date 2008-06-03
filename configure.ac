@@ -21,6 +21,22 @@ AC_LIBTOOL_WIN32_DLL
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+have_python = no
+AC_PYTHON_DEVEL([>='2.5'])
+
+if test -z "$PYTHON" ; then
+  AC_MSG_WARN([Python not found])
+else
+  AC_PROG_SWIG(1.3.31)
+  SWIG_ENABLE_CXX
+  SWIG_MULTI_MODULE_SUPPORT
+  SWIG_PYTHON
+
+  have_python=yes
+fi
+
+AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
+
 # Checks for libraries.
 
 # Checks for header files.
@@ -42,9 +58,17 @@ AC_CHECK_FUNCS([isascii])
 OPENSIM_XML2_SETFLAGS
 AC_SUBST(LIBLTDL)
 
+AC_ARG_ENABLE(debug,
+[  --enable-debug    Turn on debugging],
+[case "${enableval}" in
+  yes) debug=true ;;
+  no)  debug=false ;;
+  *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+esac],[debug=false])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile lib/CodeGen/Makefile lib/AST/Makefile],
+AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h.in])
 
 
