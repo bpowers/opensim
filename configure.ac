@@ -27,6 +27,7 @@ AC_PYTHON_DEVEL([>='2.5'])
 if test -z "$PYTHON" ; then
   AC_MSG_WARN([Python not found])
 else
+ AM_PATH_PYTHON([2.5])
   AC_PROG_SWIG(1.3.31)
   SWIG_ENABLE_CXX
   SWIG_MULTI_MODULE_SUPPORT

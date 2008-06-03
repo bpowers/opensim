@@ -8,10 +8,11 @@ simulator_wrap.cxx: simulator.i
 EXTRA_DIST = simulator.i
 
 CLEANFILES = simulator.py simulator.pyc\
-	simulator_wrap.cxx
+	simulator_wrap.cxx _simulator.so
 
 if HAVE_PYTHON
-lib_LTLIBRARIES = _simulator.la
+pkgpython_PYTHON = __init__.py simulator.py
+pkgpyexec_LTLIBRARIES = _simulator.la
 endif
 
 _simulator_la_SOURCES = simulator_wrap.cxx
