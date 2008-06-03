@@ -11,7 +11,7 @@ CLEANFILES = simulator.py simulator.pyc\
 	simulator_wrap.cxx
 
 if HAVE_PYTHON
-noinst_LTLIBRARIES = _simulator.la
+lib_LTLIBRARIES = _simulator.la
 endif
 
 _simulator_la_SOURCES = simulator_wrap.cxx

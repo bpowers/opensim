@@ -8,7 +8,7 @@ MAINTAINERCLEANFILES  = Makefile.in
 EXTRA_DIST            = Simulator.h Variable.h globals.h opensim.h
 pkginclude_HEADERS    = opensim.h
 
-SUBDIRS               = AST CodeGen IO python
+SUBDIRS               = AST CodeGen IO
 
 noinst_LTLIBRARIES    = libsimobjs.la
 libsimobjs_la_SOURCES = Simulator.cpp Variable.cpp
