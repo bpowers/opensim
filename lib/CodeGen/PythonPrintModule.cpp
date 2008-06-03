@@ -125,7 +125,12 @@ def sim_lookup(table, index):\n\
     }
   }
   
-  string headers = "print('time";
+  // calculations for savestep stuff
+  fprintf(simout, "OS_save_count = 0\n");
+  fprintf(simout, "OS_save_iterations = OS_savestep / OS_timestep\n");
+  fprintf(simout, "OS_do_save = True\n");
+  
+  string headers = "\nprint('time";
   vector<VariableAST *> body = node->Integrator()->Body();
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
@@ -174,7 +179,9 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   
   string prints = "\n" + whitespace + "#generally put print statements here\n";
   fprintf(simout, prints.c_str());
-  string printout = whitespace + "print('" + format_statement + "' % ("
+  string if_out = whitespace + "if OS_do_save:\n";
+  fputs(if_out.c_str(), simout);
+  string printout = whitespace + "  print('" + format_statement + "' % ("
                     + variable_list + "))\n";
   fputs(printout.c_str(), simout);
   
@@ -188,6 +195,18 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
     // now update the stocks at the end
     if ((*itr)->Data()->Type() == var_stock) (*itr)->Codegen(this);
   }
+  
+  // update OS_do_save
+  string update_save = "\n" + whitespace + "# determining whether or not "
+    + "to save results next iteration\n"
+    + whitespace + "OS_save_count = OS_save_count + 1\n"
+    + whitespace + "if OS_save_count >= OS_save_iterations or \\\n"
+    + whitespace + "   time + OS_timestep > OS_end:\n"
+    + whitespace + "  OS_do_save = True\n"
+    + whitespace + "  OS_save_count = 0\n"
+    + whitespace + "else:\n"
+    + whitespace + "  OS_do_save = False\n";
+  fprintf(simout, update_save.c_str());
   
   return 0;
 }

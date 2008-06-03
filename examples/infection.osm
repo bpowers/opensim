@@ -91,6 +91,13 @@
   <var>
     <name>OS_timestep</name>
     <equation>
+      .5
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_savestep</name>
+    <equation>
       1
     </equation>
   </var>
