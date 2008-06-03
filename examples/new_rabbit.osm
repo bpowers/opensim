@@ -165,7 +165,7 @@
   <var>
     <name>OS_timestep</name>
     <equation>
-      .125
+      .015625
     </equation>
   </var>
 
