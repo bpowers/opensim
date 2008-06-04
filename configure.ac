@@ -27,13 +27,16 @@ AC_PYTHON_DEVEL([>='2.5'])
 if test -z "$PYTHON" ; then
   AC_MSG_WARN([Python not found])
 else
- AM_PATH_PYTHON([2.5])
+  AM_PATH_PYTHON([2.5])
   AC_PROG_SWIG(1.3.31)
-  SWIG_ENABLE_CXX
-  SWIG_MULTI_MODULE_SUPPORT
-  SWIG_PYTHON
-
-  have_python=yes
+  if test -z "$SWIG_LIB" ; then
+    AC_MSG_WARN([SWIG not found, Python wrappers won't be built])
+  else 
+    SWIG_ENABLE_CXX
+    SWIG_MULTI_MODULE_SUPPORT
+    SWIG_PYTHON
+    have_python=yes
+  fi
 fi
 
 AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
