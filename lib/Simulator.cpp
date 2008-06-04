@@ -38,38 +38,52 @@ using OpenSim::IOxml;
 using std::string;
 
 
+OpenSim::Simulator::Simulator()
+{
+  _output_file_name = "";
+  
+  _output_type = sim_emit_Output;
+}
+
+
 
 OpenSim::Simulator::Simulator(std::string fileName)
 {
   // call the init function, load the model and construct its AST
   init(fileName);
   
-  file_name = fileName;
-  outputFile = "";
+  _file_name = fileName;
+  _output_file_name = "";
   
-  outputType = walk_Interpret;
+  _output_type = sim_emit_Output;
 }
 
 
 
 OpenSim::Simulator::~Simulator()
 {
-  delete simBuilder;
+  delete _sim_builder;
 }
 
 
+std::string
+OpenSim::Simulator::name() 
+{
+  return _model_name;
+}
+
 
 int
-OpenSim::Simulator::Simulate()
+OpenSim::Simulator::simulate()
 {
   // we'll want to produce a lot more warnings and checks in the future
   // but this should prevent the biggest segfaults...
-  if (simBuilder)
+  if (_sim_builder)
   {
     FILE *outputStream = NULL;
-    if (outputFile != "") 
+    if (_output_file_name != "") 
     {
-      outputStream = fopen(outputFile.c_str(), "w+");
+      outputStream = fopen(_output_file_name.c_str(), "w+");
       
       if (!outputStream) 
       {
@@ -82,7 +96,7 @@ OpenSim::Simulator::Simulate()
       outputStream = stdout;
     }
     
-    int parse_status = simBuilder->Parse(outputType, outputStream);
+    int parse_status = _sim_builder->Parse(_output_type, outputStream);
     
     // if we opened it, close the output stream
     if (outputStream != stdout) fclose(outputStream);
@@ -96,14 +110,14 @@ OpenSim::Simulator::Simulate()
 
 
 int
-OpenSim::Simulator::SetOutputType(WalkType newType)
+OpenSim::Simulator::set_output_type(sim_output newType)
 {
   // simple error checking that will have to be updated whenever we
   // add a new type of output
   int intWalk = (int) newType;
   if (intWalk < 1 || 5 < intWalk) return -1;
   
-  outputType = newType;
+  _output_type = newType;
   
   return 0;
 }
@@ -111,16 +125,16 @@ OpenSim::Simulator::SetOutputType(WalkType newType)
 
 
 int
-OpenSim::Simulator::SetOutputFile(std::string outputFileName)
+OpenSim::Simulator::set_output_file(std::string outputFileName)
 {
   // don't let people write the data over the model
-  if (outputFileName == file_name)
+  if (outputFileName == _file_name)
   {
     fprintf(stderr, "Error: Output file must be different from model file.\n");
     return -1;
   }
   
-  outputFile = outputFileName;
+  _output_file_name = outputFileName;
   
   return 0;
 }
@@ -132,7 +146,7 @@ OpenSim::Simulator::init(std::string fileName)
 {
   // initialize simBuilder to zero so we can test and make sure it was
   // created alright
-  simBuilder = NULL;
+  _sim_builder = NULL;
 
   IOInterface *file;
   
@@ -152,8 +166,8 @@ OpenSim::Simulator::init(std::string fileName)
   
   if (file->ValidModelParsed())
   {
-    simBuilder = new SimBuilder(file->Variables());
-    name = file->Name();
+    _sim_builder = new SimBuilder(file->Variables());
+    _model_name = file->Name();
   }
   
   delete file;

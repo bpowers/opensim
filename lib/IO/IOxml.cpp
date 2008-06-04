@@ -135,7 +135,9 @@ OpenSim::IOxml::IOxml(std::string filePath)
 
 
 
-OpenSim::IOxml::~IOxml() {}
+OpenSim::IOxml::~IOxml() 
+{
+}
 
 
 

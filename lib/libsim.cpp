@@ -26,11 +26,9 @@
 
 #include <cstdio>
 
-#include "opensim.h"
-
 #include "Simulator.h"
 using OpenSim::Simulator;
-using OpenSim::WalkType;
+using OpenSim::sim_output;
 
 Simulator *model;
 
@@ -73,7 +71,7 @@ opensim_save_model()
 extern "C" int 
 opensim_set_output_type(sim_output output_type)
 {
-  if (model) return model->SetOutputType((WalkType)output_type);
+  if (model) return model->set_output_type(output_type);
 
   return -1;
 }
@@ -83,7 +81,7 @@ opensim_set_output_type(sim_output output_type)
 extern "C" int 
 opensim_set_output_file(const char *file_name)
 {
-  if (model) return model->SetOutputFile(file_name);
+  if (model) return model->set_output_file(file_name);
   
   return -1;
 }
@@ -93,7 +91,7 @@ opensim_set_output_file(const char *file_name)
 extern "C" int 
 opensim_simulate()
 {
-  if (model) return model->Simulate();
+  if (model) return model->simulate();
   
   return -1;
 }

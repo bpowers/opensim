@@ -77,24 +77,24 @@ OpenSim::SimBuilder::~SimBuilder()
 
 
 int 
-OpenSim::SimBuilder::Parse(WalkType ourWalk, FILE *output_file)
+OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 {
   ASTConsumer *consumer = NULL;
   
   switch (ourWalk)
   {
-    case walk_Python:
+    case sim_emit_Python:
       consumer = new PythonPrintModule();
       break;
-    case walk_AS3:
+    case sim_emit_AS3:
       consumer = new AS3PrintModule();
       break;
-    case walk_IR:
+    case sim_emit_IR:
       fprintf(stdout, "Error: Sorry, JIT is disabled.\n");
       return -2;
       //consumer = new CodeGenModule();
       break;
-    case walk_Interpret:
+    case sim_emit_Output:
       consumer = new InterpreterModule();
       break;
     default:

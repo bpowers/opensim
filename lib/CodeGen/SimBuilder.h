@@ -107,7 +107,7 @@ namespace OpenSim
     SimBuilder(std::map<std::string, Variable *> variables);
     ~SimBuilder();
     
-    int Parse(WalkType ourWalk, FILE *output_file);
+    int Parse(sim_output ourWalk, FILE *output_file);
   };
 }
 

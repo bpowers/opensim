@@ -35,13 +35,13 @@ namespace OpenSim
   /// WalkType - This enum is for specifying the different types 
   /// of AST walking we support.
   ///
-  enum WalkType 
+  enum sim_output 
   {
-    walk_IR = 1,
-    walk_Python = 2,
-    walk_Fortran = 3,
-    walk_Interpret = 4,
-    walk_AS3 = 5
+    sim_emit_IR = 1,      // not supported
+    sim_emit_Python = 2,  // full Python implementation of model
+    sim_emit_Fortran = 3, // not implemented yet
+    sim_emit_Output = 4,  // results of interpreting model
+    sim_emit_AS3 = 5,     // full AS3 implementation of model
   };
   
   class SimBuilder;
@@ -50,29 +50,31 @@ namespace OpenSim
   class Simulator
   {
     /// Name of the loaded model.
-    std::string name;
+    std::string _model_name;
     
-    std::string file_name;
-    std::string outputFile;
+    std::string _file_name;
+    std::string _output_file_name;
     
     /// Current type of AST walk to take
-    WalkType outputType;
+    sim_output _output_type;
     
     /// Active SimBuilder instance which does the dirty work.
-    OpenSim::SimBuilder *simBuilder;
+    OpenSim::SimBuilder *_sim_builder;
     
     /// Private initialization function which is called from the 
     /// different constructors.
     void init(std::string fileName);
     
   public:
+    Simulator();
     Simulator(std::string fileName);
     ~Simulator();
       
-    std::string Name() {return name;}
-    int SetOutputType(WalkType newType);
-    int SetOutputFile(std::string outputFileName);
-    int Simulate();
+    int set_name(std::string modelName);
+    std::string name();
+    int set_output_type(sim_output newType);
+    int set_output_file(std::string outputFileName);
+    int simulate();
   };
 }
 
