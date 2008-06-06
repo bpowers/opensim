@@ -36,6 +36,7 @@
 #include "IO/IOVenText.h"
 using OpenSim::IOxml;
 using std::string;
+using std::map;
 
 
 OpenSim::Simulator::Simulator()
@@ -66,11 +67,41 @@ OpenSim::Simulator::~Simulator()
 }
 
 
+
+int
+OpenSim::Simulator::set_name(std::string modelName)
+{
+  _model_name = modelName;
+  
+  return 0;
+}
+
+
+
 std::string
 OpenSim::Simulator::name() 
 {
   return _model_name;
 }
+
+
+
+int
+OpenSim::Simulator::set_model_file(std::string modelFileName)
+{
+  _file_name = modelFileName;
+  
+  return 0;
+}
+
+
+
+std::string
+OpenSim::Simulator::model_file() 
+{
+  return _file_name;
+}
+
 
 
 int
@@ -141,6 +172,55 @@ OpenSim::Simulator::set_output_file(std::string outputFileName)
 
 
 
+std::string 
+OpenSim::Simulator::output_file()
+{
+  return _output_file_name;
+}
+
+
+
+int 
+OpenSim::Simulator::set_variable_equation(std::string varName, 
+                                          std::string varEqn)
+{
+  map<string, Variable *>::iterator v = _variables.find(varName); 
+  
+  // check to see if we didn't find anything
+  if (v == _variables.end())
+  {
+    fprintf(stderr, 
+            "Error: Variable '%s' doesn't exist, so can't set equation.\n", 
+            varName.c_str());
+    return -1;
+  }
+  
+  v->second->SetEquation(varEqn);
+  _sim_builder->Update();
+  
+  return 0;
+}
+
+
+
+std::string 
+OpenSim::Simulator::variable_equation(std::string varName)
+{
+  map<string, Variable *>::iterator v = _variables.find(varName); 
+  
+  // check to see if we didn't find anything
+  if (v == _variables.end())
+  {
+    fprintf(stderr, "Error: Variable '%s' doesn't exist, so no equation.\n", 
+            varName.c_str());
+    return "[null]";
+  }
+  
+  return v->second->Equation();
+}
+
+
+
 void
 OpenSim::Simulator::init(std::string fileName)
 {
@@ -166,7 +246,8 @@ OpenSim::Simulator::init(std::string fileName)
   
   if (file->ValidModelParsed())
   {
-    _sim_builder = new SimBuilder(file->Variables());
+    _variables = file->Variables();
+    _sim_builder = new SimBuilder(_variables);
     _model_name = file->Name();
   }
   

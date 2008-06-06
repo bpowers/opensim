@@ -4,5 +4,6 @@ INCLUDES                = -I$(top_builddir) -I$(top_builddir)/lib \
 MAINTAINERCLEANFILES    = Makefile.in
 
 bin_PROGRAMS            = opensim
+bin_SCRIPTS             = opensim-py
 opensim_SOURCES         = main.c
 opensim_LDADD           = @LIBLTDL@ @LIBADD_DL@

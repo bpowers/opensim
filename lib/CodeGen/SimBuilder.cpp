@@ -76,6 +76,16 @@ OpenSim::SimBuilder::~SimBuilder()
 
 
 
+int
+OpenSim::SimBuilder::Update()
+{
+  // this can be optimized, but for now should do.
+  delete root;
+  InitializeModule();
+}
+
+
+
 int 
 OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 {

@@ -254,7 +254,7 @@ static void
 print_help()
 {
   printf("\
-Usage: %s [-htv] input_file\n", program_name);
+Usage: %s [-htvo] input_file\n", program_name);
 
   fputs("\
 Simulate system dynamics models.\n\n\
@@ -276,6 +276,9 @@ Options:\n", stdout);
                           llvm-ir\n\
                           interpret [DEFUALT]\n", stdout);
   
+  fputs("\
+  -o, --output=FILE   output model to the specified file\n", stdout);  
+
   printf("\n");
 
   printf("\
@@ -287,12 +290,12 @@ Report bugs to <%s>.\n", PACKAGE_BUGREPORT);
 static void
 print_version (void)
 {
-  printf ("opensim (%s) %s\n", PACKAGE, VERSION);
+  printf("opensim (%s) %s\n", PACKAGE, VERSION);
   
-  puts ("");
+  puts("");
   
   // FSF recommends seperating out the year, for ease in translations.
-  printf ("\
+  printf("\
 Copyright (C) %s Bobby Powers.\n\
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\

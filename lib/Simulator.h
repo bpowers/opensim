@@ -29,6 +29,7 @@
 #define OSIM_SIMULATOR_H
 
 #include <string>
+#include <map>
 
 namespace OpenSim
 {
@@ -45,6 +46,7 @@ namespace OpenSim
   };
   
   class SimBuilder;
+  class Variable;
   
   
   class Simulator
@@ -61,6 +63,9 @@ namespace OpenSim
     /// Active SimBuilder instance which does the dirty work.
     OpenSim::SimBuilder *_sim_builder;
     
+    /// a map of all the variables in the model
+    std::map<std::string, OpenSim::Variable *> _variables;
+    
     /// Private initialization function which is called from the 
     /// different constructors.
     void init(std::string fileName);
@@ -72,8 +77,18 @@ namespace OpenSim
       
     int set_name(std::string modelName);
     std::string name();
+    
+    int set_model_file(std::string modelFileName);
+    std::string model_file();
+    
     int set_output_type(sim_output newType);
+    
     int set_output_file(std::string outputFileName);
+    std::string output_file();
+    
+    int set_variable_equation(std::string varName, std::string varEqn);
+    std::string variable_equation(std::string varName);
+    
     int simulate();
   };
 }

@@ -3,6 +3,7 @@
 
 %{
 #include "../Simulator.h"
+#include "../Variable.h"
 %}
 
 %include "std_string.i"

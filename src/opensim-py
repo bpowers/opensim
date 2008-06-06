@@ -1,0 +1,113 @@
+#!/usr/bin/env python
+import sys, getopt
+from opensim.simulator import sim_emit_Python, sim_emit_AS3, sim_emit_Output
+from opensim.simulator import Simulator
+
+
+VERSION = "0.2.4"
+PACKAGE = "python opensim"
+PACKAGE_BUGREPORT = "bugs@opensimproject.org"
+PROGRAM_NAME = "opensim-py"
+
+
+def Usage():
+  print("Usage: opensim-py [-htvo] input_file\n")
+
+  print("\
+Simulate system dynamics models.\n\n\
+Options:\n")
+  
+  print("\
+  -h, --help          display this help and exit\n\
+  -v, --version       display version information and exit\n");
+
+  print("\
+  -t, --target=LANG   output model in the specified language\n\
+                        Supported langages:\n\
+                          python\n\
+                          as3\n\
+                          interpret [DEFUALT]\n")
+  
+  print("\
+  -o, --output=FILE   output model to the specified file\n")
+
+  print("\n\
+Report bugs to <%s>.\n" % PACKAGE_BUGREPORT);
+
+
+def Version():
+  print("opensim (%s) %s\n" % (PACKAGE, VERSION))
+  
+  # FSF recommends seperating out the year, for ease in translations.
+  print("\
+Copyright (C) %s Bobby Powers.\n\
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
+This is free software: you are free to change and redistribute it.\n\
+There is NO WARRANTY, to the extent permitted by law.\n" % "2008")
+
+
+def main():
+  try:
+    opts, args = getopt.gnu_getopt(sys.argv[1:], "t:o:hv", 
+                               ["target=", "output=", "help", "version"])
+  except getopt.GetoptError:
+    # print help information and exit:
+    Usage()
+    sys.exit(2)
+
+  output = None
+  target = None
+  lose = False
+
+  for o, a in opts:
+    if o in ("-v", "--version"):
+      Version()
+      sys.exit()
+    elif o in ("-h", "--help"):
+      Usage()
+      sys.exit()
+    elif o in ("-o", "--output"):
+      output = a
+    elif o in ("-t", "--target"):
+      target = a
+    else:
+      lose = True
+
+  if len(args) is 0:
+    print("%s: no model file specified." % (PROGRAM_NAME))
+    Usage()
+    sys.exit(2)
+  elif len(args) > 1:
+    print("%s: only one model file can be specified." % (PROGRAM_NAME))
+    Usage()
+    sys.exit(2)
+  elif lose:
+    Usage()
+    sys.exit(2)
+
+  model_file = args[0]
+  new_walk = sim_emit_Output
+
+  if target is not None:
+    if target == "python":
+      new_walk = sim_emit_Python
+    elif target == "as3":
+      new_walk = sim_emit_AS3
+    elif target == "interpret":
+      new_walk = sim_emit_Output
+    else:
+      print("%s: invalid target language: %s." % (PROGRAM_NAME, target))
+      print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
+
+  sim = Simulator(args[0])
+  sim.set_output_type(new_walk)
+
+  if output is not None:
+    sim.set_output_file(output)
+
+  sim.simulate()
+
+
+if __name__ == "__main__":
+  PROGRAM_NAME = sys.argv[0]
+  main()
