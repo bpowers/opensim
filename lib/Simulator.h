@@ -74,7 +74,7 @@ namespace OpenSim
     Simulator();
     Simulator(std::string fileName);
     ~Simulator();
-      
+    
     int set_name(std::string modelName);
     std::string name();
     

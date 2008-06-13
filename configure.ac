@@ -21,6 +21,32 @@ AC_LIBTOOL_WIN32_DLL
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+dnl pkg-config
+CS="C#"
+have_csharp=no
+
+dnl C# compiler
+AC_PATH_PROG(CSC, csc, no)
+AC_PATH_PROG(MCS, mcs, no)
+AC_PATH_PROG(MONO, mono, no)
+
+if test "x$CSC" = "xno" -a "x$MCS" = "xno"  ; then
+	AC_MSG_WARN([No $CS compiler found, skipping $CS SWIG bindings])
+else
+	if test "x$MCS" = "xno" ; then
+		MCS=$CSC
+	fi
+
+	if test "x$MONO" = "xno"; then
+		AC_MSG_WARN([No mono runtime found, skipping $CS SWIG bindings])
+	else
+		AC_SUBST(MCS)
+		have_csharp=yes
+	fi
+fi
+
+AM_CONDITIONAL(HAVE_CSHARP, test x$have_csharp = xyes) 
+
 have_python = no
 AC_PYTHON_DEVEL([>='2.5'])
 
