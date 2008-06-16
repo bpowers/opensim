@@ -27,7 +27,7 @@ have_csharp=no
 
 dnl C# compiler
 AC_PATH_PROG(CSC, csc, no)
-AC_PATH_PROG(MCS, mcs, no)
+AC_PATH_PROG(MCS, gmcs, no)
 AC_PATH_PROG(MONO, mono, no)
 
 if test "x$CSC" = "xno" -a "x$MCS" = "xno"  ; then
@@ -42,12 +42,13 @@ else
 	else
 		AC_SUBST(MCS)
 		have_csharp=yes
+    AC_MSG_NOTICE([Found mono, enabling $CS bindings])
 	fi
 fi
 
 AM_CONDITIONAL(HAVE_CSHARP, test x$have_csharp = xyes) 
 
-have_python = no
+have_python=no
 AC_PYTHON_DEVEL([>='2.5'])
 
 if test -z "$PYTHON" ; then
