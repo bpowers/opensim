@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+import pygtk
+pygtk.require("2.0")
+
+import gtk, gtk.glade, cairo, pango, goocanvas, math
+
+import opensim as sim
+
+class OpenSimGTK:
+
+  def drawing_tool_toggled(self, widget):
+
+    # if a widget is being un-toggled, then we don't have
+    # to worry about it (otherwise breaks toggle effect)
+    if widget.get_active() == False:
+      # make sure we catch the case where no tool is active.
+      if widget.type == self.canvas.get_active_tool():
+        self.canvas.set_active_tool(sim.NONE)
+      return
+
+    # switch between possible widgets.
+    if widget.type != sim.VARIABLE:
+      self.button_variable.set_active(False)    
+    if widget.type != sim.INFLUENCE:
+      self.button_influence.set_active(False)
+    if widget.type != sim.STOCK:
+      self.button_stock.set_active(False)
+    if widget.type != sim.FLOW:
+      self.button_flow.set_active(False)
+
+    # let the canvas know what tool is active
+    self.canvas.set_active_tool(widget.type)
+      
+
+  def __init__(self):
+
+    #Set and load the Glade file
+    self.gladefile = "opensim-main.glade"  
+    self.wTree = gtk.glade.XML(self.gladefile) 
+
+    #Get the Main Window, and connect the "destroy" event
+    self.window = self.wTree.get_widget("main_window")
+
+    dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
+           "on_main_window_destroy" : gtk.main_quit, 
+           "on_file_quit" : gtk.main_quit}
+    self.wTree.signal_autoconnect(dic)
+    
+    #Get our 4 buttons & add type attributes to them
+    self.button_variable = self.wTree.get_widget("but_variable")
+    self.button_variable.type = sim.VARIABLE
+    self.button_influence = self.wTree.get_widget("but_influence")
+    self.button_influence.type = sim.INFLUENCE
+    self.button_stock = self.wTree.get_widget("but_stock")
+    self.button_stock.type = sim.STOCK
+    self.button_flow = self.wTree.get_widget("but_flow")
+    self.button_flow.type = sim.FLOW
+
+    #insert our goocanvas (since I don't want to deal with 
+    #getting it working with glade just yet...)
+    main_vbox = self.wTree.get_widget("main_vbox")
+    main_tool_bar = self.wTree.get_widget("main_tool_bar")
+
+    self.canvas = sim.Canvas()
+    self.status_bar = gtk.Statusbar()
+
+    main_vbox.pack_start(self.canvas, True, True, 0)
+    main_vbox.pack_start(self.status_bar, False, False, 0)
+
+    self.canvas.show()
+    self.status_bar.show()
+
+
+  def main(self):
+    gtk.main()
+
+
+
+if __name__ == "__main__":
+  gui = OpenSimGTK()
+  gui.main()
