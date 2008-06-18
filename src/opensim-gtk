@@ -3,9 +3,9 @@
 import pygtk
 pygtk.require("2.0")
 
-import gtk, gtk.glade, cairo, pango, goocanvas, math
-
+import os, sys, gtk, gtk.glade, cairo, pango, goocanvas, math
 import opensim as sim
+
 
 class OpenSimGTK:
 
@@ -35,8 +35,10 @@ class OpenSimGTK:
 
   def __init__(self):
 
+    pathname = os.path.dirname(sys.argv[0])
+    abspathname = os.path.abspath(pathname)
     #Set and load the Glade file
-    self.gladefile = "opensim-main.glade"  
+    self.gladefile = os.path.join(abspathname, "opensim-main.glade")
     self.wTree = gtk.glade.XML(self.gladefile) 
 
     #Get the Main Window, and connect the "destroy" event

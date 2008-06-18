@@ -7,11 +7,11 @@ simulator_wrap.cxx: simulator.i
 
 EXTRA_DIST = simulator.i
 
-CLEANFILES = simulator.py simulator.pyc\
+CLEANFILES = simulator.py simulator.pyc \
 	simulator_wrap.cxx _simulator.so
 
 if HAVE_PYTHON
-pkgpython_PYTHON = __init__.py simulator.py
+pkgpython_PYTHON = __init__.py simulator.py canvas.py constants.py                   
 pkgpyexec_LTLIBRARIES = _simulator.la
 endif
 
