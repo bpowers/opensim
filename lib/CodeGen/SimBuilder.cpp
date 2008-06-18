@@ -50,6 +50,7 @@ using OpenSim::UnaryExprAST;
 
 OpenSim::SimBuilder::SimBuilder(std::map<std::string, Variable *> variables)
 {
+  results = NULL;
   // save the variables we're passed.
   vars = variables;
     
@@ -72,6 +73,7 @@ OpenSim::SimBuilder::SimBuilder(std::map<std::string, Variable *> variables)
 
 OpenSim::SimBuilder::~SimBuilder()
 {
+  delete results;
 }
 
 
@@ -116,12 +118,28 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
   if (consumer) 
   {
     consumer->Consume(root, output_file);
+    
+    if (ourWalk == sim_emit_Output)
+    {
+      delete results;
+      InterpreterModule *interpreter = (InterpreterModule *)consumer;
+      results = interpreter->CopyResults();
+    }
+    
     delete consumer;
     
     return 0;
   }
   
   return -1;
+}
+
+
+
+std::map<std::string, std::vector<double> >
+OpenSim::SimBuilder::Results()
+{
+  return *results;
 }
 
 

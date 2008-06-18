@@ -129,6 +129,11 @@ OpenSim::Simulator::simulate()
     
     int parse_status = _sim_builder->Parse(_output_type, outputStream);
     
+    if (_output_type == sim_emit_Output)
+    {
+      _results = _sim_builder->Results();
+    }
+
     // if we opened it, close the output stream
     if (outputStream != stdout) fclose(outputStream);
     

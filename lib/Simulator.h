@@ -30,6 +30,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace OpenSim
 {
@@ -49,7 +50,7 @@ namespace OpenSim
   class Variable;
   
   
-  class Simulator
+  class Simulator 
   {
     /// Name of the loaded model.
     std::string _model_name;
@@ -69,6 +70,8 @@ namespace OpenSim
     /// Private initialization function which is called from the 
     /// different constructors.
     void init(std::string fileName);
+
+    std::map<std::string, std::vector<double> > _results;
     
   public:
     Simulator();
