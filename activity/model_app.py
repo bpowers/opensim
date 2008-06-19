@@ -11,7 +11,7 @@ import opensim as sim
 
 
 class ModelToolbar(gtk.Toolbar):
-    """Provides the toolbar containing the basic modeling functions"""
+  """Provides the toolbar containing the basic modeling functions"""
 
   def __init__(self):
     gtk.Toolbar.__init__(self)
