@@ -22,11 +22,20 @@
    id="path2381"
    style="fill:&fill_color;;fill-rule:evenodd;" />
 <path
-   d="M 5,32.5 L 40,32.5 L 40,37.5 L 50,28.75 L 40,20 L 40,25 L 5,25"
-   id="path2381"
+   d="M 32.90625,32.5 L 40,32.5 L 40,37.5 L 50,28.75 L 40,20 L 40,25 L 32.90625,25"
+   id="path2392"
+   style="fill:none;stroke:&stroke_color;;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+<path
+   d="M 5,32.5 L 12.09375,32.5"
+   id="path5"
+   style="fill:none;stroke:&stroke_color;;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+<path
+   d="M 5,25 L 12.09375,25"
+   id="path5"
    style="fill:none;stroke:&stroke_color;;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 <path
    d="M 33.660714,28.75 C 33.660714,34.913892 28.663892,39.910714 22.5,39.910714 C 16.336108,39.910714 11.339286,34.913892 11.339286,28.75 C 11.339286,22.586107 16.336108,17.589285 22.5,17.589285 C 28.663892,17.589285 33.660714,22.586107 33.660714,28.75 L 33.660714,28.75 z"
    id="path3173"
    style="fill:&fill_color;;stroke:&stroke_color;;stroke-width:2.67857146;stroke-miterlimit:4;stroke-dasharray:none" />
+
 </svg>

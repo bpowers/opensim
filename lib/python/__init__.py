@@ -9,7 +9,7 @@ pygtk.require("2.0")
 from canvas import Canvas
 
 import gtk
-from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.toggletoolbutton import ToggleToolButton
 
 class ModelToolbar(gtk.Toolbar):
   """Provides the toolbar containing the basic modeling functions"""
@@ -18,25 +18,25 @@ class ModelToolbar(gtk.Toolbar):
     gtk.Toolbar.__init__(self)
 
     #Get our 4 buttons & add type attributes to them
-    self.stock = ToolButton("icon-stock")
+    self.stock = ToggleToolButton("icon-stock")
     self.stock.set_tooltip(_('Create Stocks'))
     self.insert(self.stock, -1)
     self.stock.show()
     self.stock.type = STOCK
 
-    self.flow = ToolButton("icon-flow")
+    self.flow = ToggleToolButton("icon-flow")
     self.flow.set_tooltip(_('Create Flows'))
     self.insert(self.flow, -1)
     self.flow.show()
     self.flow.type = FLOW    
 
-    self.variable = ToolButton("icon-var")
+    self.variable = ToggleToolButton("icon-var")
     self.variable.set_tooltip(_('Create Variables'))
     self.insert(self.variable, -1)
     self.variable.show()
     self.variable.type = VARIABLE
 
-    self.influence = ToolButton("icon-infl")
+    self.influence = ToggleToolButton("icon-infl")
     self.influence.set_tooltip(_('Create Influence Arrows'))
     self.insert(self.influence, -1)
     self.influence.show()
