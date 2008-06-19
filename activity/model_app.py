@@ -1,11 +1,10 @@
-from sugar.activity import activity
-
-
 import pygtk
 pygtk.require("2.0")
 
+from sugar.activity import activity
+from sugar.graphics.toolbutton import ToolButton
 
-import gtk, gtk.glade, cairo, pango, goocanvas, math
+import gtk, math
 from gettext import gettext as _
 
 import opensim as sim
@@ -14,33 +13,33 @@ import opensim as sim
 class ModelToolbar(gtk.Toolbar):
     """Provides the toolbar containing the basic modeling functions"""
 
-    def __init__(self):
-        gtk.Toolbar.__init__(self)
+  def __init__(self):
+    gtk.Toolbar.__init__(self)
 
-        self.undo = ToolButton('edit-undo')
-        self.undo.set_tooltip(_('Undo'))
-        self.insert(self.undo, -1)
-        self.undo.show()
+    #Get our 4 buttons & add type attributes to them
+    self.variable = ToolButton("icon-var")
+    self.variable.set_tooltip(_('Create Variables'))
+    self.insert(self.variable, -1)
+    self.variable.show()
+    self.variable.type = sim.VARIABLE
 
-        self.redo = ToolButton('edit-redo')
-        self.redo.set_tooltip(_('Redo'))
-        self.insert(self.redo, -1)
-        self.redo.show()
+    self.influence = ToolButton("icon-infl")
+    self.influence.set_tooltip(_('Create Influence Arrows'))
+    self.insert(self.influence, -1)
+    self.influence.show()
+    self.influence.type = sim.INFLUENCE
 
-        self.separator = gtk.SeparatorToolItem()
-        self.separator.set_draw(True)
-        self.insert(self.separator, -1)
-        self.separator.show()
+    self.stock = ToolButton("icon-stock")
+    self.stock.set_tooltip(_('Create Stocks'))
+    self.insert(self.stock, -1)
+    self.stock.show()
+    self.stock.type = sim.STOCK
 
-        self.copy = ToolButton('edit-copy')
-        self.copy.set_tooltip(_('Copy'))
-        self.insert(self.copy, -1)
-        self.copy.show()
-
-        self.paste = ToolButton('edit-paste')
-        self.paste.set_tooltip(_('Paste'))
-        self.insert(self.paste, -1)
-        self.paste.show()
+    self.flow = ToolButton("icon-flow")
+    self.flow.set_tooltip(_('Create Flows'))
+    self.insert(self.flow, -1)
+    self.flow.show()
+    self.flow.type = sim.FLOW    
 
 
 class ModelActivity(activity.Activity):
