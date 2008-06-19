@@ -1,0 +1,16 @@
+activity/activity.info
+activity/activity-default.svg
+icons/icon-stock.svg
+icons/icon-flow.svg
+icons/icon-var.svg
+icons/icon-infl.svg
+model_app.py
+NEWS
+MANIFEST
+opensim/__init__.py
+opensim/constants.py
+opensim/base.py
+opensim/canvas.py
+opensim/widgets/__init__.py
+opensim/widgets/stock.py
+setup.py
