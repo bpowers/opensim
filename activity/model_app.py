@@ -11,6 +11,38 @@ from gettext import gettext as _
 import opensim as sim
 
 
+class ModelToolbar(gtk.Toolbar):
+    """Provides the toolbar containing the basic modeling functions"""
+
+    def __init__(self):
+        gtk.Toolbar.__init__(self)
+
+        self.undo = ToolButton('edit-undo')
+        self.undo.set_tooltip(_('Undo'))
+        self.insert(self.undo, -1)
+        self.undo.show()
+
+        self.redo = ToolButton('edit-redo')
+        self.redo.set_tooltip(_('Redo'))
+        self.insert(self.redo, -1)
+        self.redo.show()
+
+        self.separator = gtk.SeparatorToolItem()
+        self.separator.set_draw(True)
+        self.insert(self.separator, -1)
+        self.separator.show()
+
+        self.copy = ToolButton('edit-copy')
+        self.copy.set_tooltip(_('Copy'))
+        self.insert(self.copy, -1)
+        self.copy.show()
+
+        self.paste = ToolButton('edit-paste')
+        self.paste.set_tooltip(_('Paste'))
+        self.insert(self.paste, -1)
+        self.paste.show()
+
+
 class ModelActivity(activity.Activity):
   '''
   The base class for the Model activity.
