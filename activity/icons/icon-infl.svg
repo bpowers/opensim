@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+     <!ENTITY stroke_color "#010101">
+     <!ENTITY fill_color "#FFFFFF">
+ ]>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="55"
+   height="55"
+   viewBox="0 0 55 55"
+   id="svg2"
+   xml:space="preserve"><defs
+   id="defs12">
+	
+	
+</defs>
+
+
+
+<path
+   d="M 9.3522267,47.98583 C 11.62916,25.077684 18.103382,19.850278 34.625506,14.696356"
+   id="path2384"
+   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+<path
+   d="M 31.508097,7.6821862 L 34.959514,23.269231 L 46.427126,11.80162 L 31.508097,7.6821862 z"
+   id="path2381"
+   style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+</svg>

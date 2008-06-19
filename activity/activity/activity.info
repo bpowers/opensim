@@ -1,0 +1,8 @@
+[Activity]
+name = Model
+bundle_id = org.laptop.Model
+service_name = org.laptop.Model
+icon = model-icon
+class = model_app.ModelActivity
+activity_version = 1
+show_launcher = yes

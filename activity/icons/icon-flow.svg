@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+     <!ENTITY stroke_color "#010101">
+     <!ENTITY fill_color "#FFFFFF">
+ ]>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="55"
+   height="55"
+   viewBox="0 0 55 55"
+   id="svg2"
+   xml:space="preserve"><defs
+   id="defs12">
+	
+	
+</defs>
+<path
+   d="M 5,32.5 L 40,32.5 L 40,37.5 L 50,28.75 L 40,20 L 40,25 L 5,25 L 5,32.5 z"
+   id="path2381"
+   style="fill:&fill_color;;fill-rule:evenodd;" />
+<path
+   d="M 5,32.5 L 40,32.5 L 40,37.5 L 50,28.75 L 40,20 L 40,25 L 5,25"
+   id="path2381"
+   style="fill:none;stroke:&stroke_color;;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+<path
+   d="M 33.660714,28.75 C 33.660714,34.913892 28.663892,39.910714 22.5,39.910714 C 16.336108,39.910714 11.339286,34.913892 11.339286,28.75 C 11.339286,22.586107 16.336108,17.589285 22.5,17.589285 C 28.663892,17.589285 33.660714,22.586107 33.660714,28.75 L 33.660714,28.75 z"
+   id="path3173"
+   style="fill:&fill_color;;stroke:&stroke_color;;stroke-width:2.67857146;stroke-miterlimit:4;stroke-dasharray:none" />
+</svg>
