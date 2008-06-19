@@ -2,6 +2,8 @@ AM_CXXFLAGS = $(PYTHON_CPPFLAGS)
 
 INCLUDES = $(PYTHON_INCLUDES) -I$(top_srcdir) -I$(top_srcdir)/lib
 
+SUBDIRS = widgets
+
 simulator_wrap.cxx: simulator.i
 	$(SWIG) $(SWIG_PYTHON_OPT) -I$(top_srcdir)/lib $(PYTHON_INCLUDES) simulator.i
 
