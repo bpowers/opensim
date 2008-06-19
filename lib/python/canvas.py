@@ -21,6 +21,10 @@ class Canvas (gtk.ScrolledWindow):
     # white background
     color_white = gtk.gdk.Color(65535, 65535, 65535, 0)
     self.goocanvas.modify_base(gtk.STATE_NORMAL, color_white)
+
+    self.goocanvas.set_size_request(1440, 900)
+    self.goocanvas.set_bounds(0, 0, 1440, 900)
+
     self.goocanvas.automatic_bounds = True
 
     root = self.goocanvas.get_root_item()

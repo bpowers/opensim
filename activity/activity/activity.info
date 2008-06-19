@@ -5,4 +5,5 @@ service_name = org.laptop.Model
 icon = model-icon
 class = model_app.ModelActivity
 activity_version = 1
+mime_types = text/plain
 show_launcher = yes
