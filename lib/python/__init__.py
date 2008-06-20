@@ -1,4 +1,3 @@
-import simulator
 from constants import *
 
 from gettext import gettext as _

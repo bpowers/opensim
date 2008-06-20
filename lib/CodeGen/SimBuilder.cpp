@@ -540,7 +540,7 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
   {
     fprintf(stdout, "Warning: variable '%s' has empty equation field\n", 
             var->Name().c_str());
-    return NULL;
+    return false;
   }
 
   // prime CurToken
@@ -560,7 +560,7 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
     {
       fprintf(stdout, "Warning: stock '%s' has empty initial value field\n", 
               var->Name().c_str());
-      return NULL;
+      return false;
     }
     
     CurVarInitial = 0;
