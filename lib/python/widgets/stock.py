@@ -9,7 +9,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
   ## Note to read or modify the bounding box of ItemSimple use
   ## self.bounds_x1,x2,y1,y2
 
-  def __init__(self, x, y, width=120, height=80, line_width=2, **kwargs):
+  def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
     self.y = int(y - height/2)

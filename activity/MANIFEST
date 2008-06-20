@@ -5,6 +5,7 @@ icons/icon-flow.svg
 icons/icon-var.svg
 icons/icon-infl.svg
 model_app.py
+model_startup.sh
 NEWS
 setup.py
 lib/libgoocanvas.la
