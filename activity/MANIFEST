@@ -17,11 +17,12 @@ site-packages/opensim/widgets/stock.py
 site-packages/opensim/__init__.py
 site-packages/opensim/canvas.py
 site-packages/opensim/constants.py
-site-packages/opensim/simulator.py
-site-packages/opensim/_simulator.la
-site-packages/opensim/_simulator.so
-site-packages/opensim/_simulator.so.0
-site-packages/opensim/_simulator.so.0.0.0
+site-packages/opensim/engine/__init__.py
+site-packages/opensim/engine/simulator.py
+site-packages/opensim/engine/_simulator.la
+site-packages/opensim/engine/_simulator.so
+site-packages/opensim/engine/_simulator.so.0
+site-packages/opensim/engine/_simulator.so.0.0.0
 site-packages/goocanvasmodule.la
 site-packages/goocanvasmodule.so
 
