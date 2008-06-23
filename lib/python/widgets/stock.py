@@ -1,13 +1,19 @@
 import gobject
 import gtk
 import goocanvas
+import math
 
+import logging
+
+import textinfo
 
 
 class StockItem(goocanvas.ItemSimple, goocanvas.Item):
 
   ## Note to read or modify the bounding box of ItemSimple use
   ## self.bounds_x1,x2,y1,y2
+  _display_name = "Default Stock"
+  __needs_resize_calc = True
 
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
@@ -17,9 +23,24 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     self.height = height
     self.line_width = line_width
 
+    self._display_name = "Rabbit Population Model"
+
 
   def do_simple_create_path(self, cr):
-    ## define the bounding path here.
+    if self.__needs_resize_calc:
+      cr.select_font_face('Arial')
+      cr.set_font_size(18)
+      (x, y, width, height, dx, dy) = cr.text_extents(self._display_name)
+      #print("x:%f y:%f w:%f h:%f dx:%f dy:%f" % (x, y, width, height, dx, dy))
+      ## define the bounding path here.
+      old_center_x = self.x + self.width/2
+      old_center_y = self.y + self.height/2
+      self.width = 2*max(self.width, width)
+      self.height = 2*max(self.height, height)
+      self.x = old_center_x - self.width/2
+      self.y = old_center_y - self.height/2
+      self.__needs_resize_calc = False
+
     cr.rectangle(self.x, self.y, self.width, self.height)
 
 
@@ -31,6 +52,15 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(0, 0, 0)
     cr.stroke()
+    cr.translate(self.x, self.y)
+    cr.set_source_rgba(1, 0.2, 0.2, 0.6)
+    #cr.move_to(self.width/2,self.height/2)
+    cr.arc(self.width/2,self.height/2, 10, 0, 2*math.pi);
+    cr.close_path()
+    cr.fill()
+    cr.select_font_face('sans-serif')
+    cr.set_font_size(50)
+    cr.show_text(self._display_name)
 
 
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):

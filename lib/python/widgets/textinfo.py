@@ -1,0 +1,2 @@
+class TextInfo():
+  pass
