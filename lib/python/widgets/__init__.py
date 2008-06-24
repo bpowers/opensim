@@ -1,2 +1,2 @@
 from stock import StockItem
-from text import Text
+from text import TextInfo
