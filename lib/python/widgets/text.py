@@ -15,7 +15,7 @@ class TextInfo():
   def update_extents(self, cr):
     cr.push_group()
     cr.select_font_face(self.font_face)
-    cr.set_font_size(self.font_size * self.scale)
+    cr.set_font_size(self.font_size)
     (x, y, width, height, dx, dy) = cr.text_extents(self.string)
     cr.pop_group()
 
