@@ -30,8 +30,6 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)
 
-      print("w:%f h:%f" % (self._display_name.width, self._display_name.height))
-
       old_center_x = self.x + self.width/2
       old_center_y = self.y + self.height/2
       self.width = max(self.width, \
@@ -58,13 +56,11 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     # translate so that our coordinate system is in the widget
     cr.translate(self.x, self.y)
     
-    #cr.push_group()
-    cr.move_to(self.padding, self.height/2)
+    cr.move_to(self.padding, self.height/2 + self._display_name.height/2)
     cr.select_font_face(self._display_name.font_face)
     cr.set_font_size(self._display_name.font_size)
-    #print("name:%s" % self._display_name.string)
     cr.show_text(self._display_name.string)
-    #cr.pop_group()
+
 
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
     if ((x < self.x) or (x > self.x + self.width)) or \
