@@ -20,11 +20,22 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     self.width = width
     self.height = height
     self.__needs_resize_calc = True
+    self.dragging = False
+    self.text_color = [0, 0, 0]
 
     self.line_width = line_width
 
     self._display_name = TextInfo("Rabbit Population Model", \
                                   dpi=self.get_canvas().dpi)
+
+    self.connect("focus_in_event", self.on_focus_in)
+    self.connect("focus_out_event", self.on_focus_out)
+    #self.connect("key_press_event",  self.on_key_press)
+    self.connect("button_press_event", self.on_button_press)
+    self.connect("button_release_event", self.on_button_release)
+    self.connect ("motion_notify_event", self.on_motion_notify)
+
+    self.get_canvas().grab_focus(self)
 
 
   def do_simple_create_path(self, cr):
@@ -52,7 +63,9 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
     cr.set_line_width(self.line_width)
-    cr.set_source_rgb(0, 0, 0)
+    cr.set_source_rgb(self.text_color[0], \
+                      self.text_color[1], \
+                      self.text_color[2])
     cr.stroke()
 
     # translate so that our coordinate system is in the widget
@@ -71,7 +84,56 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     else:    
       return True
 
-  def do_button_press_event(self, target, event):
-    print "stock button press!"
+  def on_button_press (self, item, target, event):
+    self.get_canvas().grab_focus(item)
+    if event.button == 1:
+      self.drag_x = event.x
+      self.drag_y = event.y
+
+      fleur = gtk.gdk.Cursor(gtk.gdk.FLEUR)
+      canvas = item.get_canvas()
+      canvas.pointer_grab(item,
+                          gtk.gdk.POINTER_MOTION_MASK 
+                            | gtk.gdk.BUTTON_RELEASE_MASK,
+                          fleur, event.time)
+      self.dragging = True
+    elif event.button == 3:
+      # right-click, handle later
+      pass
+    else:
+      print "unsupported button: %d" % event.button
+
+    return True
+
+
+  def on_button_release(self, item, target, event):
+    canvas = item.get_canvas()
+    canvas.pointer_ungrab(item, event.time)
+    self.dragging = False
+
+
+  def on_motion_notify (self, item, target, event):
+    if (self.dragging == True) and (event.state & gtk.gdk.BUTTON1_MASK):
+      new_x = event.x
+      new_y = event.y
+      item.translate(new_x - self.drag_x, new_y - self.drag_y)
+    return True
+
+
+  def on_focus_in(self, item, target, event):
+    print("awes, got focus %s", item)
+
+    self.text_color = [1, .6, .2]
+    self.get_canvas().request_redraw(self.get_bounds())
+
+    return False
+
+  def on_focus_out(self, item, target, event):
+    print("aww, left focus %s", item)
+
+    self.text_color = [0, 0, 0]
+    self.get_canvas().request_redraw(self.get_bounds())
+
+    return False
 
 gobject.type_register(StockItem)
