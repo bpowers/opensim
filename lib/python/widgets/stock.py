@@ -23,30 +23,32 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
 
     self.line_width = line_width
 
-    self._display_name = TextInfo("Rabbit Population Model")
+    self._display_name = TextInfo("Rabbit Population Model", \
+                                  dpi=self.get_canvas().dpi)
 
 
   def do_simple_create_path(self, cr):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)
 
-      old_center_x = self.x + self.width/2
-      old_center_y = self.y + self.height/2
+      old_center_x = self.x + self.width/2.0
+      old_center_y = self.y + self.height/2.0
       self.width = max(self.width, \
                        self._display_name.width + 2*self.padding)
       self.height = max(self.height, \
                         self._display_name.height + 2*self.padding)
-      self.x = old_center_x - self.width/2
-      self.y = old_center_y - self.height/2
+      self.x = old_center_x - self.width/2.0
+      self.y = old_center_y - self.height/2.0
       self.__needs_resize_calc = False
 
     # define the bounding path here.
-    cr.rectangle(self.x, self.y, self.width, self.height)
+    cr.rectangle(self.x - self.line_width/2.0, self.y - self.line_width/2.0, \
+                 self.width + self.line_width, self.height + self.line_width)
 
 
   def do_simple_paint(self, cr, bounds):
 
-    self.do_simple_create_path(cr)
+    cr.rectangle(self.x, self.y, self.width, self.height)
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
     cr.set_line_width(self.line_width)
@@ -56,7 +58,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     # translate so that our coordinate system is in the widget
     cr.translate(self.x, self.y)
     
-    cr.move_to(self.padding, self.height/2 + self._display_name.height/2)
+    cr.move_to(self.padding, self.height/2.0 + self._display_name.height/2.0)
     cr.select_font_face(self._display_name.font_face)
     cr.set_font_size(self._display_name.font_size)
     cr.show_text(self._display_name.string)

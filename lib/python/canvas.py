@@ -16,13 +16,11 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_x = 0
     self.drag_y = 0
 
-    print("trying screen stuff")
-    disp = gtk.gdk.display_get_default()
-    screen = disp.get_default_screen()
-    res = screen.get_resolution()
-    print("r:%d" % res)
-
     self.goocanvas = goocanvas.Canvas()
+
+    display = gtk.gdk.display_get_default()
+    screen = display.get_default_screen()
+    self.goocanvas.dpi = screen.get_resolution()
 
     # white background
     color_white = gtk.gdk.Color(65535, 65535, 65535, 0)
