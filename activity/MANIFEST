@@ -14,6 +14,7 @@ lib/libgoocanvas.so.3
 lib/libgoocanvas.so.3.1.0
 site-packages/opensim/widgets/__init__.py
 site-packages/opensim/widgets/stock.py
+site-packages/opensim/widgets/text.py
 site-packages/opensim/__init__.py
 site-packages/opensim/canvas.py
 site-packages/opensim/constants.py

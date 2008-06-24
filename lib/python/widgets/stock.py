@@ -5,15 +5,10 @@ import math
 
 import logging
 
-import textinfo
+import text
 
 
 class StockItem(goocanvas.ItemSimple, goocanvas.Item):
-
-  ## Note to read or modify the bounding box of ItemSimple use
-  ## self.bounds_x1,x2,y1,y2
-  _display_name = "Default Stock"
-  __needs_resize_calc = True
 
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
@@ -21,16 +16,19 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     self.y = int(y - height/2)
     self.width = width
     self.height = height
+    self.__needs_resize_calc = True
+
     self.line_width = line_width
 
-    self._display_name = "Rabbit Population Model"
+    self._display_name = Text("Rabbit Population Model")
 
 
   def do_simple_create_path(self, cr):
     if self.__needs_resize_calc:
       cr.select_font_face('Arial')
       cr.set_font_size(18)
-      (x, y, width, height, dx, dy) = cr.text_extents(self._display_name)
+      (x, y, width, height, dx, dy) = \
+         cr.text_extents(self._display_name.string)
       #print("x:%f y:%f w:%f h:%f dx:%f dy:%f" % (x, y, width, height, dx, dy))
       ## define the bounding path here.
       old_center_x = self.x + self.width/2
@@ -60,7 +58,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     cr.fill()
     cr.select_font_face('sans-serif')
     cr.set_font_size(50)
-    cr.show_text(self._display_name)
+    cr.show_text(self._display_name.string)
 
 
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
