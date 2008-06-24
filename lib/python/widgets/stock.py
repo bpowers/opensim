@@ -13,6 +13,12 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
   # space between the bounding box and the text
   padding = 4
 
+  left_key = ['Left', 'KP_Left']
+  right_key = ['Right', 'KP_Right']
+  exit_key = ['Escape']
+  enter_key = ['Return', 'Control_R']
+  delete_key = ['BackSpace']
+
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
@@ -30,7 +36,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
 
     self.connect("focus_in_event", self.on_focus_in)
     self.connect("focus_out_event", self.on_focus_out)
-    #self.connect("key_press_event",  self.on_key_press)
+    self.connect("key_press_event",  self.on_key_press)
     self.connect("button_press_event", self.on_button_press)
     self.connect("button_release_event", self.on_button_release)
     self.connect ("motion_notify_event", self.on_motion_notify)
@@ -84,7 +90,30 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     else:    
       return True
 
-  def on_button_press (self, item, target, event):
+
+  def force_redraw(self):
+    # tell the canvas to redraw the area we're in
+    self.get_canvas().request_redraw(self.get_bounds())
+  
+
+  def on_key_press(self, item, target, event):
+    key_name = gtk.gdk.keyval_name(event.keyval)
+
+    if key_name in self.enter_key:
+      print("enter key!")
+    elif key_name in self.delete_key:
+      print("delete key!")
+    elif key_name in self.escape_key:
+      print("escape key!")
+    else:
+      # add key to name buffer
+      print("key\n\tstr:'%s'\n\tnam:'%s'" % (event.string, key_name))
+
+    # return true to stop propogation
+    return True
+
+
+  def on_button_press(self, item, target, event):
     self.get_canvas().grab_focus(item)
     if event.button == 1:
       self.drag_x = event.x
@@ -124,7 +153,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     print("awes, got focus %s", item)
 
     self.text_color = [1, .6, .2]
-    self.get_canvas().request_redraw(self.get_bounds())
+    self.force_redraw()
 
     return False
 
@@ -132,7 +161,7 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     print("aww, left focus %s", item)
 
     self.text_color = [0, 0, 0]
-    self.get_canvas().request_redraw(self.get_bounds())
+    self.force_redraw()
 
     return False
 
