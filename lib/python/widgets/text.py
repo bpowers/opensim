@@ -1,3 +1,5 @@
+
+
 class TextInfo():
 
   __base_dpi = 96.0
@@ -33,6 +35,11 @@ class TextInfo():
       self.placeholder = False
     self.string = self.string + string
 
+  def backspace(self):
+    if len(self.string) > 0:
+      self.string = self.string[0:-1]
+
 
   def new_width(self, requested_width):
     pass
+

@@ -80,12 +80,13 @@ class StockItem(SimItem):
     if key_name in self.enter_key:
       print("enter key!")
     elif key_name in self.delete_key:
-      print("delete key!")
+      self._display_name.backspace()
+      self.__needs_resize_calc = True
+      self.force_redraw()
     elif key_name in self.escape_key:
       print("escape key!")
     else:
       # add key to name buffer
-      print("key\n\tstr:'%s'\n\tnam:'%s'" % (event.string, key_name))
       self._display_name.add(event.string)
       self.__needs_resize_calc = True
       self.force_redraw()
