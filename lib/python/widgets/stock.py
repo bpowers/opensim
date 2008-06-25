@@ -6,18 +6,11 @@ import math
 import logging
 
 from text import TextInfo
+from item import SimItem
 
 
-class StockItem(goocanvas.ItemSimple, goocanvas.Item):
+class StockItem(SimItem):
 
-  # space between the bounding box and the text
-  padding = 4
-
-  left_key = ['Left', 'KP_Left']
-  right_key = ['Right', 'KP_Right']
-  exit_key = ['Escape']
-  enter_key = ['Return', 'Control_R']
-  delete_key = ['BackSpace']
 
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
@@ -31,15 +24,8 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
 
     self.line_width = line_width
 
-    self._display_name = TextInfo("Rabbit Population Model", \
+    self._display_name = TextInfo("(enter name)", \
                                   dpi=self.get_canvas().dpi)
-
-    self.connect("focus_in_event", self.on_focus_in)
-    self.connect("focus_out_event", self.on_focus_out)
-    self.connect("key_press_event",  self.on_key_press)
-    self.connect("button_press_event", self.on_button_press)
-    self.connect("button_release_event", self.on_button_release)
-    self.connect ("motion_notify_event", self.on_motion_notify)
 
     self.get_canvas().grab_focus(self)
 
@@ -82,19 +68,6 @@ class StockItem(goocanvas.ItemSimple, goocanvas.Item):
     cr.set_font_size(self._display_name.font_size)
     cr.show_text(self._display_name.string)
 
-
-  def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
-    if ((x < self.x) or (x > self.x + self.width)) or \
-       ((y < self.y) or (y > self.y + self.height)):
-      return False
-    else:    
-      return True
-
-
-  def force_redraw(self):
-    # tell the canvas to redraw the area we're in
-    self.get_canvas().request_redraw(self.get_bounds())
-  
 
   def on_key_press(self, item, target, event):
     key_name = gtk.gdk.keyval_name(event.keyval)

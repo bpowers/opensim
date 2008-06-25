@@ -24,3 +24,11 @@ class TextInfo():
     # dx seems to leave the proper amount of padding at the end of the line?
     self.width = dx
     self.height = height
+
+
+  def add(self, string):
+    self.string = self.string + string
+
+
+  def new_width(self, requested_width):
+    pass
