@@ -15,7 +15,7 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
   left_key = ['Left', 'KP_Left']
   right_key = ['Right', 'KP_Right']
-  exit_key = ['Escape']
+  escape_key = ['Escape']
   enter_key = ['Return', 'Control_R']
   delete_key = ['BackSpace']
 

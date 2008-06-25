@@ -11,7 +11,6 @@ from item import SimItem
 
 class StockItem(SimItem):
 
-
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
@@ -25,12 +24,21 @@ class StockItem(SimItem):
     self.line_width = line_width
 
     self._display_name = TextInfo("(enter name)", \
-                                  dpi=self.get_canvas().dpi)
+                                  dpi=self.get_canvas().dpi, \
+                                  placeholder_text=True)
 
     self.get_canvas().grab_focus(self)
 
 
   def do_simple_create_path(self, cr):
+    self.ensure_size(cr)
+
+    # define the bounding path here.
+    cr.rectangle(self.x - self.line_width/2.0, self.y - self.line_width/2.0, \
+                 self.width + self.line_width, self.height + self.line_width)
+
+
+  def ensure_size(self, cr):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)
 
@@ -44,13 +52,10 @@ class StockItem(SimItem):
       self.y = old_center_y - self.height/2.0
       self.__needs_resize_calc = False
 
-    # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, self.y - self.line_width/2.0, \
-                 self.width + self.line_width, self.height + self.line_width)
-
 
   def do_simple_paint(self, cr, bounds):
 
+    self.ensure_size(cr)
     cr.rectangle(self.x, self.y, self.width, self.height)
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
@@ -81,6 +86,9 @@ class StockItem(SimItem):
     else:
       # add key to name buffer
       print("key\n\tstr:'%s'\n\tnam:'%s'" % (event.string, key_name))
+      self._display_name.add(event.string)
+      self.__needs_resize_calc = True
+      self.force_redraw()
 
     # return true to stop propogation
     return True
