@@ -25,6 +25,7 @@
 
 
 #include <cstdio>
+#include <cstdlib>
 
 #include "IOVenText.h"
 using OpenSim::TokenType;
