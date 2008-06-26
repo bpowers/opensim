@@ -80,7 +80,7 @@ class StockItem(SimItem):
     key_name = gtk.gdk.keyval_name(event.keyval)
 
     if key_name in self.enter_key:
-      print("enter key!")
+      self.emit("highlight_out_event", self)
     elif key_name in self.delete_key:
       self._display_name.backspace()
     elif key_name in self.escape_key:
@@ -91,6 +91,8 @@ class StockItem(SimItem):
 
     self.__needs_resize_calc = True
     self.force_redraw()
+
+    self.__new = True
 
     # return true to stop propogation
     return True
@@ -115,7 +117,6 @@ class StockItem(SimItem):
       pass
     else:
       print "unsupported button: %d" % event.button
-
     return True
 
 
@@ -154,7 +155,15 @@ class StockItem(SimItem):
     self.text_color = [0, 0, 0]
     self.force_redraw()
 
+    self.get_canvas().update_name(self._display_name.string, 
+                                  self, new=self.__new)
+
+    self.__new = False
+
     return False
+
+
+  
 
 
 

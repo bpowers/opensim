@@ -62,6 +62,18 @@ class VariableItem(SimItem):
 
     cr.save()
     self.ensure_size(cr)
+    
+    self.type_icon(cr)
+    
+    cr.translate(self.x + self.icon_size + self.padding, self.y + self.height/2.0 + \
+                                      self._display_name.height/2.0)
+    cr.select_font_face(self._display_name.font_face)
+    cr.set_font_size(self._display_name.font_size)
+    cr.show_text(self._display_name.string)
+    cr.restore()
+
+
+  def type_icon(self, cr):
     cr.move_to(self.x + self.icon_size, self.y + .5*self.height)
     cr.arc(self.x + .5*self.icon_size, self.y + .5*self.height, 
            self.icon_size/2, 0, 2*math.pi)
@@ -73,13 +85,6 @@ class VariableItem(SimItem):
                       self.text_color[1], \
                       self.text_color[2])
     cr.stroke()
-    
-    cr.translate(self.x + self.icon_size + self.padding, self.y + self.height/2.0 + \
-                                      self._display_name.height/2.0)
-    cr.select_font_face(self._display_name.font_face)
-    cr.set_font_size(self._display_name.font_size)
-    cr.show_text(self._display_name.string)
-    cr.restore()
 
 
   def on_key_press(self, item, target, event):

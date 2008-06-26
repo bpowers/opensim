@@ -4,6 +4,7 @@ pygtk.require("2.0")
 import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
+import engine
 
 
 
@@ -11,6 +12,7 @@ class SimGoo(goocanvas.Canvas):
   def __init__(self, **kwargs):
     super(SimGoo, self).__init__(**kwargs)
     self.highlighted = None
+    self.engine = engine.Simulator()
   
 
   def grab_highlight(self, widget):
@@ -31,6 +33,11 @@ class SimGoo(goocanvas.Canvas):
       self.highlighted = None
 
 
+  def update_name(self, name, item, new=False):
+    if new:
+      print("awesome! new: '%s'", name)
+
+
 
 class Canvas (gtk.ScrolledWindow):
 
@@ -44,6 +51,8 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_y = 0
 
     self.goocanvas = SimGoo()
+    self.engine = self.goocanvas.engine
+    self.display_vars = []
 
     display = gtk.gdk.display_get_default()
     screen = display.get_default_screen()
@@ -86,10 +95,12 @@ class Canvas (gtk.ScrolledWindow):
         root = self.goocanvas.get_root_item()
         new_stock = widgets.StockItem(event.x, event.y, \
                                       parent=root, can_focus=True)
+        self.display_vars.append(new_stock)
       elif self.active_tool is sim.VARIABLE:
         root = self.goocanvas.get_root_item()
         new_var = widgets.VariableItem(event.x, event.y, \
                                        parent=root, can_focus=True)
+        self.display_vars.append(new_var)
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
@@ -105,6 +116,12 @@ class Canvas (gtk.ScrolledWindow):
     print("aww, left focus %s", self)
 
     return False
+
+
+  def write_model(self, file_path):
+    self.engine.model_file(file_path)
+    logging.debug("awesome, set model file")
+    #self.engine.save()
 
 
 

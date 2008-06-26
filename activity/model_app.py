@@ -74,7 +74,14 @@ class ModelActivity(activity.Activity):
     '''
     Implement this method to save your activity's state.
     '''
-    raise NotImplementedError
+    logging.debug('writing file')
+    self.canvas.write_model(file_path)
+    f = open(file_path, 'w')
+    try:
+      f.write(self._get_log())
+    finally:
+      f.close()
+
 
     
   def read_file(self, file_path):
