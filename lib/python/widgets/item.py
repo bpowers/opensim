@@ -24,7 +24,7 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
                height=80, **kwargs):
 
     ## chain to parent constructor
-    super(SimItem, self).__init__(self, **kwargs)
+    super(SimItem, self).__init__(**kwargs)
 
     self.x = x
     self.y = y
@@ -46,6 +46,7 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
 
   def do_get_item_at(self, x, y, cr, is_pointer_event, parent_is_visible):
+    print("checking stuff...")
     if ((x < self.x) or (x > self.x + self.width)) or \
        ((y < self.y) or (y > self.y + self.height)):
       return False
