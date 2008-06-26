@@ -81,13 +81,18 @@ class Canvas (gtk.ScrolledWindow):
 
   def on_background_button_press (self, item, target, event):
 
-    if event.button is 1 and self.active_tool is sim.STOCK:
-      root = self.goocanvas.get_root_item()
-      new_stock = widgets.StockItem(event.x, event.y, \
-                                    parent=root, can_focus=True)
-    else:
-      self.grab_focus()
-      self.goocanvas.drop_highlight()
+    if event.button is 1:
+      if self.active_tool is sim.STOCK:
+        root = self.goocanvas.get_root_item()
+        new_stock = widgets.StockItem(event.x, event.y, \
+                                      parent=root, can_focus=True)
+      elif self.active_tool is sim.VARIABLE:
+        root = self.goocanvas.get_root_item()
+        new_var = widgets.VariableItem(event.x, event.y, \
+                                       parent=root, can_focus=True)
+      else:
+        self.grab_focus()
+        self.goocanvas.drop_highlight()
     return True
 
 

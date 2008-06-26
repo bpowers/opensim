@@ -55,6 +55,7 @@ class StockItem(SimItem):
 
   def do_simple_paint(self, cr, bounds):
 
+    cr.save()
     self.ensure_size(cr)
     cr.rectangle(self.x, self.y, self.width, self.height)
     cr.set_source_rgb (1, 1, 1)
@@ -72,6 +73,7 @@ class StockItem(SimItem):
     cr.select_font_face(self._display_name.font_face)
     cr.set_font_size(self._display_name.font_size)
     cr.show_text(self._display_name.string)
+    cr.restore()
 
 
   def on_key_press(self, item, target, event):
