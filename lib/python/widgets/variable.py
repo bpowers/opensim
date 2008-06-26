@@ -47,10 +47,10 @@ class VariableItem(SimItem):
 
       old_center_x = self.x + self.width/2.0
       old_center_y = self.y + self.height/2.0
-      self.width = max(self.width, \
-                       self._display_name.width + 2*self.padding)
-      self.height = max(self.height, \
-                        self._display_name.height + 2*self.padding)
+      self.width = max(self.width, self._display_name.width + \
+                                   2*self.padding + self.icon_size)
+      self.height = max(self.height, self._display_name.height + \
+                                     2*self.padding + self.icon_size)
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
       self.__needs_resize_calc = False
