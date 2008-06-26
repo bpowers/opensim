@@ -12,7 +12,9 @@ from item import SimItem
 class StockItem(SimItem):
 
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
+    print("crap")
     super(StockItem, self).__init__(**kwargs)
+    print("egadz!")
     self.x = int(x - width/2)
     self.y = int(y - height/2)
     self.width = width
@@ -23,11 +25,14 @@ class StockItem(SimItem):
 
     self.line_width = line_width
 
+    print("hj")
     self._stocks_name = TextInfo("(enter name)", \
                                   dpi=self.get_canvas().dpi, \
                                   placeholder_text=True)
 
+    print("man")
     self.get_canvas().grab_focus(self)
+    print("well...")
 
 
   def ensure_size(self, cr):
@@ -46,19 +51,10 @@ class StockItem(SimItem):
 
 
   def do_update(self, entire_tree, cr):
-    print("updating!")
     self.ensure_size(cr)
-    
-    half_lw = self.line_width/2
-    self.bounds.x1 = float(self.x - half_lw)
-    self.bounds.y1 = float(self.y - half_lw)
-    self.bounds.x2 = float(self.x + self.width + half_lw)
-    self.bounds.y2 = float(self.y + self.height + half_lw)
-    return self.bounds
 
+  def do_paint(self, cr, bounds, scale):
 
-  def do_paint(self, cr, bounds=None, scale=1):
-    print("painting?")
     self.ensure_size(cr)
     cr.rectangle(self.x, self.y, self.width, self.height)
     cr.set_source_rgb (1, 1, 1)
