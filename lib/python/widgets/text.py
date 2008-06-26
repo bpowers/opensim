@@ -20,6 +20,8 @@ class TextInfo():
     cr.select_font_face(self.font_face)
     cr.set_font_size(self.font_size)
     (x, y, width, height, dx, dy) = cr.text_extents(self.string)
+    #(ascent, descent, height, x_adv, y_adv) = cr.font_extents(self.string)
+
     cr.pop_group()
 
     self.x_off = x

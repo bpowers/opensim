@@ -12,7 +12,9 @@ from item import SimItem
 class StockItem(SimItem):
 
   def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
+    print("crap")
     super(StockItem, self).__init__(**kwargs)
+    print("egadz!")
     self.x = int(x - width/2)
     self.y = int(y - height/2)
     self.width = width
@@ -23,37 +25,35 @@ class StockItem(SimItem):
 
     self.line_width = line_width
 
-    self._display_name = TextInfo("(enter name)", \
+    print("hj")
+    self._stocks_name = TextInfo("(enter name)", \
                                   dpi=self.get_canvas().dpi, \
                                   placeholder_text=True)
 
+    print("man")
     self.get_canvas().grab_focus(self)
-
-
-  def do_simple_create_path(self, cr):
-    self.ensure_size(cr)
-
-    # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, self.y - self.line_width/2.0, \
-                 self.width + self.line_width, self.height + self.line_width)
+    print("well...")
 
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
-      self._display_name.update_extents(cr)
+      self._stocks_name.update_extents(cr)
 
       old_center_x = self.x + self.width/2.0
       old_center_y = self.y + self.height/2.0
       self.width = max(self.width, \
-                       self._display_name.width + 2*self.padding)
+                       self._stocks_name.width + 2*self.padding)
       self.height = max(self.height, \
-                        self._display_name.height + 2*self.padding)
+                        self._stocks_name.height + 2*self.padding)
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
       self.__needs_resize_calc = False
 
 
-  def do_simple_paint(self, cr, bounds):
+  def do_update(self, entire_tree, cr):
+    self.ensure_size(cr)
+
+  def do_paint(self, cr, bounds, scale):
 
     self.ensure_size(cr)
     cr.rectangle(self.x, self.y, self.width, self.height)
@@ -68,10 +68,10 @@ class StockItem(SimItem):
     # translate so that our coordinate system is in the widget
     cr.translate(self.x, self.y)
     
-    cr.move_to(self.padding, self.height/2.0 + self._display_name.height/2.0)
-    cr.select_font_face(self._display_name.font_face)
-    cr.set_font_size(self._display_name.font_size)
-    cr.show_text(self._display_name.string)
+    cr.move_to(self.padding, self.height/2.0 + self._stocks_name.height/2.0)
+    cr.select_font_face(self._stocks_name.font_face)
+    cr.set_font_size(self._stocks_name.font_size)
+    cr.show_text(self._stocks_name.string)
 
 
   def on_key_press(self, item, target, event):
@@ -80,14 +80,14 @@ class StockItem(SimItem):
     if key_name in self.enter_key:
       print("enter key!")
     elif key_name in self.delete_key:
-      self._display_name.backspace()
+      self._stocks_name.backspace()
       self.__needs_resize_calc = True
       self.force_redraw()
     elif key_name in self.escape_key:
       print("escape key!")
     else:
       # add key to name buffer
-      self._display_name.add(event.string)
+      self._stocks_name.add(event.string)
       self.__needs_resize_calc = True
       self.force_redraw()
 
