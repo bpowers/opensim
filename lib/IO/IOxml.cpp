@@ -136,8 +136,28 @@ OpenSim::IOxml::IOxml(std::string filePath)
 
 
 OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial, 
-                      std::map<std::string, OpenSim::Variable *> vars)
+                      std::map<std::string, OpenSim::Variable *> vars, 
+                      std::string model_name)
 {
+  FILE * save_file = fopen(filePath.c_str(), "w");
+
+  if (save_file != NULL)
+  {
+    fprintf(stdout, "**saving\n");
+    fprintf(save_file, "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+\n\
+<opensim markup=\"1.0\">\n\
+<model>\n\
+  <name>%s</name>\n\n", model_name.c_str());
+
+    // loop through vars here.
+
+    fprintf(save_file, "\n</model>\n");
+    if (!partial) fprintf(save_file, "\n</opensim>\n");
+
+    fclose(save_file);
+  }
   fprintf(stdout, "**\n\nAWESOME THIS IS WHERE TEXT SAVING WILL GO\n\n**\n");
 }
 

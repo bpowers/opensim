@@ -40,7 +40,8 @@ namespace OpenSim
     IOInterface() {}
     IOInterface(std::string filePath) {}
     IOInterface(std::string filePath, char read_write, bool partial, 
-                std::map<std::string, OpenSim::Variable *> vars) {}
+                std::map<std::string, OpenSim::Variable *> vars, 
+                std::string model_name) {}
     virtual ~IOInterface() {}
       
     virtual std::string Name() = 0;

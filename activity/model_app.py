@@ -95,7 +95,7 @@ class ModelActivity(activity.Activity):
       print('**opened**')
       print f
       print('**contents:**')
-      for line in f.readline():
+      for line in f.readlines():
         print line
       print('**closed**')
     finally:

@@ -51,7 +51,8 @@ namespace OpenSim
   public:
     IOxml(std::string filePath);
     IOxml(std::string filePath, char read_write, bool partial, 
-                std::map<std::string, OpenSim::Variable *> vars);
+          std::map<std::string, OpenSim::Variable *> vars, 
+          std::string model_name);
     ~IOxml();
 
     std::string Name() {return name;}

@@ -109,7 +109,8 @@ OpenSim::Simulator::save()
 int
 OpenSim::Simulator::save(bool partial)
 {
-  IOInterface *file = new IOxml( _file_name, 'w', true, _variables);
+  IOInterface *file = new IOxml(_file_name, 'w', true, 
+                                _variables, _model_name);
   
   delete file;
 }
