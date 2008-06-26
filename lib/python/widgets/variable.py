@@ -25,6 +25,8 @@ class VariableItem(SimItem):
     self.dragging = False
     self.text_color = [0, 0, 0]
 
+    self._new = True
+
     self.line_width = line_width
 
     self._display_name = TextInfo("(enter name)", \
@@ -91,7 +93,7 @@ class VariableItem(SimItem):
     key_name = gtk.gdk.keyval_name(event.keyval)
 
     if key_name in self.enter_key:
-      print("enter key!")
+      self.emit("highlight_out_event", self)
     elif key_name in self.delete_key:
       self._display_name.backspace()
     elif key_name in self.escape_key:
@@ -164,6 +166,16 @@ class VariableItem(SimItem):
     print("HIGH OUT")
     self.text_color = [0, 0, 0]
     self.force_redraw()
+
+    if self._new:
+      if self._display_name.placeholder:
+        self.get_canvas().remove_item(self)
+        return
+
+    self.get_canvas().update_name(self._display_name.string, 
+                                  self, new=self._new)
+
+    self._new = False
 
     return False
 

@@ -38,6 +38,13 @@ class SimGoo(goocanvas.Canvas):
       print("awesome! new: '%s'", name)
 
 
+  def remove_item(self, item):
+    print("trying to remove")
+    self.sim.display_vars.remove(item)
+    item.remove()
+    
+    
+
 
 class Canvas (gtk.ScrolledWindow):
 
@@ -51,7 +58,8 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_y = 0
 
     self.goocanvas = SimGoo()
-    self.engine = self.goocanvas.engine
+    self.engine = self.goocanvas.engine 
+    self.goocanvas.sim = self
     self.display_vars = []
 
     display = gtk.gdk.display_get_default()

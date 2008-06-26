@@ -21,6 +21,8 @@ class StockItem(SimItem):
     self.dragging = False
     self.text_color = [0, 0, 0]
 
+    self._new = True
+
     self.line_width = line_width
 
     self._display_name = TextInfo("(enter name)", \
@@ -92,8 +94,6 @@ class StockItem(SimItem):
     self.__needs_resize_calc = True
     self.force_redraw()
 
-    self.__new = True
-
     # return true to stop propogation
     return True
 
@@ -143,7 +143,6 @@ class StockItem(SimItem):
 
 
   def on_highlight_in(self, item, target):
-    print("HIGH IN")
     self.text_color = [1, .6, .2]
     self.force_redraw()
 
@@ -151,14 +150,18 @@ class StockItem(SimItem):
 
 
   def on_highlight_out(self, item, target):
-    print("HIGH OUT")
     self.text_color = [0, 0, 0]
     self.force_redraw()
 
-    self.get_canvas().update_name(self._display_name.string, 
-                                  self, new=self.__new)
+    if self._new:
+      if self._display_name.placeholder:
+        self.get_canvas().remove_item(self)
+        return
 
-    self.__new = False
+    self.get_canvas().update_name(self._display_name.string, 
+                                  self, new=self._new)
+
+    self._new = False
 
     return False
 
