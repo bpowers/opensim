@@ -8,7 +8,19 @@ import logging
 from text import TextInfo
 
 
-class SimItem(goocanvas.ItemSimple, goocanvas.Item):
+class SimItem(gobject.GObject, goocanvas.Item):
+
+  __gproperties__ = {
+    'title': (str, None, None, '', gobject.PARAM_READWRITE),
+    'description': (str, None, None, '', gobject.PARAM_READWRITE),
+    'can-focus': (bool, None, None, False, gobject.PARAM_READWRITE),
+    'visibility-threshold': (float, None, None, 0, 10e6, 0, gobject.PARAM_READWRITE),
+    'visibility': (goocanvas.ItemVisibility, None, None, goocanvas.ITEM_VISIBLE, gobject.PARAM_READWRITE),
+    'pointer-events': (goocanvas.PointerEvents, None, None, goocanvas.EVENTS_NONE, gobject.PARAM_READWRITE),
+    'transform': (goocanvas.TYPE_CAIRO_MATRIX, None, None, gobject.PARAM_READWRITE),
+    'parent': (gobject.GObject, None, None, gobject.PARAM_READWRITE),
+    }
+
 
   # space between the bounding box and the text
   padding = 4
@@ -21,13 +33,16 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
 
   def __init__(self, x=10, y=10, width=120, 
-               height=80, **kwargs):
+               height=80, parent=None, **kwargs):
+    self.bounds = goocanvas.Bounds()
+    self.view = None
+    self.parent = parent
 
     ## chain to parent constructor
-    super(SimItem, self).__init__(self, **kwargs)
+    gobject.GObject.__init__(self, **kwargs)
 
-    self.x = x
-    self.y = y
+    self.x = int(x - width/2)
+    self.y = int(y - height/2)
     self.width = width
     self.height = height
 
@@ -37,6 +52,53 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.connect("button_press_event", self.on_button_press)
     self.connect("button_release_event", self.on_button_release)
     self.connect("motion_notify_event", self.on_motion_notify)
+
+
+  def do_set_parent(self, parent):
+    assert self.parent is None
+    self.parent = parent
+
+
+  def do_set_property(self, pspec, value):
+    if pspec.name == 'title':
+      self.title = value
+    elif pspec.name == 'description':
+      self.description = value
+    elif pspec.name == 'can-focus':
+      self.can_focus = value
+    elif pspec.name == 'visibility':
+      self.visibility = value
+    elif pspec.name == 'visibility-threshold':
+      self.visibility_threshold = value
+    elif pspec.name == 'pointer-events':
+      self.pointer_events = value
+    elif pspec.name == 'transform':
+      self.transform = value
+    elif pspec.name == 'parent':
+      self.parent = value
+    else:
+      raise AttributeError, 'unknown property %s' % pspec.name
+      
+  
+  def do_get_property(self, pspec):
+    if pspec.name == 'title':
+      return self.title
+    elif pspec.name == 'description':
+      return self.description
+    elif pspec.name == 'can-focus':
+      return self.can_focus
+    elif pspec.name == 'visibility':
+      return self.visibility
+    elif pspec.name == 'visibility-threshold':
+      return self.visibility_threshold
+    elif pspec.name == 'pointer-events':
+      return self.pointer_events
+    elif pspec.name == 'transform':
+      return self.transform
+    elif pspec.name == 'parent':
+      return self.parent
+    else:
+      raise AttributeError, 'unknown property %s' % pspec.name
 
 
   # optional methods
