@@ -5,6 +5,33 @@ import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
 
+
+
+class SimGoo(goocanvas.Canvas):
+  def __init__(self, **kwargs):
+    super(SimGoo, self).__init__(**kwargs)
+    self.highlighted = None
+  
+
+  def grab_highlight(self, widget):
+    print("grabbing")
+    
+    if self.highlighted is widget:
+      return
+    elif self.highlighted is not None:
+      self.highlighted.emit("highlight_out_event", self)
+      self.highlighted = None
+    self.highlighted = widget
+    widget.emit("highlight_in_event", self)
+
+
+  def drop_highlight(self):
+    if self.highlighted is not None:
+      self.highlighted.emit("highlight_out_event", self)
+      self.highlighted = None
+
+
+
 class Canvas (gtk.ScrolledWindow):
 
   active_tool = sim.UNDEFINED
@@ -16,7 +43,7 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_x = 0
     self.drag_y = 0
 
-    self.goocanvas = goocanvas.Canvas()
+    self.goocanvas = SimGoo()
 
     display = gtk.gdk.display_get_default()
     screen = display.get_default_screen()
@@ -60,6 +87,7 @@ class Canvas (gtk.ScrolledWindow):
                                     parent=root, can_focus=True)
     else:
       self.grab_focus()
+      self.goocanvas.drop_highlight()
     return True
 
 

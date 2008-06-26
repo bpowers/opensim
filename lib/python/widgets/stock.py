@@ -28,14 +28,14 @@ class StockItem(SimItem):
                                   placeholder_text=True)
 
     self.get_canvas().grab_focus(self)
+    self.get_canvas().grab_highlight(self)
 
 
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, self.y - self.line_width/2.0, \
-                 self.width + self.line_width, self.height + self.line_width)
+    cr.rectangle(self.x, self.y, self.width, self.height)
 
 
   def ensure_size(self, cr):
@@ -81,15 +81,14 @@ class StockItem(SimItem):
       print("enter key!")
     elif key_name in self.delete_key:
       self._display_name.backspace()
-      self.__needs_resize_calc = True
-      self.force_redraw()
     elif key_name in self.escape_key:
       print("escape key!")
     else:
       # add key to name buffer
       self._display_name.add(event.string)
-      self.__needs_resize_calc = True
-      self.force_redraw()
+
+    self.__needs_resize_calc = True
+    self.force_redraw()
 
     # return true to stop propogation
     return True
@@ -97,6 +96,7 @@ class StockItem(SimItem):
 
   def on_button_press(self, item, target, event):
     self.get_canvas().grab_focus(item)
+    self.get_canvas().grab_highlight(self)
     if event.button == 1:
       self.drag_x = event.x
       self.drag_y = event.y
@@ -132,19 +132,28 @@ class StockItem(SimItem):
 
 
   def on_focus_in(self, item, target, event):
-    print("awes, got focus %s", item)
+    return False
 
+
+  def on_focus_out(self, item, target, event):
+    return False
+
+
+  def on_highlight_in(self, item, target):
+    print("HIGH IN")
     self.text_color = [1, .6, .2]
     self.force_redraw()
 
     return False
 
-  def on_focus_out(self, item, target, event):
-    print("aww, left focus %s", item)
 
+  def on_highlight_out(self, item, target):
+    print("HIGH OUT")
     self.text_color = [0, 0, 0]
     self.force_redraw()
 
     return False
+
+
 
 gobject.type_register(StockItem)

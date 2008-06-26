@@ -10,6 +10,14 @@ from text import TextInfo
 
 class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
+  __gsignals__ = dict(highlight_in_event=(gobject.SIGNAL_RUN_FIRST,
+                                          gobject.TYPE_NONE,
+                                          (gobject.TYPE_OBJECT,)),
+                      highlight_out_event=(gobject.SIGNAL_RUN_FIRST,
+                                           gobject.TYPE_NONE,
+                                           (gobject.TYPE_OBJECT,)))
+
+
   # space between the bounding box and the text
   padding = 4
 
@@ -33,6 +41,8 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.connect("button_press_event", self.on_button_press)
     self.connect("button_release_event", self.on_button_release)
     self.connect("motion_notify_event", self.on_motion_notify)
+    self.connect("highlight_in_event", self.on_highlight_in)
+    self.connect("highlight_out_event", self.on_highlight_out)
 
 
   def do_simple_create_path(self, cr):
@@ -53,31 +63,40 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
   def force_redraw(self):
     # tell the canvas to redraw the area we're in
+    self.get_canvas().request_update()
     self.get_canvas().request_redraw(self.get_bounds())
   
 
   def on_key_press(self, item, target, event):
-    pass
+    raise NotImplementedError
 
 
   def on_button_press(self, item, target, event):
-    pass
+    raise NotImplementedError
 
 
   def on_button_release(self, item, target, event):
-    pass
+    raise NotImplementedError
 
 
   def on_motion_notify (self, item, target, event):
-    pass
+    raise NotImplementedError
 
 
   def on_focus_in(self, item, target, event):
-    pass
+    raise NotImplementedError
 
 
   def on_focus_out(self, item, target, event):
-    pass
+    raise NotImplementedError
+
+
+  def on_highlight_in(self, item, target):
+    raise NotImplementedError
+
+
+  def on_highlight_out(self, item, target):
+    raise NotImplementedError
 
 
 
