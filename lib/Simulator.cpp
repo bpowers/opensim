@@ -41,6 +41,7 @@ using std::map;
 
 OpenSim::Simulator::Simulator()
 {
+  fprintf(stdout, "created new Simulator\n");
   _output_file_name = "";
   
   _output_type = sim_emit_Output;
@@ -50,6 +51,7 @@ OpenSim::Simulator::Simulator()
 
 OpenSim::Simulator::Simulator(std::string fileName)
 {
+  fprintf(stdout, "created new Simulator from file\n");
   // call the init function, load the model and construct its AST
   init(fileName);
   
@@ -92,6 +94,24 @@ OpenSim::Simulator::set_model_file(std::string modelFileName)
   _file_name = modelFileName;
   
   return 0;
+}
+
+
+
+int
+OpenSim::Simulator::save()
+{
+  return save(false);
+}
+
+
+
+int
+OpenSim::Simulator::save(bool partial)
+{
+  IOInterface *file = new IOxml( _file_name, 'w', true, _variables);
+  
+  delete file;
 }
 
 

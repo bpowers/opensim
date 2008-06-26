@@ -7,6 +7,7 @@ import widgets
 import engine
 
 
+import logging
 
 class SimGoo(goocanvas.Canvas):
   def __init__(self, **kwargs):
@@ -127,9 +128,10 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def write_model(self, file_path):
-    self.engine.model_file(file_path)
+    self.engine.set_model_file(file_path)
     logging.debug("awesome, set model file")
-    #self.engine.save()
+    self.engine.save()
+    logging.debug("awesome, saved.")
 
 
 

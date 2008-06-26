@@ -39,6 +39,8 @@ namespace OpenSim
   public:
     IOInterface() {}
     IOInterface(std::string filePath) {}
+    IOInterface(std::string filePath, char read_write, bool partial, 
+                std::map<std::string, OpenSim::Variable *> vars) {}
     virtual ~IOInterface() {}
       
     virtual std::string Name() = 0;

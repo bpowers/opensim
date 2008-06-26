@@ -135,6 +135,13 @@ OpenSim::IOxml::IOxml(std::string filePath)
 
 
 
+OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial, 
+                      std::map<std::string, OpenSim::Variable *> vars)
+{
+  fprintf(stdout, "**\n\nAWESOME THIS IS WHERE TEXT SAVING WILL GO\n\n**\n");
+}
+
+
 OpenSim::IOxml::~IOxml() 
 {
 }

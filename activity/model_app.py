@@ -77,11 +77,11 @@ class ModelActivity(activity.Activity):
     '''
     logging.debug('writing file')
     self.canvas.write_model(file_path)
-    f = open(file_path, 'w')
-    try:
-      f.write(self._get_log())
-    finally:
-      f.close()
+    #f = open(file_path, 'a')
+    #try:
+    #  f.write('\nbadass\n')
+    #finally:
+    #  f.close()
 
 
     
@@ -89,4 +89,14 @@ class ModelActivity(activity.Activity):
     '''
     Implement this method to resume state saved in write_file().
     '''
-    raise NotImplementedError
+    logging.debug('reading file')
+    f = open(file_path, 'r')
+    try:
+      print('**opened**')
+      print f
+      print('**contents:**')
+      for line in f.readline():
+        print line
+      print('**closed**')
+    finally:
+      f.close()

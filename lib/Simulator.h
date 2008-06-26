@@ -83,6 +83,9 @@ namespace OpenSim
     
     int set_model_file(std::string modelFileName);
     std::string model_file();
+
+    int save();
+    int save(bool partial);
     
     int set_output_type(sim_output newType);
     
