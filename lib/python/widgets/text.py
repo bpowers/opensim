@@ -27,7 +27,7 @@ class TextInfo():
     self.y_off = y
     # dx seems to leave the proper amount of padding at the end of the line?
     self.width = dx
-    self.height = ascent
+    self.height = ascent - descent
 
 
   def add(self, string):
