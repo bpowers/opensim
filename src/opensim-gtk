@@ -3,11 +3,11 @@
 import pygtk
 pygtk.require("2.0")
 
-import os, sys, gtk, gtk.glade, cairo, pango, goocanvas, math
+import os, sys, gtk, gtk.glade, gobject, cairo, pango, goocanvas, math
 import opensim as sim
 
 
-class OpenSimGTK:
+class OpenSimGTK(gobject.GObject):
 
   def drawing_tool_toggled(self, widget):
 
@@ -17,6 +17,7 @@ class OpenSimGTK:
       # make sure we catch the case where no tool is active.
       if widget.type == self.canvas.get_active_tool():
         self.canvas.set_active_tool(sim.NONE)
+        self.canvas.goocanvas.highlighted.emit("highlight_out_event", self)
       return
 
     # switch between possible widgets.
@@ -33,7 +34,8 @@ class OpenSimGTK:
     self.canvas.set_active_tool(widget.type)
       
 
-  def __init__(self):
+  def __init__(self, **kwargs):
+    super(OpenSimGTK, self).__init__(**kwargs)
 
     pathname = os.path.dirname(sys.argv[0])
     abspathname = os.path.abspath(pathname)
@@ -77,6 +79,9 @@ class OpenSimGTK:
   def main(self):
     gtk.main()
 
+
+
+gobject.type_register(OpenSimGTK)
 
 
 if __name__ == "__main__":
