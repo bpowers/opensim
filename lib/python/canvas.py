@@ -127,16 +127,27 @@ class Canvas (gtk.ScrolledWindow):
     return False
 
 
+  def open_model(self, file_path):
+    pass
+
+
   def write_model(self, file_path):
     logging.debug("Setting model file and saving.")
     self.engine.set_model_file(file_path)
     self.engine.save()
+
+    f = open(file_path, 'a')
+    try:
+      self.canvas.save_visual_state(f, partial=True)
+    finally:
+      f.close()
+
     logging.debug("Saved model.")
 
 
   def save_visual_state(f, partial=False):
     logging.debug("Saving visual state.")
-    if partial=True:
+    if partial is True:
       raise NotImplementedError
 
 

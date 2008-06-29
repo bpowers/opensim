@@ -76,12 +76,7 @@ class ModelActivity(activity.Activity):
     Implement this method to save your activity's state.
     '''
     logging.debug('writing file')
-    self.canvas.write_model(file_path)
-    f = open(file_path, 'a')
-    try:
-      self.canvas.save_state(f, partial=True)
-    finally:
-      f.close()
+    self.canvas.save_model(file_path)
 
 
     
@@ -90,13 +85,14 @@ class ModelActivity(activity.Activity):
     Implement this method to resume state saved in write_file().
     '''
     logging.debug('reading file')
-    f = open(file_path, 'r')
-    try:
-      print('**opened**')
-      print f
-      print('**contents:**')
-      for line in f.readlines():
-        print line,
-      print('**closed**')
-    finally:
-      f.close()
+    #f = open(file_path, 'r')
+    #try:
+    self.canvas.open_model(file_path)
+      #print('**opened**')
+      #print f
+      #print('**contents:**')
+      #for line in f.readlines():
+      #  print line,
+      #print('**closed**')
+    #finally:
+    #  f.close()
