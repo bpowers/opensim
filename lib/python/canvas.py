@@ -128,11 +128,16 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def write_model(self, file_path):
+    logging.debug("Setting model file and saving.")
     self.engine.set_model_file(file_path)
-    logging.debug("awesome, set model file")
     self.engine.save()
-    logging.debug("awesome, saved.")
+    logging.debug("Saved model.")
 
+
+  def save_visual_state(f, partial=False):
+    logging.debug("Saving visual state.")
+    if partial=True:
+      raise NotImplementedError
 
 
 gobject.type_register(Canvas)

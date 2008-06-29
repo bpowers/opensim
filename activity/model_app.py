@@ -77,11 +77,11 @@ class ModelActivity(activity.Activity):
     '''
     logging.debug('writing file')
     self.canvas.write_model(file_path)
-    #f = open(file_path, 'a')
-    #try:
-    #  f.write('\nbadass\n')
-    #finally:
-    #  f.close()
+    f = open(file_path, 'a')
+    try:
+      self.canvas.save_state(f, partial=True)
+    finally:
+      f.close()
 
 
     
@@ -96,7 +96,7 @@ class ModelActivity(activity.Activity):
       print f
       print('**contents:**')
       for line in f.readlines():
-        print line
+        print line,
       print('**closed**')
     finally:
       f.close()

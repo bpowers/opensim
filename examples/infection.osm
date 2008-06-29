@@ -103,4 +103,19 @@
   </var>
 
 </model>
+
+<view markup="1.0">
+
+  <name>Infection Model</name>
+
+  <item>
+    <name>Infection</name>
+    <x>200</x>
+    <y>300</y>
+    <width>200</width>
+    <height>400</height>
+  </item>
+
+</view>
+
 </opensim>
