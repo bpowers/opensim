@@ -4,7 +4,7 @@ pygtk.require("2.0")
 import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
-import engine
+import opensim.engine
 
 
 import logging
@@ -131,7 +131,7 @@ class Canvas (gtk.ScrolledWindow):
     pass
 
 
-  def write_model(self, file_path):
+  def save_model(self, file_path):
     logging.debug("Setting model file and saving.")
     self.engine.set_model_file(file_path)
     self.engine.save()

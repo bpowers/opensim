@@ -3,9 +3,9 @@ EXTRA_DIST = __init__.py stock.py
 CLEANFILES = __init__.pyc stock.pyc
 
 if HAVE_PYTHON
-opensimdir = $(pkgpythondir)/widgets
+opensimdir = $(pkgpythondir)/visuals/widgets
 opensim_PYTHON = __init__.py stock.py variable.py text.py item.py
-activitydir = $(top_srcdir)/activity/site-packages/opensim/widgets
+activitydir = $(top_srcdir)/activity/site-packages/opensim/visuals/widgets
 activity_PYTHON = $(opensim_PYTHON)
 endif
 

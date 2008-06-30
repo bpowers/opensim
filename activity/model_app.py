@@ -6,7 +6,7 @@ from sugar.activity import activity
 import math, logging
 from gettext import gettext as _
 
-import opensim as sim
+import opensim.visuals as sim
 
 
 class ModelActivity(activity.Activity):

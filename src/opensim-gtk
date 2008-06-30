@@ -4,7 +4,7 @@ import pygtk
 pygtk.require("2.0")
 
 import os, sys, gtk, gtk.glade, gobject, cairo, pango, goocanvas, math
-import opensim as sim
+import opensim.visuals as sim
 
 
 class OpenSimGTK(gobject.GObject):
