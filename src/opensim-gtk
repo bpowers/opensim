@@ -4,6 +4,7 @@ import pygtk
 pygtk.require("2.0")
 
 import os, sys, gtk, gtk.glade, gobject, cairo, pango, goocanvas, math
+import logging
 import opensim.visuals as sim
 
 
@@ -37,6 +38,8 @@ class OpenSimGTK(gobject.GObject):
 
   def __init__(self, **kwargs):
     super(OpenSimGTK, self).__init__(**kwargs)
+
+    self.first_save = True
 
     pathname = os.path.dirname(sys.argv[0])
     abspathname = os.path.abspath(pathname)
@@ -79,17 +82,10 @@ class OpenSimGTK(gobject.GObject):
     self.canvas.show()
     self.status_bar.show()
 
-  def save_clicked(self, widget):
-    print "** save clicked **"
-    pass
 
-  def save_as_clicked(self, widget):
-    print "** save as clicked **"
-    pass
-
-  def open_clicked(self, widget):
-    dialog = gtk.FileChooserDialog(title="Open Existing Model...",
-                                   action=gtk.FILE_CHOOSER_ACTION_OPEN,
+  def create_dialog(self, requested_title, requested_action):
+    dialog = gtk.FileChooserDialog(title=requested_title,
+                                   action=requested_action,
                                    buttons=(gtk.STOCK_CANCEL,
                                             gtk.RESPONSE_CANCEL,
                                             gtk.STOCK_OPEN,gtk.RESPONSE_OK))
@@ -105,13 +101,34 @@ class OpenSimGTK(gobject.GObject):
     filter.set_name("All files")
     filter.add_pattern("*")
     dialog.add_filter(filter)   
-   
+
+    return_val = None   
     response = dialog.run()
     if response == gtk.RESPONSE_OK:
-      print dialog.get_filename(), 'selected'
-    elif response == gtk.RESPONSE_CANCEL:
-      print 'Closed, no files selected'
+      return_val = dialog.get_filename()
+
     dialog.destroy()
+    return return_val
+
+
+  def open_clicked(self, widget):
+    model_file = self.create_dialog("Open Existing Model...",
+                                    gtk.FILE_CHOOSER_ACTION_OPEN)
+    if model_file:
+      self.read_file(model_file)
+
+
+  def save_clicked(self, widget):
+    if self.first_save:
+      self.save_as_clicked(self)
+
+
+  def save_as_clicked(self, widget):
+    model_file = self.create_dialog("Save Model As...",
+                                    gtk.FILE_CHOOSER_ACTION_SAVE)
+    if model_file:
+      self.write_file(model_file)
+      self.first_save = False
 
 
   def write_file(self, file_path):

@@ -138,17 +138,17 @@ class Canvas (gtk.ScrolledWindow):
 
     f = open(file_path, 'a')
     try:
-      self.canvas.save_visual_state(f, partial=True)
+      self.save_visual_state(f, partial=True)
     finally:
       f.close()
 
     logging.debug("Saved model.")
 
 
-  def save_visual_state(f, partial=False):
+  def save_visual_state(self, f, partial=False):
     logging.debug("Saving visual state.")
     if partial is True:
-      raise NotImplementedError
+      pass
 
 
 gobject.type_register(Canvas)
