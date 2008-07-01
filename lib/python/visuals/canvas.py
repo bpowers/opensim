@@ -4,7 +4,7 @@ pygtk.require("2.0")
 import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
-import opensim.engine
+from opensim.engine.simulator import Simulator
 
 
 import logging
@@ -13,7 +13,7 @@ class SimGoo(goocanvas.Canvas):
   def __init__(self, **kwargs):
     super(SimGoo, self).__init__(**kwargs)
     self.highlighted = None
-    self.engine = engine.Simulator()
+    self.engine = Simulator()
   
 
   def grab_highlight(self, widget):

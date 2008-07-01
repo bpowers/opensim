@@ -6,6 +6,9 @@ pygtk.require("2.0")
 import gtk
 from sugar.graphics.toggletoolbutton import ToggleToolButton
 
+from constants import *
+
+
 class ModelToolbar(gtk.Toolbar):
   """Provides the toolbar containing the basic modeling functions"""
 

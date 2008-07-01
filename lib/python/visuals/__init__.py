@@ -1,3 +1,3 @@
 from constants import *
 from canvas import Canvas
-from tools import ModelToobar
+from tools import ModelToolbar
