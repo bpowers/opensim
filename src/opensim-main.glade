@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sun Jun 29 08:42:36 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Jul  1 16:54:31 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="main_window">
     <property name="width_request">800</property>
@@ -37,6 +37,7 @@
                         <property name="label" translatable="yes">gtk-open</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_open"/>
                       </widget>
                     </child>
                     <child>
@@ -54,6 +55,7 @@
                         <property name="label" translatable="yes">gtk-save-as</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_save_as"/>
                       </widget>
                     </child>
                     <child>
@@ -166,6 +168,7 @@
               <widget class="GtkToolButton" id="toolbutton1">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-open</property>
+                <signal name="clicked" handler="on_open"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -175,6 +178,7 @@
               <widget class="GtkToolButton" id="toolbutton2">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-save</property>
+                <signal name="clicked" handler="on_save"/>
               </widget>
               <packing>
                 <property name="expand">False</property>

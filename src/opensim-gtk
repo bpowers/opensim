@@ -33,7 +33,7 @@ class OpenSimGTK(gobject.GObject):
 
     # let the canvas know what tool is active
     self.canvas.set_active_tool(widget.type)
-      
+
 
   def __init__(self, **kwargs):
     super(OpenSimGTK, self).__init__(**kwargs)
@@ -48,6 +48,9 @@ class OpenSimGTK(gobject.GObject):
     self.window = self.wTree.get_widget("main_window")
 
     dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
+           "on_open" : self.open_clicked,
+           "on_save" : self.save_clicked,
+           "on_save_as" : self.save_as_clicked,
            "on_main_window_destroy" : gtk.main_quit, 
            "on_file_quit" : gtk.main_quit}
     self.wTree.signal_autoconnect(dic)
@@ -75,6 +78,66 @@ class OpenSimGTK(gobject.GObject):
 
     self.canvas.show()
     self.status_bar.show()
+
+  def save_clicked(self, widget):
+    print "** save clicked **"
+    pass
+
+  def save_as_clicked(self, widget):
+    print "** save as clicked **"
+    pass
+
+  def open_clicked(self, widget):
+    dialog = gtk.FileChooserDialog(title="Open Existing Model...",
+                                   action=gtk.FILE_CHOOSER_ACTION_OPEN,
+                                   buttons=(gtk.STOCK_CANCEL,
+                                            gtk.RESPONSE_CANCEL,
+                                            gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
+   
+    filter = gtk.FileFilter()
+    filter.set_name("Models")
+    filter.add_pattern("*.osm")
+    filter.add_pattern("*.mdl")
+    dialog.add_filter(filter)
+
+    filter = gtk.FileFilter()
+    filter.set_name("All files")
+    filter.add_pattern("*")
+    dialog.add_filter(filter)   
+   
+    response = dialog.run()
+    if response == gtk.RESPONSE_OK:
+      print dialog.get_filename(), 'selected'
+    elif response == gtk.RESPONSE_CANCEL:
+      print 'Closed, no files selected'
+    dialog.destroy()
+
+
+  def write_file(self, file_path):
+    '''
+    Implement this method to save your activity's state.
+    '''
+    logging.debug('writing file')
+    self.canvas.save_model(file_path)
+
+    
+  def read_file(self, file_path):
+    '''
+    Implement this method to resume state saved in write_file().
+    '''
+    logging.debug('reading file')
+    #f = open(file_path, 'r')
+    #try:
+    self.canvas.open_model(file_path)
+      #print('**opened**')
+      #print f
+      #print('**contents:**')
+      #for line in f.readlines():
+      #  print line,
+      #print('**closed**')
+    #finally:
+    #  f.close()
 
 
   def main(self):
