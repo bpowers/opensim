@@ -51,6 +51,7 @@ namespace OpenSim
   class SimBuilder;
   class Variable;
   
+  void force_cpp_glib_init();
   
   class Simulator : public Glib::Object
   {

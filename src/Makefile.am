@@ -7,3 +7,7 @@ EXTRA_DIST              = opensim opensim-gtk opensim-main.glade
 
 bin_SCRIPTS             = opensim opensim-gtk opensim-main.glade
 
+dnl bin_PROGRAMS            = opensim-test
+dnl opensim_test_SOURCES    = main.c
+dnl opensim_test_LDADD      = @LIBLTDL@ @LIBADD_DL@
+

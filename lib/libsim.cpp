@@ -26,6 +26,8 @@
 
 #include <cstdio>
 
+#include <glibmm/init.h>
+
 #include "Simulator.h"
 using OpenSim::Simulator;
 using OpenSim::sim_output;
@@ -36,6 +38,9 @@ Simulator *model;
 void __attribute__ ((constructor)) 
 my_init(void)
 {
+  // important!
+  Glib::init();
+
   model = NULL;
 }
 

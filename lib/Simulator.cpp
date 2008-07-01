@@ -28,6 +28,8 @@
 #include <cstdio>
 #include "Simulator.h"
 
+#include <glibmm/init.h>
+
 // openSim stuff
 #include "globals.h"
 #include "CodeGen/SimBuilder.h"
@@ -38,9 +40,18 @@ using OpenSim::IOxml;
 using std::string;
 using std::map;
 
+void
+OpenSim::force_cpp_glib_init()
+{
+  // IMPORTANT: glib needs to be initialized before the constructors are called
+  Glib::init();
+}
 
 OpenSim::Simulator::Simulator()
 {
+  // important!
+  //Glib::init();
+
   fprintf(stdout, "created new Simulator\n");
   _output_file_name = "";
   
@@ -51,7 +62,10 @@ OpenSim::Simulator::Simulator()
 
 OpenSim::Simulator::Simulator(std::string fileName)
 {
-  fprintf(stdout, "created new Simulator from file\n");
+  // important!
+  //Glib::init();
+
+  //fprintf(stdout, "created new Simulator from file\n");
   // call the init function, load the model and construct its AST
   init(fileName);
   
