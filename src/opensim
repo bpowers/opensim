@@ -7,11 +7,11 @@ from opensim.engine.simulator import Simulator
 VERSION = "0.2.4"
 PACKAGE = "python opensim"
 PACKAGE_BUGREPORT = "bugs@opensimproject.org"
-PROGRAM_NAME = "opensim-py"
+PROGRAM_NAME = "opensim"
 
 
 def Usage():
-  print("Usage: opensim-py [-htvo] input_file\n")
+  print("Usage: %s [-htvo] input_file\n" % PROGRAM_NAME)
 
   print("\
 Simulate system dynamics models.\n\n\

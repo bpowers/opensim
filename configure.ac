@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 AC_INIT([OpenSim], [0.2.4], [bugs@opensimproject.org])
-AC_CONFIG_SRCDIR([src/opensim-py])
+AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
 
