@@ -1,3 +1,6 @@
+AM_CXXFLAGS            = $(GLIBMM_CFLAGS)
+AM_LDFLAGS             = $(GLIBMM_LIBS)
+
 EXTRA_DIST              = SimBuilder.h \
                           PythonPrintModule.h InterpreterModule.h \
                           AS3PrintModule.h
