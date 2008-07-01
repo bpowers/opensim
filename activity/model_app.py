@@ -21,7 +21,8 @@ class ModelActivity(activity.Activity):
       # make sure we catch the case where no tool is active.
       if widget.type == self.canvas.get_active_tool():
         self.canvas.set_active_tool(sim.NONE)
-        self.canvas.goocanvas.highlighted.emit("highlight_out_event", self)
+        if self.canvas.goocanvas.highlighted:
+          self.canvas.goocanvas.highlighted.emit("highlight_out_event", self)
       return
 
     # switch between possible widgets.
