@@ -1,4 +1,4 @@
-//===--- libsim.h - Defines the interface to the shared library ----------===//
+//===--- opensim.h - Defines the interface to the shared library ---------===//
 //
 // Copyright 2008 Bobby Powers
 //
