@@ -143,7 +143,6 @@ OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial,
 
   if (save_file != NULL)
   {
-    fprintf(stdout, "**saving\n");
     fprintf(save_file, "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 \n\
@@ -158,7 +157,6 @@ OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial,
 
     fclose(save_file);
   }
-  fprintf(stdout, "**\n\nAWESOME THIS IS WHERE TEXT SAVING WILL GO\n\n**\n");
 }
 
 

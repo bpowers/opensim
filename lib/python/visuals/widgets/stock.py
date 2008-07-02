@@ -103,6 +103,20 @@ class StockItem(SimItem):
     cr.restore()
 
 
+  def xml_representation(self):
+    xml_string = '\
+    <stock>\n\
+      <name>%s</name>\n\
+      <x>%d</x>\n\
+      <y>%d</x>\n\
+      <width>%f</width>\n\
+      <height>%f</height>\n\
+    </stock>\n' % (self._display_name.string, self.x, self.y, 
+                   self.width, self.height)
+
+    return xml_string
+
+
   def on_key_press(self, item, target, event):
     key_name = gtk.gdk.keyval_name(event.keyval)
 

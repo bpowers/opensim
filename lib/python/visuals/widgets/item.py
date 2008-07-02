@@ -75,7 +75,7 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
 
   def do_simple_paint(self, cr, bounds):
-    pass
+    raise NotImplementedError
 
 
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
@@ -90,6 +90,10 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     # tell the canvas to redraw the area we're in
     self.get_canvas().request_update()
     self.get_canvas().request_redraw(self.get_bounds())
+
+
+  def xml_representation(self):
+    raise NotImplementedError
   
 
   def on_key_press(self, item, target, event):
@@ -126,3 +130,4 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
 
 gobject.type_register(SimItem)
+

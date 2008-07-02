@@ -173,8 +173,20 @@ class Canvas (gtk.ScrolledWindow):
 
   def save_visual_state(self, f, partial=False):
     logging.debug("Saving visual state.")
+ 
+    f.write('\n<!-- below this is layout information for sketches -->\n')
+    f.write('<visuals markup="1.0">\n\n')
+    f.write('  <page name="default">\n\n')
+
+    # here we go
+    for widget in self.display_vars:
+      f.write(widget.xml_representation())
+
+    f.write('\n  </page>\n\n')
+    f.write('</visuals>\n')
+
     if partial is True:
-      pass
+      f.write("</opensim>\n")
 
 
 gobject.type_register(Canvas)

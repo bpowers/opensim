@@ -115,6 +115,20 @@ class VariableItem(SimItem):
     cr.stroke()
 
 
+  def xml_representation(self):
+    xml_string = '\
+    <var>\n\
+      <name>%s</name>\n\
+      <x>%d</x>\n\
+      <y>%d</x>\n\
+      <width>%f</width>\n\
+      <height>%f</height>\n\
+    </var>\n' % (self._display_name.string, self.x, self.y, 
+                   self.width, self.height)
+
+    return xml_string
+
+
   def on_key_press(self, item, target, event):
     key_name = gtk.gdk.keyval_name(event.keyval)
 

@@ -192,6 +192,7 @@ gobject.type_register(OpenSimGTK)
 
 
 if __name__ == "__main__":
+  logging.basicConfig(level=logging.DEBUG)
   gui = OpenSimGTK()
   gui.main()
 
