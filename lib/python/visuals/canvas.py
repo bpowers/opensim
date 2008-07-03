@@ -30,6 +30,7 @@ pygtk.require("2.0")
 import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
+import libxml2
 from opensim.engine.simulator import Simulator
 
 
@@ -154,7 +155,24 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def open_model(self, file_path):
-    pass
+    doc = libxml2.parseFile(file_path)
+
+    root = doc.vis_rootren
+    if root.name != "opensim":
+      logging.error("not an opensim XML file")
+      return
+
+    vis_root = root.vis_rootren
+    while vis_root is not None and vis_root.name != "visuals":
+      vis_root = vis_root.next
+
+    if vis_root is None:
+      logging.error("no node named 'visuals'")
+      return
+
+    var = vis_root.children
+
+    doc.freeDoc()
 
 
   def save_model(self, file_path):
@@ -164,14 +182,15 @@ class Canvas (gtk.ScrolledWindow):
 
     f = open(file_path, 'a')
     try:
-      self.save_visual_state(f, partial=True)
+      self.save_visual_state(f)
+      f.write("</opensim>\n")
     finally:
       f.close()
 
     logging.debug("Saved model.")
 
 
-  def save_visual_state(self, f, partial=False):
+  def save_visual_state(self, f):
     logging.debug("Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
@@ -185,8 +204,6 @@ class Canvas (gtk.ScrolledWindow):
     f.write('\n  </page>\n\n')
     f.write('</visuals>\n')
 
-    if partial is True:
-      f.write("</opensim>\n")
 
 
 gobject.type_register(Canvas)

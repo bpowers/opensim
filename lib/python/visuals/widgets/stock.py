@@ -108,7 +108,7 @@ class StockItem(SimItem):
     <stock>\n\
       <name>%s</name>\n\
       <x>%d</x>\n\
-      <y>%d</x>\n\
+      <y>%d</y>\n\
       <width>%f</width>\n\
       <height>%f</height>\n\
     </stock>\n' % (self._display_name.string, self.x, self.y, 

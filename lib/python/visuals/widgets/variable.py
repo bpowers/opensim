@@ -120,7 +120,7 @@ class VariableItem(SimItem):
     <var>\n\
       <name>%s</name>\n\
       <x>%d</x>\n\
-      <y>%d</x>\n\
+      <y>%d</y>\n\
       <width>%f</width>\n\
       <height>%f</height>\n\
     </var>\n' % (self._display_name.string, self.x, self.y, 
