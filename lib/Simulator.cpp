@@ -127,6 +127,8 @@ OpenSim::Simulator::save(bool partial)
                                 _variables, _model_name);
   
   delete file;
+
+  return 0;
 }
 
 

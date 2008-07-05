@@ -18,6 +18,6 @@ opensim_LTLIBRARIES = _simulator.la
 endif
 
 _simulator_la_SOURCES = simulator_wrap.cxx
-_simulator_la_LDFLAGS = $(PYTHON_LDFLAGS) -module
+_simulator_la_LDFLAGS = $(PYTHON_LDFLAGS) $(GLIBMM_LIBS) -module
 _simulator_la_LIBADD  = $(top_builddir)/lib/libsimobjs.la
 

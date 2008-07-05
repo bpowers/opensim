@@ -31,6 +31,9 @@
 // Windows functions or headers, but it might have its own ifdefs in there.
 #ifdef _WIN32
 #include <windows.h>
+#define WIN_DLL __declspec(dllexport)
+#else
+#define WIN_DLL 
 #endif 
 
 #include <cstdio>

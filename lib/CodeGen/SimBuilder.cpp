@@ -84,6 +84,8 @@ OpenSim::SimBuilder::Update()
   // this can be optimized, but for now should do.
   delete root;
   InitializeModule();
+
+  return 0;
 }
 
 

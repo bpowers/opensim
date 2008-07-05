@@ -24,6 +24,8 @@
 //
 //===---------------------------------------------------------------------===//
 
+// for the windows ifdef
+#include "globals.h"
 #include <cstdio>
 
 #include <glibmm/init.h>
@@ -34,6 +36,28 @@ using OpenSim::sim_output;
 
 Simulator *model;
 
+#ifdef _WIN32
+BOOL APIENTRY DllMain(HANDLE hModule,
+                      DWORD  ul_reason_for_call,
+                      LPVOID lpReserved)
+{
+    switch( ul_reason_for_call ) 
+	{
+    case DLL_PROCESS_ATTACH:
+    case DLL_THREAD_ATTACH:
+		Glib::init();
+		model = NULL;
+		break;
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+		// Bah cases errors.  Just leave junk around for now.
+		//delete model;
+		break;
+    }
+    return TRUE;
+}
+
+#else
 
 void __attribute__ ((constructor)) 
 my_init(void)
@@ -51,10 +75,10 @@ my_fini(void)
 {
   delete model;
 }
+#endif
 
 
-
-extern "C" int 
+extern "C" int WIN_DLL
 opensim_load_model(const char *filename)
 {
   delete model;
@@ -65,7 +89,7 @@ opensim_load_model(const char *filename)
 }
 
 
-extern "C" int 
+extern "C" int WIN_DLL
 opensim_save_model()
 {
   return 0;
@@ -73,7 +97,7 @@ opensim_save_model()
 
 
 
-extern "C" int 
+extern "C" int WIN_DLL
 opensim_set_output_type(sim_output output_type)
 {
   if (model) return model->set_output_type(output_type);
@@ -83,7 +107,7 @@ opensim_set_output_type(sim_output output_type)
 
 
 
-extern "C" int 
+extern "C" int WIN_DLL
 opensim_set_output_file(const char *file_name)
 {
   if (model) return model->set_output_file(file_name);
@@ -93,7 +117,7 @@ opensim_set_output_file(const char *file_name)
 
 
 
-extern "C" int 
+extern "C" int WIN_DLL
 opensim_simulate()
 {
   if (model) return model->simulate();

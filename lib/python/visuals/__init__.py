@@ -24,5 +24,8 @@
 #===-----------------------------------------------------------------------===#
 
 from constants import *
-from canvas import Canvas
+try:
+  from canvas import Canvas
+except:
+  pass
 from tools import ModelToolbar

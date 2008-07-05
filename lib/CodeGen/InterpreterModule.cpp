@@ -300,7 +300,7 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
 {
-    std::map<std::string, std::vector<double> > Results();
+  std::map<std::string, std::vector<double> > Results();
   if (node->FunctionName() == "MAX")
   {
     const std::vector<ExprAST *> args = node->Args();
@@ -328,4 +328,3 @@ OpenSim::InterpreterModule::CopyResults()
 {
   return new std::map<std::string, std::vector<double> >(vals);
 }
-
