@@ -172,6 +172,14 @@ class Canvas (gtk.ScrolledWindow):
 
     var = vis_root.children
 
+    if var is None:
+      logging.warning("empty canvas")
+      return
+
+    while var is not None:
+
+      var = var.next
+
     doc.freeDoc()
 
 
