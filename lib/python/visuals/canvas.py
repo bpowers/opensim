@@ -63,11 +63,11 @@ class SimGoo(goocanvas.Canvas):
 
   def update_name(self, name, item, new=False):
     if new:
-      print("awesome! new: '%s'", name)
+      logging.debug("SimGooCanvas: awesome! new: '%s'", name)
 
 
   def remove_item(self, item):
-    print("trying to remove")
+    logging.debug("SimGooCanvas: trying to remove '%s'." % item.name())
     self.sim.display_vars.remove(item)
     item.remove()
     
@@ -155,14 +155,17 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def open_model(self, file_path):
+    logging.debug("Dropping highlight to save.")
+    self.goocanvas.drop_highlight()
+    logging.debug("Opening model '%s'." % file_path)
     doc = libxml2.parseFile(file_path)
 
-    root = doc.vis_rootren
+    root = doc.children
     if root.name != "opensim":
       logging.error("not an opensim XML file")
       return
 
-    vis_root = root.vis_rootren
+    vis_root = root.children
     while vis_root is not None and vis_root.name != "visuals":
       vis_root = vis_root.next
 
@@ -171,6 +174,11 @@ class Canvas (gtk.ScrolledWindow):
       return
 
     var = vis_root.children
+
+    # make a copy so we're not editing the list we're iterating through
+    vars_copy = list(self.display_vars) 
+    for old_widget in vars_copy:
+      self.goocanvas.remove_item(old_widget)
 
     if var is None:
       logging.warning("empty canvas")
@@ -184,7 +192,9 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def save_model(self, file_path):
-    logging.debug("Setting model file and saving.")
+    logging.debug("Canvas: Dropping highlight to save.")
+    self.goocanvas.drop_highlight()
+    logging.debug("Canvas: Setting model file and saving.")
     self.engine.set_model_file(file_path)
     self.engine.save()
 
@@ -195,11 +205,11 @@ class Canvas (gtk.ScrolledWindow):
     finally:
       f.close()
 
-    logging.debug("Saved model.")
+    logging.debug("Canvas: Saved model.")
 
 
   def save_visual_state(self, f):
-    logging.debug("Saving visual state.")
+    logging.debug("Canvas: Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
     f.write('<visuals markup="1.0">\n\n')

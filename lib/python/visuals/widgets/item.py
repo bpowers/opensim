@@ -92,6 +92,10 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.get_canvas().request_redraw(self.get_bounds())
 
 
+  def name(self):
+    raise NotImplementedError
+
+
   def xml_representation(self):
     raise NotImplementedError
   

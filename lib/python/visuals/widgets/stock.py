@@ -117,6 +117,10 @@ class StockItem(SimItem):
     return xml_string
 
 
+  def name(self):
+    return self._display_name.string
+
+
   def on_key_press(self, item, target, event):
     key_name = gtk.gdk.keyval_name(event.keyval)
 
