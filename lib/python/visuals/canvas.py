@@ -144,18 +144,18 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def on_focus_in(self, target, event):
-    print("awes, got focus %s", self)
+    logging.debug("Canvas: got focus")
 
     return False
 
   def on_focus_out(self, target, event):
-    print("aww, left focus %s", self)
+    logging.debug("Canvas: left focus")
 
     return False
 
 
   def open_model(self, file_path):
-    logging.debug("Dropping highlight to save.")
+    logging.debug("Dropping highlight to open.")
     self.goocanvas.drop_highlight()
     logging.debug("Opening model '%s'." % file_path)
     doc = libxml2.parseFile(file_path)
@@ -166,6 +166,8 @@ class Canvas (gtk.ScrolledWindow):
       return
 
     vis_root = root.children
+    # skip through model and text children (XML treats 
+    # whitespace as text elements)
     while vis_root is not None and vis_root.name != "visuals":
       vis_root = vis_root.next
 
@@ -173,19 +175,58 @@ class Canvas (gtk.ScrolledWindow):
       logging.error("no node named 'visuals'")
       return
 
-    var = vis_root.children
-
     # make a copy so we're not editing the list we're iterating through
     vars_copy = list(self.display_vars) 
     for old_widget in vars_copy:
       self.goocanvas.remove_item(old_widget)
 
-    if var is None:
-      logging.warning("empty canvas")
-      return
+    page = vis_root.children
+    while page is not None and page.name != "page":
+        page = page.next
+    
+    if page is None:
+      logging.error("Canvas: each visual part of a savefile must have " + \
+                    "at least one page.")
 
+    goo_root = self.goocanvas.get_root_item()
+    var = page.children
+    # now for the meat and potatoes.
     while var is not None:
+      name = var.name
+      if name == "stock" or name == "var":
+        var_item = var.children
+        var_name = "undefined"
+        x, y, width, height = 0, 0, 100, 100
+        while var_item is not None:
+          if var_item.name == "x":
+            x = float(var_item.content)
+          elif var_item.name == "y":
+            y = float(var_item.content)
+          elif var_item.name == "width":
+            width = float(var_item.content)
+          elif var_item.name == "height":
+            height = float(var_item.content)
+          elif var_item.name == "name":
+            var_name = var_item.content
+          var_item = var_item.next
 
+        # using ints for output so that its more readable.  values
+        # are actually floats
+        logging.debug("Canvas: Adding variable " + 
+                      "'%s' (x'%d', y'%d', w'%d', h'%d')" % \
+                      (var_name, x, y, width, height))
+
+        # FIXME: we assume correct input.  handle errors!
+        if name == "var":
+          new_var = widgets.VariableItem(x, y, width, height, var_name,
+                                         focus=False, parent=goo_root, 
+                                         can_focus=True)
+          self.display_vars.append(new_var)
+        if name == "stock":
+          new_var = widgets.StockItem(x, y, width, height, var_name,
+                                      focus=False, parent=goo_root, 
+                                      can_focus=True)
+          self.display_vars.append(new_var)
       var = var.next
 
     doc.freeDoc()

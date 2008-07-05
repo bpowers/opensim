@@ -41,7 +41,8 @@ class VariableItem(SimItem):
   ## Note to read or modify the bounding box of ItemSimple use
   ## self.bounds_x1,x2,y1,y2
 
-  def __init__(self, x, y, width=120, height=80, line_width=3.5, **kwargs):
+  def __init__(self, x, y, width=120, height=80, name=None,
+               focus=True, line_width=3.5, **kwargs):
     super(VariableItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
     self.y = int(y - height/2)
@@ -55,12 +56,18 @@ class VariableItem(SimItem):
 
     self.line_width = line_width
 
-    self._display_name = TextInfo("(enter name)", \
-                                  dpi=self.get_canvas().dpi, \
-                                  placeholder_text=True)
+    if name is not None:
+      self._display_name = TextInfo(name, \
+                                    dpi=self.get_canvas().dpi, \
+                                    placeholder_text=False)
+    else:
+      self._display_name = TextInfo("(enter name)", \
+                                    dpi=self.get_canvas().dpi, \
+                                    placeholder_text=True)
 
-    self.get_canvas().grab_focus(self)
-    self.get_canvas().grab_highlight(self)
+    if focus:
+      self.get_canvas().grab_focus(self)
+      self.get_canvas().grab_highlight(self)
 
 
   def do_simple_create_path(self, cr):
