@@ -62,6 +62,8 @@ double
 OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
 {   
   vars = node->NamedVars();
+
+  Bootstrap();
   
   for (map<string, VariableAST *>::iterator itr = vars.begin(); 
        itr != vars.end(); itr++) 
@@ -93,7 +95,9 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
   }
   
   node->Integrator()->Codegen(this);
-  
+
+  Tailstrap();  
+
   fprintf(simout, "\n");
   
   return 0;
@@ -233,5 +237,31 @@ OpenSim::AS3PrintModule::visit(OpenSim::FunctionRefAST *node)
 {
   fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST\n");
   
+  return 0;
+}
+
+
+
+double
+OpenSim::AS3PrintModule::Bootstrap()
+{
+  fprintf(simout, "\
+package opensim\n\
+{\n\
+  public class OpenSim\n\
+  {\n");
+
+  return 0;
+}
+
+
+
+double
+OpenSim::AS3PrintModule::Tailstrap()
+{
+  fprintf(simout, "\
+  }\n\
+}\n");
+
   return 0;
 }
