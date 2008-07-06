@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([OpenSim], [0.2.4], [bugs@opensimproject.org])
+AC_INIT([OpenSim], [0.2.8], [bugs@opensimproject.org])
 AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
@@ -107,7 +107,7 @@ AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
                  lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
                  lib/python/visuals/Makefile \
                  lib/python/visuals/widgets/Makefile \
-                 lib/python/engine/Makefile],
+                 lib/python/engine/Makefile share/Makefile],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h.in])
 
 

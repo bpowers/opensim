@@ -1,6 +1,6 @@
 EXTRA_DIST		= bootstrap examples
 
-SUBDIRS 		= lib lib/python src
+SUBDIRS 		= lib lib/python share src 
 
 MAINTAINERCLEANFILES 	= Makefile.in aclocal.m4 configure \
 			  config-h.in stamp-h.in stamp-h1
