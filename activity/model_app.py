@@ -96,29 +96,20 @@ class ModelActivity(activity.Activity):
     self.set_canvas(self.canvas)
 
 
-
   def write_file(self, file_path):
     '''
     Implement this method to save your activity's state.
     '''
-    logging.debug('writing file')
+    logging.debug('ModelActivity: writing file')
     self.canvas.save_model(file_path)
-
+    logging.debug('ModelActivity: done writing file')
 
     
   def read_file(self, file_path):
     '''
     Implement this method to resume state saved in write_file().
     '''
-    logging.debug('reading file')
-    #f = open(file_path, 'r')
-    #try:
+    logging.debug('ModelActivity: reading file')
     self.canvas.open_model(file_path)
-      #print('**opened**')
-      #print f
-      #print('**contents:**')
-      #for line in f.readlines():
-      #  print line,
-      #print('**closed**')
-    #finally:
-    #  f.close()
+    logging.debug('ModelActivity: done reading file')
+

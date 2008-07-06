@@ -111,6 +111,12 @@ class StockItem(SimItem):
 
 
   def xml_representation(self):
+    # get the center of the widget, so that we get the correct 
+    # behavior when it loads.  also, add the cairo transformation
+    # matrix offset.
+    x_center = self.bounds_x1 + self.width/2.0
+    y_center = self.bounds_y1 + self.height/2.0
+
     xml_string = '\
     <stock>\n\
       <name>%s</name>\n\
@@ -118,7 +124,7 @@ class StockItem(SimItem):
       <y>%d</y>\n\
       <width>%f</width>\n\
       <height>%f</height>\n\
-    </stock>\n' % (self._display_name.string, self.x, self.y, 
+    </stock>\n' % (self._display_name.string, x_center, y_center, 
                    self.width, self.height)
 
     return xml_string

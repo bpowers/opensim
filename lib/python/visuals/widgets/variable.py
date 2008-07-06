@@ -96,10 +96,15 @@ class VariableItem(SimItem):
   def do_simple_paint(self, cr, bounds):
 
     cr.save()
+
+    # keep track of the transformation matrix, so we can save 
+    # the right coordinates
+    matrix = cr.get_matrix()
+
     self.ensure_size(cr)
     
     self.type_icon(cr)
-    
+
     cr.translate(self.x + self.icon_size + self.padding, self.y + self.height/2.0 + \
                                       self._display_name.height/2.0)
     cr.select_font_face(self._display_name.font_face)
@@ -123,6 +128,12 @@ class VariableItem(SimItem):
 
 
   def xml_representation(self):
+    # get the center of the widget, so that we get the correct 
+    # behavior when it loads.  also, add the cairo transformation
+    # matrix offset.
+    x_center = self.bounds_x1 + self.width/2.0
+    y_center = self.bounds_y1 + self.height/2.0
+
     xml_string = '\
     <var>\n\
       <name>%s</name>\n\
@@ -130,7 +141,7 @@ class VariableItem(SimItem):
       <y>%d</y>\n\
       <width>%f</width>\n\
       <height>%f</height>\n\
-    </var>\n' % (self._display_name.string, self.x, self.y, 
+    </var>\n' % (self._display_name.string, x_center, y_center, 
                    self.width, self.height)
 
     return xml_string

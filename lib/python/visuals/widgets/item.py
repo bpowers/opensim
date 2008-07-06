@@ -98,6 +98,10 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
   def xml_representation(self):
     raise NotImplementedError
+
+
+  def on_property_change(self, widget, event):
+    raise NotImplementedError
   
 
   def on_key_press(self, item, target, event):
