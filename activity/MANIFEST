@@ -19,6 +19,7 @@ site-packages/opensim/visuals/widgets/variable.py
 site-packages/opensim/visuals/__init__.py
 site-packages/opensim/visuals/canvas.py
 site-packages/opensim/visuals/constants.py
+site-packages/opensim/visuals/tools.py
 site-packages/opensim/engine/__init__.py
 site-packages/opensim/engine/simulator.py
 site-packages/opensim/engine/_simulator.so
