@@ -4,6 +4,6 @@ bundle_id = org.laptop.Model
 service_name = org.laptop.Model
 exec = ./model_startup.sh
 icon = model-icon
-activity_version = 3
+activity_version = 4
 mime_types = text/plain
 show_launcher = yes
