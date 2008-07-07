@@ -44,8 +44,6 @@ class SimGoo(goocanvas.Canvas):
   
 
   def grab_highlight(self, widget):
-    print("grabbing")
-    
     if self.highlighted is widget:
       return
     elif self.highlighted is not None:
@@ -67,9 +65,10 @@ class SimGoo(goocanvas.Canvas):
 
 
   def remove_item(self, item):
-    logging.debug("SimGooCanvas: trying to remove '%s'." % item.name())
+    logging.debug("SimGooCanvas: removing '%s'." % item.name())
     self.sim.display_vars.remove(item)
     item.remove()
+    self.highlighted = None
     
     
 
@@ -107,6 +106,7 @@ class Canvas (gtk.ScrolledWindow):
 
     root = self.goocanvas.get_root_item()
     root.connect("button_press_event", self.on_background_button_press)
+    root.connect("motion_notify_event", self.on_motion)
 
     self.connect("focus_in_event", self.on_focus_in)
     self.connect("focus_out_event", self.on_focus_out)
@@ -137,10 +137,17 @@ class Canvas (gtk.ScrolledWindow):
         new_var = widgets.VariableItem(event.x, event.y, \
                                        parent=root, can_focus=True)
         self.display_vars.append(new_var)
+      elif self.active_tool is sim.FLOW:
+        logging.debug("background click for Flow")
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
     return True
+
+
+  def on_motion(self, item, target, event):
+    if self.active_tool is sim.FLOW or self.active_tool is sim.VARIABLE:
+      logging.debug("motion notify!")
 
 
   def on_focus_in(self, target, event):

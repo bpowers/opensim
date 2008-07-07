@@ -25,4 +25,10 @@
 
 from constants import *
 from canvas import Canvas
-from tools import ModelToolbar
+try:
+  from tools import ModelToolbar
+except:
+  import logger
+  logging.error("Couldn't import ModelToolbar, probably due to sugar dependency")
+finally:
+  pass
