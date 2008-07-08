@@ -84,7 +84,7 @@ class StockItem(SimItem):
       self.width = max(self.width, \
                        self._display_name.width + 2*self.padding)
       self.height = max(self.height, \
-                        self._display_name.height + 2*self.padding)
+                        self._display_name.height*3 + 2*self.padding)
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
       
