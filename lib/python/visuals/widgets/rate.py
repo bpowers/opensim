@@ -1,4 +1,4 @@
-#===--- stock.py - OpenSim Stock widget -----------------===#
+#===--- rate.py - OpenSim Rate widget -----------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -19,7 +19,7 @@
 #
 #===-----------------------------------------------------------------------===#
 #
-# This file contains the implementation of the stock widget
+# This file contains the implementation of the rate widget
 #
 #===-----------------------------------------------------------------------===#
 
@@ -34,11 +34,11 @@ from text import TextInfo
 from item import SimItem
 
 
-class StockItem(SimItem):
+class RateItem(SimItem):
 
   def __init__(self, x, y, width=120, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
-    super(StockItem, self).__init__(**kwargs)
+    super(RateItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
     self.y = int(y - height/2)
     self.width = width
@@ -69,10 +69,7 @@ class StockItem(SimItem):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, 
-                 self.y - self.line_width/2.0,
-                 self.width + self.line_width/2.0, 
-                 self.height + self.line_width/2.0)
+    cr.rectangle(self.x, self.y, self.width, self.height)
 
 
   def ensure_size(self, cr):
@@ -87,14 +84,7 @@ class StockItem(SimItem):
                         self._display_name.height + 2*self.padding)
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
-      
-      self.bounds_x1 = self.x - self.line_width/2.0 
-      self.bounds_y1 = self.y - self.line_width/2.0
-      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
-      self.bounds_y2 = self.y + self.height + self.line_width/2.0
-
       self.__needs_resize_calc = False
-      self.force_redraw()
 
 
   def do_simple_paint(self, cr, bounds):
@@ -174,7 +164,6 @@ class StockItem(SimItem):
 
     canvas.grab_focus(item)
     canvas.grab_highlight(self)
-
     if event.button == 1:
       self.drag_x = event.x
       self.drag_y = event.y
@@ -183,7 +172,7 @@ class StockItem(SimItem):
       canvas = item.get_canvas()
       canvas.pointer_grab(item,
                           gtk.gdk.POINTER_MOTION_MASK 
-                           | gtk.gdk.BUTTON_RELEASE_MASK,
+                            | gtk.gdk.BUTTON_RELEASE_MASK,
                           fleur, event.time)
       self.dragging = True
     elif event.button == 3:
@@ -241,8 +230,4 @@ class StockItem(SimItem):
     return False
 
 
-  
-
-
-
-gobject.type_register(StockItem)
+gobject.type_register(RateItem)

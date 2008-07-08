@@ -41,6 +41,10 @@ class SimGoo(goocanvas.Canvas):
     super(SimGoo, self).__init__(**kwargs)
     self.highlighted = None
     self.engine = Simulator()
+
+    # used to denote when we're overriding mouseclicks on canvas items.
+    # mostly for when we're drawing lines and rates
+    self.override = False
   
 
   def grab_highlight(self, widget):
@@ -118,6 +122,12 @@ class Canvas (gtk.ScrolledWindow):
 
   def set_active_tool(self, tool_type):
     self.active_tool = tool_type
+    if tool_type is sim.FLOW or tool_type is sim.INFLUENCE:
+      self.goocanvas.override = True
+    else:
+      self.goocanvas.override = False
+    if self.goocanvas.highlighted:
+      self.goocanvas.highlighted.emit("highlight_out_event", self)
 
 
   def get_active_tool(self):
@@ -139,6 +149,9 @@ class Canvas (gtk.ScrolledWindow):
         self.display_vars.append(new_var)
       elif self.active_tool is sim.FLOW:
         logging.debug("background click for Flow")
+        widget = self.goocanvas.get_item_at(event.x, event.y, False)
+        if widget is not None:
+          logging.debug("I got one!!! its a big one!!!")
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
@@ -147,7 +160,8 @@ class Canvas (gtk.ScrolledWindow):
 
   def on_motion(self, item, target, event):
     if self.active_tool is sim.FLOW or self.active_tool is sim.VARIABLE:
-      logging.debug("motion notify!")
+      #logging.debug("motion notify!")
+      pass
 
 
   def on_focus_in(self, target, event):

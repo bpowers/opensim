@@ -72,8 +72,12 @@ class VariableItem(SimItem):
 
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
-    ## define the bounding path hertocke.
-    cr.rectangle(self.x, self.y, self.width, self.height)
+
+    # define the bounding path here.
+    cr.rectangle(self.x - self.line_width/2.0, 
+                 self.y - self.line_width/2.0,
+                 self.width + self.line_width/2.0, 
+                 self.height + self.line_width/2.0)
 
 
   def ensure_size(self, cr):
@@ -88,7 +92,14 @@ class VariableItem(SimItem):
                                      2*self.padding + self.icon_size)
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
+
+      self.bounds_x1 = self.x - self.line_width/2.0 
+      self.bounds_y1 = self.y - self.line_width/2.0
+      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
+      self.bounds_y2 = self.y + self.height + self.line_width/2.0
+
       self.__needs_resize_calc = False
+      self.force_redraw()
 
 
 
@@ -172,8 +183,16 @@ class VariableItem(SimItem):
 
 
   def on_button_press(self, item, target, event):
-    self.get_canvas().grab_focus(item)
-    self.get_canvas().grab_highlight(self)
+    canvas = self.get_canvas()
+
+    if canvas.override:
+      # if we're in the process of drawing a line, just 
+      # propogate the signal.
+      return False
+
+    canvas.grab_focus(item)
+    canvas.grab_highlight(self)
+
     if event.button == 1:
       self.drag_x = event.x
       self.drag_y = event.y
@@ -182,7 +201,7 @@ class VariableItem(SimItem):
       canvas = item.get_canvas()
       canvas.pointer_grab(item,
                           gtk.gdk.POINTER_MOTION_MASK 
-                            | gtk.gdk.BUTTON_RELEASE_MASK,
+                           | gtk.gdk.BUTTON_RELEASE_MASK,
                           fleur, event.time)
       self.dragging = True
     elif event.button == 3:
