@@ -39,17 +39,21 @@ class StockItem(SimItem):
   def __init__(self, x, y, width=120, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
+
+    self._new = True
+
     self.x = int(x - width/2)
     self.y = int(y - height/2)
     self.width = width
     self.height = height
-    self.__needs_resize_calc = True
     self.dragging = False
+
     self.text_color = [0, 0, 0]
-
-    self._new = True
-
     self.line_width = line_width
+
+    # keep track of inflows and outflows, for use in engine
+    self.inflows = []
+    self.outflows = []
 
     if name is not None:
       self._display_name = TextInfo(name, \
@@ -59,6 +63,8 @@ class StockItem(SimItem):
       self._display_name = TextInfo("(enter name)", \
                                     dpi=self.get_canvas().dpi, \
                                     placeholder_text=True)
+
+    self.__needs_resize_calc = True
 
     if focus:
       self.get_canvas().grab_focus(self)

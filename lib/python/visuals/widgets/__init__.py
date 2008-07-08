@@ -26,4 +26,4 @@
 from stock import StockItem
 from text import TextInfo
 from variable import VariableItem
-from rate import RateItem
+from flow import FlowItem

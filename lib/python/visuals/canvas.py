@@ -135,23 +135,28 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def on_background_button_press (self, item, target, event):
-
+    root = self.goocanvas.get_root_item()
+    
     if event.button is 1:
       if self.active_tool is sim.STOCK:
-        root = self.goocanvas.get_root_item()
         new_stock = widgets.StockItem(event.x, event.y, \
                                       parent=root, can_focus=True)
         self.display_vars.append(new_stock)
+
       elif self.active_tool is sim.VARIABLE:
-        root = self.goocanvas.get_root_item()
         new_var = widgets.VariableItem(event.x, event.y, \
                                        parent=root, can_focus=True)
         self.display_vars.append(new_var)
+
       elif self.active_tool is sim.FLOW:
         logging.debug("background click for Flow")
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
-        if widget is not None:
-          logging.debug("I got one!!! its a big one!!!")
+        if widget is not None and type(widget) is widgets.StockItem:
+          new_var = widgets.RateItem((event.x, event.y), flow_out=widget,
+                                      parent=root, can_focus=True)
+        else:
+          # create a cloud if they clicked on the background for a flow 
+          pass
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
