@@ -45,6 +45,11 @@ class SimGoo(goocanvas.Canvas):
     # used to denote when we're overriding mouseclicks on canvas items.
     # mostly for when we're drawing lines and rates
     self.override = False
+
+    # if we've got a line we're making, we want to attach the
+    # motion callback to it.  When we're done moving the line, 
+    # detach the callback.  keep track of the callback id here.
+    self.line_id = None
   
 
   def grab_highlight(self, widget):
@@ -73,6 +78,10 @@ class SimGoo(goocanvas.Canvas):
     self.sim.display_vars.remove(item)
     item.remove()
     self.highlighted = None
+
+    if self.line_id:
+      self.get_root_item().disconnect(self.line_id)
+      self.line_id = None
     
     
 
@@ -92,11 +101,6 @@ class Canvas (gtk.ScrolledWindow):
     self.engine = self.goocanvas.engine 
     self.goocanvas.sim = self
     self.display_vars = []
-
-    # if we've got a line we're making, we want to attach the
-    # motion callback to it.  When we're done moving the line, 
-    # detach the callback.  keep track of the callback id here.
-    self.line_id = None
 
     display = gtk.gdk.display_get_default()
     screen = display.get_default_screen()
@@ -157,20 +161,22 @@ class Canvas (gtk.ScrolledWindow):
         logging.debug("background click for Flow")
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
 
-        if widget is not None and type(widget) is widgets.StockItem:
-          if self.line_id is None:
-
-            logging.debug("starting new flow")
-            new_var = widgets.FlowItem((event.x, event.y), flow_from=widget,
-                                        parent=root, can_focus=True)
-            self.line_id = root.connect("motion_notify_event", 
-                                        new_var.on_motion_notify)
+        if self.goocanvas.line_id is None:
+          if widget is not None and type(widget) is not widgets.StockItem:
+            # if we landed on anything but a stock, break
+            return True
+          elif not widget:
+            # create a cloud if they clicked on the background for a flow 
+            logging.debug("creating a cloud here")
+            new_var = widgets.CloudItem(event.x, event.y, parent=root)
             self.display_vars.append(new_var)
-
-        else:
-          # create a cloud if they clicked on the background for a flow 
-          logging.debug("creating a cloud here")
-          new_var = widgets.CloudItem(event.x, event.y, parent=root)
+            widget = new_var
+        
+          logging.debug("starting new flow")
+          new_var = widgets.FlowItem(flow_from=widget,
+                                     parent=root, can_focus=True)
+          self.goocanvas.line_id = root.connect("motion_notify_event", 
+                                      new_var.on_motion_notify)
           self.display_vars.append(new_var)
 
       else:

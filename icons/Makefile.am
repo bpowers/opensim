@@ -7,3 +7,5 @@ pkgdata_DATA = opensim-cloud.svg model-icon.svg
 icondir = $(top_srcdir)/activity/icons
 icon_DATA = $(icons_DATA)
 
+hicolordir = /usr/share/icons/hicolor/scalable/apps
+hicolor_DATA = model-icon.svg

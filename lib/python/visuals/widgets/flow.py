@@ -37,9 +37,11 @@ from item import SimItem
 
 class FlowItem(SimItem):
 
-  def __init__(self, start_coord, flow_from, name=None, 
+  def __init__(self, flow_from, name=None, 
                dragging=True, focus=True, line_width=3.5, **kwargs):
     super(FlowItem, self).__init__(**kwargs)
+
+    start_coord = flow_from.center()  
     self.x1 = start_coord[0]
     self.y1 = start_coord[1]
 
