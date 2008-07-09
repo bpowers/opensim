@@ -5,7 +5,8 @@ MAINTAINERCLEANFILES    = Makefile.in
 
 EXTRA_DIST              = opensim opensim-gtk opensim-main.glade
 
-bin_SCRIPTS             = opensim opensim-gtk opensim-main.glade
+bin_SCRIPTS             = opensim opensim-gtk
+pkgdata_DATA            = opensim-main.glade
 
 dnl bin_PROGRAMS            = opensim-test
 dnl opensim_test_SOURCES    = main.c
