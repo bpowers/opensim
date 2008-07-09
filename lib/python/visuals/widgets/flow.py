@@ -100,7 +100,8 @@ class FlowItem(SimItem):
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
-                      self.active_color[2])
+                      self.active_color[2])     
+    cr.set_line_cap  (cairo.LINE_CAP_ROUND)
     cr.stroke()
 
     # print flow name

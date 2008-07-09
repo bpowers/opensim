@@ -224,7 +224,8 @@ class VariableItem(SimItem):
       new_x = event.x
       new_y = event.y
       item.translate(new_x - self.drag_x, new_y - self.drag_y)
-    return True
+      return True
+    return False
 
 
   def on_focus_in(self, item, target, event):
