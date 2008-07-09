@@ -33,7 +33,7 @@ import logging
 import opensim.visuals as sim
 
 
-class OpenSimGTK(gtk.Window):
+class OpenSimGTK(gobject.GObject):
 
   def drawing_tool_toggled(self, widget):
 
@@ -74,10 +74,8 @@ class OpenSimGTK(gtk.Window):
       xdg_string = environ['XDG_DATA_DIRS']
       all_paths = xdg_string.split(':').append(share_paths)
 
-    logging.debug('search paths')
     for i, path in enumerate(all_paths):
       path = os.path.join(path, "opensim")
-      logging.debug('\t%d: %s' % (i, path))
       if os.path.exists(path):
         self.file_path = path
         break
@@ -94,6 +92,9 @@ class OpenSimGTK(gtk.Window):
 
     #Get the Main Window, and connect the "destroy" event
     self.window = self.wTree.get_widget("main_window")
+    self.window.set_icon_from_file(os.path.join(self.file_path, 
+                                   "model-icon.svg"))
+    self.window.set_title('new simulation | Model')
 
     dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
            "on_open" : self.open_clicked,

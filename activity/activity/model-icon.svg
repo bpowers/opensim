@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+     <!ENTITY stroke_color "#010101">
+     <!ENTITY fill_color "#FFFFFF">
+ ]>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:svg="http://www.w3.org/2000/svg"
@@ -17,19 +21,19 @@
 <path
    d="M 12.362217,49.365687 L 43.7591,17.968803 L 48.24437,22.454073 L 49.365687,5.6343127 L 32.545928,6.7556306 L 37.031197,11.240899 L 5.634313,42.637783 L 12.362217,49.365687 z"
    id="path2381"
-   style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+   style="fill:&fill_color;;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 <path
    d="M 15.745709,32.526387 L 5.6343131,42.637783 L 12.362217,49.365688 L 12.362217,49.365688 L 22.457977,39.269928"
    id="path2389"
-   style="fill:none;fill-rule:evenodd;stroke:#e02121;stroke-width:3.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 <path
    d="M 36.601427,25.126478 L 43.759102,17.968803 L 48.24437,22.454073 L 49.365688,5.6343126 L 32.545929,6.7556305 L 37.031197,11.240899 L 29.842266,18.42983"
    id="path2385"
-   style="fill:none;fill-rule:evenodd;stroke:#e02121;stroke-width:3.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 <path
    d="M 37.334803,28.861336 C 37.334803,35.025228 32.337981,40.02205 26.174089,40.02205 C 20.010197,40.02205 15.013375,35.025228 15.013375,28.861336 C 15.013375,22.697443 20.010197,17.700621 26.174089,17.700621 C 32.337981,17.700621 37.334803,22.697443 37.334803,28.861336 L 37.334803,28.861336 z"
    id="path3173"
-   style="fill:#ffffff;stroke:#e02121;stroke-width:3.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+   style="fill:&fill_color;;stroke:&stroke_color;;stroke-width:3.5;stroke-miterlimit:4;stroke-dasharray:none" />
 
 
 </svg>
