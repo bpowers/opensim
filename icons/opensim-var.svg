@@ -12,11 +12,25 @@
    height="55"
    viewBox="0 0 55 55"
    id="svg2"
-   xml:space="preserve"><defs
+   xml:space="preserve">
+<defs
      id="defs12">
 	
-	
+	<filter
+   height="1.2945455"
+   y="-0.14727274"
+   width="1.2025"
+   x="-0.10125"
+   id="filter3173"><feGaussianBlur
+     id="feGaussianBlur3175"
+     stdDeviation="2.025"
+     inkscape:collect="always" /></filter>
+
 </defs>
+<path
+   d="M 48.499952,27.5 C 48.499952,39.097953 39.097955,48.499952 27.500002,48.499952 C 15.902048,48.499952 6.5000474,39.097953 6.5000474,27.5 C 6.5000474,15.902047 15.902048,6.5000472 27.500002,6.5000472 C 39.097955,6.5000472 48.499952,15.902047 48.499952,27.5 L 48.499952,27.5 z"
+   id="path2382"
+   style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3173)" />
 
 <path
    d="M 48.499952,27.5 C 48.499952,39.097953 39.097955,48.499952 27.500002,48.499952 C 15.902048,48.499952 6.5000474,39.097953 6.5000474,27.5 C 6.5000474,15.902047 15.902048,6.5000472 27.500002,6.5000472 C 39.097955,6.5000472 48.499952,15.902047 48.499952,27.5 L 48.499952,27.5 z"

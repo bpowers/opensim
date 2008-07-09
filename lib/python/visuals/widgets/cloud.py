@@ -40,6 +40,8 @@ class CloudItem(SimItem):
   def __init__(self, x, y, **kwargs):
     super(CloudItem, self).__init__(**kwargs)
 
+    logging.debug("oh yea TOTALLY clouding it up")
+
     self._new = True
     self.dragging = False
 
@@ -50,19 +52,21 @@ class CloudItem(SimItem):
     self.inflows = []
     self.outflows = []
 
-    self._icon = gtk.Image(icon_name="opensim-cloud")
+    self._icon = gtk.Image()
+    self._icon = self._icon.set_from_file('opensim-cloud')
 
     self.__needs_resize_calc = True
+    self.force_redraw()
 
 
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(self.x - self.width/2.0, 
-                 self.y - self.height/2.0,
-                 self.x + self.width/2.0, 
-                 self.y + self.height/2.0)
+    cr.rectangle(self.x, 
+                 self.y,
+                 self.x + self.width, 
+                 self.y + self.height)
 
 
   def center(self):
@@ -72,10 +76,10 @@ class CloudItem(SimItem):
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       
-      self.bounds_x1 = self.x - self.width/2.0 
-      self.bounds_y1 = self.y - self.height/2.0
-      self.bounds_x2 = self.x + self.width/2.0 
-      self.bounds_y2 = self.y + self.height/2.0
+      self.bounds_x1 = float(self.x)
+      self.bounds_y1 = float(self.y)
+      self.bounds_x2 = float(self.x + self.width)
+      self.bounds_y2 = float(self.y + self.height)
 
       self.__needs_resize_calc = False
       self.force_redraw()
@@ -83,42 +87,28 @@ class CloudItem(SimItem):
 
   def do_simple_paint(self, cr, bounds):
 
+    logging.debug("DRAWING START")
     cr.save()
-    self.ensure_size(cr)
-    cr.rectangle(self.x, self.y, self.width, self.height)
-    cr.set_source_rgb (1, 1, 1)
-    cr.fill_preserve()
-    cr.set_line_width(self.line_width)
-    cr.set_source_rgb(self.text_color[0], \
-                      self.text_color[1], \
-                      self.text_color[2])
-    cr.stroke()
-
-    # translate so that our coordinate system is in the widget
-    
     center = self.center()
-    cr.translate(center[0], center[1])
-    self._display_name.show_text(cr)
+    cr.translate(center[0]-self.width()/2, center[1]-self.height/2)
+    
+    pcctx = pangocairo.CairoContext(cr)
+    gcr = gtk.gdk.CairoContext(gccxt)
+
+    pixbuf = self._icon.get_pixbuf()
+    gcr.set_source_pixbuf(pixbuf, 0, 0)
+    gcr.paint()
 
     cr.restore()
+    logging.debug("DRAWING END")
 
 
   def xml_representation(self):
-    # get the center of the widget, so that we get the correct 
-    # behavior when it loads.  also, add the cairo transformation
-    # matrix offset.
-    x_center = self.bounds_x1 + self.width/2.0
-    y_center = self.bounds_y1 + self.height/2.0
-
     xml_string = '\
-    <stock>\n\
-      <name>%s</name>\n\
+    <cloud>\n\
       <x>%d</x>\n\
       <y>%d</y>\n\
-      <width>%f</width>\n\
-      <height>%f</height>\n\
-    </stock>\n' % (self._display_name.string, x_center, y_center, 
-                   self.width, self.height)
+    </cloud>\n' % (self.x, self.y)
 
     return xml_string
 
@@ -128,23 +118,7 @@ class CloudItem(SimItem):
 
 
   def on_key_press(self, item, target, event):
-    key_name = gtk.gdk.keyval_name(event.keyval)
-
-    if key_name in self.enter_key:
-      self.emit("highlight_out_event", self)
-    elif key_name in self.delete_key:
-      self._display_name.backspace()
-    elif key_name in self.escape_key:
-      print("escape key!")
-    else:
-      # add key to name buffer
-      self._display_name.add(event.string)
-
-    self.__needs_resize_calc = True
-    self.force_redraw()
-
-    # return true to stop propogation
-    return True
+    return False
 
 
   def on_button_press(self, item, target, event):
@@ -216,15 +190,9 @@ class CloudItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self._display_name.string, 
-                                  self, new=self._new)
-
     self._new = False
 
     return False
-
-
-  
 
 
 

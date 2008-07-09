@@ -12,20 +12,40 @@
    height="55"
    viewBox="0 0 55 55"
    id="svg2"
-   xml:space="preserve"><defs
+   xml:space="preserve">
+
+<defs
    id="defs12">
 	
-	
+	<filter
+   id="filter3173"
+   x="-0.10125"
+   width="1.2025"
+   y="-0.14727274"
+   height="1.2945455"><feGaussianBlur
+     collect="always"
+     stdDeviation="2.025"
+     id="feGaussianBlur3175" /></filter>
 </defs>
-
-
 
 <path
    d="M 9.3522267,47.98583 C 11.62916,25.077684 18.103382,19.850278 34.625506,14.696356"
+   transform="matrix(0.9195189,0,0,1.0035493,0.8457748,-0.1112376)"
    id="path2384"
-   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+   style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;filter:url(#filter3173)" />
 <path
-   d="M 31.508097,7.6821862 L 34.959514,23.269231 L 46.427126,11.80162 L 31.508097,7.6821862 z"
+   d="M 29.508097,7.6821862 L 32.959514,23.269231 L 44.427126,11.80162 L 29.508097,7.6821862 z"
    id="path2381"
+   style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;filter:url(#filter3173)" />
+
+<path
+   d="M 9.445324,48.044906 C 11.539007,25.055454 17.492177,19.809494 32.684582,14.63728"
+   id="path8"
+   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:2.88184714px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+
+
+<path
+   d="M 29.508097,7.6821862 L 32.959514,23.269231 L 44.427126,11.80162 L 29.508097,7.6821862 z"
+   id="path10"
    style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
 </svg>

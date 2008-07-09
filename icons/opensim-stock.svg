@@ -7,22 +7,36 @@
 <svg
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
    width="55"
    height="55"
    viewBox="0 0 55 55"
    id="svg2"
    xml:space="preserve"><defs
-     id="defs12">
+   id="defs12">
 	
 	
-</defs>
+<filter
+   height="1.2945455"
+   y="-0.14727274"
+   width="1.2025"
+   x="-0.10125"
+   id="filter3173"><feGaussianBlur
+     id="feGaussianBlur3175"
+     stdDeviation="2.025"
+     inkscape:collect="always" /></filter></defs>
 <rect
-     width="45"
-     height="30"
-     x="5"
-     y="12.5"
-     id="rect2399"
-     style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+   width="45"
+   height="30"
+   x="5"
+   y="12.5"
+   id="rect2381"
+   style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3173)" /><rect
+   width="45"
+   height="30"
+   x="5"
+   y="12.5"
+   id="rect2399"
+   style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
 </svg>
-

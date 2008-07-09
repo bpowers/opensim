@@ -169,7 +169,9 @@ class Canvas (gtk.ScrolledWindow):
 
         else:
           # create a cloud if they clicked on the background for a flow 
-          logging.debug("mm yup need a cloud here")
+          logging.debug("creating a cloud here")
+          new_var = widgets.CloudItem(event.x, event.y, parent=root)
+          self.display_vars.append(new_var)
 
       else:
         self.grab_focus()
