@@ -93,6 +93,11 @@ class Canvas (gtk.ScrolledWindow):
     self.goocanvas.sim = self
     self.display_vars = []
 
+    # if we've got a line we're making, we want to attach the
+    # motion callback to it.  When we're done moving the line, 
+    # detach the callback.  keep track of the callback id here.
+    self.line_id = None
+
     display = gtk.gdk.display_get_default()
     screen = display.get_default_screen()
     self.goocanvas.dpi = screen.get_resolution()
@@ -151,12 +156,21 @@ class Canvas (gtk.ScrolledWindow):
       elif self.active_tool is sim.FLOW:
         logging.debug("background click for Flow")
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
+
         if widget is not None and type(widget) is widgets.StockItem:
-          new_var = widgets.RateItem((event.x, event.y), flow_out=widget,
-                                      parent=root, can_focus=True)
+          if self.line_id is None:
+
+            logging.debug("starting new flow")
+            new_var = widgets.FlowItem((event.x, event.y), flow_from=widget,
+                                        parent=root, can_focus=True)
+            self.line_id = root.connect("motion_notify_event", 
+                                        new_var.on_motion_notify)
+            self.display_vars.append(new_var)
+
         else:
           # create a cloud if they clicked on the background for a flow 
-          pass
+          logging.debug("mm yup need a cloud here")
+
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
