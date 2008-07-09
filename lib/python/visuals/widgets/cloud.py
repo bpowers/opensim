@@ -39,18 +39,18 @@ from item import SimItem
 
 class CloudItem(SimItem):
 
-  def __init__(self, x, y, width=55, height=55, name=None,
-               focus=True, line_width=3.5, **kwargs):
+  def __init__(self, x, y, width=55, height=55, **kwargs):
     super(CloudItem, self).__init__(**kwargs)
 
     self._new = True
 
-    self.x = int(x - width/2)
-    self.y = int(y - height/2)
+    self.x = x - width/2.0
+    self.y = y - height/2.0
     self.width = width
     self.height = height
     self.dragging = False
 
+    # find our cloud icon hanging out with the other icons.
     icon_paths = gtk.icon_theme_get_default().get_search_path()
     cloud_path = None
 
@@ -66,27 +66,18 @@ class CloudItem(SimItem):
 
     self._cloud = rsvg.Handle(cloud_path)
 
-    self.line_width = line_width
-
     # keep track of inflows and outflows, for use in engine
     self.inflows = []
     self.outflows = []
 
     self.__needs_resize_calc = True
 
-    if focus:
-      self.get_canvas().grab_focus(self)
-      self.get_canvas().grab_highlight(self)
-
 
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, 
-                 self.y - self.line_width/2.0,
-                 self.width + self.line_width/2.0, 
-                 self.height + self.line_width/2.0)
+    cr.rectangle(self.x, self.y, self.width, self.height)
 
 
   def center(self):
@@ -96,10 +87,10 @@ class CloudItem(SimItem):
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       
-      self.bounds_x1 = self.x - self.line_width/2.0 
-      self.bounds_y1 = self.y - self.line_width/2.0
-      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
-      self.bounds_y2 = self.y + self.height + self.line_width/2.0
+      self.bounds_x1 = self.x
+      self.bounds_y1 = self.y
+      self.bounds_x2 = self.x + self.width 
+      self.bounds_y2 = self.y + self.height
 
       self.__needs_resize_calc = False
       self.force_redraw()
@@ -110,7 +101,6 @@ class CloudItem(SimItem):
     cr.save()
 
     cr.translate(self.x, self.y)
-    
     self._cloud.render_cairo(cr)
 
     cr.restore()
@@ -126,28 +116,8 @@ class CloudItem(SimItem):
     return xml_string
 
 
-  def name(self):
-    return self._display_name.string
-
-
   def on_key_press(self, item, target, event):
-    key_name = gtk.gdk.keyval_name(event.keyval)
-
-    if key_name in self.enter_key:
-      self.emit("highlight_out_event", self)
-    elif key_name in self.delete_key:
-      self._display_name.backspace()
-    elif key_name in self.escape_key:
-      print("escape key!")
-    else:
-      # add key to name buffer
-      self._display_name.add(event.string)
-
-    self.__needs_resize_calc = True
-    self.force_redraw()
-
-    # return true to stop propogation
-    return True
+    return False
 
 
   def on_button_press(self, item, target, event):
@@ -213,14 +183,6 @@ class CloudItem(SimItem):
   def on_highlight_out(self, item, target):
     self.text_color = [0, 0, 0]
     self.force_redraw()
-
-    if self._new:
-      if self._display_name.placeholder:
-        self.get_canvas().remove_item(self)
-        return
-
-    self.get_canvas().update_name(self._display_name.string, 
-                                  self, new=self._new)
 
     self._new = False
 
