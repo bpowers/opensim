@@ -13,12 +13,12 @@
    viewBox="0 0 55 55"
    id="svg2"
    xml:space="preserve"><defs
-   id="defs12">
+     id="defs12">
 	
 	
 </defs>
+
 <path
-   d="M 10, 27.5 L 27.5,10 L 45,27.5 L 27.5,45 z"
-   id="path2381"
-   style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-</svg>
+   d="M 48.499952,27.5 C 48.499952,39.097953 39.097955,48.499952 27.500002,48.499952 C 15.902048,48.499952 6.5000474,39.097953 6.5000474,27.5 C 6.5000474,15.902047 15.902048,6.5000472 27.500002,6.5000472 C 39.097955,6.5000472 48.499952,15.902047 48.499952,27.5 L 48.499952,27.5 z"
+   id="path2382"
+   style="fill:&fill_color;;fill-opacity:1;stroke:&stroke_color;;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /></svg>

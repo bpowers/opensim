@@ -23,9 +23,9 @@
 <path
    d="M 9.3522267,47.98583 C 11.62916,25.077684 18.103382,19.850278 34.625506,14.696356"
    id="path2384"
-   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+   style="fill:none;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
 <path
    d="M 31.508097,7.6821862 L 34.959514,23.269231 L 46.427126,11.80162 L 31.508097,7.6821862 z"
    id="path2381"
-   style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+   style="fill:&fill_color;;fill-rule:evenodd;stroke:&stroke_color;;stroke-width:3px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
 </svg>
