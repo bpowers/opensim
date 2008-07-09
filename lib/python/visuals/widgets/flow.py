@@ -27,6 +27,7 @@ import gobject
 import gtk
 import goocanvas
 import math
+import cairo
 
 import logging
 
@@ -57,12 +58,10 @@ class FlowItem(SimItem):
     self.line_width = line_width
 
     if name is not None:
-      self._display_name = TextInfo(name, \
-                                    dpi=self.get_canvas().dpi, \
+      self._display_name = TextInfo(name, 
                                     placeholder_text=False)
     else:
-      self._display_name = TextInfo("(enter name)", \
-                                    dpi=self.get_canvas().dpi, \
+      self._display_name = TextInfo("(enter name)", 
                                     placeholder_text=True)
 
     if focus:
