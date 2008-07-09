@@ -42,7 +42,7 @@ class VariableItem(SimItem):
   ## Note to read or modify the bounding box of ItemSimple use
   ## self.bounds_x1,x2,y1,y2
 
-  def __init__(self, x, y, width=120, height=80, name=None,
+  def __init__(self, x, y, width=180, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
     super(VariableItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
@@ -57,11 +57,13 @@ class VariableItem(SimItem):
 
     self.line_width = line_width
 
+    text_width = self.width - self.padding*2 - self.icon_size
+
     if name is not None:
-      self._display_name = TextInfo(name, \
+      self._display_name = TextInfo(name, wrap_width=text_width, 
                                     placeholder_text=False)
     else:
-      self._display_name = TextInfo("(enter name)", \
+      self._display_name = TextInfo("(enter name)", wrap_width=text_width, 
                                     placeholder_text=True)
 
     if focus:
@@ -89,17 +91,17 @@ class VariableItem(SimItem):
 
       old_center_x = self.x + self.width/2.0
       old_center_y = self.y + self.height/2.0
-      self.width = max(self.width, self._display_name.width + \
-                                   2*self.padding + self.icon_size)
-      self.height = max(self.height, self._display_name.height + \
-                                     2*self.padding + self.icon_size)
+      self.height = max(self.icon_size, self._display_name.height) \
+                    + 2*self.padding
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
 
       self.bounds_x1 = self.x - self.line_width/2.0 
       self.bounds_y1 = self.y - self.line_width/2.0
-      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
-      self.bounds_y2 = self.y + self.height + self.line_width/2.0
+      self.bounds_x2 = self.x + self.width + self.line_width \
+                       + 2*self.padding
+      self.bounds_y2 = self.y + self.height + self.line_width \
+                       + 2*self.padding
 
       self.__needs_resize_calc = False
       self.force_redraw()

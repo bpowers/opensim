@@ -25,12 +25,8 @@
 #===-----------------------------------------------------------------------===#
 
 import cairo, pango, pangocairo
-import logging
 
 class TextInfo():
-
-  # this is the DPI on my Hardy system
-  __base_dpi = 96.0
 
   def __init__(self, string, font_face='Arial,sans', wrap_width=120,
                font_size=14, placeholder_text=False, cr=None):
@@ -45,10 +41,10 @@ class TextInfo():
 
   def update_extents(self, cr):
     cr.save()
-    layout = self.create_layout(cr)
 
+    layout = self.create_layout(cr)
     self.width, self.height = layout.get_pixel_size()
-    logging.debug("w:%f h:%f" % (self.width, self.height))
+
     cr.restore()
 
 
@@ -58,7 +54,7 @@ class TextInfo():
     pcr = font_map.create_context()
     p_layout = pango.Layout(pcr)
     p_layout.set_wrap(pango.WRAP_WORD)
-    p_layout.set_width(int(120*pango.SCALE))
+    p_layout.set_width(int(self.wrap_width*pango.SCALE))
     font = pango.FontDescription(self.font_description)
     p_layout.set_font_description(font)
     p_layout.set_text(self.string)
