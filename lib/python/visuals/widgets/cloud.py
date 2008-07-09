@@ -27,7 +27,9 @@ import gobject
 import gtk
 import goocanvas
 import math
-import cairo
+import cairo, pangocairo
+import rsvg
+import os
 
 import logging
 
@@ -37,49 +39,67 @@ from item import SimItem
 
 class CloudItem(SimItem):
 
-  def __init__(self, x, y, **kwargs):
+  def __init__(self, x, y, width=55, height=55, name=None,
+               focus=True, line_width=3.5, **kwargs):
     super(CloudItem, self).__init__(**kwargs)
 
-    logging.debug("oh yea TOTALLY clouding it up")
-
     self._new = True
+
+    self.x = int(x - width/2)
+    self.y = int(y - height/2)
+    self.width = width
+    self.height = height
     self.dragging = False
 
-    self.width = 55
-    self.height = 55
+    icon_paths = gtk.icon_theme_get_default().get_search_path()
+    cloud_path = None
+
+    for path in icon_paths:
+      possible_path = os.path.join(path, "opensim-cloud.svg")
+      if os.path.isfile(possible_path):
+        cloud_path = possible_path
+        break
+
+    if cloud_path is None:
+      logging.error("could not find cloud svg!")
+      raise Exception
+
+    self._cloud = rsvg.Handle(cloud_path)
+
+    self.line_width = line_width
 
     # keep track of inflows and outflows, for use in engine
     self.inflows = []
     self.outflows = []
 
-    self._icon = gtk.Image()
-    self._icon = self._icon.set_from_file('opensim-cloud')
-
     self.__needs_resize_calc = True
-    self.force_redraw()
+
+    if focus:
+      self.get_canvas().grab_focus(self)
+      self.get_canvas().grab_highlight(self)
 
 
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(self.x, 
-                 self.y,
-                 self.x + self.width, 
-                 self.y + self.height)
+    cr.rectangle(self.x - self.line_width/2.0, 
+                 self.y - self.line_width/2.0,
+                 self.width + self.line_width/2.0, 
+                 self.height + self.line_width/2.0)
 
 
   def center(self):
-    return (self.x, self.y)
+    return (int(self.x + self.width/2), int(self.y + self.height/2))
 
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       
-      self.bounds_x1 = float(self.x)
-      self.bounds_y1 = float(self.y)
-      self.bounds_x2 = float(self.x + self.width)
-      self.bounds_y2 = float(self.y + self.height)
+      self.bounds_x1 = self.x - self.line_width/2.0 
+      self.bounds_y1 = self.y - self.line_width/2.0
+      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
+      self.bounds_y2 = self.y + self.height + self.line_width/2.0
 
       self.__needs_resize_calc = False
       self.force_redraw()
@@ -87,20 +107,13 @@ class CloudItem(SimItem):
 
   def do_simple_paint(self, cr, bounds):
 
-    logging.debug("DRAWING START")
     cr.save()
-    center = self.center()
-    cr.translate(center[0]-self.width()/2, center[1]-self.height/2)
-    
-    pcctx = pangocairo.CairoContext(cr)
-    gcr = gtk.gdk.CairoContext(gccxt)
 
-    pixbuf = self._icon.get_pixbuf()
-    gcr.set_source_pixbuf(pixbuf, 0, 0)
-    gcr.paint()
+    cr.translate(self.x, self.y)
+    
+    self._cloud.render_cairo(cr)
 
     cr.restore()
-    logging.debug("DRAWING END")
 
 
   def xml_representation(self):
@@ -118,7 +131,23 @@ class CloudItem(SimItem):
 
 
   def on_key_press(self, item, target, event):
-    return False
+    key_name = gtk.gdk.keyval_name(event.keyval)
+
+    if key_name in self.enter_key:
+      self.emit("highlight_out_event", self)
+    elif key_name in self.delete_key:
+      self._display_name.backspace()
+    elif key_name in self.escape_key:
+      print("escape key!")
+    else:
+      # add key to name buffer
+      self._display_name.add(event.string)
+
+    self.__needs_resize_calc = True
+    self.force_redraw()
+
+    # return true to stop propogation
+    return True
 
 
   def on_button_press(self, item, target, event):
@@ -190,6 +219,9 @@ class CloudItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
+    self.get_canvas().update_name(self._display_name.string, 
+                                  self, new=self._new)
+
     self._new = False
 
     return False
@@ -197,3 +229,4 @@ class CloudItem(SimItem):
 
 
 gobject.type_register(CloudItem)
+
