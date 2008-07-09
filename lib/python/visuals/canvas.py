@@ -180,6 +180,10 @@ class Canvas (gtk.ScrolledWindow):
                                       new_var.on_motion_notify)
           self.display_vars.append(new_var)
 
+        else:
+          #okay, we're finishing the line here.
+          pass
+
       else:
         self.grab_focus()
         self.goocanvas.drop_highlight()
