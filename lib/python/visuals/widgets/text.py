@@ -24,35 +24,56 @@
 #
 #===-----------------------------------------------------------------------===#
 
+import cairo, pango, pangocairo
+import logging
+
 class TextInfo():
 
   # this is the DPI on my Hardy system
   __base_dpi = 96.0
 
-  def __init__(self, string, dpi=96, font_face='sans-serif', \
+  def __init__(self, string, font_face='Arial,sans', wrap_width=120,
                font_size=14, placeholder_text=False, cr=None):
     self.string = string
     self.font_face = font_face
-    self._dpi = dpi
-    self.scale = self._dpi/self.__base_dpi
-    self.font_size = font_size * self.scale
-    self.font_size_unscaled = font_size
+    self.font_size = font_size
+    self.wrap_width = wrap_width
     self.placeholder = placeholder_text
+
+    self.font_description = "%s normal %d" % (self.font_face, self.font_size)
 
 
   def update_extents(self, cr):
     cr.save()
-    cr.select_font_face(self.font_face)
-    cr.set_font_size(self.font_size)
-    (x, y, width, height, dx, dy) = cr.text_extents(self.string)
-    (ascent, descent, height, x_adv, y_adv) = cr.font_extents()
+    layout = self.create_layout(cr)
+
+    self.width, self.height = layout.get_pixel_size()
+    logging.debug("w:%f h:%f" % (self.width, self.height))
     cr.restore()
 
-    self.x_off = x
-    self.y_off = y
-    # dx seems to leave the proper amount of padding at the end of the line?
-    self.width = dx
-    self.height = ascent - descent
+
+  def create_layout(self, cr):
+    pcctx = pangocairo.CairoContext(cr)
+    font_map = pangocairo.cairo_font_map_get_default()
+    pcr = font_map.create_context()
+    p_layout = pango.Layout(pcr)
+    p_layout.set_wrap(pango.WRAP_WORD)
+    p_layout.set_width(int(120*pango.SCALE))
+    font = pango.FontDescription(self.font_description)
+    p_layout.set_font_description(font)
+    p_layout.set_text(self.string)
+    return p_layout
+
+
+  def show_text(self, cr):
+    cr.save()
+    layout = self.create_layout(cr)
+
+    cr.translate(-int(self.wrap_width/2), -int(self.height/2))
+    pc = pangocairo.CairoContext(cr)
+    pc.show_layout(layout)
+
+    cr.restore()
 
 
   def add(self, string):
@@ -67,5 +88,5 @@ class TextInfo():
 
 
   def new_width(self, requested_width):
-    pass
+    self.wrap_width = requested_width
 

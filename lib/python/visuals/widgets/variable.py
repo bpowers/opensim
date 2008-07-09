@@ -28,6 +28,7 @@ import gobject
 import gtk
 import goocanvas
 import math
+import cairo
 
 import logging
 
@@ -58,11 +59,9 @@ class VariableItem(SimItem):
 
     if name is not None:
       self._display_name = TextInfo(name, \
-                                    dpi=self.get_canvas().dpi, \
                                     placeholder_text=False)
     else:
       self._display_name = TextInfo("(enter name)", \
-                                    dpi=self.get_canvas().dpi, \
                                     placeholder_text=True)
 
     if focus:
@@ -78,6 +77,10 @@ class VariableItem(SimItem):
                  self.y - self.line_width/2.0,
                  self.width + self.line_width/2.0, 
                  self.height + self.line_width/2.0)
+
+
+  def center(self):
+    return (int(self.x + self.width/2), int(self.y + self.height/2))
 
 
   def ensure_size(self, cr):
@@ -116,11 +119,10 @@ class VariableItem(SimItem):
     
     self.type_icon(cr)
 
-    cr.translate(self.x + self.icon_size + self.padding, self.y + self.height/2.0 + \
-                                      self._display_name.height/2.0)
-    cr.select_font_face(self._display_name.font_face)
-    cr.set_font_size(self._display_name.font_size)
-    cr.show_text(self._display_name.string)
+    center = self.center()
+    cr.translate(int(center[0] + self.icon_size/2 + self.padding), center[1])
+    self._display_name.show_text(cr)
+
     cr.restore()
 
 
