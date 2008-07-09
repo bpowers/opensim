@@ -37,7 +37,7 @@ from item import SimItem
 
 class StockItem(SimItem):
 
-  def __init__(self, x, y, width=120, height=80, name=None,
+  def __init__(self, x, y, width=140, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
     super(StockItem, self).__init__(**kwargs)
 

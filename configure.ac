@@ -105,7 +105,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
                  lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
-                 lib/python/visuals/Makefile \
+                 lib/python/visuals/Makefile icons/Makefile  \
                  lib/python/visuals/widgets/Makefile \
                  lib/python/engine/Makefile share/Makefile],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h.in])

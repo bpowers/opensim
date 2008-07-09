@@ -88,11 +88,6 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_x = 0
     self.drag_y = 0
 
-    icon_theme = gtk.icon_theme_get_default().get_search_path()
-    logging.debug("gtk search paths:")
-    for i, path in enumerate(icon_theme):
-      logging.debug("  %d: %s" % (i, path))
-
     self.goocanvas = SimGoo()
     self.engine = self.goocanvas.engine 
     self.goocanvas.sim = self

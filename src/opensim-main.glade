@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Tue Jul  1 16:54:31 2008 -->
+<!--Generated with glade3 3.4.4 on Wed Jul  9 06:05:03 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="main_window">
     <property name="width_request">800</property>
@@ -156,15 +156,6 @@
           <widget class="GtkToolbar" id="main_tool_bar">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkToolButton" id="toolbutton12">
-                <property name="visible">True</property>
-                <property name="stock_id">gtk-new</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkToolButton" id="toolbutton1">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-open</property>
@@ -221,29 +212,11 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToggleToolButton" id="but_variable">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">var</property>
-                <signal name="toggled" handler="on_drawing_tool_toggled" object="variable"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkToggleToolButton" id="but_influence">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">infl</property>
-                <signal name="toggled" handler="on_drawing_tool_toggled" object="influence"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkToggleToolButton" id="but_stock">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">stock</property>
+                <property name="tooltip" translatable="yes">Draw Stock</property>
+                <property name="label" translatable="yes">Stock</property>
+                <property name="icon_name">opensim-stock</property>
                 <signal name="toggled" handler="on_drawing_tool_toggled" object="stock"/>
               </widget>
               <packing>
@@ -253,8 +226,34 @@
             <child>
               <widget class="GtkToggleToolButton" id="but_flow">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">flow</property>
+                <property name="tooltip" translatable="yes">Draw Flow</property>
+                <property name="label" translatable="yes">Flow</property>
+                <property name="icon_name">opensim-flow</property>
                 <signal name="toggled" handler="on_drawing_tool_toggled" object="flow"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToggleToolButton" id="but_variable">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Draw Variable</property>
+                <property name="label" translatable="yes">Var</property>
+                <property name="icon_name">opensim-var</property>
+                <signal name="toggled" handler="on_drawing_tool_toggled" object="variable"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToggleToolButton" id="but_influence">
+                <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Draw Influence</property>
+                <property name="label" translatable="yes">Infl</property>
+                <property name="icon_name">opensim-infl</property>
+                <signal name="toggled" handler="on_drawing_tool_toggled" object="influence"/>
               </widget>
               <packing>
                 <property name="expand">False</property>

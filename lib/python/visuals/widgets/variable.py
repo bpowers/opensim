@@ -39,10 +39,7 @@ class VariableItem(SimItem):
 
   icon_size = 55
 
-  ## Note to read or modify the bounding box of ItemSimple use
-  ## self.bounds_x1,x2,y1,y2
-
-  def __init__(self, x, y, width=180, height=80, name=None,
+  def __init__(self, x, y, width=200, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
     super(VariableItem, self).__init__(**kwargs)
     self.x = int(x - width/2)
