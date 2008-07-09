@@ -135,6 +135,7 @@ class Canvas (gtk.ScrolledWindow):
       self.goocanvas.override = True
     else:
       self.goocanvas.override = False
+
     if self.goocanvas.highlighted:
       self.goocanvas.highlighted.emit("highlight_out_event", self)
 

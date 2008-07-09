@@ -84,8 +84,6 @@ class OpenSimGTK(gobject.GObject):
       logging.error("no data directory found.")
       raise Exception
 
-    self
-
     #Set and load the Glade file
     self.gladefile = os.path.join(self.file_path, "opensim-main.glade")
     self.wTree = gtk.glade.XML(self.gladefile) 

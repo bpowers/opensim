@@ -143,6 +143,7 @@ class IndependentItem(SimItem):
     self.get_canvas().update_name(self._display_name.string, 
                                   self, new=self._new)
 
+    self.get_canvas().drop_highlight()
     self._new = False
 
     return False
