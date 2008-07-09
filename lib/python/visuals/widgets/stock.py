@@ -214,6 +214,8 @@ class StockItem(SimItem):
       new_y = event.y
       item.translate(new_x - self.drag_x, new_y - self.drag_y)
       return True
+    canvas = self.get_canvas()
+    event.x, event.y = canvas.convert_from_item_space(self, event.x, event.y)
     return False
 
 
