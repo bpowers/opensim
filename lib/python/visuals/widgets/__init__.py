@@ -27,3 +27,4 @@ from stock import StockItem
 from text import TextInfo
 from variable import VariableItem
 from flow import FlowItem
+from cloud import CloudItem
