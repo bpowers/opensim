@@ -29,12 +29,14 @@ import cairo, pango, pangocairo
 class TextInfo():
 
   def __init__(self, string, font_face='Arial,sans', wrap_width=120,
-               font_size=14, placeholder_text=False, cr=None):
+               font_size=14, align=pango.ALIGN_CENTER, 
+               placeholder_text=False, cr=None):
     self.string = string
     self.font_face = font_face
     self.font_size = font_size
     self.wrap_width = wrap_width
     self.placeholder = placeholder_text
+    self.align = align
 
     self.font_description = "%s normal %d" % (self.font_face, self.font_size)
 
@@ -57,6 +59,7 @@ class TextInfo():
     p_layout.set_width(int(self.wrap_width*pango.SCALE))
     font = pango.FontDescription(self.font_description)
     p_layout.set_font_description(font)
+    p_layout.set_alignment(self.align)
     p_layout.set_text(self.string)
     return p_layout
 

@@ -28,7 +28,7 @@ import gobject
 import gtk
 import goocanvas
 import math
-import cairo
+import cairo, pango
 
 import logging
 
@@ -58,9 +58,11 @@ class VariableItem(SimItem):
 
     if name is not None:
       self._display_name = TextInfo(name, wrap_width=text_width, 
+                                    align=pango.ALIGN_LEFT, 
                                     placeholder_text=False)
     else:
       self._display_name = TextInfo("(enter name)", wrap_width=text_width, 
+                                    align=pango.ALIGN_LEFT, 
                                     placeholder_text=True)
 
     if focus:
