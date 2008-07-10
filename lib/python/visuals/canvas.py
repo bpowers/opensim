@@ -180,6 +180,7 @@ class Canvas (gtk.ScrolledWindow):
                                      parent=root, can_focus=True)
           self.line.cb_id = root.connect("motion_notify_event", 
                                       new_var.on_motion_notify)
+          self.line.line = new_var
           self.display_vars.append(new_var)
 
         else:

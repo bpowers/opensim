@@ -77,6 +77,7 @@ class LineControl:
     # motion callback to it.  When we're done moving the line, 
     # detach the callback.  keep track of the callback id here.
     self.cb_id = None
+    self.line = None
 
   
 
