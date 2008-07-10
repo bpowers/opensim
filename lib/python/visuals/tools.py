@@ -30,8 +30,10 @@ pygtk.require("2.0")
 
 import gtk
 from sugar.graphics.toggletoolbutton import ToggleToolButton
+import logging
 
 from constants import *
+import widgets
 
 
 class ModelToolbar(gtk.Toolbar):
@@ -86,10 +88,37 @@ class LineControl:
 
 
   def cleanup(self, item):
-    if item is self.line:
-      if self.cb_id and self._canvas:
-        self._canvas.get_root_item().disconnect(self.cb_id)
-        self.cb_id = None
-      self.line = None
+    if item is not self.line:
+      return
+
+    logging.debug("LineControl: cleaning up line junk.")
+
+    if self.cb_id and self._canvas:
+      logging.debug("LineControl: disconnecting callback")
+      self._canvas.goocanvas.get_root_item().disconnect(self.cb_id)
+      self.cb_id = None
+    self.line = None
+
+
+  def new_flow(self, flow_from):
+    if not flow_from:
+      logging.error("LineControl: no widget as source.")
+
+    root = self._canvas.goocanvas.get_root_item()
+
+    new_var = widgets.FlowItem(flow_from=flow_from,
+                               parent=root, can_focus=True)
+    self.cb_id = root.connect("motion_notify_event", 
+                                   new_var.on_motion_notify)
+    self.line = new_var
+    self._canvas.display_vars.append(new_var)
+
   
+  def end_flow(self, flow_to):
+    if not self.cb_id or not self._canvas:
+      logging.error("LineControl: something is screwey finishing line.")
+    
+    self.line.set_flow_to(flow_to)
+
+    self.cleanup(self.line)
 

@@ -51,7 +51,6 @@ class SimGoo(goocanvas.Canvas):
     # motion callback to it.  When we're done moving the line, 
     # detach the callback.  keep track of the callback id here.
     self.line = line_control
-    self.line.set_canvas(self)
   
 
   def grab_highlight(self, widget):
@@ -100,6 +99,8 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_y = 0
 
     self.line = tools.LineControl()
+    self.line.set_canvas(self)
+
     self.goocanvas = SimGoo(self.line)
     self.engine = self.goocanvas.engine 
     self.goocanvas.sim = self
@@ -162,7 +163,6 @@ class Canvas (gtk.ScrolledWindow):
         self.display_vars.append(new_var)
 
       elif self.active_tool is sim.FLOW:
-        logging.debug("background click for Flow")
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
 
         if self.line.cb_id is None:
@@ -171,23 +171,33 @@ class Canvas (gtk.ScrolledWindow):
             return True
           elif not widget:
             # create a cloud if they clicked on the background for a flow 
-            logging.debug("creating a cloud here")
+            logging.debug("creating a cloud")
             new_var = widgets.CloudItem(event.x, event.y, parent=root)
             self.display_vars.append(new_var)
             widget = new_var
         
           logging.debug("starting new flow")
-          new_var = widgets.FlowItem(flow_from=widget,
-                                     parent=root, can_focus=True)
-          self.line.cb_id = root.connect("motion_notify_event", 
-                                      new_var.on_motion_notify)
-          self.line.line = new_var
-          self.display_vars.append(new_var)
+          self.line.new_flow(widget)
 
         else:
           #okay, we're finishing the line here.
+          if widget is not None and type(widget) is not widgets.StockItem:
+            # if we landed on anything but a stock, break
+            return True
+          elif not widget:
+            # don't allow flows between 2 clouds
+            if type(self.line.line.flow_from) is widgets.CloudItem:
+              self.goocanvas.remove_item(self.line.line)
+              return True
+
+            # create a cloud if they clicked on the background for a flow 
+            logging.debug("creating a cloud")
+            new_var = widgets.CloudItem(event.x, event.y, parent=root)
+            self.display_vars.append(new_var)
+            widget = new_var
           
-          pass
+          logging.debug("ending new flow")
+          self.line.end_flow(widget)
 
       else:
         self.grab_focus()

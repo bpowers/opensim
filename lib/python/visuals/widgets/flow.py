@@ -66,7 +66,7 @@ class FlowItem(SimItem):
       self._display_name = TextInfo(name, 
                                     placeholder_text=False)
     else:
-      self._display_name = TextInfo("(enter name)", 
+      self._display_name = TextInfo("(new flow)", 
                                     placeholder_text=True)
 
     if focus:
@@ -78,7 +78,7 @@ class FlowItem(SimItem):
     # get rid of clouds
     if self.flow_from and type(self.flow_from) is CloudItem:
         self.get_canvas().remove_item(self.flow_from)
-    if self.flow_to and type(self.flow_from) is CloudItem:
+    if self.flow_to and type(self.flow_to) is CloudItem:
         self.get_canvas().remove_item(self.flow_to)
     super(FlowItem, self).remove()
 
@@ -124,6 +124,10 @@ class FlowItem(SimItem):
     #cr.show_text(self._display_name.string)
     #cr.restore()
 
+
+  def set_flow_to(self, flow_to):
+    self.flow_to = flow_to
+    self.x2, self.y2 = self.flow_to.center()
 
   def xml_representation(self):
     xml_string = '\
