@@ -33,6 +33,8 @@ import logging
 
 from text import TextInfo
 from item import SimItem
+from stock import StockItem
+from cloud import CloudItem
 
 
 class FlowItem(SimItem):
@@ -54,6 +56,7 @@ class FlowItem(SimItem):
 
     # keep track of where we're coming from, even if its a cloud.
     self.flow_from = flow_from
+    self.flow_to = None
 
     self._new = True
 
@@ -69,6 +72,15 @@ class FlowItem(SimItem):
     if focus:
       self.get_canvas().grab_focus(self)
       self.get_canvas().grab_highlight(self)
+
+
+  def remove(self):
+    # get rid of clouds
+    if self.flow_from and type(self.flow_from) is CloudItem:
+        self.get_canvas().remove_item(self.flow_from)
+    if self.flow_to and type(self.flow_from) is CloudItem:
+        self.get_canvas().remove_item(self.flow_to)
+    super(FlowItem, self).remove()
 
 
   def do_simple_create_path(self, cr):

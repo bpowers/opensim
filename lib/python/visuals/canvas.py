@@ -51,6 +51,7 @@ class SimGoo(goocanvas.Canvas):
     # motion callback to it.  When we're done moving the line, 
     # detach the callback.  keep track of the callback id here.
     self.line = line_control
+    self.line.set_canvas(self)
   
 
   def grab_highlight(self, widget):
@@ -80,11 +81,11 @@ class SimGoo(goocanvas.Canvas):
     item.remove()
     self.highlighted = None
 
-    if self.line.cb_id:
-      self.get_root_item().disconnect(self.line.cb_id)
-      self.line.cb_id = None
-    
-    
+    # give the LineControl instance the variable we're removing.
+    # if we're removing the line currently being made, then 
+    # reset LineControl
+    self.line.cleanup(item)
+
 
 
 class Canvas (gtk.ScrolledWindow):

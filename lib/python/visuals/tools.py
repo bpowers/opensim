@@ -78,6 +78,18 @@ class LineControl:
     # detach the callback.  keep track of the callback id here.
     self.cb_id = None
     self.line = None
+    self._canvas = None
 
+
+  def set_canvas(self, canvas):
+    self._canvas = canvas
+
+
+  def cleanup(self, item):
+    if item is self.line:
+      if self.cb_id and self._canvas:
+        self._canvas.get_root_item().disconnect(self.cb_id)
+        self.cb_id = None
+      self.line = None
   
 

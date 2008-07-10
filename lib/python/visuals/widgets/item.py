@@ -78,6 +78,10 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     raise NotImplementedError
 
 
+  def remove(self):
+    super(SimItem, self).remove()
+
+
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
     if ((x < self.x) or (x > self.x + self.width)) or \
        ((y < self.y) or (y > self.y + self.height)):

@@ -73,6 +73,10 @@ class CloudItem(SimItem):
     self.__needs_resize_calc = True
 
 
+  def name(self):
+    return "simple cloud"
+
+
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
