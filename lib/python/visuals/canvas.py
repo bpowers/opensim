@@ -32,12 +32,13 @@ import constants as sim
 import widgets
 import libxml2
 from opensim.engine.simulator import Simulator
+import tools
 
 
 import logging
 
 class SimGoo(goocanvas.Canvas):
-  def __init__(self, **kwargs):
+  def __init__(self, line_control=tools.LineControl(), **kwargs):
     super(SimGoo, self).__init__(**kwargs)
     self.highlighted = None
     self.engine = Simulator()
@@ -49,7 +50,7 @@ class SimGoo(goocanvas.Canvas):
     # if we've got a line we're making, we want to attach the
     # motion callback to it.  When we're done moving the line, 
     # detach the callback.  keep track of the callback id here.
-    self.line_id = None
+    self.line = line_control
   
 
   def grab_highlight(self, widget):
@@ -79,9 +80,9 @@ class SimGoo(goocanvas.Canvas):
     item.remove()
     self.highlighted = None
 
-    if self.line_id:
-      self.get_root_item().disconnect(self.line_id)
-      self.line_id = None
+    if self.line.cb_id:
+      self.get_root_item().disconnect(self.line.cb_id)
+      self.line.cb_id = None
     
     
 
@@ -97,7 +98,8 @@ class Canvas (gtk.ScrolledWindow):
     self.drag_x = 0
     self.drag_y = 0
 
-    self.goocanvas = SimGoo()
+    self.line = tools.LineControl()
+    self.goocanvas = SimGoo(self.line)
     self.engine = self.goocanvas.engine 
     self.goocanvas.sim = self
     self.display_vars = []
@@ -162,7 +164,7 @@ class Canvas (gtk.ScrolledWindow):
         logging.debug("background click for Flow")
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
 
-        if self.goocanvas.line_id is None:
+        if self.line.cb_id is None:
           if widget is not None and type(widget) is not widgets.StockItem:
             # if we landed on anything but a stock, break
             return True
@@ -176,12 +178,13 @@ class Canvas (gtk.ScrolledWindow):
           logging.debug("starting new flow")
           new_var = widgets.FlowItem(flow_from=widget,
                                      parent=root, can_focus=True)
-          self.goocanvas.line_id = root.connect("motion_notify_event", 
+          self.line.cb_id = root.connect("motion_notify_event", 
                                       new_var.on_motion_notify)
           self.display_vars.append(new_var)
 
         else:
           #okay, we're finishing the line here.
+          
           pass
 
       else:

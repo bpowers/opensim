@@ -66,3 +66,17 @@ class ModelToolbar(gtk.Toolbar):
     self.influence.type = INFLUENCE
 
 
+
+class LineControl:
+  '''
+  This class keeps track of things related to the process of
+  adding new lines to the canvas.
+  '''
+  def __init__(self):
+    # if we've got a line we're making, we want to attach the
+    # motion callback to it.  When we're done moving the line, 
+    # detach the callback.  keep track of the callback id here.
+    self.cb_id = None
+
+  
+
