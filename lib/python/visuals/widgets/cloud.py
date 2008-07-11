@@ -87,6 +87,12 @@ class CloudItem(SimItem):
   def center(self):
     return (int(self.x + self.width/2), int(self.y + self.height/2))
 
+  def abs_center(self):
+    if self.__needs_resize_calc:
+      return self.center()
+    return (int(self.bounds_x1 + self.width/2), 
+            int(self.bounds_y2 - self.height/2))
+
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
@@ -103,7 +109,7 @@ class CloudItem(SimItem):
   def do_simple_paint(self, cr, bounds):
 
     cr.save()
-
+    self.ensure_size(cr)
     cr.translate(self.x, self.y)
     self._cloud.render_cairo(cr)
 
@@ -165,6 +171,7 @@ class CloudItem(SimItem):
       new_x = event.x
       new_y = event.y
       item.translate(new_x - self.drag_x, new_y - self.drag_y)
+      self.emit("item_moved_event", self)
       return True
     return False
 

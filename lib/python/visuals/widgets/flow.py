@@ -43,7 +43,7 @@ class FlowItem(SimItem):
                dragging=True, focus=True, line_width=3.5, **kwargs):
     super(FlowItem, self).__init__(**kwargs)
 
-    start_coord = flow_from.center()  
+    start_coord = flow_from.abs_center()  
     self.x1 = start_coord[0]
     self.y1 = start_coord[1]
 
@@ -76,10 +76,17 @@ class FlowItem(SimItem):
 
   def remove(self):
     # get rid of clouds
-    if self.flow_from and type(self.flow_from) is CloudItem:
+    if self.flow_from:
+      self.flow_from.disconnect(self.__start_cb)
+      if type(self.flow_from) is CloudItem:
         self.get_canvas().remove_item(self.flow_from)
-    if self.flow_to and type(self.flow_to) is CloudItem:
+
+    if self.flow_to:
+      self.flow_to.disconnect(self.__end_cb)
+      if type(self.flow_to) is CloudItem:
         self.get_canvas().remove_item(self.flow_to)
+
+    
     super(FlowItem, self).remove()
 
 
@@ -127,7 +134,32 @@ class FlowItem(SimItem):
 
   def set_flow_to(self, flow_to):
     self.flow_to = flow_to
-    self.x2, self.y2 = self.flow_to.center()
+    self.x2, self.y2 = self.flow_to.abs_center()
+    self._new = False
+
+    #now make sure we update our endpoints when the targets move
+    self.__start_cb = self.flow_from.connect("item_moved_event", 
+                                             self.update_point)
+
+    #now make sure we update our endpoints when the targets move
+    self.__end_cb = self.flow_to.connect("item_moved_event", 
+                                         self.update_point)
+
+    self.__needs_resize_calc = True
+    self.force_redraw()
+
+
+  def update_point(self, item, target):
+    if item is self.flow_from:
+      #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
+      self.x1, self.y1 = self.flow_from.abs_center()
+    else:
+      #logging.debug("down!!!")
+      self.x2, self.y2 = self.flow_to.abs_center()
+
+    self.__needs_resize_calc = True
+    self.force_redraw()
+
 
   def xml_representation(self):
     xml_string = '\

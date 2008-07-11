@@ -85,6 +85,10 @@ class StockItem(SimItem):
   def center(self):
     return (int(self.x + self.width/2), int(self.y + self.height/2))
 
+  def abs_center(self):
+    return (int(self.bounds_x1 + self.width/2), 
+            int(self.bounds_y2 - self.height/2))
+
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
@@ -213,6 +217,7 @@ class StockItem(SimItem):
       new_x = event.x
       new_y = event.y
       item.translate(new_x - self.drag_x, new_y - self.drag_y)
+      self.emit("item_moved_event", self)
       return True
     canvas = self.get_canvas()
     event.x, event.y = canvas.convert_from_item_space(self, event.x, event.y)
@@ -249,9 +254,6 @@ class StockItem(SimItem):
     self._new = False
 
     return False
-
-
-  
 
 
 

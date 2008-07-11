@@ -40,7 +40,10 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
                                           (gobject.TYPE_OBJECT,)),
                       highlight_out_event=(gobject.SIGNAL_RUN_FIRST,
                                            gobject.TYPE_NONE,
-                                           (gobject.TYPE_OBJECT,)))
+                                           (gobject.TYPE_OBJECT,)),
+                      item_moved_event=(gobject.SIGNAL_RUN_FIRST,
+                                        gobject.TYPE_NONE,
+                                        (gobject.TYPE_OBJECT,)))
 
 
   # space between the bounding box and the text

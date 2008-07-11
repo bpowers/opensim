@@ -110,6 +110,8 @@ class LineControl:
                                parent=root, can_focus=True)
     self.cb_id = root.connect("motion_notify_event", 
                                    new_var.on_motion_notify)
+
+    new_var.lower(None)
     self.line = new_var
     self._canvas.display_vars.append(new_var)
 
