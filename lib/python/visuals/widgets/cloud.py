@@ -135,7 +135,10 @@ class CloudItem(SimItem):
 
     if canvas.override:
       # if we're in the process of drawing a line, just 
-      # propogate the signal.
+      # propogate the signal.  first fix the coordinates
+      canvas = self.get_canvas()
+      event.x, event.y = canvas.convert_from_item_space(self, 
+                                                        event.x, event.y)
       return False
 
     canvas.grab_focus(item)
