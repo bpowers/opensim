@@ -30,6 +30,7 @@
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
 #include "../AST/General.h"
+#include "../AST/LookupAST.h"
 
 #include <cstdlib>
 using std::string;
@@ -215,7 +216,19 @@ OpenSim::AS3PrintModule::visit(OpenSim::UnaryExprAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
+  const std::vector< std::pair<double, double> > table = node->Table();
+  
+  fprintf(simout, "[");
+  
+  for (int i=0; i<table.size(); i++)
+  {
+    fprintf(simout, "(%f, %f)", table[i].first, table[i].second);
+    
+    if (i<table.size()-1)
+      fprintf(simout, ", ");
+  }
+  
+  fprintf(simout, "]");
   
   return 0;
 }
@@ -225,7 +238,9 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for LookupRefAST\n");
+  fprintf(simout, "sim_lookup(%s, ", node->TableName().c_str());
+  node->ref->Codegen(this);
+  fprintf(simout, ")");
   
   return 0;
 }
@@ -235,7 +250,28 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::FunctionRefAST *node)
 {
-  fprintf(stderr, "Warning: visit unimplemented for FunctionRefAST\n");
+  if (node->FunctionName() == "MAX")
+  {
+    const std::vector<ExprAST *> args = node->Args();
+    
+    if (args.size() != 2)
+    {
+      fprintf(stderr, "Error: MAX function takes 2, not %d, arguments.\n", 
+              args.size());
+      return 0;
+    }
+    
+    fprintf(simout, "max(");
+    args[0]->Codegen(this);
+    fprintf(simout, ",");
+    args[1]->Codegen(this);
+    fprintf(simout, ")");
+    
+    return 0;
+  }
+  
+  fprintf(stderr, "Error: Unknown function '%s' referenced.\n", 
+          node->FunctionName().c_str());
   
   return 0;
 }
