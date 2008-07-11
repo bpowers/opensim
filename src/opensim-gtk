@@ -62,7 +62,9 @@ class OpenSimGTK(gobject.GObject):
   def __init__(self, **kwargs):
     super(OpenSimGTK, self).__init__(**kwargs)
 
+    # this is for the SAVE file, not the data directory
     self.file_path = None
+    self.data_path = None
 
     # http://standards.freedesktop.org/basedir-spec/basedir-spec-0.6.html
     share_paths = ('/usr/local/share/', '/usr/share/')
@@ -77,20 +79,20 @@ class OpenSimGTK(gobject.GObject):
     for i, path in enumerate(all_paths):
       path = os.path.join(path, "opensim")
       if os.path.exists(path):
-        self.file_path = path
+        self.data_path = path
         break
 
-    if self.file_path is None:
+    if self.data_path is None:
       logging.error("no data directory found.")
       raise Exception
 
     #Set and load the Glade file
-    self.gladefile = os.path.join(self.file_path, "opensim-main.glade")
+    self.gladefile = os.path.join(self.data_path, "opensim-main.glade")
     self.wTree = gtk.glade.XML(self.gladefile) 
 
     #Get the Main Window, and connect the "destroy" event
     self.window = self.wTree.get_widget("main_window")
-    self.window.set_icon_from_file(os.path.join(self.file_path, 
+    self.window.set_icon_from_file(os.path.join(self.data_path, 
                                    "model-icon.svg"))
     self.window.set_title('new simulation | Model')
 
@@ -128,11 +130,16 @@ class OpenSimGTK(gobject.GObject):
 
 
   def create_dialog(self, requested_title, requested_action):
+
+    save_or_open = gtk.STOCK_OPEN
+    if requested_action is gtk.FILE_CHOOSER_ACTION_SAVE:
+      save_or_open = gtk.STOCK_SAVE
+
     dialog = gtk.FileChooserDialog(title=requested_title,
                                    action=requested_action,
                                    buttons=(gtk.STOCK_CANCEL,
                                             gtk.RESPONSE_CANCEL,
-                                            gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+                                            save_or_open,gtk.RESPONSE_OK))
     dialog.set_default_response(gtk.RESPONSE_OK)
    
     filter = gtk.FileFilter()
