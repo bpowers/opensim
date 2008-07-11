@@ -1,4 +1,4 @@
 #/usr/bin/env sh
 
-opensim -t as3 examples/rabbit.osm -o examples/infection.as
+opensim -t as3 examples/rabbit.osm -o examples/test.as
 less examples/infection.as
