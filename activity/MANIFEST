@@ -17,7 +17,6 @@ site-packages/opensim/visuals/widgets/item.py
 site-packages/opensim/visuals/widgets/stock.py
 site-packages/opensim/visuals/widgets/text.py
 site-packages/opensim/visuals/widgets/variable.py
-site-packages/opensim/visuals/widgets/rate.py
 site-packages/opensim/visuals/widgets/flow.py
 site-packages/opensim/visuals/widgets/cloud.py
 site-packages/opensim/visuals/__init__.py
