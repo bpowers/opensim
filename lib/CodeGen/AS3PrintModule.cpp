@@ -73,25 +73,25 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
     Variable *v = v_ast->Data();
     
     // define constants at the top of the file
-    if (v->Type() == var_const)
+    if (v->Type() == var_const || v->Type() == var_lookup)
     {
-      string constant = v->Name() + " = ";
+      string constant = "      data[\"" + v->Name() + "\"] = [";
       fprintf(simout, constant.c_str());
       
       v_ast->AST()->Codegen(this);
       
-      fprintf(simout, "\n");
+      fprintf(simout, "]\n");
     }
     
     // define constants at the top of the file
     if (v->Type() == var_stock)
     {
-      string stock = v->Name() + " = ";
+      string stock = "      data[\"" + v->Name() + "\"] = [";
       fprintf(simout, stock.c_str());
       
       v_ast->Initial()->Codegen(this);
       
-      fprintf(simout, "\n");
+      fprintf(simout, "]\n");
     }
   }
   
@@ -114,7 +114,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::EulerAST *node)
   
   fprintf(simout, "for time in frange(OS_start, OS_end, OS_timestep):\n");
   
-  whitespace += "  ";
+  whitespace += "      ";
   string format_statement = "%f";
   string variable_list = "time";
   
@@ -222,7 +222,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
   
   for (int i=0; i<table.size(); i++)
   {
-    fprintf(simout, "(%f, %f)", table[i].first, table[i].second);
+    fprintf(simout, "[%f, %f]", table[i].first, table[i].second);
     
     if (i<table.size()-1)
       fprintf(simout, ", ");
@@ -238,7 +238,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(simout, "sim_lookup(%s, ", node->TableName().c_str());
+  fprintf(simout, "lookup(%s, ", node->TableName().c_str());
   node->ref->Codegen(this);
   fprintf(simout, ")");
   
@@ -261,7 +261,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::FunctionRefAST *node)
       return 0;
     }
     
-    fprintf(simout, "max(");
+    fprintf(simout, "Math.max(");
     args[0]->Codegen(this);
     fprintf(simout, ",");
     args[1]->Codegen(this);

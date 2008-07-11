@@ -9,9 +9,35 @@ package opensim
 
   public class OpenSim
   {
+    private var data:Array
+    private var curr_itr:Array
+    private var next_itr:Array
+
     public function OpenSim():
     {
+      data = new Array()
+      curr_itr = new Array()
+      next_itr = new Array()
       // initialization
+
+      data["OS_end"] = 50.000000
+      data["OS_savestep"] = 1.000000
+      data["OS_start"] = 0.000000
+      data["OS_timestep"] = 0.015625
+      data["average_fox_life"] = 4.000000
+      data["average_rabbit_life"] = 2.000000
+      data["carrying_capacity"] = 500.000000
+      data["effect_of_crowding_on_deaths_lookup"] = [[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]]
+      data["fox_birth_rate"] = 0.250000
+      data["fox_food_requirements"] = 25.000000
+      data["fox_mortality_lookup"] = [[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]]
+      data["fox_population"] = initial_fox_population
+      data["fox_rabbit_consumption_lookup"] = [[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]]
+      data["initial_fox_population"] = 30.000000
+      data["initial_rabbit_population"] = 500.000000
+      data["rabbit_birth_rate"] = 2.000000
+      data["rabbit_population"] = initial_rabbit_population
+
     }
 
 
@@ -54,6 +80,12 @@ package opensim
           return (index-table[i-1][0])*slope + table[i-1][1]
         }
       }
+    }
+
+
+    private function simulate(time_span:Number)
+    {
+      
     }
 
 
