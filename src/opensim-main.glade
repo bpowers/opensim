@@ -251,7 +251,7 @@
               <widget class="GtkToggleToolButton" id="but_influence">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Draw Influence</property>
-                <property name="label" translatable="yes">Inflow</property>
+                <property name="label" translatable="yes">Link</property>
                 <property name="icon_name">opensim-infl</property>
                 <signal name="toggled" handler="on_drawing_tool_toggled" object="influence"/>
               </widget>
