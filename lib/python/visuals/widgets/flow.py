@@ -40,7 +40,7 @@ from cloud import CloudItem
 class FlowItem(SimItem):
 
   def __init__(self, flow_from, name=None, 
-               dragging=True, focus=True, line_width=3.5, **kwargs):
+               dragging=True, focus=True, line_width=9, **kwargs):
     super(FlowItem, self).__init__(**kwargs)
 
     start_coord = flow_from.abs_center()  
@@ -85,9 +85,13 @@ class FlowItem(SimItem):
       self.flow_to.disconnect(self.__end_cb)
       if type(self.flow_to) is CloudItem:
         self.get_canvas().remove_item(self.flow_to)
-
     
     super(FlowItem, self).remove()
+
+
+  def center(self):
+    return (int(self.x1 + (self.x2 - self.x1)/2), 
+            int(self.y1 + (self.y2 - self.y1)/2))
 
 
   def do_simple_create_path(self, cr):
@@ -102,10 +106,28 @@ class FlowItem(SimItem):
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
-      self.bounds_x1 = min(self.x1, self.x2) - self.line_width 
-      self.bounds_y1 = min(self.y1, self.y2) - self.line_width
-      self.bounds_x2 = max(self.x1, self.x2) + self.line_width
-      self.bounds_y2 = max(self.y1, self.y2) + self.line_width
+      self.bounds_x1 = float(min(self.x1, self.x2) - self.line_width)
+      self.bounds_y1 = float(min(self.y1, self.y2) - self.line_width)
+      self.bounds_x2 = float(max(self.x1, self.x2) + self.line_width)
+      self.bounds_y2 = float(max(self.y1, self.y2) + self.line_width)
+
+      b_w = self.bounds_x2 - self.bounds_x1
+      b_h = self.bounds_y2 - self.bounds_y1
+      b_cx = self.bounds_x1 + b_w/2.0
+      b_cy = self.bounds_y1 + b_h/2.0
+
+      self._display_name.update_extents(cr)
+      t_w = self._display_name.width
+
+      bottom_extent = b_cy + self.padding + self.icon_size/2 \
+                      + self._display_name.height
+
+      self.bounds_x1 = float(min(self.bounds_x1, b_cx - t_w/2.0))
+      self.bounds_y1 = float(min(self.bounds_y1, b_cy - self.icon_size/2 \
+                                                 - self.padding))
+      self.bounds_x2 = float(max(self.bounds_x2, b_cx + t_w/2.0))
+      self.bounds_y2 = float(max(self.bounds_y2, bottom_extent))
+
       #self._display_name.update_extents(cr)
       self.__needs_resize_calc = False
       self.force_redraw()
@@ -121,15 +143,34 @@ class FlowItem(SimItem):
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
                       self.active_color[2])     
-    cr.set_line_cap  (cairo.LINE_CAP_ROUND)
+    # I think that this is a slight performance loss, so only do it
+    # when we can see the end (i.e. when we're drawing it)
+    if self._new:
+      cr.set_line_cap  (cairo.LINE_CAP_ROUND)
+    cr.stroke_preserve()
+    cr.set_line_width(self.line_width/3)
+    cr.set_source_rgb(1, 1, 1)
     cr.stroke()
 
     # print flow name
-    #cr.move_to(self.padding, self.height/2.0 + self._display_name.height/2.0)
-    #cr.select_font_face(self._display_name.font_face)
-    #cr.set_font_size(self._display_name.font_size)
-    #cr.show_text(self._display_name.string)
-    #cr.restore()
+    if not self._new:
+      center = self.center()
+      cr.move_to(center[0] + self.icon_size/2.0, center[1])
+      cr.arc(center[0], center[1], self.icon_size/2, 0, 2*math.pi)
+      cr.close_path()
+      cr.fill_preserve()
+      cr.set_source_rgb(self.active_color[0], \
+                        self.active_color[1], \
+                        self.active_color[2]) 
+      cr.stroke()
+
+      self._display_name.update_extents(cr)
+      y_offset = center[1] + self.padding + self._display_name.height/2.0 \
+                 + self.icon_size/2
+      cr.translate(center[0], y_offset)
+      self._display_name.show_text(cr)
+    
+    cr.restore()
 
 
   def set_flow_to(self, flow_to):
@@ -180,6 +221,10 @@ class FlowItem(SimItem):
 
 
   def on_key_press(self, item, target, event):
+    # don't allow input while we're creating the flow.
+    if self._new:
+      return False
+
     key_name = gtk.gdk.keyval_name(event.keyval)
 
     if key_name in self.enter_key:

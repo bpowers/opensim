@@ -37,8 +37,6 @@ from item import SimItem
 
 class VariableItem(SimItem):
 
-  icon_size = 55
-
   def __init__(self, x, y, width=200, height=80, name=None,
                focus=True, line_width=3.5, **kwargs):
     super(VariableItem, self).__init__(**kwargs)

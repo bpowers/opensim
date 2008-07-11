@@ -49,6 +49,8 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
   # space between the bounding box and the text
   padding = 4
 
+  icon_size = 55
+
   left_key = ['Left', 'KP_Left']
   right_key = ['Right', 'KP_Right']
   escape_key = ['Escape']

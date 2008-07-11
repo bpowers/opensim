@@ -26,15 +26,16 @@
 
 import cairo, pango, pangocairo
 
+
 class TextInfo():
 
-  def __init__(self, string, font_face='Arial,sans', wrap_width=120,
+  def __init__(self, string, font_face='Arial,sans', wrap_width=180,
                font_size=14, align=pango.ALIGN_CENTER, 
                placeholder_text=False, cr=None):
     self.string = string
     self.font_face = font_face
     self.font_size = font_size
-    self.wrap_width = wrap_width
+    self.width = wrap_width
     self.placeholder = placeholder_text
     self.align = align
 
@@ -56,7 +57,7 @@ class TextInfo():
     pcr = font_map.create_context()
     p_layout = pango.Layout(pcr)
     p_layout.set_wrap(pango.WRAP_WORD)
-    p_layout.set_width(int(self.wrap_width*pango.SCALE))
+    p_layout.set_width(int(self.width*pango.SCALE))
     font = pango.FontDescription(self.font_description)
     p_layout.set_font_description(font)
     p_layout.set_alignment(self.align)
@@ -68,7 +69,7 @@ class TextInfo():
     cr.save()
     layout = self.create_layout(cr)
 
-    cr.translate(-int(self.wrap_width/2), -int(self.height/2))
+    cr.translate(-int(self.width/2), -int(self.height/2))
     pc = pangocairo.CairoContext(cr)
     pc.show_layout(layout)
 
@@ -87,5 +88,5 @@ class TextInfo():
 
 
   def new_width(self, requested_width):
-    self.wrap_width = requested_width
+    self.width = requested_width
 
