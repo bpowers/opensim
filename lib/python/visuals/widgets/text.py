@@ -46,7 +46,7 @@ class TextInfo():
     cr.save()
 
     layout = self.create_layout(cr)
-    self.width, self.height = layout.get_pixel_size()
+    self.height = layout.get_pixel_size()[1]
 
     cr.restore()
 
