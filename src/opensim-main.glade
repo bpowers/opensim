@@ -239,7 +239,7 @@
               <widget class="GtkToggleToolButton" id="but_variable">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Draw Variable</property>
-                <property name="label" translatable="yes">Var</property>
+                <property name="label" translatable="yes">Aux</property>
                 <property name="icon_name">opensim-var</property>
                 <signal name="toggled" handler="on_drawing_tool_toggled" object="variable"/>
               </widget>
