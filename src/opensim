@@ -87,10 +87,10 @@ def main():
   for o, a in opts:
     if o in ("-v", "--version"):
       Version()
-      sys.exit()
+      sys.exit(0)
     elif o in ("-h", "--help"):
       Usage()
-      sys.exit()
+      sys.exit(0)
     elif o in ("-o", "--output"):
       output = a
     elif o in ("-t", "--target"):
@@ -123,6 +123,7 @@ def main():
     else:
       print("%s: invalid target language: %s." % (PROGRAM_NAME, target))
       print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
+      sys.exit(2)
 
   sim = Simulator(args[0])
   sim.set_output_type(new_walk)
