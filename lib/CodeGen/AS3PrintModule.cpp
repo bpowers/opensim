@@ -73,7 +73,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
     Variable *v = v_ast->Data();
     
     // define constants at the top of the file
-    if (v->Type() == var_const || v->Type() == var_lookup)
+    if (v->Type() == var_const)
     {
       string constant = "      data[\"" + v->Name() + "\"] = [";
       fprintf(simout, constant.c_str());
@@ -81,6 +81,17 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
       v_ast->AST()->Codegen(this);
       
       fprintf(simout, "]\n");
+    }
+    
+    // define lookups, but don't make them part of an array.
+    if (v->Type() == var_lookup)
+    {
+      string constant = "      data[\"" + v->Name() + "\"] = ";
+      fprintf(simout, constant.c_str());
+      
+      v_ast->AST()->Codegen(this);
+      
+      fprintf(simout, "\n");
     }
     
     // define constants at the top of the file
@@ -94,6 +105,8 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
       fprintf(simout, "]\n");
     }
   }
+
+  fprintf(simout, "      data[\"time\"] = [OS_start]\n");
   
   node->Integrator()->Codegen(this);
 

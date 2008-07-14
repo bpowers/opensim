@@ -29,17 +29,18 @@ package opensim
       data["average_fox_life"] = [4.000000]
       data["average_rabbit_life"] = [2.000000]
       data["carrying_capacity"] = [500.000000]
-      data["effect_of_crowding_on_deaths_lookup"] = [[[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]]]
+      data["effect_of_crowding_on_deaths_lookup"] = [[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]]
       data["fox_birth_rate"] = [0.250000]
       data["fox_food_requirements"] = [25.000000]
-      data["fox_mortality_lookup"] = [[[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]]]
+      data["fox_mortality_lookup"] = [[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]]
       data["fox_population"] = [initial_fox_population]
-      data["fox_rabbit_consumption_lookup"] = [[[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]]]
+      data["fox_rabbit_consumption_lookup"] = [[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]]
       data["initial_fox_population"] = [30.000000]
       data["initial_rabbit_population"] = [500.000000]
       data["rabbit_birth_rate"] = [2.000000]
       data["rabbit_population"] = [initial_rabbit_population]
-
+      data["time"] = [OS_start]
+      original_data = new Array(data)
     }
 
 
@@ -56,39 +57,14 @@ package opensim
     //  - save_step (must be multiple of time step)
 
 
-    // simple lookup table implementation
-    private function lookup(table:Number, index:Number):Number
-    {
-      if (table.length == 0) 
-        return 0
-
-      var end:Number = table.length - 1
-
-      // if the request is outside the min or max, then we return
-      // the nearest element of the array
-      if   (index < table[0][0])   return table[0][1]
-      elif (index > table[end][0]) return table[end][1]
-
-      for (i:Number = 0; i < table.length; i++)
-      {
-        x = table[i][0]
-        y = table[i][1]
-
-        if (index == x) return y
-        if (index < x)
-        {
-          // slope = deltaY/deltaX
-          slope = (y - table[i-1][1])/(x - table[i-1][0])
-          return (index-table[i-1][0])*slope + table[i-1][1]
-        }
-      }
-    }
 
 
     private function simulate(time_span:Number)
     {
       // this is where the math will go, simulating from the current time 
       // to current time + time_span
+      
+      
     }
 
 
@@ -162,13 +138,44 @@ package opensim
 
     public function getUnits(var_name:String):String
     {
-        return "";
+      // implement me please!
+      return "";
     }
 
 
     public function getDescription(var_name:String):String
     {
+      // implement me please!
       return "";
+    }
+    
+    
+    // simple lookup table implementation
+    private function lookup(table:Number, index:Number):Number
+    {
+      if (table.length == 0) 
+        return 0
+
+      var end:Number = table.length - 1
+
+      // if the request is outside the min or max, then we return
+      // the nearest element of the array
+      if   (index < table[0][0])   return table[0][1]
+      elif (index > table[end][0]) return table[end][1]
+
+      for (i:Number = 0; i < table.length; i++)
+      {
+        x = table[i][0]
+        y = table[i][1]
+
+        if (index == x) return y
+        if (index < x)
+        {
+          // slope = deltaY/deltaX
+          slope = (y - table[i-1][1])/(x - table[i-1][0])
+          return (index-table[i-1][0])*slope + table[i-1][1]
+        }
+      }
     }
   }
 }
