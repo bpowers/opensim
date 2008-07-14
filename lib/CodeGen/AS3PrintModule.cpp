@@ -163,7 +163,11 @@ OpenSim::AS3PrintModule::visit(OpenSim::VariableAST *node)
 {
   Variable *v = node->Data();
   
-  string message = whitespace + "data[\"" + v->Name() + "\"][i+1] = ";
+  string index = "[i]";
+  if (v->Type() == OpenSim::var_stock)
+    index = "[j]";
+
+  string message = whitespace + "data[\"" + v->Name() + "\"]" + index + " = ";
   fprintf(simout, message.c_str());
   
   node->AST()->Codegen(this);

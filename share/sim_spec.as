@@ -25,15 +25,16 @@ package opensim
     private var curr_itr:Array
     private var next_itr:Array
     private var i:int
+    private var do_save:Boolean
+    private var save_count:int
+    private var save_iterations:int
+    private var timestep:Number
 
     public function OpenSim():
     {
       data = new Array()
-      curr_itr = new Array()
-      next_itr = new Array()
       // initialization
 
-      i = 0
 
       // store all the initialization data as the first item in 
       // the data 'dictionary'
@@ -59,6 +60,9 @@ package opensim
       // keep track of the initialized data so that we can reset the 
       // simulation
       original_data = new Array(data)
+
+      // initialize simulation
+      Start()
     }
 
 
@@ -73,36 +77,64 @@ package opensim
 
       end_time = Math.min(data["OS_end"][0], cur_time + time_span);      
 
-      for (time = cur_time)
+      for (time = cur_time; time < end_time; time = time + timestep)
       {
-        data["rabbit_births"][i+1] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
-        data["rabbit_crowding"][i+1] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
-        data["fox_consumption_of_rabbits"][i+1] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup", data["rabbit_crowding"][i]))
-        data["rabbit_deaths"][i+1] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup", data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
-        data["fox_births"][i+1] = (data["fox_population"][i] * data["fox_birth_rate"][0])
-        data["fox_food_availability"][i+1] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
-        data["fox_deaths"][i+1] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup", data["fox_food_availability"][i]))
+        data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
+        data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
+        data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup", data["rabbit_crowding"][i]))
+        data["rabbit_deaths"][i] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup", data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
+        data["fox_births"][i] = (data["fox_population"][i] * data["fox_birth_rate"][0])
+        data["fox_food_availability"][i] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
+        data["fox_deaths"][i] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup", data["fox_food_availability"][i]))
+
+        var:int j = i
+        if (do_save)
+          j = i+1;
 
         //updating stocks
-        data["rabbit_population"][i+1] = (data["rabbit_population"][i] + ((data["rabbit_births"][i] - data["rabbit_deaths"][i]) * data["OS_timestep"][0]))
-        data["fox_population"][i+1] = (data["fox_population"][i] + ((data["fox_births"][i] - data["fox_deaths"][i]) * data["OS_timestep"][0]))
+        data["rabbit_population"][j] = (data["rabbit_population"][i] + ((data["rabbit_births"][i] - data["rabbit_deaths"][i]) * data["OS_timestep"][0]))
+        data["fox_population"][j] = (data["fox_population"][i] + ((data["fox_births"][i] - data["fox_deaths"][i]) * data["OS_timestep"][0]))
+        
+        // determining whether or not to save results next iteration
+        save_count = save_count + 1
+        if (save_count >= save_iterations || time + timestep > data["OS_end"][0])
+        {        
+          do_save = true
+          save_count = 0
+        }
+        else
+        {
+          do_save = false
+        }
       }
     }
 
 
+    // resets everything
     public function Start():Number
     {
+      data = new Array(original_data)
 
+      timestep = data["OS_timestep"][0]
+      do_save = true
+      
+      i = 0
+      save_count = 0
+      save_iterations = data["OS_savestep"][0] / data["OS_timestep"][0]
+
+      return 0
     }
 
 
-    // length of time to simulate, NOT     // of iterations.  if it doesn't match
+    // length of time to simulate, NOT # of iterations.  if it doesn't match
     // a multiple of time_step, it will be rounded down to the nearest one.  
     // If it is greater than the time left in the simulation, it will simulate
     // to the end and not beyond
     public function Continue(time:Number):Number
     {
+      simulate(time)
 
+      return 0
     }
 
 
@@ -110,7 +142,8 @@ package opensim
     // sure there is no active simulation, for example
     public function Finish():Number
     {
-
+      simulate(data["end_time"][0] - data["start_time"][0])
+      return 0
     }
 
 
@@ -118,14 +151,19 @@ package opensim
     // constants and lookup values to their initial values
     public function Reset():Number
     {
-
+      return Start()
     }
 
     // works on constants any time, but is only defined for other variables when 
-    // a model is bring simulated.
+    // a model is bring simulated, or when it is done simulating
     public function getValue(var_name:String):Number
     {
+      // constant
+      if (data[var_name].length == 1)
+        return data[var_name][0]
 
+      // not constant
+      return data[var_name][i]
     }
 
 
@@ -135,7 +173,7 @@ package opensim
     // current time
     public function setValue(var_name:String, var_value:Number):Number
     {
-
+      data[var_name][0] = var_value
     }
 
 
@@ -147,14 +185,18 @@ package opensim
     // value for a lookup table not indexed with respect to time.
     public function getData(var_name:String, sparse:Boolean=True):SimData
     {
-
+      // this should work for regular data, but not lookups
+      ret_val =  new SimData()
+      ret_val.index = data["time"]
+      ret_val.data = data[var_name]
+      return ret_val
     }
 
 
     // used to set lookup data only.
     public function setData(var_name:String, var_data:SimData):Number
     {
-
+      return -1
     }
 
 
