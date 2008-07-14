@@ -127,7 +127,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::EulerAST *node)
   
   fprintf(simout, "for time in frange(OS_start, OS_end, OS_timestep):\n");
   
-  whitespace += "      ";
+  whitespace += "        ";
   string format_statement = "%f";
   string variable_list = "time";
   

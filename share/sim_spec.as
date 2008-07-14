@@ -9,6 +9,18 @@ package opensim
 
   public class OpenSim
   {
+    // for all functions returning a Number (that isn't data you're 
+    // interested in), it will return 0 for normal operation, and 
+    // a negative number if it failed (corresponding to the error it
+    // encountered)
+
+    // 'built-in' variables:
+    //  - time
+    //  - start_time (OS_start)
+    //  - end_time (OS_end)
+    //  - time_step (OS_timestep)
+    //  - save_step (OS_savestep) (must be multiple of time step)
+
     private var data:Array
     private var curr_itr:Array
     private var next_itr:Array
@@ -40,31 +52,36 @@ package opensim
       data["rabbit_birth_rate"] = [2.000000]
       data["rabbit_population"] = [initial_rabbit_population]
       data["time"] = [OS_start]
+      
+      // keep track of the initialized data so that we can reset the 
+      // simulation
       original_data = new Array(data)
     }
-
-
-    // for all functions returning a Number (that isn't data you're 
-    // interested in), it will return 0 for normal operation, and 
-    // a negative number if it failed (corresponding to the error it
-    // encountered)
-
-    // 'built-in' variables:
-    //  - time
-    //  - start_time
-    //  - end_time
-    //  - time_step
-    //  - save_step (must be multiple of time step)
-
-
 
 
     private function simulate(time_span:Number)
     {
       // this is where the math will go, simulating from the current time 
       // to current time + time_span
+      cur_time = data["time"]
       
-      
+      for (time:Number = )
+      {
+        rabbit_births = (rabbit_population * rabbit_birth_rate)
+        rabbit_crowding = (rabbit_population / carrying_capacity)
+        fox_consumption_of_rabbits = ((fox_population * fox_food_requirements) * lookup(fox_rabbit_consumption_lookup, rabbit_crowding))
+        rabbit_deaths = Math.max(((rabbit_population / average_rabbit_life) * lookup(effect_of_crowding_on_deaths_lookup, rabbit_crowding)),fox_consumption_of_rabbits)
+        fox_births = (fox_population * fox_birth_rate)
+        fox_food_availability = ((fox_consumption_of_rabbits / fox_population) / fox_food_requirements)
+        fox_deaths = ((fox_population / average_fox_life) * lookup(fox_mortality_lookup, fox_food_availability))
+
+        #generally put print statements here
+        print('%f,%f,%f,%f,%f,%f,%f,%f,%f,%f' % (time, rabbit_births, rabbit_crowding, fox_consumption_of_rabbits, rabbit_deaths, rabbit_population, fox_births, fox_food_availability, fox_deaths, fox_population))
+
+        #updating stocks
+        rabbit_population = (rabbit_population + ((rabbit_births - rabbit_deaths) * OS_timestep))
+        fox_population = (fox_population + ((fox_births - fox_deaths) * OS_timestep))
+      }
     }
 
 
