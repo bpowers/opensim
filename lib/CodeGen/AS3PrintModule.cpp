@@ -106,7 +106,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
     }
   }
 
-  fprintf(simout, "      data[\"time\"] = [OS_start]\n");
+  fprintf(simout, "      data[\"time\"] = [data[\"OS_start\"][0]]\n");
   
   node->Integrator()->Codegen(this);
 
@@ -143,15 +143,8 @@ OpenSim::AS3PrintModule::visit(OpenSim::EulerAST *node)
     variable_list += ", " + (*itr)->Data()->Name();
   }
   
-  string prints = "\n" + whitespace + "#generally put print statements here\n";
-  fprintf(simout, prints.c_str());
-  string printout = whitespace + "print('" + format_statement + "' % ("
-  + variable_list + "))\n";
-  fputs(printout.c_str(), simout);
-  
-  string updateStocks = "\n" + whitespace + "#updating stocks\n";
-  fprintf(simout, updateStocks.c_str());
-  
+  string updateStocks = "\n" + whitespace + "//updating stocks\n";
+  fprintf(simout, updateStocks.c_str());  
   
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
@@ -170,7 +163,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::VariableAST *node)
 {
   Variable *v = node->Data();
   
-  string message = whitespace + v->Name() + " = ";
+  string message = whitespace + "data[\"" + v->Name() + "\"][i+1] = ";
   fprintf(simout, message.c_str());
   
   node->AST()->Codegen(this);
@@ -185,7 +178,11 @@ OpenSim::AS3PrintModule::visit(OpenSim::VariableAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::VarRefAST *node)
 {
-  fprintf(simout, node->Name().c_str());
+  string index = "[i]";
+  if (vars[node->Name()]->Data()->Type() == OpenSim::var_const)
+    index = "[0]";
+
+  fprintf(simout, "data[\"%s\"]%s", node->Name().c_str(), index.c_str());
   return 0;
 }
 
@@ -251,7 +248,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(simout, "lookup(%s, ", node->TableName().c_str());
+  fprintf(simout, "lookup(data[\"%s\", ", node->TableName().c_str());
   node->ref->Codegen(this);
   fprintf(simout, ")");
   

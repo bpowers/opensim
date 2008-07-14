@@ -24,6 +24,7 @@ package opensim
     private var data:Array
     private var curr_itr:Array
     private var next_itr:Array
+    private var i:int
 
     public function OpenSim():
     {
@@ -31,6 +32,8 @@ package opensim
       curr_itr = new Array()
       next_itr = new Array()
       // initialization
+
+      i = 0
 
       // store all the initialization data as the first item in 
       // the data 'dictionary'
@@ -61,26 +64,28 @@ package opensim
 
     private function simulate(time_span:Number)
     {
+      // negative time span would just mess stuff up
+      time_span = Math.max(0, time_span)
+
       // this is where the math will go, simulating from the current time 
       // to current time + time_span
       cur_time = data["time"]
-      
-      for (time:Number = )
+
+      end_time = Math.min(data["OS_end"][0], cur_time + time_span);      
+
+      for (time = cur_time)
       {
-        rabbit_births = (rabbit_population * rabbit_birth_rate)
-        rabbit_crowding = (rabbit_population / carrying_capacity)
-        fox_consumption_of_rabbits = ((fox_population * fox_food_requirements) * lookup(fox_rabbit_consumption_lookup, rabbit_crowding))
-        rabbit_deaths = Math.max(((rabbit_population / average_rabbit_life) * lookup(effect_of_crowding_on_deaths_lookup, rabbit_crowding)),fox_consumption_of_rabbits)
-        fox_births = (fox_population * fox_birth_rate)
-        fox_food_availability = ((fox_consumption_of_rabbits / fox_population) / fox_food_requirements)
-        fox_deaths = ((fox_population / average_fox_life) * lookup(fox_mortality_lookup, fox_food_availability))
+        data["rabbit_births"][i+1] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
+        data["rabbit_crowding"][i+1] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
+        data["fox_consumption_of_rabbits"][i+1] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup", data["rabbit_crowding"][i]))
+        data["rabbit_deaths"][i+1] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup", data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
+        data["fox_births"][i+1] = (data["fox_population"][i] * data["fox_birth_rate"][0])
+        data["fox_food_availability"][i+1] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
+        data["fox_deaths"][i+1] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup", data["fox_food_availability"][i]))
 
-        #generally put print statements here
-        print('%f,%f,%f,%f,%f,%f,%f,%f,%f,%f' % (time, rabbit_births, rabbit_crowding, fox_consumption_of_rabbits, rabbit_deaths, rabbit_population, fox_births, fox_food_availability, fox_deaths, fox_population))
-
-        #updating stocks
-        rabbit_population = (rabbit_population + ((rabbit_births - rabbit_deaths) * OS_timestep))
-        fox_population = (fox_population + ((fox_births - fox_deaths) * OS_timestep))
+        //updating stocks
+        data["rabbit_population"][i+1] = (data["rabbit_population"][i] + ((data["rabbit_births"][i] - data["rabbit_deaths"][i]) * data["OS_timestep"][0]))
+        data["fox_population"][i+1] = (data["fox_population"][i] + ((data["fox_births"][i] - data["fox_deaths"][i]) * data["OS_timestep"][0]))
       }
     }
 
