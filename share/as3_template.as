@@ -5,7 +5,28 @@ package opensim
   {
     public var index:Array
     public var data:Array
+
+    // convenience constructor
+    public function SimData(new_index:Array, new_data:Array)
+    {
+      index = new_index
+      data = new_data
+    }
+
+    public function SimData(lookup:Array)
+    {
+      index = []
+      data = []
+
+      for each (entry:Array in lookup)
+      {
+        index.push(entry[0]) 
+        data.push(entry[1])
+      }
+    }
   }
+
+  // **insert point**
 
   public class OpenSim
   {
@@ -45,17 +66,17 @@ package opensim
       data["average_fox_life"] = [4.000000]
       data["average_rabbit_life"] = [2.000000]
       data["carrying_capacity"] = [500.000000]
-      data["effect_of_crowding_on_deaths_lookup"] = [[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]]
+      data["effect_of_crowding_on_deaths_lookup"] = new SimData([[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]])
       data["fox_birth_rate"] = [0.250000]
       data["fox_food_requirements"] = [25.000000]
-      data["fox_mortality_lookup"] = [[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]]
-      data["fox_population"] = [initial_fox_population]
-      data["fox_rabbit_consumption_lookup"] = [[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]]
+      data["fox_mortality_lookup"] = new SimData([[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]])
+      data["fox_population"] = [data["initial_fox_population"][0]]
+      data["fox_rabbit_consumption_lookup"] = new SimData([[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]])
       data["initial_fox_population"] = [30.000000]
       data["initial_rabbit_population"] = [500.000000]
       data["rabbit_birth_rate"] = [2.000000]
-      data["rabbit_population"] = [initial_rabbit_population]
-      data["time"] = [OS_start]
+      data["rabbit_population"] = [data["initial_rabbit_population"][0]]
+      data["time"] = [data["OS_start"][0]]
       
       // keep track of the initialized data so that we can reset the 
       // simulation
@@ -183,7 +204,7 @@ package opensim
     // and any data not on a save_step will be removed, so as to keep 
     // time-indexed data of equal length.  It is inappropriate to specify a sparse 
     // value for a lookup table not indexed with respect to time.
-    public function getData(var_name:String, sparse:Boolean=True):SimData
+    public function getData(var_name:String, sparse:Boolean=true):SimData
     {
       // this should work for regular data, but not lookups
       ret_val =  new SimData()

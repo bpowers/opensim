@@ -1,2 +1,2 @@
-pkgdata_DATA = sim_spec.as
+pkgdata_DATA = as3_template.as
 

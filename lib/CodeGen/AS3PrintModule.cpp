@@ -86,12 +86,12 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
     // define lookups, but don't make them part of an array.
     if (v->Type() == var_lookup)
     {
-      string constant = "      data[\"" + v->Name() + "\"] = ";
+      string constant = "      data[\"" + v->Name() + "\"] = new SimData(";
       fprintf(simout, constant.c_str());
       
       v_ast->AST()->Codegen(this);
       
-      fprintf(simout, "\n");
+      fprintf(simout, ")\n");
     }
     
     // define constants at the top of the file
@@ -252,7 +252,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::AS3PrintModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(simout, "lookup(data[\"%s\", ", node->TableName().c_str());
+  fprintf(simout, "lookup(data[\"%s\"], ", node->TableName().c_str());
   node->ref->Codegen(this);
   fprintf(simout, ")");
   
