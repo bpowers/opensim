@@ -250,7 +250,7 @@ package
       if      (index < table.index[0])   return table.data[0]
       else if (index > table.index[end]) return table.data[end]
 
-      for (i:int = 0; i < table.data.length; i++)
+      for (var i:int = 0; i < table.data.length; i++)
       {
         x = table.index[i]
         y = table.data[i]
