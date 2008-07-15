@@ -45,10 +45,10 @@ package opensim
     private var data:Array
     private var curr_itr:Array
     private var next_itr:Array
-    private var i:Number
+    private var i:int
     private var do_save:Boolean
-    private var save_count:Number
-    private var save_iterations:Number
+    private var save_count:int
+    private var save_iterations:int
     private var timestep:Number
 
     public function OpenSim()
@@ -108,8 +108,8 @@ package opensim
         data["fox_food_availability"][i] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
         data["fox_deaths"][i] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup"], data["fox_food_availability"][i]))
 
-        var:Number j = i
-        if (do_save == true)
+        var j:int = i
+        if (do_save)
         {
           j = i+1;
         }
