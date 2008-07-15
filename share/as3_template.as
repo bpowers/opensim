@@ -18,7 +18,7 @@ package
 
       if (args.length == 1)
       {
-        for each (entry in lookup)
+        for each (entry in args[0])
         {
           index.push(entry[0]) 
           data.push(entry[1])
