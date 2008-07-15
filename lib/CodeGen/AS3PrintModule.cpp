@@ -33,6 +33,8 @@
 #include "../AST/LookupAST.h"
 
 #include <cstdlib>
+#include <cstdio>
+#include <cstring>
 using std::string;
 using std::vector;
 using std::map;
@@ -77,9 +79,43 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 
   free(c_cwd);
 
-  fprintf(stderr, "paths: '%s'\n", paths.c_str());
+  vector<string> path;
+  char *p;
+  // FIXME: this seems unsafe...
+  p = strtok((char *)paths.c_str(), ":");
+  while (p != NULL)
+  {
+    path.push_back(p);
+    p = strtok(NULL, ":");
+  }
 
-  
+  bool found_simdata = false;
+  bool found_template = false;
+  for (int i=0; i<path.size(); i++)
+  {
+    if (path[i].length() == 0) continue;
+    if (path[i][path[i].length()-1] != '/') path[i] += "/";
+
+    if (!found_simdata && this->file_exists(path[i] + "opensim/SimData.as"))
+    {
+      found_simdata = true;
+      simdata_path = path[i] + "opensim/SimData.as";
+    }
+    if (!found_template 
+        && this->file_exists(path[i] + "opensim/as3_template.as"))
+    {
+      found_template = true;
+      template_path = path[i] + "opensim/SimData.as";
+    }
+  }
+
+  if (!found_template || !found_simdata)
+  {
+    fprintf(stderr, "%s%s", "Warning: Either the AS3 template or ",
+                    "SimData.as was not found.\n");
+    return;
+  }
+
 
   start->Codegen(this);
 }
@@ -342,3 +378,17 @@ OpenSim::AS3PrintModule::Tailstrap()
 
   return 0;
 }
+
+
+
+bool 
+OpenSim::AS3PrintModule::file_exists(std::string file_name)
+{
+    if (FILE * file = fopen(file_name.c_str(), "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+

@@ -1,9 +1,5 @@
 package model
 {
-
-
-  // **insert point**
-
   public class OpenSim
   {
     // for all functions returning a Number (that isn't data you're 
@@ -28,11 +24,11 @@ package model
     private var save_iterations:int
     private var timestep:Number
 
+
     public function OpenSim()
     {
       data = new Array()
       // initialization
-
 
       // store all the initialization data as the first item in 
       // the data 'dictionary'
@@ -153,6 +149,7 @@ package model
     {
       return Start()
     }
+
 
     // works on constants any time, but is only defined for other variables when 
     // a model is bring simulated, or when it is done simulating

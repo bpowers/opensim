@@ -44,6 +44,9 @@ namespace OpenSim
       std::string whitespace;
       std::map<std::string, OpenSim::VariableAST *> vars;
       
+      std::string template_path;
+      std::string simdata_path;
+
       FILE *simout;
       
     public:
@@ -65,6 +68,8 @@ namespace OpenSim
 
       double Bootstrap();
       double Tailstrap();
+
+      bool file_exists(std::string file_path);
     };
 }
 
