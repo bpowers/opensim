@@ -77,9 +77,9 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 
   free(c_cwd);
 
-  
-
   fprintf(stderr, "paths: '%s'\n", paths.c_str());
+
+  
 
   start->Codegen(this);
 }

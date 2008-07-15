@@ -1,36 +1,6 @@
 package 
 {
-  // basic class to pack time and data arrays together
-  public class SimData
-  {
-    public var index:Array
-    public var data:Array
 
-    // convenience constructor
-    // can either give 0, 1, or 2 arguments.  0: basic initialization.
-    // 1: assumes list of tuples, and unpacks them.  2: assumes is 
-    // (index, data)
-    public function SimData(... args)
-    {
-      
-      index = []
-      data = []
-
-      if (args.length == 1)
-      {
-        for each (entry in args[0])
-        {
-          index.push(entry[0]) 
-          data.push(entry[1])
-        }
-      }
-      else if (args.length == 2)
-      {
-        index = args[0]
-        data = args[1]
-      }
-    }
-  }
 
   // **insert point**
 
@@ -49,6 +19,7 @@ package
     //  - save_step (OS_savestep) (must be multiple of time step)
 
     private var data:Array
+    private var original_data:Array
     private var curr_itr:Array
     private var next_itr:Array
     private var i:int
@@ -96,15 +67,15 @@ package
     private function simulate(time_span:Number)
     {
       // negative time span would just mess stuff up
-      time_span = Math.max(0, time_span)
+      var time_span:Number = Math.max(0, time_span)
 
       // this is where the math will go, simulating from the current time 
       // to current time + time_span
-      cur_time = data["time"]
+      var cur_time:Number = data["time"]
 
-      end_time = Math.min(data["OS_end"][0], cur_time + time_span);      
+      var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);      
 
-      for (time = cur_time; time < end_time; time = time + timestep)
+      for (var time:Number = cur_time; time < end_time; time = time + timestep)
       {
         data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
         data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
@@ -203,6 +174,8 @@ package
     public function setValue(var_name:String, var_value:Number):Number
     {
       data[var_name][0] = var_value
+
+      return 0
     }
 
 
@@ -258,14 +231,14 @@ package
 
       for (var i:int = 0; i < table.data.length; i++)
       {
-        x = table.index[i]
-        y = table.data[i]
+        var x:Number = table.index[i]
+        var y:Number = table.data[i]
 
         if (index == x) return y
         if (index < x)
         {
           // slope = deltaY/deltaX
-          slope = (y - table.data[i-1])/(x - table.index[i-1])
+          var slope:Number = (y - table.data[i-1])/(x - table.index[i-1])
           return (index-table.index[i-1])*slope + table.data[i-1]
         }
       }
