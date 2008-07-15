@@ -243,14 +243,14 @@ package
       if (table.data.length == 0) 
         return 0
 
-      var end:Number = table.data.length - 1
+      var end:int = table.data.length - 1
 
       // if the request is outside the min or max, then we return
       // the nearest element of the array
-      if   (index < table.index[0])   return table.data[0]
-      elif (index > table.index[end]) return table.data[end]
+      if      (index < table.index[0])   return table.data[0]
+      else if (index > table.index[end]) return table.data[end]
 
-      for (i:Number = 0; i < table.data.length; i++)
+      for (i:int = 0; i < table.data.length; i++)
       {
         x = table.index[i]
         y = table.data[i]
