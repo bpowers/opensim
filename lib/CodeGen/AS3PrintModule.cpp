@@ -54,7 +54,27 @@ void
 OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 {
   simout = output_file;
-  start->Codegen(this);
+
+  char *c_paths = getenv("XDG_DATA_DIRS");
+
+  // I know mallocing sucks, but is there a better way?!?
+  int buf_size = 255;
+  char *c_cwd = (char *)malloc(buf_size*sizeof(char));
+  getcwd(c_cwd, buf_size);
+
+  string paths = "/usr/local/share/:/usr/share/";
+  if (c_paths)
+    paths += ":" + string(c_paths);
+  if (c_cwd)
+    paths += ":" + string(c_cwd);
+  else
+    fprintf(stderr, "Warning: getcwd failed.\n");
+
+  free(c_cwd);
+
+  fprintf(stderr, "paths: '%s'\n", paths.c_str());
+
+  //start->Codegen(this);
 }
 
 
