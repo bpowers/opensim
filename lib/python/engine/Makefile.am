@@ -15,9 +15,18 @@ if HAVE_PYTHON
 opensimdir = $(pkgpythondir)/engine
 opensim_PYTHON = __init__.py simulator.py
 opensim_LTLIBRARIES = _simulator.la
+
+activitydir = $(top_srcdir)/activity/site-packages/opensim/engine
+activity_PYTHON = $(opensim_PYTHON)
+activity_SCRIPTS = libcopy
+
+libcopy: 
+	mkdir -p $(activitydir)
+	cp .libs/_simulator.so.0.0.0 $(activitydir)/_simulator.so
 endif
 
 _simulator_la_SOURCES = simulator_wrap.cxx
 _simulator_la_LDFLAGS = $(PYTHON_LDFLAGS) $(GLIBMM_LIBS) -module
 _simulator_la_LIBADD  = $(top_builddir)/lib/libsimobjs.la
+
 
