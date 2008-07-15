@@ -236,29 +236,29 @@ package opensim
     
     
     // simple lookup table implementation
-    private function lookup(table:Number, index:Number):Number
+    private function lookup(table:SimData, index:Number):Number
     {
-      if (table.length == 0) 
+      if (table.data.length == 0) 
         return 0
 
-      var end:Number = table.length - 1
+      var end:Number = table.data.length - 1
 
       // if the request is outside the min or max, then we return
       // the nearest element of the array
-      if   (index < table[0][0])   return table[0][1]
-      elif (index > table[end][0]) return table[end][1]
+      if   (index < table.index[0])   return table.data[0]
+      elif (index > table.index[end]) return table.data[end]
 
-      for (i:Number = 0; i < table.length; i++)
+      for (i:Number = 0; i < table.data.length; i++)
       {
-        x = table[i][0]
-        y = table[i][1]
+        x = table.index[i]
+        y = table.data[i]
 
         if (index == x) return y
         if (index < x)
         {
           // slope = deltaY/deltaX
-          slope = (y - table[i-1][1])/(x - table[i-1][0])
-          return (index-table[i-1][0])*slope + table[i-1][1]
+          slope = (y - table.data[i-1])/(x - table.index[i-1])
+          return (index-table.index[i-1])*slope + table.data[i-1]
         }
       }
     }
