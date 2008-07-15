@@ -7,21 +7,27 @@ package
     public var data:Array
 
     // convenience constructor
-    public function SimData(new_index:Array, new_data:Array)
+    // can either give 0, 1, or 2 arguments.  0: basic initialization.
+    // 1: assumes list of tuples, and unpacks them.  2: assumes is 
+    // (index, data)
+    public function SimData(... args)
     {
-      index = new_index
-      data = new_data
-    }
-
-    public function SimData(lookup:Array)
-    {
+      
       index = []
       data = []
 
-      for each (entry in lookup)
+      if (args.length == 1)
       {
-        index.push(entry[0]) 
-        data.push(entry[1])
+        for each (entry in lookup)
+        {
+          index.push(entry[0]) 
+          data.push(entry[1])
+        }
+      }
+      else if (args.length == 2)
+      {
+        index = args[0]
+        data = args[1]
       }
     }
   }
