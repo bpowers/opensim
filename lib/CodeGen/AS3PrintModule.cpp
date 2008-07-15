@@ -58,10 +58,15 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
   char *c_paths = getenv("XDG_DATA_DIRS");
 
   // I know mallocing sucks, but is there a better way?!?
+  // basically, this is for adding the current working directory onto the 
+  // end of the directories we look for our AS3 template in.  This is 
+  // necessary for Windows, as I think Billy is going to throw everything
+  // in a folder.
   int buf_size = 255;
   char *c_cwd = (char *)malloc(buf_size*sizeof(char));
   getcwd(c_cwd, buf_size);
 
+  // http://standards.freedesktop.org/basedir-spec/basedir-spec-0.6.html
   string paths = "/usr/local/share/:/usr/share/";
   if (c_paths)
     paths += ":" + string(c_paths);
@@ -71,6 +76,8 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
     fprintf(stderr, "Warning: getcwd failed.\n");
 
   free(c_cwd);
+
+  
 
   fprintf(stderr, "paths: '%s'\n", paths.c_str());
 
