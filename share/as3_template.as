@@ -18,7 +18,7 @@ package opensim
       index = []
       data = []
 
-      for each (entry:Array in lookup)
+      for each (entry in lookup)
       {
         index.push(entry[0]) 
         data.push(entry[1])
@@ -51,7 +51,7 @@ package opensim
     private var save_iterations:int
     private var timestep:Number
 
-    public function OpenSim():
+    public function OpenSim()
     {
       data = new Array()
       // initialization
@@ -102,15 +102,17 @@ package opensim
       {
         data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
         data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
-        data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup", data["rabbit_crowding"][i]))
-        data["rabbit_deaths"][i] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup", data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
+        data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup"], data["rabbit_crowding"][i]))
+        data["rabbit_deaths"][i] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup"], data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
         data["fox_births"][i] = (data["fox_population"][i] * data["fox_birth_rate"][0])
         data["fox_food_availability"][i] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
-        data["fox_deaths"][i] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup", data["fox_food_availability"][i]))
+        data["fox_deaths"][i] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup"], data["fox_food_availability"][i]))
 
         var:int j = i
         if (do_save)
+        {
           j = i+1;
+        }
 
         //updating stocks
         data["rabbit_population"][j] = (data["rabbit_population"][i] + ((data["rabbit_births"][i] - data["rabbit_deaths"][i]) * data["OS_timestep"][0]))
