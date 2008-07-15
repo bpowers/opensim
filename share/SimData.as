@@ -18,10 +18,10 @@ package
 
       if (args.length == 1)
       {
-        for each (entry in args[0])
+        for (var i:int = 0; i< args[0].length; i++)
         {
-          index.push(entry[0]) 
-          data.push(entry[1])
+          index.push(args[0][i][0]) 
+          data.push(args[0][i][1])
         }
       }
       else if (args.length == 2)

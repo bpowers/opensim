@@ -1,4 +1,4 @@
-package 
+package model
 {
 
 
@@ -188,7 +188,7 @@ package
     public function getData(var_name:String, sparse:Boolean=true):SimData
     {
       // this should work for regular data, but not lookups
-      ret_val =  new SimData()
+      var ret_val:SimData =  new SimData()
       ret_val.index = data["time"]
       ret_val.data = data[var_name]
       return ret_val
