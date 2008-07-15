@@ -1,4 +1,4 @@
-package
+package model
 {
   // basic class to pack time and data arrays together
   public class SimData

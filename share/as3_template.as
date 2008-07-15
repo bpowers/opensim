@@ -242,6 +242,9 @@ package model
           return (index-table.index[i-1])*slope + table.data[i-1]
         }
       }
+      
+      // should have returned by here.
+      return -1
     }
   }
 }
