@@ -24,80 +24,10 @@ package model
     private var save_iterations:int
     private var timestep:Number
 
-
-    public function OpenSim()
-    {
-      data = new Array()
-      // initialization
-
-      // store all the initialization data as the first item in 
-      // the data 'dictionary'
-      data["rabbit_birth_rate"] = [2.000000]
-      data["average_rabbit_life"] = [2.000000]
-      data["carrying_capacity"] = [500.000000]
-      data["fox_food_requirements"] = [25.000000]
-      data["initial_rabbit_population"] = [500.000000]
-      data["rabbit_population"] = [data["initial_rabbit_population"][0]]
-      data["initial_fox_population"] = [30.000000]
-      data["fox_rabbit_consumption_lookup"] = new SimData([[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]])
-      data["fox_birth_rate"] = [0.250000]
-      data["average_fox_life"] = [4.000000]
-      data["fox_population"] = [data["initial_fox_population"][0]]
-      data["fox_mortality_lookup"] = new SimData([[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]])
-      data["effect_of_crowding_on_deaths_lookup"] = new SimData([[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]])
-      data["OS_timestep"] = [0.015625]
-      data["OS_start"] = [0.000000]
-      data["OS_savestep"] = [1.000000]
-      data["OS_end"] = [50.000000]
-      data["rabbit_births"] = []
-      data["rabbit_crowding"] = []
-      data["fox_consumption_of_rabbits"] = []
-      data["rabbit_deaths"] = []
-      data["fox_births"] = []
-      data["fox_food_availability"] = []
-      data["fox_deaths"] = []
-      data["time"] = [data["OS_start"][0]]
-      
-      // keep track of the initialized data so that we can reset the 
-      // simulation
-      original_data = data
-
-      // initialize simulation
-      Start()
-    }
+    // ** insert here **
 
 
-    private function simulate(time_span:Number)
-    {
-      // negative time span would just mess stuff up
-      var time_span:Number = Math.max(0, time_span)
 
-      // this is where the math will go, simulating from the current time 
-      // to current time + time_span
-      var cur_time:Number = data["time"]
-
-      var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);      
-
-      for (var time:Number = cur_time; time < end_time; time = time + timestep)
-      {
-        data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
-        data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
-        data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup"], data["rabbit_crowding"][i]))
-        data["rabbit_deaths"][i] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup"], data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
-        data["fox_births"][i] = (data["fox_population"][i] * data["fox_birth_rate"][0])
-        data["fox_food_availability"][i] = ((data["fox_consumption_of_rabbits"][i] / data["fox_population"][i]) / data["fox_food_requirements"][0])
-        data["fox_deaths"][i] = ((data["fox_population"][i] / data["average_fox_life"][0]) * lookup(data["fox_mortality_lookup"], data["fox_food_availability"][i]))
-
-        var j:int = i
-        if (do_save)
-        {
-          j = i+1;
-        }
-
-        //updating stocks
-        data["rabbit_population"][j] = (data["rabbit_population"][i] + ((data["rabbit_births"][i] - data["rabbit_deaths"][i]) * data["OS_timestep"][0]))
-        data["fox_population"][j] = (data["fox_population"][i] + ((data["fox_births"][i] - data["fox_deaths"][i]) * data["OS_timestep"][0]))
-        
         // determining whether or not to save results next iteration
         save_count = save_count + 1
         if (save_count >= save_iterations || time + timestep > data["OS_end"][0])

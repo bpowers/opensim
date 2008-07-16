@@ -106,19 +106,54 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
         && this->file_exists(path[i] + "opensim/as3_template.as"))
     {
       found_template = true;
-      template_path = path[i] + "opensim/SimData.as";
+      template_path = path[i] + "opensim/as3_template.as";
     }
   }
 
   if (!found_template || !found_simdata)
   {
-    fprintf(stderr, "%s%s", "Warning: Either the AS3 template or ",
+    fprintf(stderr, "%s%s", "Error: Either the AS3 template or ",
                     "SimData.as was not found.\n");
     return;
   }
 
+  as3 = fopen(template_path.c_str(), "r");
+
+  if (!as3)
+  {
+    fprintf(stderr, "Error: Couldn't open AS3 template for reading.\n");
+    return;
+  }
+
+  bool break_next = false;
+  int i=0;
+  string match = "// ** insert here **";
+  int c = fgetc(as3);
+  while (c != EOF)
+  {
+    fputc(c, simout);
+
+    if (!break_next && c == match[i])
+    {
+      //fprintf(stdout, "ALLRIGHT!\n");
+      i++;
+      if (i == match.length()) 
+      {
+        break_next = true;
+      }
+    }
+    else if (break_next && (c != '\n' || c != '\r'))
+    {
+      break;      
+    }
+
+    c = fgetc(as3);
+  } 
+
 
   start->Codegen(this);
+
+  fclose(as3);
 }
 
 
@@ -185,6 +220,8 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
 
   fprintf(simout, "      data[\"time\"] = [data[\"OS_start\"][0]]\n");
   
+  Waiststrap();  
+
   node->Integrator()->Codegen(this);
 
   Tailstrap();  
@@ -198,12 +235,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
 
 double
 OpenSim::AS3PrintModule::visit(OpenSim::EulerAST *node)
-{
-  string message = whitespace + "#using euler integration\n";
-  fprintf(simout, message.c_str());
-  
-  fprintf(simout, "for time in frange(OS_start, OS_end, OS_timestep):\n");
-  
+{ 
   whitespace += "        ";
   string format_statement = "%f";
   string variable_list = "time";
@@ -219,6 +251,13 @@ OpenSim::AS3PrintModule::visit(OpenSim::EulerAST *node)
     format_statement += ",%f";
     variable_list += ", " + (*itr)->Data()->Name();
   }
+
+  fprintf(simout, "\n\
+        var j:int = i\n\
+        if (do_save)\n\
+        {\n\
+          j = i+1;\n\
+        }\n");
   
   string updateStocks = "\n" + whitespace + "//updating stocks\n";
   fprintf(simout, updateStocks.c_str());  
@@ -373,22 +412,58 @@ double
 OpenSim::AS3PrintModule::Bootstrap()
 {
   fprintf(simout, "\
-package opensim\n\
-{\n\
-  public class OpenSim\n\
-  {\n");
+    public function OpenSim()\n\
+    {\n\
+      data = new Array()\n\
+      // initialization\n\
+\n\
+      // store all the initialization data as the first item in \n\
+      // the data 'dictionary'\n");
 
   return 0;
 }
 
 
+double
+OpenSim::AS3PrintModule::Waiststrap()
+{
+  fprintf(simout, "\n\
+      // keep track of the initialized data so that we can reset the \n\
+      // simulation\n\
+      original_data = data\n\
+\n\
+      // initialize simulation\n\
+      Start()\n\
+    }\n\
+\n\
+\n\
+    private function simulate(time_span:Number)\n\
+    {\n\
+      // negative time span would just mess stuff up\n\
+      var time_span:Number = Math.max(0, time_span)\n\
+\n\
+      // this is where the math will go, simulating from the current time \n\
+      // to current time + time_span\n\
+      var cur_time:Number = data[\"time\"]\n\
+\n\
+      var end_time:Number = Math.min(data[\"OS_end\"][0], cur_time + time_span);\n\
+\n\
+      for (var time:Number = cur_time; time < end_time; time = time + timestep)\n\
+      {");
+
+  return 0;
+}
+
 
 double
 OpenSim::AS3PrintModule::Tailstrap()
-{
-  fprintf(simout, "\
-  }\n\
-}\n");
+{  
+  int c = fgetc(as3);
+  while (c != EOF)
+  {
+    fputc(c, simout);
+    c = fgetc(as3);
+  } 
 
   return 0;
 }

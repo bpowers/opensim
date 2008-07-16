@@ -48,6 +48,7 @@ namespace OpenSim
       std::string simdata_path;
 
       FILE *simout;
+      FILE *as3;
       
     public:
       AS3PrintModule();
@@ -67,6 +68,7 @@ namespace OpenSim
       virtual double visit(OpenSim::FunctionRefAST *node);
 
       double Bootstrap();
+      double Waiststrap();
       double Tailstrap();
 
       bool file_exists(std::string file_path);
