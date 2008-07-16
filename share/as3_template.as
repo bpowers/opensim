@@ -25,7 +25,11 @@ package model
     // ** insert here **
 
 
-        if (do_save) i++
+        if (do_save)
+        {
+          i++
+          data["time"][j] = time + timestep
+        }
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
