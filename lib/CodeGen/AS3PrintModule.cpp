@@ -442,7 +442,7 @@ OpenSim::AS3PrintModule::Waiststrap()
       // negative time span would just mess stuff up\n\
       var time_span:Number = Math.max(0, time_span)\n\
 \n\
-      var end_time:Number = Math.min(data[\"OS_end\"][0], cur_time + time_span);\n\
+      var end_time:Number = Math.min(data[\"OS_end\"][0], data[\"time\"] + time_span);\n\
 \n\
       for (; data[\"time\"] < end_time; data[\"time\"] += timestep)\n\
       {\n\

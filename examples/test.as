@@ -70,7 +70,7 @@ package model
       // negative time span would just mess stuff up
       var time_span:Number = Math.max(0, time_span)
 
-      var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);
+      var end_time:Number = Math.min(data["OS_end"][0], data["time"] + time_span);
 
       for (; data["time"] < end_time; data["time"] += timestep)
       {
