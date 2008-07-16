@@ -94,6 +94,7 @@ package model
         data["fox_population"][j] = (data["fox_population"][i] + ((data["fox_births"][i] - data["fox_deaths"][i]) * data["OS_timestep"][0]))
 
 
+        if (do_save) i++
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
@@ -104,7 +105,6 @@ package model
         }
         else
         {
-          i++
           do_save = false
         }
       }

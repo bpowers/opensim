@@ -25,6 +25,7 @@ package model
     // ** insert here **
 
 
+        if (do_save) i++
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
@@ -35,7 +36,6 @@ package model
         }
         else
         {
-          i++
           do_save = false
         }
       }
