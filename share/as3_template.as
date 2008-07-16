@@ -14,8 +14,8 @@ package model
     //  - time_step (OS_timestep)
     //  - save_step (OS_savestep) (must be multiple of time step)
 
-    private var data:Array
-    private var original_data:Array
+    private var data:Object
+    private var original_data:Object
     private var i:int
     private var do_save:Boolean
     private var save_count:int
@@ -117,6 +117,9 @@ package model
     // a model is bring simulated, or when it is done simulating
     public function getValue(var_name:String):Number
     {
+      if (!data.hasOwnProperty(var_name))
+        return -1
+
       // constant
       if (data[var_name].length == 1)
         return data[var_name][0]

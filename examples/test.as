@@ -14,8 +14,8 @@ package model
     //  - time_step (OS_timestep)
     //  - save_step (OS_savestep) (must be multiple of time step)
 
-    private var data:Array
-    private var original_data:Array
+    private var data:Object
+    private var original_data:Object
     private var i:int
     private var do_save:Boolean
     private var save_count:int
@@ -70,11 +70,12 @@ package model
       // negative time span would just mess stuff up
       var time_span:Number = Math.max(0, time_span)
 
-      var end_time:Number = Math.min(data["OS_end"][0], data["time"] + time_span);
+      var time:Number = data["time"][i]
+      var end_time:Number = Math.min(data["OS_end"][0], time + time_span);
 
-      for (; data["time"] < end_time; data["time"] += timestep)
+      for (; time < end_time; time += timestep)
       {
-        var time:Number = data["time"]
+        data["time"][i] = time
         data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
         data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
         data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup"], data["rabbit_crowding"][i]))
@@ -186,6 +187,9 @@ package model
     // a model is bring simulated, or when it is done simulating
     public function getValue(var_name:String):Number
     {
+      if (!data.hasOwnProperty(var_name))
+        return -1
+
       // constant
       if (data[var_name].length == 1)
         return data[var_name][0]
