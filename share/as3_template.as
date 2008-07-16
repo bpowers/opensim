@@ -53,7 +53,7 @@ package model
       
       // keep track of the initialized data so that we can reset the 
       // simulation
-      original_data = data.slice(0, data.length)
+      original_data = data
 
       // initialize simulation
       Start()
@@ -109,7 +109,7 @@ package model
     // resets everything
     public function Start():Number
     {
-      data = new Array(original_data)
+      data = original_data
 
       timestep = data["OS_timestep"][0]
       do_save = true
