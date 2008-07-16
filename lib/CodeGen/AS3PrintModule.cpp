@@ -87,6 +87,7 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
   while (p != NULL)
   {
     path.push_back(p);
+    path.push_back(string(p) + "/opensim/");
     p = strtok(NULL, ":");
   }
 
@@ -97,16 +98,16 @@ OpenSim::AS3PrintModule::Consume(OpenSim::SimAST *start, FILE *output_file)
     if (path[i].length() == 0) continue;
     if (path[i][path[i].length()-1] != '/') path[i] += "/";
 
-    if (!found_simdata && this->file_exists(path[i] + "opensim/SimData.as"))
+    if (!found_simdata && this->file_exists(path[i] + "SimData.as"))
     {
       found_simdata = true;
-      simdata_path = path[i] + "opensim/SimData.as";
+      simdata_path = path[i] + "SimData.as";
     }
     if (!found_template 
-        && this->file_exists(path[i] + "opensim/as3_template.as"))
+        && this->file_exists(path[i] + "as3_template.as"))
     {
       found_template = true;
-      template_path = path[i] + "opensim/as3_template.as";
+      template_path = path[i] + "as3_template.as";
     }
   }
 

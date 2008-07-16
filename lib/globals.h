@@ -31,6 +31,8 @@
 // Windows functions or headers, but it might have its own ifdefs in there.
 #ifdef _WIN32
 #include <windows.h>
+#include <direct.h>
+#define getcwd(buffer, maxlen) _getcwd(buffer, maxlen)
 #define WIN_DLL __declspec(dllexport)
 #else
 #define WIN_DLL 

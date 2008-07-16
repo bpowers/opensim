@@ -18,11 +18,6 @@ opensim_LTLIBRARIES = _simulator.la
 
 activitydir = $(top_srcdir)/activity/site-packages/opensim/engine
 activity_PYTHON = $(opensim_PYTHON)
-activity_SCRIPTS = libcopy
-
-libcopy: 
-	mkdir -p $(activitydir)
-	cp .libs/_simulator.so.0.0.0 $(activitydir)/_simulator.so
 endif
 
 _simulator_la_SOURCES = simulator_wrap.cxx
