@@ -30,7 +30,7 @@ package model
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
-        if (save_count >= save_iterations || time + timestep > data["OS_end"][0])
+        if (save_count >= save_iterations || time + timestep >= data["OS_end"][0])
         {        
           do_save = true
           save_count = 0
@@ -78,7 +78,7 @@ package model
     // sure there is no active simulation, for example
     public function Finish():Number
     {
-      simulate(data["end_time"][0] - data["start_time"][0])
+      simulate(data["OS_end"][0] - data["OS_start"][0])
       return 0
     }
 

@@ -78,8 +78,9 @@ package model
 
       var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);
 
-      for (var time:Number = cur_time; time < end_time; time = time + timestep)
+      for (; data["time"] < end_time; data["time"] += timestep)
       {
+        var time:Number = data["time"]
         data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
         data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
         data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup"], data["rabbit_crowding"][i]))
@@ -102,7 +103,7 @@ package model
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
-        if (save_count >= save_iterations || time + timestep > data["OS_end"][0])
+        if (save_count >= save_iterations || time + timestep >= data["OS_end"][0])
         {        
           do_save = true
           save_count = 0
@@ -150,7 +151,7 @@ package model
     // sure there is no active simulation, for example
     public function Finish():Number
     {
-      simulate(data["end_time"][0] - data["start_time"][0])
+      simulate(data["OS_end"][0] - data["OS_start"][0])
       return 0
     }
 

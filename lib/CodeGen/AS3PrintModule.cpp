@@ -448,8 +448,9 @@ OpenSim::AS3PrintModule::Waiststrap()
 \n\
       var end_time:Number = Math.min(data[\"OS_end\"][0], cur_time + time_span);\n\
 \n\
-      for (var time:Number = cur_time; time < end_time; time = time + timestep)\n\
-      {\n");
+      for (; data[\"time\"] < end_time; data[\"time\"] += timestep)\n\
+      {\n\
+        var time:Number = data[\"time\"]\n");
 
   return 0;
 }
