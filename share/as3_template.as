@@ -125,11 +125,11 @@ package model
         return -1
 
       // constant
-      if (data[var_name].length == 1)
+      if (data[var_name].length == 1 || i<1)
         return data[var_name][0]
 
       // not constant
-      return data[var_name][i]
+      return data[var_name][i-1]
     }
 
 
