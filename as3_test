@@ -2,3 +2,5 @@
 
 opensim -t as3 examples/rabbit.osm -o examples/test.as
 less examples/test.as
+cp share/SimData.as ~/Desktop/sandbox/dialect/Examples/OpenSim/OpenSimTest_ResourceDirectory/model/SimData.as
+cp share/as3_template.as ~/Desktop/sandbox/dialect/Examples/OpenSim/OpenSimTest_ResourceDirectory/model/OpenSim.as

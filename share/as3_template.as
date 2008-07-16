@@ -32,28 +32,28 @@ package model
 
       // store all the initialization data as the first item in 
       // the data 'dictionary'
-      data["OS_end"] = [50.000000]
-      data["OS_savestep"] = [1.000000]
-      data["OS_start"] = [0.000000]
-      data["OS_timestep"] = [0.015625]
-      data["average_fox_life"] = [4.000000]
+      data["rabbit_birth_rate"] = [2.000000]
       data["average_rabbit_life"] = [2.000000]
       data["carrying_capacity"] = [500.000000]
-      data["effect_of_crowding_on_deaths_lookup"] = new SimData([[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]])
-      data["fox_birth_rate"] = [0.250000]
       data["fox_food_requirements"] = [25.000000]
-      data["fox_mortality_lookup"] = new SimData([[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]])
-      data["fox_population"] = [data["initial_fox_population"][0]]
-      data["fox_rabbit_consumption_lookup"] = new SimData([[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]])
-      data["initial_fox_population"] = [30.000000]
       data["initial_rabbit_population"] = [500.000000]
-      data["rabbit_birth_rate"] = [2.000000]
       data["rabbit_population"] = [data["initial_rabbit_population"][0]]
+      data["initial_fox_population"] = [30.000000]
+      data["fox_rabbit_consumption_lookup"] = new SimData([[0.000000, 0.000000], [1.000000, 1.000000], [2.000000, 2.000000], [6.000000, 2.000000]])
+      data["fox_birth_rate"] = [0.250000]
+      data["average_fox_life"] = [4.000000]
+      data["fox_population"] = [data["initial_fox_population"][0]]
+      data["fox_mortality_lookup"] = new SimData([[0.000000, 20.000000], [0.300000, 5.000000], [0.500000, 2.000000], [1.000000, 1.000000], [2.000000, 0.500000]])
+      data["effect_of_crowding_on_deaths_lookup"] = new SimData([[0.000000, 0.750000], [3.000000, 2.500000], [6.000000, 6.000000], [8.000000, 11.000000], [10.000000, 20.000000]])
+      data["OS_timestep"] = [0.015625]
+      data["OS_start"] = [0.000000]
+      data["OS_savestep"] = [1.000000]
+      data["OS_end"] = [50.000000]
       data["time"] = [data["OS_start"][0]]
       
       // keep track of the initialized data so that we can reset the 
       // simulation
-      original_data = new Array(data)
+      original_data = data.slice(0, data.length)
 
       // initialize simulation
       Start()

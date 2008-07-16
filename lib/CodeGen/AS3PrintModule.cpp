@@ -129,10 +129,9 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
 
   Bootstrap();
   
-  for (map<string, VariableAST *>::iterator itr = vars.begin(); 
-       itr != vars.end(); itr++) 
+  for (int i=0; i < node->Initial().size(); i++) 
   {
-    VariableAST *v_ast = itr->second;
+    VariableAST *v_ast = node->Initial()[i];
     Variable *v = v_ast->Data();
     
     // define constants at the top of the file
