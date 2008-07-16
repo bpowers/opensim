@@ -79,7 +79,8 @@ package model
       var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);
 
       for (var time:Number = cur_time; time < end_time; time = time + timestep)
-      {        data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
+      {
+        data["rabbit_births"][i] = (data["rabbit_population"][i] * data["rabbit_birth_rate"][0])
         data["rabbit_crowding"][i] = (data["rabbit_population"][i] / data["carrying_capacity"][0])
         data["fox_consumption_of_rabbits"][i] = ((data["fox_population"][i] * data["fox_food_requirements"][0]) * lookup(data["fox_rabbit_consumption_lookup"], data["rabbit_crowding"][i]))
         data["rabbit_deaths"][i] = Math.max(((data["rabbit_population"][i] / data["average_rabbit_life"][0]) * lookup(data["effect_of_crowding_on_deaths_lookup"], data["rabbit_crowding"][i])),data["fox_consumption_of_rabbits"][i])
