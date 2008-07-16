@@ -16,8 +16,6 @@ package model
 
     private var data:Array
     private var original_data:Array
-    private var curr_itr:Array
-    private var next_itr:Array
     private var i:int
     private var do_save:Boolean
     private var save_count:int
@@ -72,10 +70,6 @@ package model
       // negative time span would just mess stuff up
       var time_span:Number = Math.max(0, time_span)
 
-      // this is where the math will go, simulating from the current time 
-      // to current time + time_span
-      var cur_time:Number = data["time"]
-
       var end_time:Number = Math.min(data["OS_end"][0], cur_time + time_span);
 
       for (; data["time"] < end_time; data["time"] += timestep)
@@ -116,6 +110,30 @@ package model
       }
     }
 
+
+    public function getI():Number
+    {
+      return i
+    }
+
+
+    public function getSaveCount():Number
+    {
+      return save_count
+    }
+
+
+    public function getSaveIterations():Number
+    {
+      return save_iterations
+    }
+
+
+    public function getTimestep():Number
+    {
+      return timestep
+    }
+    
 
     // resets everything
     public function Start():Number

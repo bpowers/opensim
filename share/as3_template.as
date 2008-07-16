@@ -16,8 +16,6 @@ package model
 
     private var data:Array
     private var original_data:Array
-    private var curr_itr:Array
-    private var next_itr:Array
     private var i:int
     private var do_save:Boolean
     private var save_count:int
@@ -43,6 +41,30 @@ package model
       }
     }
 
+
+    public function getI():Number
+    {
+      return i
+    }
+
+
+    public function getSaveCount():Number
+    {
+      return save_count
+    }
+
+
+    public function getSaveIterations():Number
+    {
+      return save_iterations
+    }
+
+
+    public function getTimestep():Number
+    {
+      return timestep
+    }
+    
 
     // resets everything
     public function Start():Number
