@@ -31,6 +31,7 @@
 #include "../AST/VariableAST.h"
 #include "../AST/General.h"
 #include "../AST/LookupAST.h"
+#include "../Variable.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -165,6 +166,20 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
       v_ast->Initial()->Codegen(this);
       
       fprintf(simout, "]\n");
+    }
+  }
+
+  vector<VariableAST *> body = node->Integrator()->Body();
+  for (vector<VariableAST *>::iterator itr = body.begin();
+       itr != body.end(); ++itr)
+  {
+    VariableAST *v_ast = *itr;
+    Variable *v = v_ast->Data();
+    
+    if (v->Type() == var_aux)
+    {
+      string aux = "      data[\"" + v->Name() + "\"] = []\n";
+      fprintf(simout, aux.c_str());
     }
   }
 

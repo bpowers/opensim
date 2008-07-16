@@ -19,6 +19,13 @@ package opensim
       data["OS_start"] = [0.000000]
       data["OS_savestep"] = [1.000000]
       data["OS_end"] = [50.000000]
+      data["rabbit_births"] = []
+      data["rabbit_crowding"] = []
+      data["fox_consumption_of_rabbits"] = []
+      data["rabbit_deaths"] = []
+      data["fox_births"] = []
+      data["fox_food_availability"] = []
+      data["fox_deaths"] = []
       data["time"] = [data["OS_start"][0]]
 #using euler integration
 for time in frange(OS_start, OS_end, OS_timestep):
