@@ -100,6 +100,7 @@ package model
         }
         else
         {
+          i++
           do_save = false
         }
       }
@@ -118,6 +119,8 @@ package model
       save_count = 0
       save_iterations = data["OS_savestep"][0] / data["OS_timestep"][0]
 
+      // do one round of simulation, so that we fill in data
+      simulate(data["OS_timestep"][0])
       return 0
     }
 
