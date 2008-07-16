@@ -158,9 +158,9 @@ package model
     // a multiple of time_step, it will be rounded down to the nearest one.  
     // If it is greater than the time left in the simulation, it will simulate
     // to the end and not beyond
-    public function Continue(time:Number):Number
+    public function Continue(continue_time:Number):Number
     {
-      simulate(time)
+      simulate(continue_time)
 
       return 0
     }
