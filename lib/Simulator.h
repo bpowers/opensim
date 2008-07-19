@@ -96,8 +96,11 @@ namespace OpenSim
     std::string output_file();
     
     int set_variable_equation(std::string varName, std::string varEqn);
-    std::string variable_equation(std::string varName);
+    std::string get_variable_equation(std::string varName);
     
+    int new_variable(std::string varName);
+    int rename_variable(std::string varName, std::string newName);
+
     int simulate();
   };
 }

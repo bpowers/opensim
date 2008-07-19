@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opensim markup="1.0">
+<model>
+  <name>Infection Spread</name>
+
+  <var>
+    <name>infected</name>
+    <equation>
+      INTEG(infection_rate, 2)
+    </equation>
+  </var>
+
+  <var>
+    <name>susceptible</name>
+    <equation>
+      INTEG(-infection_rate, 21)
+    </equation>
+  </var>
+
+  <var>
+    <name>initial_infected</name>
+    <equation>
+      23
+    </equation>
+  </var>
+
+  <var>
+    <name>total_population</name>
+    <equation>
+      23
+    </equation>
+  </var>
+
+  <var>
+    <name>infection_rate</name>
+    <equation>
+      prob_of_infection * susceptibles_contacted_daily
+    </equation>
+  </var>
+
+  <var>
+    <name>prob_of_infection</name>
+    <equation>
+      .5
+    </equation>
+  </var>
+
+  <var>
+    <name>susceptibles_contacted_daily</name>
+    <equation>
+      proportion_susceptible * daily_contacts_per_infected
+    </equation>
+  </var>
+
+  <var>
+    <name>proportion_susceptible</name>
+    <equation>
+      susceptible / 21
+    </equation>
+  </var>
+
+  <var>
+    <name>daily_contacts_per_infected</name>
+    <equation>
+      infected * number_of_contacts_per_day
+    </equation>
+  </var>
+
+  <var>
+    <name>number_of_contacts_per_day</name>
+    <equation>
+      1
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_start</name>
+    <equation>
+      0
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_end</name>
+    <equation>
+      20
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_timestep</name>
+    <equation>
+      .5
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_savestep</name>
+    <equation>
+      1
+    </equation>
+  </var>
+
+</model>
+</opensim>

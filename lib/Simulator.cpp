@@ -49,10 +49,6 @@ OpenSim::force_cpp_glib_init()
 
 OpenSim::Simulator::Simulator()
 {
-  // important!
-  //Glib::init();
-
-  fprintf(stdout, "created new Simulator\n");
   _output_file_name = "";
   
   _output_type = sim_emit_Output;
@@ -246,7 +242,7 @@ OpenSim::Simulator::set_variable_equation(std::string varName,
 
 
 std::string 
-OpenSim::Simulator::variable_equation(std::string varName)
+OpenSim::Simulator::get_variable_equation(std::string varName)
 {
   map<string, Variable *>::iterator v = _variables.find(varName); 
   
@@ -259,6 +255,22 @@ OpenSim::Simulator::variable_equation(std::string varName)
   }
   
   return v->second->Equation();
+}
+
+
+
+int 
+OpenSim::Simulator::new_variable(std::string varName)
+{
+  return 0;
+}
+
+
+
+int 
+rename_variable(std::string varName, std::string newName)
+{
+  return 0;
 }
 
 
@@ -295,3 +307,4 @@ OpenSim::Simulator::init(std::string fileName)
   
   delete file;
 }
+
