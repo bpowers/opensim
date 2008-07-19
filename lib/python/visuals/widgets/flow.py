@@ -56,6 +56,11 @@ class FlowItem(SimItem):
 
     # keep track of where we're coming from, even if its a cloud.
     self.flow_from = flow_from
+
+    #now make sure we update our endpoints when the targets move
+    self.__start_cb = self.flow_from.connect("item_moved_event", 
+                                             self.update_point)
+
     self.flow_to = None
 
     self._new = True
@@ -177,10 +182,6 @@ class FlowItem(SimItem):
     self.flow_to = flow_to
     self.x2, self.y2 = self.flow_to.abs_center()
     self._new = False
-
-    #now make sure we update our endpoints when the targets move
-    self.__start_cb = self.flow_from.connect("item_moved_event", 
-                                             self.update_point)
 
     #now make sure we update our endpoints when the targets move
     self.__end_cb = self.flow_to.connect("item_moved_event", 
