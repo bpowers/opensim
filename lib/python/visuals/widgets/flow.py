@@ -341,7 +341,7 @@ class FlowItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self._, 
+    self.get_canvas().update_name(self.__old_name, 
                                   self, new=self._new)
 
     self._new = False
