@@ -87,7 +87,10 @@ class SimGoo(goocanvas.Canvas):
 
   def update_name(self, old_name, item, new=False):
     if new:
-      logging.debug("SimGooCanvas: awesome! new: '%s'", old_name)
+      logging.debug("SimGooCanvas: awesome! new: '%s'" % item.name())
+    else:
+      logging.debug("SimGooCanvas: renaming '%s' to '%s'" % 
+                    (old_name, item.name()))
 
 
   def remove_item(self, item):
