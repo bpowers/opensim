@@ -350,7 +350,10 @@ class Canvas (gtk.ScrolledWindow):
         widget = new_cloud
       else:
         # here we need to get the stock with the name var[1]
-        pass
+        for d_var in self.display_vars:
+          if d_var.name() == var[1]:
+            widget = d_var
+            break
       if widget:
         logging.debug("setting flow-from")
         var[0].set_flow_from(widget)
@@ -363,7 +366,10 @@ class Canvas (gtk.ScrolledWindow):
         widget = new_cloud
       else:
         # here we need to get the stock with the name var[2]
-        pass
+        for d_var in self.display_vars:
+          if d_var.name() == var[2]:
+            widget = d_var
+            break
       if widget:
         logging.debug("setting flow-to")
         var[0].set_flow_to(widget)
