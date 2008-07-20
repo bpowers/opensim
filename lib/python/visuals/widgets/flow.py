@@ -328,13 +328,14 @@ class FlowItem(SimItem):
     self.force_redraw()
 
     self.__old_name = self.name()
+    if self.name() == "(new flow)":
+      self.__old_name = ""
 
     return False
 
 
   def on_highlight_out(self, item, target):
     self.active_color = [0, 0, 0]
-    self.force_redraw()
 
     if self._new:
       if self._display_name.placeholder:
@@ -345,6 +346,7 @@ class FlowItem(SimItem):
                                   self, new=self._new)
 
     self._new = False
+    self.force_redraw()
 
     return False
 

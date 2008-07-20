@@ -32,6 +32,7 @@
 
 // openSim stuff
 #include "globals.h"
+#include <utility>
 #include "CodeGen/SimBuilder.h"
 #include "AST/VariableAST.h"
 #include "IO/IOxml.h"
@@ -49,6 +50,7 @@ OpenSim::force_cpp_glib_init()
 
 OpenSim::Simulator::Simulator()
 {
+  _sim_builder = NULL;
   _output_file_name = "";
   
   _output_type = sim_emit_Output;
@@ -262,6 +264,24 @@ OpenSim::Simulator::get_variable_equation(std::string varName)
 int 
 OpenSim::Simulator::new_variable(std::string varName)
 {
+  //fprintf(stderr, "Debug: Simulator: creating new variable '%s'\n", 
+  //        varName.c_str());
+
+  string varClean = this->clean_name(varName);
+
+  map<string, Variable *>::iterator v = _variables.find(varClean); 
+  
+  // check to make sure variable doesn't exist
+  if (v != _variables.end())
+  {
+    fprintf(stderr, 
+            "Error: Variable '%s' allready exists, can't make a new one.\n", 
+            varClean.c_str());
+    return -1;
+  }
+
+  _variables[varClean] = new Variable(varClean, "");
+
   return 0;
 }
 
@@ -270,7 +290,62 @@ OpenSim::Simulator::new_variable(std::string varName)
 int 
 OpenSim::Simulator::rename_variable(std::string varName, std::string newName)
 {
+  //fprintf(stderr, "Debug: Simulator: renaming variable '%s' to '%s'\n", 
+  //        varName.c_str(), newName.c_str());
+
+
+  string newClean = this->clean_name(newName);
+
+  map<string, Variable *>::iterator v = _variables.find(newClean);
+  if (v != _variables.end())
+  {
+    fprintf(stderr, "Error: Var with name '%s', already exists, no rename.\n",
+            newClean.c_str());
+    // return -2 so that we can tell the variable it is not allowed 
+    // to rename itself
+    return -2;
+  }
+
+  string varClean = this->clean_name(varName);
+
+  v = _variables.find(varClean); 
+  
+  // check to see if we didn't find anything
+  if (v == _variables.end())
+  {
+    fprintf(stderr, "Error: No variable '%s', so can't change name.\n", 
+            varClean.c_str());
+    return -1;
+  }
+
+  Variable *var = v->second;
+  _variables.erase(v);
+  var->SetName(newClean);
+  _variables[newClean] = var;
+  
+  //_sim_builder->Update();
+
   return 0;
+}
+
+
+
+int 
+OpenSim::Simulator::delete_variable(std::string varName)
+{
+  return 0;
+}
+
+
+
+std::string
+OpenSim::Simulator::clean_name(std::string varName)
+{
+  string clean = varName;
+  for (int i=varName.find(' '); i != -1; i=varName.find(' ', i+1))
+    clean[i] = '_';
+
+  return clean;
 }
 
 

@@ -75,6 +75,7 @@ namespace OpenSim
     void init(std::string fileName);
 
     std::map<std::string, std::vector<double> > _results;
+    std::string clean_name(std::string varName);
     
   public:
     Simulator();
@@ -100,6 +101,7 @@ namespace OpenSim
     
     int new_variable(std::string varName);
     int rename_variable(std::string varName, std::string newName);
+    int delete_variable(std::string varName);
 
     int simulate();
   };
