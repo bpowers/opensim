@@ -256,6 +256,7 @@ class Canvas (gtk.ScrolledWindow):
       logging.error("Canvas: each visual part of a savefile must have " + \
                     "at least one page.")
 
+    post = []
     goo_root = self.goocanvas.get_root_item()
     var = page.children
     # now for the meat and potatoes.
@@ -329,10 +330,43 @@ class Canvas (gtk.ScrolledWindow):
                                    can_focus=True)
         new_var.lower(None)
         self.display_vars.append(new_var)
+        
+        # add info to post in order to finish hooking up rate.
+        post.append((new_var, start, end))
 
       var = var.next
 
     doc.freeDoc()
+    
+    # now do postprocessing to finish hooking up flows and influences
+    for var in post:
+      logging.debug("hooking up '%s'", var[0].name())
+      
+      widget = None
+      if var[1] == "cloud":
+        logging.debug("creating a cloud for the start")
+        new_cloud = widgets.CloudItem(var[0].x1, var[0].y1, parent=goo_root)
+        self.display_vars.append(new_cloud)
+        widget = new_cloud
+      else:
+        # here we need to get the stock with the name var[1]
+        pass
+      if widget:
+        logging.debug("setting flow-from")
+        var[0].set_flow_from(widget)
+      
+      widget = None
+      if var[2] == "cloud":
+        logging.debug("creating a cloud for the start")
+        new_cloud = widgets.CloudItem(var[0].x2, var[0].y2, parent=goo_root)
+        self.display_vars.append(new_cloud)
+        widget = new_cloud
+      else:
+        # here we need to get the stock with the name var[2]
+        pass
+      if widget:
+        logging.debug("setting flow-to")
+        var[0].set_flow_to(widget)
 
 
   def save_model(self, file_path):
