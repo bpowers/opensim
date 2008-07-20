@@ -268,7 +268,7 @@ OpenSim::Simulator::new_variable(std::string varName)
 
 
 int 
-rename_variable(std::string varName, std::string newName)
+OpenSim::Simulator::rename_variable(std::string varName, std::string newName)
 {
   return 0;
 }

@@ -74,7 +74,7 @@ class CloudItem(SimItem):
 
 
   def name(self):
-    return "simple cloud"
+    return "cloud"
 
 
   def do_simple_create_path(self, cr):
@@ -117,13 +117,7 @@ class CloudItem(SimItem):
 
 
   def xml_representation(self):
-    xml_string = '\
-    <cloud>\n\
-      <x>%d</x>\n\
-      <y>%d</y>\n\
-    </cloud>\n' % (self.x, self.y)
-
-    return xml_string
+    return ""
 
 
   def on_key_press(self, item, target, event):

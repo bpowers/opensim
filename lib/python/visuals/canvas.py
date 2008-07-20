@@ -295,6 +295,41 @@ class Canvas (gtk.ScrolledWindow):
                                       focus=False, parent=goo_root, 
                                       can_focus=True)
           self.display_vars.append(new_var)
+
+      if name == "flow":
+        var_item = var.children
+        var_name, start, end = "undefined", "none", "none"
+        x1, x2, y1, y2 = 0, 0, 0, 0
+        while var_item is not None:
+          if var_item.name == "x1":
+            x1 = float(var_item.content)
+          elif var_item.name == "y1":
+            y1 = float(var_item.content)
+          elif var_item.name == "x2":
+            x2 = float(var_item.content)
+          elif var_item.name == "y2":
+            y2 = float(var_item.content)
+          elif var_item.name == "name":
+            var_name = var_item.content
+          elif var_item.name == "start":
+            start = var_item.content
+          elif var_item.name == "end":
+            end = var_item.content
+          var_item = var_item.next
+
+        # using ints for output so that its more readable.  values
+        # are actually floats
+        logging.debug("Canvas: Adding flow " + 
+                      "'%s' (x1'%d', y1'%d', x2'%d', y2'%d', s'%s' e'%s')" % \
+                      (var_name, x1, y1, x2, y2, start, end))
+
+        # FIXME: we assume correct input.  handle errors!
+        new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
+                                   focus=False, parent=goo_root, 
+                                   can_focus=True)
+        new_var.lower(None)
+        self.display_vars.append(new_var)
+
       var = var.next
 
     doc.freeDoc()
