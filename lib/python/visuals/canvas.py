@@ -41,6 +41,7 @@ class SimGoo(goocanvas.Canvas):
   def __init__(self, line_control=tools.LineControl(), **kwargs):
     super(SimGoo, self).__init__(**kwargs)
     self.highlighted = None
+    self.highlight_cb = None
     self.engine = Simulator()
 
     # used to denote when we're overriding mouseclicks on canvas items.
@@ -58,9 +59,11 @@ class SimGoo(goocanvas.Canvas):
       return
     elif self.highlighted is not None:
       self.highlighted.emit("highlight_out_event", self)
-      self.highlighted = None
     self.highlighted = widget
+    self.highlight_cb = widget.connect("highlight_out_event", self.highlight_out)
     widget.emit("highlight_in_event", self)
+    self.grab_focus(self.highlighted)
+    #logging.debug("done grab_highlight")
 
 
   def drop_highlight(self):
@@ -69,9 +72,22 @@ class SimGoo(goocanvas.Canvas):
       self.highlighted = None
 
 
-  def update_name(self, name, item, new=False):
+  def highlight_out(self, item, target):
+    #logging.debug("SimGoo: highlight_out")
+    if item is not self.highlighted:
+      logging.error("receiving highlight events, but not from right object.")
+      return False
+
+    self.highlighted.disconnect(self.highlight_cb)
+    self.highlight_cb = None
+    self.highlighted = None
+    self.sim.grab_focus()
+    return False
+
+
+  def update_name(self, old_name, item, new=False):
     if new:
-      logging.debug("SimGooCanvas: awesome! new: '%s'", name)
+      logging.debug("SimGooCanvas: awesome! new: '%s'", old_name)
 
 
   def remove_item(self, item):
@@ -200,8 +216,8 @@ class Canvas (gtk.ScrolledWindow):
           self.line.end_flow(widget)
 
       else:
-        self.grab_focus()
         self.goocanvas.drop_highlight()
+        self.grab_focus()
     return True
 
 
@@ -212,12 +228,12 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def on_focus_in(self, target, event):
-    logging.debug("Canvas: got focus")
+    #logging.debug("Canvas: got focus")
 
     return False
 
   def on_focus_out(self, target, event):
-    logging.debug("Canvas: left focus")
+    #logging.debug("Canvas: left focus")
 
     return False
 

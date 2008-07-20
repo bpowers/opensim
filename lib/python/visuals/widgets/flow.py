@@ -46,6 +46,7 @@ class FlowItem(SimItem):
     self.__needs_resize_calc = True
     self.dragging = dragging
     self.active_color = [0, 0, 0]
+    self.__old_name = ""
 
     if flow_from:
       start_coord = flow_from.abs_center()  
@@ -326,6 +327,8 @@ class FlowItem(SimItem):
     self.active_color = [1, .6, .2]
     self.force_redraw()
 
+    self.__old_name = self.name()
+
     return False
 
 
@@ -338,7 +341,7 @@ class FlowItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self._display_name.string, 
+    self.get_canvas().update_name(self.__old_name, 
                                   self, new=self._new)
 
     self._new = False

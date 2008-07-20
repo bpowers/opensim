@@ -47,6 +47,7 @@ class VariableItem(SimItem):
     self.__needs_resize_calc = True
     self.dragging = False
     self.text_color = [0, 0, 0]
+    self.__old_name = ""
 
     self._new = True
 
@@ -246,6 +247,8 @@ class VariableItem(SimItem):
     self.text_color = [1, .6, .2]
     self.force_redraw()
 
+    self.__old_name = self.name()
+
     return False
 
 
@@ -258,7 +261,7 @@ class VariableItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self._display_name.string, 
+    self.get_canvas().update_name(self.__old_name, 
                                   self, new=self._new)
 
     self._new = False

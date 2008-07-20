@@ -51,6 +51,7 @@ class StockItem(SimItem):
 
     self.text_color = [0, 0, 0]
     self.line_width = line_width
+    self.__old_name = ""
 
     # keep track of inflows and outflows, for use in engine
     self.inflows = []
@@ -239,6 +240,8 @@ class StockItem(SimItem):
     self.text_color = [1, .6, .2]
     self.force_redraw()
 
+    self.__old_name = self.name()
+
     return False
 
 
@@ -251,7 +254,7 @@ class StockItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self._display_name.string, 
+    self.get_canvas().update_name(self.__old_name, 
                                   self, new=self._new)
 
     self._new = False
