@@ -154,6 +154,80 @@ class SimulateToolbar(gtk.Toolbar):
     tool_item.show()
 
 
+class ViewToolbar(gtk.Toolbar):
+  '''Provides the toolbar containing the basic modeling functions'''
+
+  def __init__(self):
+    gtk.Toolbar.__init__(self)
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    separator.set_expand(True)
+    self.insert(separator, -1)
+    separator.show()
+
+    self.view_canvas = ToggleToolButton('opensim-canvas')
+    self.view_canvas.set_tooltip(_('View model diagram'))
+    self.view_canvas.connect('toggled', self.__toggled)
+    self.insert(self.view_canvas, -1)
+    self.view_canvas.set_active(True)
+    self.view_canvas.show()
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    self.insert(separator, -1)
+    separator.show()
+
+    self.view_graphs = ToggleToolButton('opensim-graphs')
+    self.view_graphs.set_tooltip(_('View simulation graphs'))
+    #self.run.props.accelerator = '<Ctrl>Q'
+    self.view_graphs.connect('toggled', self.__toggled)
+    self.insert(self.view_graphs, -1)
+    self.view_graphs.show()
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    self.insert(separator, -1)
+    separator.show()
+
+    self.view_var = ToolComboBox(label_text=_('View behavior of:'))
+    #self.timestep.combo.connect('changed', self.__share_changed_cb)
+    self.view_var.combo.append_item(1, _('rabbits'))
+    self.view_var.combo.append_item(2, _('foxes'))
+    self.view_var.combo.append_item(3, _('rabbit births'))
+    self.view_var.combo.set_active(0)
+    self.insert(self.view_var, -1)
+    self.view_var.set_sensitive(False)
+    self.view_var.show()
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    separator.set_expand(True)
+    self.insert(separator, -1)
+    separator.show()
+
+
+  def __toggled(self, widget):
+    # fight infinite loops!
+    if widget.get_active() is False:
+      return
+
+    if widget is self.view_graphs:
+      self.view_canvas.set_active(False)
+      self.view_var.set_sensitive(True)
+    else:
+      self.view_graphs.set_active(False)
+      self.view_var.set_sensitive(False)
+
+
+
+class EquationEditor(gtk.Dialog):
+  '''Provides a pop-up window for editing the equations of variables'''
+
+  def __init__(self, **kwargs):
+    gtk.Dialog.__init__(self, **kwargs)
+
+
 
 class LineControl:
   '''

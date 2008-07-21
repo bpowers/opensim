@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Wed Jul  9 06:05:03 2008 -->
+<!--Generated with glade3 3.4.4 on Tue Jul 22 02:29:10 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="main_window">
     <property name="width_request">800</property>
@@ -187,6 +187,7 @@
             <child>
               <widget class="GtkToolButton" id="toolbutton4">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="stock_id">gtk-undo</property>
               </widget>
               <packing>
@@ -196,6 +197,7 @@
             <child>
               <widget class="GtkToolButton" id="toolbutton5">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="stock_id">gtk-redo</property>
               </widget>
               <packing>

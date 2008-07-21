@@ -28,6 +28,8 @@ from canvas import Canvas
 try:
   from tools import ModelToolbar
   from tools import SimulateToolbar
+  from tools import ViewToolbar
+  from tools import EquationEditor
 except:
   import logger
   logging.error("Couldn't import ModelToolbar, probably due to sugar dependency")

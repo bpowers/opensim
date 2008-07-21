@@ -92,6 +92,10 @@ class ModelActivity(activity.Activity):
     toolbox.add_toolbar(_('Simulate'), self.simulate_toolbar)
     self.simulate_toolbar.show()
 
+    self.view_toolbar = sim.ViewToolbar()
+    toolbox.add_toolbar(_('View'), self.view_toolbar)
+    self.view_toolbar.show()
+
     self.set_toolbox(toolbox)
     toolbox.show()
  
