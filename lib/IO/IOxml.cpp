@@ -203,7 +203,10 @@ OpenSim::IOxml::ParseInput(xmlDocPtr doc, xmlNodePtr mod)
         haveModelName = true;
     
       txt = xmlNodeListGetString(doc, cur->children, 0);
-      name = (char *)txt;
+      if (txt)
+      {
+        name = (char *)txt;
+      }
       xmlFree( txt );
     }
     

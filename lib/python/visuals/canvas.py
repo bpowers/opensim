@@ -247,11 +247,14 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def open_model(self, file_path):
+    logging.debug("path ascii: '%s'" % file_path.encode('ascii'))
+    #logging.debug("path utf-8: '%s'" % file_path)
     logging.debug("Dropping highlight to open.")
     self.goocanvas.drop_highlight()
 
     logging.debug("Loading model part of file.")
-    self.goocanvas.engine = Simulator(file_path)
+    # the engine requires file paths to be in ASCII (OLD SCHOOL REPRESENT)
+    self.goocanvas.engine = Simulator(file_path.encode('ascii'))
     self.engine = self.goocanvas.engine
     self.goocanvas.engine.info()
 
