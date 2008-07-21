@@ -249,6 +249,12 @@ class Canvas (gtk.ScrolledWindow):
   def open_model(self, file_path):
     logging.debug("Dropping highlight to open.")
     self.goocanvas.drop_highlight()
+
+    logging.debug("Loading model part of file.")
+    self.goocanvas.engine = Simulator(file_path)
+    self.engine = self.goocanvas.engine
+    self.goocanvas.engine.info()
+
     logging.debug("Opening model '%s'." % file_path)
     doc = libxml2.parseFile(file_path)
 

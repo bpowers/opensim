@@ -141,6 +141,9 @@ OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial,
 {
   FILE * save_file = fopen(filePath.c_str(), "w");
 
+  // FIXME: model_name should be set somewhere
+  model_name = "created in Model";
+
   if (save_file != NULL)
   {
     fprintf(save_file, "\
@@ -151,8 +154,22 @@ OpenSim::IOxml::IOxml(std::string filePath, char read_write, bool partial,
   <name>%s</name>\n\n", model_name.c_str());
 
     // loop through vars here.
+    map<string, Variable *>::iterator i;
+    for (i = vars.begin(); i != vars.end(); i++)
+    {
+      string name = i->second->Name();
+      string equation = i->second->Equation();
+      
+      fprintf(save_file, "\
+  <var>\n\
+    <name>%s</name>\n\
+    <equation>\n\
+      %s\n\
+    </equation>\n\
+  </var>\n\n", name.c_str(), equation.c_str());
+    }
 
-    fprintf(save_file, "\n</model>\n");
+    fprintf(save_file, "</model>\n");
     if (!partial) fprintf(save_file, "\n</opensim>\n");
 
     fclose(save_file);

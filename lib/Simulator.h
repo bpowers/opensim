@@ -103,6 +103,8 @@ namespace OpenSim
     int rename_variable(std::string varName, std::string newName);
     int delete_variable(std::string varName);
 
+    int info();
+
     int simulate();
   };
 }

@@ -125,7 +125,7 @@ def main():
       print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
       sys.exit(2)
 
-  sim = Simulator(args[0])
+  sim = Simulator(model_file)
   sim.set_output_type(new_walk)
 
   if output is not None:

@@ -140,6 +140,16 @@ OpenSim::Simulator::model_file()
 
 
 int
+OpenSim::Simulator::info()
+{
+  fprintf(stdout, "# vars: %d\n", _variables.size());
+
+  return 0;
+}
+
+
+
+int
 OpenSim::Simulator::simulate()
 {
   // we'll want to produce a lot more warnings and checks in the future
@@ -281,6 +291,8 @@ OpenSim::Simulator::new_variable(std::string varName)
   }
 
   _variables[varClean] = new Variable(varClean, "");
+
+  //_sim_builder->Update();
 
   return 0;
 }
