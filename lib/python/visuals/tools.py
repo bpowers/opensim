@@ -30,6 +30,9 @@ pygtk.require("2.0")
 
 import gtk
 from sugar.graphics.toggletoolbutton import ToggleToolButton
+from sugar.graphics.toolcombobox import ToolComboBox
+from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.icon import Icon
 import logging
 
 from constants import *
@@ -66,6 +69,89 @@ class ModelToolbar(gtk.Toolbar):
     self.insert(self.influence, -1)
     self.influence.show()
     self.influence.type = INFLUENCE
+
+
+class SimulateToolbar(gtk.Toolbar):
+  '''Provides the toolbar containing the basic modeling functions'''
+
+  def __init__(self):
+    gtk.Toolbar.__init__(self)
+
+    #Get our 4 buttons & add type attributes to them
+
+    self.start_label = gtk.Label()
+    self.start_label.set_text(_('Start time: '))
+    self._add_widget(self.start_label)
+
+    self.start = gtk.Entry()
+    self.start.set_size_request(int(gtk.gdk.screen_width() / 12), -1)
+    self.start.set_text(_('2008'))
+    self._add_widget(self.start)
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    self.insert(separator, -1)
+    separator.show()
+
+    self.end_label = gtk.Label()
+    self.end_label.set_text(_('End time: '))
+    self._add_widget(self.end_label)
+
+    self.start = gtk.Entry()
+    self.start.set_size_request(int(gtk.gdk.screen_width() / 12), -1)
+    self.start.set_text(_('2050'))
+    self._add_widget(self.start)
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    self.insert(separator, -1)
+    separator.show()
+
+    self.timestep = ToolComboBox(label_text=_('Timestep:'))
+    #self.timestep.combo.connect('changed', self.__share_changed_cb)
+    self.timestep.combo.append_item(.125, _('.125'))
+    self.timestep.combo.append_item(.25, _('.25'))
+    self.timestep.combo.append_item(1, _('1'))
+    self.timestep.combo.set_active(0)
+    self.insert(self.timestep, -1)
+    self.timestep.show()
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    self.insert(separator, -1)
+    separator.show()
+
+    self.savestep = ToolComboBox(label_text=_('Savestep:'))
+    #self.timestep.combo.connect('changed', self.__share_changed_cb)
+    self.savestep.combo.append_item(1, _('1'))
+    self.savestep.combo.append_item(.25, _('.25'))
+    self.savestep.combo.append_item(.125, _('.125'))
+    self.savestep.combo.set_active(0)
+    self.insert(self.savestep, -1)
+    self.savestep.show()
+
+    separator = gtk.SeparatorToolItem()
+    separator.props.draw = False
+    separator.set_expand(True)
+    self.insert(separator, -1)
+    separator.show()
+
+    self.run = ToolButton('media-playback-start', tooltip=_('Run Simulation'))
+    #self.run.props.accelerator = '<Ctrl>Q'
+    #self.run.connect('clicked', self.__stop_clicked_cb)
+    self.insert(self.run, -1)
+    self.run.show()
+
+
+  def _add_widget(self, widget, expand=False):
+    tool_item = gtk.ToolItem()
+    tool_item.set_expand(expand)
+
+    tool_item.add(widget)
+    widget.show()
+
+    self.insert(tool_item, -1)
+    tool_item.show()
 
 
 

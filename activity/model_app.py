@@ -88,6 +88,10 @@ class ModelActivity(activity.Activity):
     self.model_toolbar.influence.connect('toggled', self.drawing_tool_toggled)
     self.model_toolbar.variable.connect('toggled', self.drawing_tool_toggled)
 
+    self.simulate_toolbar = sim.SimulateToolbar()
+    toolbox.add_toolbar(_('Simulate'), self.simulate_toolbar)
+    self.simulate_toolbar.show()
+
     self.set_toolbox(toolbox)
     toolbox.show()
  

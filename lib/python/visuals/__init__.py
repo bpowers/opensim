@@ -27,6 +27,7 @@ from constants import *
 from canvas import Canvas
 try:
   from tools import ModelToolbar
+  from tools import SimulateToolbar
 except:
   import logger
   logging.error("Couldn't import ModelToolbar, probably due to sugar dependency")
