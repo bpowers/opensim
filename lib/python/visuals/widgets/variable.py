@@ -84,8 +84,8 @@ class VariableItem(SimItem):
 
 
   def abs_center(self):
-    return (int(self.bounds_x1 + self.width/2), 
-            int(self.bounds_y2 - self.height/2))
+    return (int(self.bounds_x1 + .5*self.icon_size), 
+            int(self.bounds_y1 + self.height/2))
 
 
   def ensure_size(self, cr):
@@ -234,6 +234,7 @@ class VariableItem(SimItem):
       new_x = event.x
       new_y = event.y
       item.translate(new_x - self.drag_x, new_y - self.drag_y)
+      self.emit("item_moved_event", self)
       return True
     canvas = self.get_canvas()
     event.x, event.y = canvas.convert_from_item_space(self, event.x, event.y)

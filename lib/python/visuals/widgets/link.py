@@ -95,6 +95,11 @@ class LinkItem(SimItem):
             int(self.y1 + (self.y2 - self.y1)/2))
 
 
+  def abs_center(self):
+    return (self.bounds_x1 + (self.bounds_x2 - self.bounds_x1),
+            self.bounds_y1 + (self.bounds_y2 - self.bounds_y1))
+
+
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
@@ -174,7 +179,7 @@ class LinkItem(SimItem):
       #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
       self.x1, self.y1 = self.flow_from.abs_center()
     else:
-      #logging.debug("down!!!")
+      #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
       self.x2, self.y2 = self.flow_to.abs_center()
 
     self.__needs_resize_calc = True
