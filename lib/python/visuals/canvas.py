@@ -199,8 +199,25 @@ class Canvas (gtk.ScrolledWindow):
                                        parent=root, can_focus=True)
         self.display_vars.append(new_var)
 
+      elif self.active_tool is sim.INFLUENCE:
+        widget = self.goocanvas.get_item_at(event.x, event.y, False)
+
+        if self.line.cb_id is None:
+          if widget is None or (type(widget) is not widgets.StockItem and
+                                type(widget) is not widgets.FlowItem and 
+                                type(widget) is not widgets.VariableItem):
+            logging.debug("Canvas: can't start a link here")
+            return True
+
+          logging.debug("sweet new line")
+        else:          
+          if type(self.line) is not widgets.FlowItem:
+            logging.error("somehow we have a non-flow line")
+            return True
+
       elif self.active_tool is sim.FLOW:
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
+
 
         if self.line.cb_id is None:
           if widget is not None and type(widget) is not widgets.StockItem:
@@ -217,6 +234,10 @@ class Canvas (gtk.ScrolledWindow):
           self.line.new_flow(widget)
 
         else:
+          if type(self.line) is not widgets.FlowItem:
+            logging.error("somehow we have a non-flow line")
+            return True
+
           #okay, we're finishing the line here.
           if widget is not None and type(widget) is not widgets.StockItem:
             # if we landed on anything but a stock, break
