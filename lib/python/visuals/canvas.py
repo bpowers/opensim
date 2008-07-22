@@ -112,13 +112,15 @@ class SimGoo(goocanvas.Canvas):
 
   def show_editor(self, item):
     logging.debug("showing equation editor for: %s" % item.name())
-    editor = tools.EquationEditor()
+    eqn = self.engine.get_variable_equation(item.name())
+    editor = tools.EquationEditor(eqn)
     result = editor.run()
     editor.hide()
 
     if result == gtk.RESPONSE_OK:
       logging.debug("okay, got an equation:")
       logging.debug("\t'%s'" % editor.equation.get_text())
+      self.engine.set_variable_equation(item.name(), editor.equation.get_text())
     else:
       logging.debug('oh well, canceled editor or something.')
 

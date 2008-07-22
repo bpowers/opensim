@@ -234,19 +234,21 @@ int
 OpenSim::Simulator::set_variable_equation(std::string varName, 
                                           std::string varEqn)
 {
-  map<string, Variable *>::iterator v = _variables.find(varName); 
+  string varClean = this->clean_name(varName);
+  
+  map<string, Variable *>::iterator v = _variables.find(varClean); 
   
   // check to see if we didn't find anything
   if (v == _variables.end())
   {
     fprintf(stderr, 
             "Error: Variable '%s' doesn't exist, so can't set equation.\n", 
-            varName.c_str());
+            varClean.c_str());
     return -1;
   }
   
   v->second->SetEquation(varEqn);
-  _sim_builder->Update();
+  //_sim_builder->Update();
   
   return 0;
 }
@@ -256,13 +258,15 @@ OpenSim::Simulator::set_variable_equation(std::string varName,
 std::string 
 OpenSim::Simulator::get_variable_equation(std::string varName)
 {
-  map<string, Variable *>::iterator v = _variables.find(varName); 
+  string varClean = this->clean_name(varName);
+  
+  map<string, Variable *>::iterator v = _variables.find(varClean); 
   
   // check to see if we didn't find anything
   if (v == _variables.end())
   {
     fprintf(stderr, "Error: Variable '%s' doesn't exist, so no equation.\n", 
-            varName.c_str());
+            varClean.c_str());
     return "[null]";
   }
   
