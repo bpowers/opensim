@@ -84,7 +84,8 @@ class VariableItem(SimItem):
 
 
   def abs_center(self):
-    return self.center()
+    return (int(self.bounds_x1 + self.width/2), 
+            int(self.bounds_y2 - self.height/2))
 
 
   def ensure_size(self, cr):

@@ -86,6 +86,7 @@ class StockItem(SimItem):
   def center(self):
     return (int(self.x + self.width/2), int(self.y + self.height/2))
 
+
   def abs_center(self):
     return (int(self.bounds_x1 + self.width/2), 
             int(self.bounds_y2 - self.height/2))

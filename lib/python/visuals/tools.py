@@ -284,7 +284,8 @@ class LineControl:
     self.cb_id = root.connect("motion_notify_event", 
                               new_var.on_motion_notify)
 
-    flow_from.raise_(None)
+    new_var.lower(None)
+    #flow_from.raise_(None)
     self.line = new_var
     self._canvas.display_vars.append(new_var)
 
@@ -300,7 +301,8 @@ class LineControl:
     self.cb_id = root.connect("motion_notify_event", 
                               new_var.on_motion_notify)
 
-    link_from.raise_(None)
+    new_var.lower(None)
+    #link_from.raise_(None)
     self.line = new_var
     self._canvas.display_vars.append(new_var)
 
@@ -310,7 +312,7 @@ class LineControl:
       logging.error("LineControl: something is screwey finishing line.")
     
     self.line.set_flow_to(flow_to)
-    flow_to.raise_(None)
+    #flow_to.raise_(None)
 
     self.cleanup(self.line)
 

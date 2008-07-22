@@ -215,6 +215,10 @@ class Canvas (gtk.ScrolledWindow):
           if widget is None or (type(widget) is not widgets.FlowItem and 
                                 type(widget) is not widgets.VariableItem):
             logging.debug("Canvas: can't end a link here")
+            if widget is None:
+              logging.debug("Canvas: no widget")
+            else:
+              logging.debug("Canvas: '%s'" % type(widget))
             return True
 
           self.line.end_flow(widget)
