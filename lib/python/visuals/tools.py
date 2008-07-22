@@ -282,9 +282,25 @@ class LineControl:
     new_var = widgets.FlowItem(flow_from=flow_from,
                                parent=root, can_focus=True)
     self.cb_id = root.connect("motion_notify_event", 
-                                   new_var.on_motion_notify)
+                              new_var.on_motion_notify)
 
-    new_var.lower(None)
+    flow_from.raise_(None)
+    self.line = new_var
+    self._canvas.display_vars.append(new_var)
+
+
+  def new_link(self, link_from):
+    if not link_from:
+      logging.error("LineControl: no widget as source.")
+
+    root = self._canvas.goocanvas.get_root_item()
+
+    new_var = widgets.LinkItem(flow_from=link_from,
+                               parent=root, can_focus=True)
+    self.cb_id = root.connect("motion_notify_event", 
+                              new_var.on_motion_notify)
+
+    link_from.raise_(None)
     self.line = new_var
     self._canvas.display_vars.append(new_var)
 
@@ -294,6 +310,7 @@ class LineControl:
       logging.error("LineControl: something is screwey finishing line.")
     
     self.line.set_flow_to(flow_to)
+    flow_to.raise_(None)
 
     self.cleanup(self.line)
 

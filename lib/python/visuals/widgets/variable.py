@@ -83,6 +83,10 @@ class VariableItem(SimItem):
     return (int(self.x + self.width/2), int(self.y + self.height/2))
 
 
+  def abs_center(self):
+    return self.center()
+
+
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)

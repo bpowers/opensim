@@ -41,7 +41,7 @@ class LinkItem(SimItem):
 
   def __init__(self, flow_from=None, start=None, end=None, 
                dragging=True, focus=True, line_width=3, **kwargs):
-    super(FlowItem, self).__init__(**kwargs)
+    super(LinkItem, self).__init__(**kwargs)
 
     self.__needs_resize_calc = True
     self.dragging = dragging
@@ -87,7 +87,7 @@ class LinkItem(SimItem):
     if self.flow_to:
       self.flow_to.disconnect(self.__end_cb)
     
-    super(FlowItem, self).remove()
+    super(LinkItem, self).remove()
 
 
   def center(self):
@@ -109,23 +109,6 @@ class LinkItem(SimItem):
       self.bounds_y1 = float(min(self.y1, self.y2) - self.line_width)
       self.bounds_x2 = float(max(self.x1, self.x2) + self.line_width)
       self.bounds_y2 = float(max(self.y1, self.y2) + self.line_width)
-
-      b_w = self.bounds_x2 - self.bounds_x1
-      b_h = self.bounds_y2 - self.bounds_y1
-      b_cx = self.bounds_x1 + b_w/2.0
-      b_cy = self.bounds_y1 + b_h/2.0
-
-      self._display_name.update_extents(cr)
-      t_w = self._display_name.width
-
-      bottom_extent = b_cy + self.padding + self.icon_size/2 \
-                      + self._display_name.height
-
-      self.bounds_x1 = float(min(self.bounds_x1, b_cx - t_w/2.0))
-      self.bounds_y1 = float(min(self.bounds_y1, b_cy - self.icon_size/2 \
-                                                 - self.padding))
-      self.bounds_x2 = float(max(self.bounds_x2, b_cx + t_w/2.0))
-      self.bounds_y2 = float(max(self.bounds_y2, bottom_extent))
 
       #self._display_name.update_extents(cr)
       self.__needs_resize_calc = False
@@ -285,7 +268,10 @@ class LinkItem(SimItem):
   def on_highlight_out(self, item, target):
     self.active_color = [0, 0, 0]
 
-    self._new = False
+    if self._new:
+      self.get_canvas().remove_item(self)
+      return False
+
     self.force_redraw()
 
     return False

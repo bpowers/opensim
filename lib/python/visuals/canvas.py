@@ -210,10 +210,14 @@ class Canvas (gtk.ScrolledWindow):
             return True
 
           logging.debug("sweet new line")
-        else:          
-          if type(self.line) is not widgets.FlowItem:
-            logging.error("somehow we have a non-flow line")
+          self.line.new_link(widget)
+        else:
+          if widget is None or (type(widget) is not widgets.FlowItem and 
+                                type(widget) is not widgets.VariableItem):
+            logging.debug("Canvas: can't end a link here")
             return True
+
+          self.line.end_flow(widget)
 
       elif self.active_tool is sim.FLOW:
         widget = self.goocanvas.get_item_at(event.x, event.y, False)
@@ -234,9 +238,6 @@ class Canvas (gtk.ScrolledWindow):
           self.line.new_flow(widget)
 
         else:
-          if type(self.line) is not widgets.FlowItem:
-            logging.error("somehow we have a non-flow line")
-            return True
 
           #okay, we're finishing the line here.
           if widget is not None and type(widget) is not widgets.StockItem:

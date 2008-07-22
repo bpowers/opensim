@@ -10,7 +10,7 @@
 # (at your option) any later version.
 # 
 # OpenSim is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# but WITHOUT ANY WARRANTY; without even the implied warranty ofcent
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
@@ -105,6 +105,10 @@ class FlowItem(SimItem):
   def center(self):
     return (int(self.x1 + (self.x2 - self.x1)/2), 
             int(self.y1 + (self.y2 - self.y1)/2))
+
+
+  def abs_center(self):
+    return self.center()
 
 
   def do_simple_create_path(self, cr):
