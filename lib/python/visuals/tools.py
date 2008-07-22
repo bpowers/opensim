@@ -228,10 +228,17 @@ class EquationEditor(gtk.Dialog):
     gtk.Dialog.__init__(self, flags=gtk.DIALOG_MODAL|
                         gtk.DIALOG_DESTROY_WITH_PARENT, **kwargs)
 
+
+
+    self.eqn_label = gtk.Label()
+    self.eqn_label.set_text(_('Edit equation:'))
+    self.vbox.pack_start(self.eqn_label, False, False)
+    self.eqn_label.show()
+    
     self.equation = gtk.Entry()
     self.equation.set_text(equation)
     self.equation.set_size_request(int(gtk.gdk.screen_width() / 4), -1)
-    self.vbox.pack_start(self.equation, False, False, 10)
+    self.vbox.pack_start(self.equation, False, False)
     self.equation.show()
 
     cancel = gtk.Button(stock=gtk.STOCK_CANCEL)
