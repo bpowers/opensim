@@ -56,28 +56,28 @@
   <var>
     <name>effect_of_density_lookup</name>
     <equation>
-      
+      [(0,0),(0.1,0.5),(0.25,0.75),(0.5,1),(0.75,0.75),(0.9,0.5),(1,0)]
     </equation>
   </var>
 
   <var>
     <name>effect_of_density_on_grass_growth_rate</name>
     <equation>
-      
+      effect_of_density_lookup[grass_density]
     </equation>
   </var>
 
   <var>
     <name>effect_of_food_lookup</name>
     <equation>
-      
+      [(0,10),(0.25,4),(0.5,2),(1,1),(10,1)]
     </equation>
   </var>
 
   <var>
     <name>effect_of_food_on_death</name>
     <equation>
-      
+      effect_of_food_lookup
     </equation>
   </var>
 
@@ -188,310 +188,310 @@
 
     <stock>
       <name>goats</name>
-      <x>386</x>
-      <y>215</y>
+      <x>396</x>
+      <y>223</y>
       <width>140.000000</width>
       <height>80.000000</height>
     </stock>
     <stock>
       <name>grass</name>
-      <x>382</x>
-      <y>537</y>
+      <x>378</x>
+      <y>556</y>
       <width>140.000000</width>
       <height>80.000000</height>
     </stock>
     <flow>
       <name>goat births</name>
-      <x1>58</x1>
-      <y1>218</y1>
-      <x2>387</x2>
-      <y2>219</y2>
+      <x1>67</x1>
+      <y1>221</y1>
+      <x2>399</x2>
+      <y2>226</y2>
       <start>cloud</start>
       <end>goats</end>
     </flow>
     <flow>
       <name>goat deaths</name>
-      <x1>387</x1>
-      <y1>219</y1>
-      <x2>744</x2>
-      <y2>220</y2>
+      <x1>399</x1>
+      <y1>226</y1>
+      <x2>762</x2>
+      <y2>225</y2>
       <start>goats</start>
       <end>cloud</end>
     </flow>
     <flow>
       <name>goat sales</name>
-      <x1>387</x1>
-      <y1>219</y1>
-      <x2>387</x2>
-      <y2>27</y2>
+      <x1>399</x1>
+      <y1>226</y1>
+      <x2>409</x2>
+      <y2>28</y2>
       <start>goats</start>
       <end>cloud</end>
     </flow>
     <flow>
       <name>new grass</name>
-      <x1>32</x1>
-      <y1>541</y1>
-      <x2>382</x2>
-      <y2>540</y2>
+      <x1>46</x1>
+      <y1>551</y1>
+      <x2>381</x2>
+      <y2>559</y2>
       <start>cloud</start>
       <end>grass</end>
     </flow>
     <flow>
       <name>grass eaten</name>
-      <x1>382</x1>
-      <y1>540</y1>
-      <x2>760</x2>
-      <y2>543</y2>
+      <x1>381</x1>
+      <y1>559</y1>
+      <x2>771</x2>
+      <y2>562</y2>
       <start>grass</start>
       <end>cloud</end>
     </flow>
     <var>
       <name>crude birth rate</name>
-      <x>167</x>
-      <y>128</y>
+      <x>201</x>
+      <y>127</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>sales fraction</name>
-      <x>638</x>
-      <y>37</y>
+      <x>577</x>
+      <y>45</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <link>
-      <x1>566</x1>
-      <y1>37</y1>
-      <x2>388</x2>
-      <y2>45</y2>
+      <x1>507</x1>
+      <y1>48</y1>
+      <x2>404</x2>
+      <y2>127</y2>
       <start>sales fraction</start>
       <end>goat sales</end>
     </link>
     <link>
-      <x1>95</x1>
-      <y1>128</y1>
-      <x2>223</x2>
-      <y2>215</y2>
+      <x1>131</x1>
+      <y1>130</y1>
+      <x2>233</x2>
+      <y2>223</y2>
       <start>crude birth rate</start>
       <end>goat births</end>
     </link>
     <var>
       <name>crude death rate</name>
-      <x>733</x>
-      <y>143</y>
+      <x>701</x>
+      <y>150</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>effect of food on death</name>
-      <x>770</x>
-      <y>300</y>
+      <x>775</x>
+      <y>286</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>food availability</name>
-      <x>729</x>
-      <y>428</y>
+      <x>749</x>
+      <y>432</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>grass needed to feed all goats</name>
-      <x>474</x>
-      <y>432</y>
+      <x>440</x>
+      <y>388</y>
       <width>200.000000</width>
       <height>71.000000</height>
     </var>
     <var>
       <name>grass needed per goat per year</name>
-      <x>242</x>
-      <y>344</y>
+      <x>221</x>
+      <y>343</y>
       <width>200.000000</width>
       <height>71.000000</height>
     </var>
     <var>
       <name>crude grass growth rate</name>
-      <x>268</x>
-      <y>466</y>
+      <x>197</x>
+      <y>476</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>effect of density on grass growth rate</name>
-      <x>324</x>
-      <y>662</y>
+      <x>289</x>
+      <y>660</y>
       <width>200.000000</width>
       <height>92.000000</height>
     </var>
     <var>
       <name>initial amount of grass</name>
-      <x>592</x>
-      <y>634</y>
+      <x>553</x>
+      <y>648</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>grass density</name>
-      <x>561</x>
-      <y>707</y>
+      <x>538</x>
+      <y>724</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <var>
       <name>probability of finding food</name>
-      <x>877</x>
-      <y>650</y>
+      <x>790</x>
+      <y>635</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <link>
-      <x1>171</x1>
-      <y1>344</y1>
-      <x2>402</x2>
-      <y2>432</y2>
+      <x1>151</x1>
+      <y1>346</y1>
+      <x2>370</x2>
+      <y2>391</y2>
       <start>grass needed per goat per year</start>
       <end>grass needed to feed all goats</end>
     </link>
     <link>
-      <x1>387</x1>
-      <y1>219</y1>
-      <x2>402</x2>
-      <y2>432</y2>
+      <x1>399</x1>
+      <y1>226</y1>
+      <x2>370</x2>
+      <y2>391</y2>
       <start>goats</start>
       <end>grass needed to feed all goats</end>
     </link>
     <link>
-      <x1>402</x1>
-      <y1>432</y1>
-      <x2>657</x2>
-      <y2>429</y2>
+      <x1>370</x1>
+      <y1>391</y1>
+      <x2>679</x2>
+      <y2>435</y2>
       <start>grass needed to feed all goats</start>
       <end>food availability</end>
     </link>
     <link>
-      <x1>402</x1>
-      <y1>432</y1>
-      <x2>571</x2>
-      <y2>537</y2>
+      <x1>370</x1>
+      <y1>391</y1>
+      <x2>576</x2>
+      <y2>560</y2>
       <start>grass needed to feed all goats</start>
       <end>grass eaten</end>
     </link>
     <link>
-      <x1>571</x1>
-      <y1>537</y1>
-      <x2>657</x2>
-      <y2>429</y2>
+      <x1>576</x1>
+      <y1>560</y1>
+      <x2>679</x2>
+      <y2>435</y2>
       <start>grass eaten</start>
       <end>food availability</end>
     </link>
     <link>
-      <x1>657</x1>
-      <y1>429</y1>
-      <x2>698</x2>
-      <y2>301</y2>
+      <x1>679</x1>
+      <y1>435</y1>
+      <x2>705</x2>
+      <y2>289</y2>
       <start>food availability</start>
       <end>effect of food on death</end>
     </link>
     <link>
-      <x1>698</x1>
-      <y1>301</y1>
-      <x2>566</x2>
-      <y2>216</y2>
+      <x1>705</x1>
+      <y1>289</y1>
+      <x2>580</x2>
+      <y2>225</y2>
       <start>effect of food on death</start>
       <end>goat deaths</end>
     </link>
     <link>
-      <x1>659</x1>
-      <y1>144</y1>
-      <x2>566</x2>
-      <y2>216</y2>
+      <x1>631</x1>
+      <y1>153</y1>
+      <x2>580</x2>
+      <y2>225</y2>
       <start>crude death rate</start>
       <end>goat deaths</end>
     </link>
     <link>
-      <x1>250</x1>
-      <y1>661</y1>
-      <x2>207</x2>
-      <y2>537</y2>
+      <x1>219</x1>
+      <y1>663</y1>
+      <x2>213</x2>
+      <y2>555</y2>
       <start>effect of density on grass growth rate</start>
       <end>new grass</end>
     </link>
     <link>
-      <x1>382</x1>
-      <y1>540</y1>
-      <x2>488</x2>
-      <y2>706</y2>
+      <x1>381</x1>
+      <y1>559</y1>
+      <x2>468</x2>
+      <y2>727</y2>
       <start>grass</start>
       <end>grass density</end>
     </link>
     <link>
-      <x1>520</x1>
-      <y1>633</y1>
-      <x2>488</x2>
-      <y2>706</y2>
+      <x1>483</x1>
+      <y1>651</y1>
+      <x2>468</x2>
+      <y2>727</y2>
       <start>initial amount of grass</start>
       <end>grass density</end>
     </link>
     <link>
-      <x1>488</x1>
-      <y1>706</y1>
-      <x2>250</x2>
-      <y2>661</y2>
+      <x1>468</x1>
+      <y1>727</y1>
+      <x2>219</x2>
+      <y2>663</y2>
       <start>grass density</start>
       <end>effect of density on grass growth rate</end>
     </link>
     <link>
-      <x1>488</x1>
-      <y1>706</y1>
-      <x2>805</x2>
-      <y2>651</y2>
+      <x1>468</x1>
+      <y1>727</y1>
+      <x2>720</x2>
+      <y2>638</y2>
       <start>grass density</start>
       <end>probability of finding food</end>
     </link>
     <link>
-      <x1>805</x1>
-      <y1>651</y1>
-      <x2>571</x2>
-      <y2>537</y2>
+      <x1>720</x1>
+      <y1>638</y1>
+      <x2>576</x2>
+      <y2>560</y2>
       <start>probability of finding food</start>
       <end>grass eaten</end>
     </link>
     <link>
-      <x1>197</x1>
-      <y1>467</y1>
-      <x2>207</x2>
-      <y2>537</y2>
+      <x1>127</x1>
+      <y1>479</y1>
+      <x2>213</x2>
+      <y2>555</y2>
       <start>crude grass growth rate</start>
       <end>new grass</end>
     </link>
     <var>
       <name>effect of food lookup</name>
-      <x>883</x>
-      <y>370</y>
+      <x>854</x>
+      <y>355</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <link>
-      <x1>811</x1>
-      <y1>370</y1>
-      <x2>698</x2>
-      <y2>301</y2>
+      <x1>784</x1>
+      <y1>358</y1>
+      <x2>705</x2>
+      <y2>289</y2>
       <start>effect of food lookup</start>
       <end>effect of food on death</end>
     </link>
     <var>
       <name>effect of density lookup</name>
-      <x>108</x>
-      <y>665</y>
+      <x>128</x>
+      <y>720</y>
       <width>200.000000</width>
       <height>63.000000</height>
     </var>
     <link>
-      <x1>35</x1>
-      <y1>664</y1>
-      <x2>251</x2>
-      <y2>662</y2>
+      <x1>58</x1>
+      <y1>723</y1>
+      <x2>219</x2>
+      <y2>663</y2>
       <start>effect of density lookup</start>
       <end>effect of density on grass growth rate</end>
     </link>

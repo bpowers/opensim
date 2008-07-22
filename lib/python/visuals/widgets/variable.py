@@ -46,7 +46,7 @@ class VariableItem(SimItem):
     self.height = height
     self.__needs_resize_calc = True
     self.dragging = False
-    self.text_color = [0, 0, 0]
+    self.active_color = [0, 0, 0]
     self.__old_name = ""
 
     self._new = True
@@ -130,6 +130,19 @@ class VariableItem(SimItem):
 
     center = self.center()
     cr.translate(int(center[0] + self.icon_size/2 + self.padding), center[1])
+
+    # white background for text
+    cr.rectangle(-self._display_name.width/2.0, 
+                 -self._display_name.height/2.0,
+                 self._display_name.text_width, 
+                 self._display_name.height)
+    cr.set_source_rgba(1, 1, 1, .8)
+    cr.fill()
+
+    cr.set_source_rgb(self.active_color[0], \
+                      self.active_color[1], \
+                      self.active_color[2]) 
+
     self._display_name.show_text(cr)
 
     cr.restore()
@@ -143,9 +156,9 @@ class VariableItem(SimItem):
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
     cr.set_line_width(self.line_width)
-    cr.set_source_rgb(self.text_color[0], \
-                      self.text_color[1], \
-                      self.text_color[2])
+    cr.set_source_rgb(self.active_color[0], \
+                      self.active_color[1], \
+                      self.active_color[2])
     cr.stroke()
 
 
@@ -153,7 +166,8 @@ class VariableItem(SimItem):
     # get the center of the widget, so that we get the correct 
     # behavior when it loads.  also, add the cairo transformation
     # matrix offset.
-    x_center, y_center = self.abs_center()
+    x_center = self.bounds_x1 + self.width/2
+    y_center = self.bounds_y1 + self.height/2
 
     xml_string = '\
     <var>\n\
@@ -253,7 +267,7 @@ class VariableItem(SimItem):
 
 
   def on_highlight_in(self, item, target):
-    self.text_color = [1, .6, .2]
+    self.active_color = [1, .6, .2]
     self.force_redraw()
 
     self.__old_name = self.name()
@@ -262,7 +276,7 @@ class VariableItem(SimItem):
 
 
   def on_highlight_out(self, item, target):
-    self.text_color = [0, 0, 0]
+    self.active_color = [0, 0, 0]
     self.force_redraw()
 
     if self._new:

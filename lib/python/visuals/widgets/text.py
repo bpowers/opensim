@@ -36,6 +36,7 @@ class TextInfo():
     self.font_face = font_face
     self.font_size = font_size
     self.width = wrap_width
+    self.text_width = self.width
     self.placeholder = placeholder_text
     self.align = align
 
@@ -46,7 +47,7 @@ class TextInfo():
     cr.save()
 
     layout = self.create_layout(cr)
-    self.height = layout.get_pixel_size()[1]
+    self.text_width, self.height = layout.get_pixel_size()
 
     cr.restore()
 
@@ -69,6 +70,7 @@ class TextInfo():
     cr.save()
     layout = self.create_layout(cr)
 
+    self.text_width, self.height = layout.get_pixel_size()
     cr.translate(-int(self.width/2), -int(self.height/2))
     pc = pangocairo.CairoContext(cr)
     pc.show_layout(layout)

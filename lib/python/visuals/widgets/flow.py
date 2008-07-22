@@ -190,11 +190,11 @@ class FlowItem(SimItem):
       cr.translate(center[0], y_offset)
 
       # white background for text
-      cr.rectangle(-self._display_name.width/2.0, 
+      cr.rectangle(-self._display_name.text_width/2.0, 
                    -self._display_name.height/2.0,
-                   self._display_name.width/2.0, 
-                   self._display_name.height/2.0)
-      cr.set_source_rgb(1, 1, 1)
+                   self._display_name.text_width, 
+                   self._display_name.height)
+      cr.set_source_rgba(1, 1, 1, .8)
       cr.fill()
 
       cr.set_source_rgb(self.active_color[0], \

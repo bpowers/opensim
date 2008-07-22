@@ -142,7 +142,8 @@ class StockItem(SimItem):
     # get the center of the widget, so that we get the correct 
     # behavior when it loads.  also, add the cairo transformation
     # matrix offset.
-    x_center, y_center = self.abs_center()
+    x_center = self.bounds_x1 + self.width/2.0
+    y_center = self.bounds_y1 + self.height/2.0
 
     xml_string = '\
     <stock>\n\
