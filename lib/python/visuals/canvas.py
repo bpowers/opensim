@@ -370,7 +370,7 @@ class Canvas (gtk.ScrolledWindow):
                                       can_focus=True)
           self.display_vars.append(new_var)
 
-      if name == "flow":
+      if name == "flow" or name == "link":
         var_item = var.children
         var_name, start, end = "undefined", "none", "none"
         x1, x2, y1, y2 = 0, 0, 0, 0
@@ -397,14 +397,20 @@ class Canvas (gtk.ScrolledWindow):
                       "'%s' (x1'%d', y1'%d', x2'%d', y2'%d', s'%s' e'%s')" % \
                       (var_name, x1, y1, x2, y2, start, end))
 
-        # FIXME: we assume correct input.  handle errors!
-        new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
-                                   focus=False, parent=goo_root, 
-                                   can_focus=True)
+        new_var = None
+        if name == "flow":
+          # FIXME: we assume correct input.  handle errors!
+          new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
+                                     focus=False, parent=goo_root, 
+                                     can_focus=True)
+        else:
+          new_var = widgets.LinkItem(None, (x1, y1), (x2, y2),
+                                     focus=False, parent=goo_root,
+                                     can_focus=True)
+        # add info to post in order to finish hooking up rate.
+
         new_var.lower(None)
         self.display_vars.append(new_var)
-        
-        # add info to post in order to finish hooking up rate.
         post.append((new_var, start, end))
 
       var = var.next
