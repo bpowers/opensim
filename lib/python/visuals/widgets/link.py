@@ -1,4 +1,4 @@
-#===--- rate.py - OpenSim Rate widget -------------------------------------===#
+#===--- link.py - OpenSim Link widget -------------------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -19,7 +19,7 @@
 #
 #===-----------------------------------------------------------------------===#
 #
-# This file contains the implementation of the rate widget
+# This file contains the implementation of the link widget
 #
 #===-----------------------------------------------------------------------===#
 
@@ -37,16 +37,15 @@ from stock import StockItem
 from cloud import CloudItem
 
 
-class FlowItem(SimItem):
+class LinkItem(SimItem):
 
-  def __init__(self, flow_from=None, name=None, start=None, end=None, 
-               dragging=True, focus=True, line_width=9, **kwargs):
+  def __init__(self, flow_from=None, start=None, end=None, 
+               dragging=True, focus=True, line_width=3, **kwargs):
     super(FlowItem, self).__init__(**kwargs)
 
     self.__needs_resize_calc = True
     self.dragging = dragging
     self.active_color = [0, 0, 0]
-    self.__old_name = ""
 
     if flow_from:
       start_coord = flow_from.abs_center()  
@@ -75,13 +74,6 @@ class FlowItem(SimItem):
     self._new = True
     self.line_width = line_width
 
-    if name is not None:
-      self._display_name = TextInfo(name, 
-                                    placeholder_text=False)
-    else:
-      self._display_name = TextInfo("(new flow)", 
-                                    placeholder_text=True)
-
     if focus:
       self.get_canvas().grab_focus(self)
       self.get_canvas().grab_highlight(self)
@@ -91,13 +83,9 @@ class FlowItem(SimItem):
     # get rid of clouds
     if self.flow_from:
       self.flow_from.disconnect(self.__start_cb)
-      if type(self.flow_from) is CloudItem:
-        self.get_canvas().remove_item(self.flow_from)
 
     if self.flow_to:
       self.flow_to.disconnect(self.__end_cb)
-      if type(self.flow_to) is CloudItem:
-        self.get_canvas().remove_item(self.flow_to)
     
     super(FlowItem, self).remove()
 
@@ -158,28 +146,7 @@ class FlowItem(SimItem):
     # when we can see the end (i.e. when we're drawing it)
     if self._new:
       cr.set_line_cap  (cairo.LINE_CAP_ROUND)
-    cr.stroke_preserve()
-    cr.set_line_width(self.line_width/3)
-    cr.set_source_rgb(1, 1, 1)
     cr.stroke()
-
-    # print flow name
-    if not self._new:
-      center = self.center()
-      cr.move_to(center[0] + self.icon_size/2.0, center[1])
-      cr.arc(center[0], center[1], self.icon_size/2, 0, 2*math.pi)
-      cr.close_path()
-      cr.fill_preserve()
-      cr.set_source_rgb(self.active_color[0], \
-                        self.active_color[1], \
-                        self.active_color[2]) 
-      cr.stroke()
-
-      self._display_name.update_extents(cr)
-      y_offset = center[1] + self.padding + self._display_name.height/2.0 \
-                 + self.icon_size/2
-      cr.translate(center[0], y_offset)
-      self._display_name.show_text(cr)
     
     cr.restore()
 
@@ -188,8 +155,6 @@ class FlowItem(SimItem):
 
     if self.flow_from:
       self.flow_from.disconnect(self.__start_cb)
-      if type(self.flow_from) is CloudItem:
-        self.get_canvas().remove_item(self.flow_from)
 
     self.flow_from = flow_from
     self.x1, self.y1 = self.flow_from.abs_center()
@@ -207,8 +172,6 @@ class FlowItem(SimItem):
 
     if self.flow_to:
       self.flow_to.disconnect(self.__end_cb)
-      if type(self.flow_to) is CloudItem:
-        self.get_canvas().remove_item(self.flow_to)
 
     self.flow_to = flow_to
     self.x2, self.y2 = self.flow_to.abs_center()
@@ -237,15 +200,14 @@ class FlowItem(SimItem):
 
   def xml_representation(self):
     xml_string = '\
-    <flow>\n\
-      <name>%s</name>\n\
+    <link>\n\
       <x1>%d</x1>\n\
       <y1>%d</y1>\n\
       <x2>%d</x2>\n\
       <y2>%d</y2>\n\
       <start>%s</start>\n\
       <end>%s</end>\n\
-    </flow>\n' % (self.name(), self.x1, self.y1, 
+    </link>\n' % (self.x1, self.y1, 
                   self.x2, self.y2, 
                   self.flow_from.name(), self.flow_to.name())
 
@@ -253,51 +215,20 @@ class FlowItem(SimItem):
 
 
   def name(self):
-    return self._display_name.string
+    return "link"
 
 
   def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
     self.ensure_size(cr)
 
-    b_w = self.bounds_x2 - self.bounds_x1
-    b_h = self.bounds_y2 - self.bounds_y1
-    b_cx = self.bounds_x1 + b_w/2.0
-    b_cy = self.bounds_y1 + b_h/2.0
-
-    self._display_name.update_extents(cr)
-    t_w = self._display_name.width
-
-    bottom_extent = b_cy + self.padding + self.icon_size/2 \
-                    + self._display_name.height
-
-    if ((x < b_cx - t_w/2.0) or (x > b_cx + t_w/2.0)) or \
-       ((y < b_cy - self.icon_size/2 - self.padding) or (y > bottom_extent)):
+    if ((x < self.bounds_x1) or (x > self.bounds_x2)) or \
+       ((y < self.bounds_y1) or (y > self.bounds_y2)):
       return False
     else:    
       return True
 
 
   def on_key_press(self, item, target, event):
-    # don't allow input while we're creating the flow.
-    if self._new:
-      return False
-
-    key_name = gtk.gdk.keyval_name(event.keyval)
-
-    if key_name in self.enter_key:
-      self.emit("highlight_out_event", self)
-    elif key_name in self.delete_key:
-      self._display_name.backspace()
-    elif key_name in self.escape_key:
-      print("escape key!")
-    else:
-      # add key to name buffer
-      self._display_name.add(event.string)
-
-    self.__needs_resize_calc = True
-    self.force_redraw()
-
-    # return true to stop propogation
     return True
 
 
@@ -311,10 +242,12 @@ class FlowItem(SimItem):
 
     canvas.grab_focus(item)
     canvas.grab_highlight(self)
+
     if event.button == 1:
+      # this is where we deal with bending the line
       pass
     elif event.button == 3:
-      canvas.show_editor(self)
+      pass
     else:
       print "unsupported button: %d" % event.button
     return True
@@ -346,23 +279,11 @@ class FlowItem(SimItem):
     self.active_color = [1, .6, .2]
     self.force_redraw()
 
-    self.__old_name = self.name()
-    if self.name() == "(new flow)":
-      self.__old_name = ""
-
     return False
 
 
   def on_highlight_out(self, item, target):
     self.active_color = [0, 0, 0]
-
-    if self._new:
-      if self._display_name.placeholder:
-        self.get_canvas().remove_item(self)
-        return
-
-    self.get_canvas().update_name(self.__old_name, 
-                                  self, new=self._new)
 
     self._new = False
     self.force_redraw()
@@ -370,4 +291,5 @@ class FlowItem(SimItem):
     return False
 
 
-gobject.type_register(FlowItem)
+gobject.type_register(LinkItem)
+
