@@ -108,8 +108,12 @@ class FlowItem(SimItem):
 
 
   def abs_center(self):
-    return (self.bounds_x1 + (self.bounds_x2 - self.bounds_x1)/2,
-            self.bounds_y1 + .5*self.icon_size)
+    center = self.center()
+    transform = self.get_transform()
+    x0, y0 = 0, 0
+    if transform is not None:
+      xx, yx, xy, yy, x0, y0 = self.get_transform()
+    return (x0 + center[0], y0 + center[1])
 
 
   def do_simple_create_path(self, cr):

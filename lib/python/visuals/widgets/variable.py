@@ -84,8 +84,12 @@ class VariableItem(SimItem):
 
 
   def abs_center(self):
-    return (int(self.bounds_x1 + .5*self.icon_size), 
-            int(self.bounds_y1 + self.height/2))
+    center = self.center()
+    transform = self.get_transform()
+    x0, y0 = 0, 0
+    if transform is not None:
+      xx, yx, xy, yy, x0, y0 = self.get_transform()
+    return (x0 + self.x + self.icon_size/2.0, y0 + center[1])
 
 
   def ensure_size(self, cr):

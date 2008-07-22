@@ -403,12 +403,12 @@ class Canvas (gtk.ScrolledWindow):
         if name == "flow":
           # FIXME: we assume correct input.  handle errors!
           new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
-                                     focus=False, parent=goo_root, 
-                                     can_focus=True)
+                                     focus=False, parent=goo_root,
+                                     dragging=False, can_focus=True)
         else:
           new_var = widgets.LinkItem(None, (x1, y1), (x2, y2),
                                      focus=False, parent=goo_root,
-                                     can_focus=True)
+                                     dragging=False, can_focus=True)
         # add info to post in order to finish hooking up rate.
 
         new_var.lower(None)
