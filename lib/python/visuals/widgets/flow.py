@@ -111,10 +111,8 @@ class FlowItem(SimItem):
     self.ensure_size(cr)
 
     # define the bounding path here.
-    cr.rectangle(min(self.x1, self.x2) - self.line_width, 
-                 min(self.y1, self.y2) - self.line_width, 
-                 max(self.x1, self.x2) + self.line_width, 
-                 max(self.y1, self.y2) + self.line_width)
+    cr.rectangle(self.bounds_x1, self.bounds_y1,
+                 self.bounds_x2, self.bounds_y2)
 
 
   def ensure_size(self, cr):
@@ -220,6 +218,7 @@ class FlowItem(SimItem):
     self.__end_cb = self.flow_to.connect("item_moved_event", 
                                          self.update_point)
 
+    self.dragging = False
     self.__needs_resize_calc = True
     self.force_redraw()
 
@@ -255,6 +254,27 @@ class FlowItem(SimItem):
 
   def name(self):
     return self._display_name.string
+
+
+  def do_simple_is_item_at(self, x, y, cr, is_pointer_event):
+    self.ensure_size(cr)
+
+    b_w = self.bounds_x2 - self.bounds_x1
+    b_h = self.bounds_y2 - self.bounds_y1
+    b_cx = self.bounds_x1 + b_w/2.0
+    b_cy = self.bounds_y1 + b_h/2.0
+
+    self._display_name.update_extents(cr)
+    t_w = self._display_name.width
+
+    bottom_extent = b_cy + self.padding + self.icon_size/2 \
+                    + self._display_name.height
+
+    if ((x < b_cx - t_w/2.0) or (x > b_cx + t_w/2.0)) or \
+       ((y < b_cy - self.icon_size/2 - self.padding) or (y > bottom_extent)):
+      return False
+    else:    
+      return True
 
 
   def on_key_press(self, item, target, event):
