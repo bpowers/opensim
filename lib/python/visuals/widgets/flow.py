@@ -184,6 +184,18 @@ class FlowItem(SimItem):
       y_offset = center[1] + self.padding + self._display_name.height/2.0 \
                  + self.icon_size/2
       cr.translate(center[0], y_offset)
+
+      # white background for text
+      cr.rectangle(-self._display_name.width/2.0, 
+                   -self._display_name.height/2.0,
+                   self._display_name.width/2.0, 
+                   self._display_name.height/2.0)
+      cr.set_source_rgb(1, 1, 1)
+      cr.fill()
+
+      cr.set_source_rgb(self.active_color[0], \
+                        self.active_color[1], \
+                        self.active_color[2]) 
       self._display_name.show_text(cr)
     
     cr.restore()

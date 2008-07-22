@@ -54,6 +54,11 @@ OpenSim::Simulator::Simulator()
   _output_file_name = "";
   
   _output_type = sim_emit_Output;
+
+  _variables["OS_start"] = new Variable("OS_start", "0");
+  _variables["OS_end"] = new Variable("OS_end", "100");
+  _variables["OS_savestep"] = new Variable("OS_savestep", "1");
+  _variables["OS_timestep"] = new Variable("OS_timestep", ".125");
 }
 
 
