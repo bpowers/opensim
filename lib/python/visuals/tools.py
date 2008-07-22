@@ -224,9 +224,22 @@ class ViewToolbar(gtk.Toolbar):
 class EquationEditor(gtk.Dialog):
   '''Provides a pop-up window for editing the equations of variables'''
 
-  def __init__(self, **kwargs):
-    gtk.Dialog.__init__(self, **kwargs)
+  def __init__(self, equation='', **kwargs):
+    gtk.Dialog.__init__(self, flags=gtk.DIALOG_MODAL|
+                        gtk.DIALOG_DESTROY_WITH_PARENT, **kwargs)
 
+    self.equation = gtk.Entry()
+    self.equation.set_text(equation)
+    self.equation.set_size_request(int(gtk.gdk.screen_width() / 4), -1)
+    self.vbox.pack_start(self.equation, False, False, 10)
+    self.equation.show()
+
+    cancel = gtk.Button(stock=gtk.STOCK_CANCEL)
+    self.add_action_widget(cancel, gtk.RESPONSE_CANCEL)
+    cancel.show()
+    ok = gtk.Button(stock=gtk.STOCK_OK)
+    self.add_action_widget(ok, gtk.RESPONSE_OK)
+    ok.show()
 
 
 class LineControl:

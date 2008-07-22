@@ -210,7 +210,7 @@ class VariableItem(SimItem):
                           fleur, event.time)
       self.dragging = True
     elif event.button == 3:
-      # right-click, handle later
+      canvas.show_editor(self)
       pass
     else:
       print "unsupported button: %d" % event.button

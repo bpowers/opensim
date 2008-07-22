@@ -314,8 +314,7 @@ class FlowItem(SimItem):
     if event.button == 1:
       pass
     elif event.button == 3:
-      # right-click, handle later
-      pass
+      canvas.show_editor(self)
     else:
       print "unsupported button: %d" % event.button
     return True
