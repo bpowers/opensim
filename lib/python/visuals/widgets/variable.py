@@ -218,7 +218,9 @@ class VariableItem(SimItem):
       return False
 
     canvas.grab_focus(item)
+    logging.debug("**before grab")
     canvas.grab_highlight(self)
+    logging.debug("**after grab")
 
     if event.button == 1:
       self.drag_x = event.x
@@ -232,6 +234,7 @@ class VariableItem(SimItem):
                           fleur, event.time)
       self.dragging = True
     elif event.button == 3:
+      logging.debug("right click")
       canvas.show_editor(self)
       pass
     else:
@@ -270,6 +273,8 @@ class VariableItem(SimItem):
     self.active_color = [1, .6, .2]
     self.force_redraw()
 
+    logging.debug("h_in : (%s)" % self.name())
+
     self.__old_name = self.name()
 
     return False
@@ -278,6 +283,8 @@ class VariableItem(SimItem):
   def on_highlight_out(self, item, target):
     self.active_color = [0, 0, 0]
     self.force_redraw()
+
+    logging.debug("h_out: (%s)" % self.name())
 
     if self._new:
       if self._display_name.placeholder:

@@ -124,6 +124,8 @@ class SimGoo(goocanvas.Canvas):
     else:
       logging.debug('oh well, canceled editor or something.')
 
+    self.drop_highlight()
+
 
 
 class Canvas (gtk.ScrolledWindow):

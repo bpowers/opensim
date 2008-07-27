@@ -194,7 +194,9 @@ class StockItem(SimItem):
       return False
 
     canvas.grab_focus(item)
+    logging.debug("**before grab")
     canvas.grab_highlight(self)
+    logging.debug("**after grab")
 
     if event.button == 1:
       self.drag_x = event.x
@@ -208,6 +210,7 @@ class StockItem(SimItem):
                           fleur, event.time)
       self.dragging = True
     elif event.button == 3:
+      logging.debug("right click")
       canvas.show_editor(self)
     else:
       print "unsupported button: %d" % event.button
