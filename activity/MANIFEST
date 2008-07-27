@@ -5,6 +5,8 @@ icons/opensim-flow.svg
 icons/opensim-var.svg
 icons/opensim-infl.svg
 icons/opensim-cloud.svg
+icons/opensim-graphs.svg
+icons/opensim-canvas.svg
 model_app.py
 model_startup.sh
 NEWS
@@ -19,6 +21,7 @@ site-packages/opensim/visuals/widgets/text.py
 site-packages/opensim/visuals/widgets/variable.py
 site-packages/opensim/visuals/widgets/flow.py
 site-packages/opensim/visuals/widgets/cloud.py
+site-packages/opensim/visuals/widgets/link.py
 site-packages/opensim/visuals/__init__.py
 site-packages/opensim/visuals/canvas.py
 site-packages/opensim/visuals/constants.py
