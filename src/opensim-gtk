@@ -39,7 +39,7 @@ class OpenSimGTK(gobject.GObject):
 
     # if a widget is being un-toggled, then we don't have
     # to worry about it (otherwise breaks toggle effect)
-    if widget.get_active() == False:
+    if widget.get_active() is False:
       # make sure we catch the case where no tool is active.
       if widget.type == self.canvas.get_active_tool():
         self.canvas.set_active_tool(sim.NONE)
@@ -57,6 +57,16 @@ class OpenSimGTK(gobject.GObject):
 
     # let the canvas know what tool is active
     self.canvas.set_active_tool(widget.type)
+
+
+  def view_toggled(self, widget):
+
+    print("view toggled")
+
+    if widget is self.view_graphs:
+      self.view_var.set_sensitive(True)
+    else:
+      self.view_var.set_sensitive(False)
 
 
   def __init__(self, **kwargs):
@@ -97,6 +107,7 @@ class OpenSimGTK(gobject.GObject):
     self.window.set_title('new simulation | Model')
 
     dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
+           "on_view_toggled" : self.view_toggled,
            "on_open" : self.open_clicked,
            "on_save" : self.save_clicked,
            "on_save_as" : self.save_as_clicked,
@@ -113,6 +124,12 @@ class OpenSimGTK(gobject.GObject):
     self.button_stock.type = sim.STOCK
     self.button_flow = self.wTree.get_widget("but_flow")
     self.button_flow.type = sim.FLOW
+
+    self.view_canvas = self.wTree.get_widget("but_view_canvas")
+    self.view_var = self.wTree.get_widget("but_view_var")
+    self.view_graphs = self.wTree.get_widget("but_view_graphs")
+
+    self.view_var.set_sensitive(False)
 
     #insert our goocanvas (since I don't want to deal with 
     #getting it working with glade just yet...)
