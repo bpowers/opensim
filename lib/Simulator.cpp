@@ -29,6 +29,7 @@
 #include "Simulator.h"
 
 #include <glibmm/init.h>
+#include <glibmm/thread.h>
 
 // openSim stuff
 #include "globals.h"
@@ -46,6 +47,7 @@ OpenSim::force_cpp_glib_init()
 {
   // IMPORTANT: glib needs to be initialized before the constructors are called
   Glib::init();
+  if(!Glib::thread_supported()) Glib::thread_init();
 }
 
 OpenSim::Simulator::Simulator()

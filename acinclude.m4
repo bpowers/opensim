@@ -1,26 +1,36 @@
 AC_DEFUN(
-	[OPENSIM_LLVM_SETFLAGS],
-	[
-		AC_CHECK_PROGS([LLVM], ['llvm-config'], [$MISSING llvm-config])
+  [OPENSIM_LLVM_SETFLAGS],
+  [
+    AC_CHECK_PROGS([LLVM], ['llvm-config'], [$MISSING llvm-config])
 
-        	AC_MSG_NOTICE([Getting LLVM compiler and linker flags.])
-		AC_SUBST(OPENSIM_LLVM_CXXFLAGS, ['esyscmd(llvm-config --cppflags)'])
-                AC_SUBST(OPENSIM_LLVM_LDFLAGS,  ['esyscmd(llvm-config --ldflags)'])
-		AC_SUBST(OPEMSIM_LLVM_LIBS, ['esyscmd(llvm-config --libs core jit native)'])
-        ]
+    AC_MSG_NOTICE([Getting LLVM compiler and linker flags.])
+    AC_SUBST(OPENSIM_LLVM_CXXFLAGS, ['esyscmd(llvm-config --cppflags)'])
+    AC_SUBST(OPENSIM_LLVM_LDFLAGS,  ['esyscmd(llvm-config --ldflags)'])
+    AC_SUBST(OPEMSIM_LLVM_LIBS, 
+             ['esyscmd(llvm-config --libs core jit native)'])
+  ]
 )
 
 AC_DEFUN(
-	[OPENSIM_XML2_SETFLAGS],
-	[
-		AC_CHECK_PROGS([XML2], ['xml2-config'], [$MISSING xml2-config])
+  [OPENSIM_XML2_SETFLAGS],
+  [
+    AC_CHECK_PROGS([XML2], ['xml2-config'], [$MISSING xml2-config])
 
-        	AC_MSG_NOTICE([Getting libXML2 compiler and linker flags.])
-		AC_SUBST(OPENSIM_XML2_CXXFLAGS, ['esyscmd(xml2-config --cflags)'])
-                AC_SUBST(OPENSIM_XML2_LDFLAGS,  ['esyscmd(xml2-config --libs)'])
-        ]
+    AC_MSG_NOTICE([Getting libXML2 compiler and linker flags.])
+    AC_SUBST(OPENSIM_XML2_CXXFLAGS, ['esyscmd(xml2-config --cflags)'])
+    AC_SUBST(OPENSIM_XML2_LDFLAGS,  ['esyscmd(xml2-config --libs)'])
+  ]
 )
 
+AC_DEFUN(
+	[OPENSIM_GTHREADS],
+	[
+    AC_MSG_NOTICE([Getting gthread linker flags.])
+    AC_SUBST(OPENSIM_GTHREAD_LDFLAGS, 
+             ['esyscmd(pkg-config --libs gthread-2.0)'])
+  ]
+)
+pkg-config --libs gthread-2.0
 
 
 # AC_LIBLTDL_INSTALLABLE([DIRECTORY])
