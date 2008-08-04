@@ -29,6 +29,7 @@
 #include "Simulator.h"
 
 #include <glibmm/init.h>
+#include <glibmm/object.h>
 #include <glibmm/thread.h>
 
 // openSim stuff
@@ -155,6 +156,19 @@ OpenSim::Simulator::info()
 }
 
 
+void
+OpenSim::Simulator::sim_thread()
+{
+  _parse_status = _sim_builder->Parse(_output_type, _output_stream);
+  
+  if (_output_type == sim_emit_Output)
+  {
+    _results = _sim_builder->Results();
+  }
+  
+  return;
+}
+
 
 int
 OpenSim::Simulator::simulate()
@@ -163,12 +177,11 @@ OpenSim::Simulator::simulate()
   // but this should prevent the biggest segfaults...
   if (_sim_builder)
   {
-    FILE *outputStream = NULL;
     if (_output_file_name != "") 
     {
-      outputStream = fopen(_output_file_name.c_str(), "w+");
+      _output_stream = fopen(_output_file_name.c_str(), "w+");
       
-      if (!outputStream) 
+      if (!_output_stream) 
       {
         fprintf(stderr, "Error: Could not open output file for writing.\n");
         return -1;
@@ -176,20 +189,20 @@ OpenSim::Simulator::simulate()
     }
     else 
     {
-      outputStream = stdout;
+      _output_stream = stdout;
     }
     
-    int parse_status = _sim_builder->Parse(_output_type, outputStream);
+    _parse_status = -1;
     
-    if (_output_type == sim_emit_Output)
-    {
-      _results = _sim_builder->Results();
-    }
+    Glib::Thread *const parsing = Glib::Thread::create(
+      sigc::mem_fun(this, &OpenSim::Simulator::sim_thread), true);
+    
+    parsing->join();
 
     // if we opened it, close the output stream
-    if (outputStream != stdout) fclose(outputStream);
+    if (_output_stream != stdout) fclose(_output_stream);
     
-    return parse_status;
+    return _parse_status;
   }
   
   return -1;

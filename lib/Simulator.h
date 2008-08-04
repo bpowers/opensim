@@ -77,6 +77,10 @@ namespace OpenSim
     std::map<std::string, std::vector<double> > _results;
     std::string clean_name(std::string varName);
     
+    void sim_thread();
+    FILE *_output_stream;
+    int _parse_status;
+    
   public:
     Simulator();
     Simulator(std::string fileName);
