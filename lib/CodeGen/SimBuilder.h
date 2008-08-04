@@ -70,6 +70,8 @@ namespace OpenSim
     
     /// Internal method to process the variables and construct an AST.
     void InitializeModule();
+    bool _valid_model;
+    int _errors;
     
     
     /// Checks to see if we've started parsing the variable with 

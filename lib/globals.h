@@ -44,6 +44,9 @@
 #include <map>
 #include <vector>
 
+#define WALK_BAILED 20
+#define PARSED_OK 0
+
 /*
 // llvm code generation
 #include "llvm/DerivedTypes.h"

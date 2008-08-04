@@ -65,6 +65,9 @@ OpenSim::SimBuilder::SimBuilder(std::map<std::string, Variable *> variables)
   BinopPrecedence['/'] = 40;
   BinopPrecedence['^'] = 60;// highest.
 
+  _valid_model = false;
+  _errors = 0;
+
   // creates AST from variable definitions.
   InitializeModule();
 }
@@ -93,6 +96,12 @@ OpenSim::SimBuilder::Update()
 int 
 OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 {
+  if (!_valid_model)
+  {
+    fprintf(stderr, "opensim: model not valid, not simulating.\n");
+    return -1;
+  }
+
   ASTConsumer *consumer = NULL;
   
   switch (ourWalk)
@@ -141,7 +150,11 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 std::map<std::string, std::vector<double> >
 OpenSim::SimBuilder::Results()
 {
-  return *results;
+  if (results)
+    return *results;
+  
+  // if we don't have results, return an empty map
+  return std::map<std::string, std::vector<double> >();
 }
 
 
@@ -168,6 +181,14 @@ OpenSim::SimBuilder::InitializeModule()
 
     ProcessVar(var);
   }
+  
+  if (_errors)
+  {
+    _valid_model = false;
+    fprintf(stderr, "opensim: The model has %d errors.\n", _errors);
+  }
+  else
+    _valid_model = true;
   
   // these are the root AST nodes.
   EulerAST *integrate = new EulerAST(body);
@@ -299,6 +320,8 @@ OpenSim::SimBuilder::ParseTable()
       {
         fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
                 CurTok.Identifier.c_str());
+        _errors++;
+        
         break;
       }
       
@@ -310,6 +333,8 @@ OpenSim::SimBuilder::ParseTable()
       {
         fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
                 CurTok.Identifier.c_str());
+        _errors++;
+        
         break;
       }
       
@@ -319,6 +344,8 @@ OpenSim::SimBuilder::ParseTable()
       {
         fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
                 CurTok.Identifier.c_str());
+        _errors++;
+        
         break;
       }
       
@@ -330,6 +357,8 @@ OpenSim::SimBuilder::ParseTable()
       {
         fprintf(stderr, "Error: Expecting a ')' in lookup, not '%s'\n",
                 CurTok.Identifier.c_str());
+        _errors++;
+        
         break;
       }
       
@@ -345,8 +374,11 @@ OpenSim::SimBuilder::ParseTable()
       {
         // its not an error if its the closing bracket
         if (CurTok.Type != tok_operator || CurTok.Op != ']')
+        {
           fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
                   CurTok.Identifier.c_str());
+          _errors++;
+        }
         
         break;
       }
@@ -436,6 +468,8 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     if (CurTok.Op != ',')
     {
       fprintf(stdout, "Error: expected ')' while parsing %c.", CurTok.Op);
+      _errors++;
+      
       return 0;
     }
     getNextToken();
@@ -450,6 +484,8 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     if (Args.size() != 2)
     {
       fprintf(stdout, "Error: integrals take only 2 arguments.\n");
+      _errors++;
+      
       return 0;
     }
     
@@ -467,6 +503,8 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     if (Args.size() != 1)
     {
       fprintf(stderr, "Error: Table functions take 1 argument.\n");
+      _errors++;
+      
       return 0;
     }
     
@@ -482,10 +520,17 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
 ExprAST *
 OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 {
-  // FIXME: dirty hack to get time references working...
   if (IdName == "time") return new VarRefAST("time");
   
-  // FIXME: this is where error checking code goez
+  if (vars.find(IdName) == vars.end())
+  {
+    fprintf(stderr, "Error: Reference to undefined variable '%s'\n", 
+            IdName.c_str());
+    _errors++;
+    
+    return NULL;
+  }
+  
   Variable *requestedVar = vars[IdName];
   
   if ((requestedVar->Type() != var_stock) && IsUnparsedTL(IdName))
@@ -540,8 +585,9 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
   
   if (toks.size() == 0)
   {
-    fprintf(stdout, "Warning: variable '%s' has empty equation field\n", 
+    fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
             var->Name().c_str());
+    _errors++;
     return false;
   }
 
@@ -560,8 +606,9 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
     
     if (CurVarInitial == 0)
     {
-      fprintf(stdout, "Warning: stock '%s' has empty initial value field\n", 
+      fprintf(stderr, "Error: stock '%s' has empty initial value field\n", 
               var->Name().c_str());
+      _errors++;
       return false;
     }
     

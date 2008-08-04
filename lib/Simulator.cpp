@@ -68,10 +68,6 @@ OpenSim::Simulator::Simulator()
 
 OpenSim::Simulator::Simulator(std::string fileName)
 {
-  // important!
-  //Glib::init();
-
-  //fprintf(stdout, "created new Simulator from file\n");
   // call the init function, load the model and construct its AST
   init(fileName);
   
@@ -192,7 +188,7 @@ OpenSim::Simulator::simulate()
       _output_stream = stdout;
     }
     
-    _parse_status = -1;
+    _parse_status = WALK_BAILED;
     
     Glib::Thread *const parsing = Glib::Thread::create(
       sigc::mem_fun(this, &OpenSim::Simulator::sim_thread), true);
@@ -201,6 +197,11 @@ OpenSim::Simulator::simulate()
 
     // if we opened it, close the output stream
     if (_output_stream != stdout) fclose(_output_stream);
+    
+    if (_parse_status == WALK_BAILED)
+    {
+      fprintf(stderr, "Error: a problem occured during simulation.\n");
+    }
     
     return _parse_status;
   }
