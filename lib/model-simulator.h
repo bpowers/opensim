@@ -31,10 +31,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <string>
-#include <map>
-#include <vector>
-
 
 enum sim_output 
 {
@@ -62,17 +58,17 @@ struct _ModelSimulator
 {
   GObject parent_instance;
   
+  /*
+   * Properties:
+   *   - model_name       (gchar *)    get/set
+   *   - sketch_name      (gchar *)    get/set
+   *   - file_name        (gchar *)    get/set
+   *   - output_type      (sim_output) get/set
+   *   - output_file_name (gchar *)    get/set
+   *   - valid_model      (gboolean)   get
+   */
+   
   /* instance members */
-  /* private */
-  gchar *_model_name;
-  gchar *_model_file_name;
-  gchar *_output_file_name;
-  sim_output _output_type;
-  OpenSim::SimBuilder *_sim_builder;
-  std::map<std::string, OpenSim::Variable *> _variables;
-  std::map<std::string, std::vector<double> > _results;
-  FILE *_output_stream;
-  int _parse_status;
 };
 
 struct _ModelSimulatorClass
@@ -90,34 +86,20 @@ GType model_simulator_get_type();
  */
 
 /* private */
-gchar *clean_name(gchar *varName);
-void model_simulator_init(gchar *fileName);
+gchar *clean_name(gchar *var_name);
+void model_simulator_init(gchar *file_name);
 void model_simulator_sim_thread();
 
 /* public */
-int model_simulator_set_name(gchar *modelName);
-gchar *model_simulator_name();
-
-int model_simulator_set_model_file(gchar *modelFileName);
-gchar *model_simulator_model_file();
-
 int model_simulator_save();
 int model_simulator_save(gboolean partial);
 
-int model_simulator_set_output_type(sim_output newType);
+int model_simulator_new_variable(gchar *var_name, gpointer var_pointer);
+int model_simulator_get_variable(gchar *var_name, gpointer var_pointer);
+int model_simulator_remove_variable(gchar *var_name);
 
-int model_simulator_set_output_file(gchar *outputFileName);
-gchar *model_simulator_output_file();
+int model_simulator_run();
 
-int model_simulator_set_variable_equation(gchar *varName, gchar *varEqn);
-gchar *model_simulator_get_variable_equation(gchar *varName);
-
-int model_simulator_new_variable(gchar *varName);
-int model_simulator_rename_variable(gchar *varName, gchar *newName);
-int model_simulator_delete_variable(gchar *varName);
-
-int info();
-
-int simulate();
 
 #endif /* __MODEL_SIMULATOR_H__ */
+
