@@ -32,6 +32,9 @@
 #include <glib-object.h>
 
 
+G_BEGIN_DECLS
+
+
 enum sim_output 
 {
   sim_emit_IR = 1,      // not supported
@@ -44,12 +47,12 @@ enum sim_output
 /*
  * Type macros.
  */
-#define MODEL_TYPE_SIMULATOR                  (model_simulator_get_type())
-#define MODEL_SIMULATOR(obj)                  (G_TYPE_CHECK_INSTANCE_CAST((obj), MODEL_TYPE_SIMULATOR, ModelSimulator))
-#define MODEL_IS_SIMULATOR(obj)               (G_TYPE_CHECK_INSTANCE_TYPE((obj), MODEL_TYPE_SIMULATOR))
-#define MODEL_SIMULATOR_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST((klass), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
-#define MODEL_IS_SIMULATOR_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_SIMULATOR))
-#define MODEL_SIMULATOR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
+#define MODEL_TYPE_SIMULATOR            (model_simulator_get_type())
+#define MODEL_SIMULATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MODEL_TYPE_SIMULATOR, ModelSimulator))
+#define MODEL_SIMULATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
+#define MODEL_IS_SIMULATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MODEL_TYPE_SIMULATOR))
+#define MODEL_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_SIMULATOR))
+#define MODEL_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
 
 typedef struct _ModelSimulator        ModelSimulator;
 typedef struct _ModelSimulatorClass   ModelSimulatorClass;
@@ -85,21 +88,21 @@ GType model_simulator_get_type();
  * Method definitions.
  */
 
-/* private */
-gchar *clean_name(gchar *var_name);
-void model_simulator_init(gchar *file_name);
-void model_simulator_sim_thread();
-
 /* public */
-int model_simulator_save();
-int model_simulator_save(gboolean partial);
+int model_simulator_save(ModelSimulator *simulator);
+int model_simulator_save(ModelSimulator *simulator, gboolean partial);
 
-int model_simulator_new_variable(gchar *var_name, gpointer var_pointer);
-int model_simulator_get_variable(gchar *var_name, gpointer var_pointer);
-int model_simulator_remove_variable(gchar *var_name);
+int model_simulator_new_variable(ModelSimulator *simulator, gchar *var_name, 
+                                 gpointer var_pointer);
+int model_simulator_get_variable(ModelSimulator *simulator, gchar *var_name, 
+                                 gpointer var_pointer);
+int model_simulator_remove_variable(ModelSimulator *simulator, 
+                                    gchar *var_name);
 
-int model_simulator_run();
+int model_simulator_run(ModelSimulator *simulator);
 
+
+G_END_DECLS
 
 #endif /* __MODEL_SIMULATOR_H__ */
 
