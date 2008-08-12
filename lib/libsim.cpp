@@ -28,8 +28,6 @@
 #include "globals.h"
 #include <cstdio>
 
-#include <glibmm/init.h>
-
 #include "Simulator.h"
 using OpenSim::Simulator;
 using OpenSim::sim_output;
@@ -45,7 +43,6 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 	{
     case DLL_PROCESS_ATTACH:
     case DLL_THREAD_ATTACH:
-		Glib::init();
 		model = NULL;
 		break;
     case DLL_THREAD_DETACH:
@@ -62,9 +59,6 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 void __attribute__ ((constructor)) 
 my_init(void)
 {
-  // important!
-  Glib::init();
-
   model = NULL;
 }
 

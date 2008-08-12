@@ -28,10 +28,6 @@
 #include <cstdio>
 #include "Simulator.h"
 
-#include <glibmm/init.h>
-#include <glibmm/object.h>
-#include <glibmm/thread.h>
-
 // openSim stuff
 #include "globals.h"
 #include <utility>
@@ -43,13 +39,6 @@ using OpenSim::IOxml;
 using std::string;
 using std::map;
 
-void
-OpenSim::force_cpp_glib_init()
-{
-  // IMPORTANT: glib needs to be initialized before the constructors are called
-  Glib::init();
-  if(!Glib::thread_supported()) Glib::thread_init();
-}
 
 OpenSim::Simulator::Simulator()
 {
@@ -189,11 +178,8 @@ OpenSim::Simulator::simulate()
     }
     
     _parse_status = WALK_BAILED;
-    
-    Glib::Thread *const parsing = Glib::Thread::create(
-      sigc::mem_fun(this, &OpenSim::Simulator::sim_thread), true);
-    
-    parsing->join();
+
+    this->sim_thread();
 
     // if we opened it, close the output stream
     if (_output_stream != stdout) fclose(_output_stream);

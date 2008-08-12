@@ -32,8 +32,6 @@
 #include <map>
 #include <vector>
 
-#include <glibmm/object.h>
-
 namespace OpenSim
 {
   /// WalkType - This enum is for specifying the different types 
@@ -53,7 +51,7 @@ namespace OpenSim
   
   void force_cpp_glib_init();
   
-  class Simulator : public Glib::Object
+  class Simulator
   {
     /// Name of the loaded model.
     std::string _model_name;

@@ -88,11 +88,11 @@ PKG_PROG_PKG_CONFIG()
 PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4 >= 2.16.0])
 
 
-OPENSIM_GTHREADS
 # llvm is disabled for now.
 #OPENSIM_LLVM_SETFLAGS
 OPENSIM_XML2_SETFLAGS
 AC_SUBST(LIBLTDL)
+
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug    Turn on debugging],
