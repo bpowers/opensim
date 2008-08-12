@@ -14,7 +14,7 @@ noinst_LTLIBRARIES     = libsimobjs.la
 libsimobjs_la_SOURCES  = Simulator.cpp Variable.cpp
 libsimobjs_la_LIBADD   = AST/libAST.la CodeGen/libCodeGen.la \
                          IO/libIO.la
-libsimobjs_la_LDFLAGS  = -no-undefined $(OPENSIM_GTHREAD_LDFLAGS)
+libsimobjs_la_LDFLAGS  = -no-undefined
 
 lib_LTLIBRARIES        = libsim.la
 libsim_la_SOURCES      = libsim.cpp

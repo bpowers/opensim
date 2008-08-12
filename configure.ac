@@ -88,11 +88,11 @@ AC_CHECK_FUNCS([isascii])
 PKG_PROG_PKG_CONFIG()
 
 
-OPENSIM_GTHREADS
 # llvm is disabled for now.
 #OPENSIM_LLVM_SETFLAGS
 OPENSIM_XML2_SETFLAGS
 AC_SUBST(LIBLTDL)
+
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug    Turn on debugging],

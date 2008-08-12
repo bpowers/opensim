@@ -22,16 +22,6 @@ AC_DEFUN(
   ]
 )
 
-AC_DEFUN(
-	[OPENSIM_GTHREADS],
-	[
-    AC_MSG_NOTICE([Getting gthread linker flags.])
-    AC_SUBST(OPENSIM_GTHREAD_LDFLAGS, 
-             ['esyscmd(pkg-config --libs gthread-2.0)'])
-  ]
-)
-pkg-config --libs gthread-2.0
-
 
 # AC_LIBLTDL_INSTALLABLE([DIRECTORY])
 # -----------------------------------
