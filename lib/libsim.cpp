@@ -64,6 +64,8 @@ my_init(void)
   
   fprintf(stderr, "creating model\n");
   
+  g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
+  
   ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, NULL)); 
   
   g_object_unref(gsim);

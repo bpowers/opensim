@@ -87,10 +87,10 @@ AC_CHECK_FUNCS([isascii])
 
 PKG_PROG_PKG_CONFIG()
 
-pkg_modules="glib-2.0 >= 2.10.0"
-PKG_CHECK_MODULES(PACKAGE, [$pkg_modules])
-AC_SUBST(PACKAGE_CFLAGS)
-AC_SUBST(PACKAGE_LIBS)
+pkg_modules="glib-2.0 >= 2.10.0 gobject-2.0 >= 2.12.0"
+PKG_CHECK_MODULES(GOBJ, [$pkg_modules])
+AC_SUBST(GOBJ_CFLAGS)
+AC_SUBST(GOBJ_LIBS)
 
 # llvm is disabled for now.
 #OPENSIM_LLVM_SETFLAGS

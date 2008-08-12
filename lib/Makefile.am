@@ -1,5 +1,5 @@
-AM_CXXFLAGS            = $(OPENSIM_XML2_CXXFLAGS) $(PACKAGE_CFLAGS)
-AM_LDFLAGS             = $(OPENSIM_XML2_LDFLAGS) $(PACKAGE_LIBS)
+AM_CXXFLAGS            = $(OPENSIM_XML2_CXXFLAGS) $(GOBJ_CFLAGS)
+AM_LDFLAGS             = $(OPENSIM_XML2_LDFLAGS)  $(GOBJ_LIBS)
 
 INCLUDES               = -I$(top_builddir) -I$(top_srcdir)
 
