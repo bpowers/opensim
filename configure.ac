@@ -13,6 +13,9 @@ AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 AC_PROG_CXX
 AC_PROG_CC
 
+AC_GNU_SOURCE
+AM_GNU_GETTEXT
+
 AC_DISABLE_FAST_INSTALL
 
 AC_LIBTOOL_DLOPEN
@@ -20,6 +23,7 @@ AC_LIBLTDL_INSTALLABLE
 AC_LIBTOOL_WIN32_DLL
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+
 
 dnl pkg-config
 CS="C#"
@@ -103,7 +107,7 @@ esac],[debug=false])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
+AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile  intl/Makefile po/Makefile.in\
                  lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
                  lib/python/visuals/Makefile icons/Makefile  \
                  lib/python/visuals/widgets/Makefile \

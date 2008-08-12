@@ -1,0 +1,8 @@
+# List of source files which contain translatable strings.
+src/opensim
+src/opensim-gtk
+src/main.c
+lib/libsim.cpp
+lib/model-simulator.cpp
+lib/Simulator.cpp
+lib/Variable.cpp
