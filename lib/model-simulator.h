@@ -37,11 +37,11 @@ G_BEGIN_DECLS
 
 enum sim_output 
 {
-  sim_emit_IR = 1,      // not supported
-  sim_emit_Python = 2,  // full Python implementation of model
+  sim_emit_IR      = 1, // not supported
+  sim_emit_Python  = 2, // full Python implementation of model
   sim_emit_Fortran = 3, // not implemented yet
-  sim_emit_Output = 4,  // results of interpreting model
-  sim_emit_AS3 = 5,     // full AS3 implementation of model
+  sim_emit_Output  = 4, // results of interpreting model
+  sim_emit_AS3     = 5, // full AS3 implementation of model
 };
 
 /*

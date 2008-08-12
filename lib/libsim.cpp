@@ -28,9 +28,10 @@
 #include "globals.h"
 #include <cstdio>
 
+#include "model-simulator.h"
 #include "Simulator.h"
 using OpenSim::Simulator;
-using OpenSim::sim_output;
+//using OpenSim::sim_output;
 
 Simulator *model;
 
@@ -60,6 +61,14 @@ void __attribute__ ((constructor))
 my_init(void)
 {
   model = NULL;
+  
+  fprintf(stderr, "creating model\n");
+  
+  ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, NULL)); 
+  
+  g_object_unref(gsim);
+  
+  fprintf(stderr, "done creating model\n");
 }
 
 
@@ -92,7 +101,7 @@ opensim_save_model()
 
 
 extern "C" int WIN_DLL
-opensim_set_output_type(sim_output output_type)
+opensim_set_output_type(OpenSim::sim_output output_type)
 {
   if (model) return model->set_output_type(output_type);
 
