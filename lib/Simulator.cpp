@@ -168,7 +168,7 @@ OpenSim::Simulator::simulate()
       
       if (!_output_stream) 
       {
-        fprintf(stderr, "Error: Could not open output file for writing.\n");
+        fprintf(stderr, _("Error: Could not open output file for writing.\n"));
         return -1;
       }
     }
@@ -186,7 +186,7 @@ OpenSim::Simulator::simulate()
     
     if (_parse_status == WALK_BAILED)
     {
-      fprintf(stderr, "Error: a problem occured during simulation.\n");
+      fprintf(stderr, _("Error: a problem occured during simulation.\n"));
     }
     
     return _parse_status;
@@ -218,7 +218,7 @@ OpenSim::Simulator::set_output_file(std::string outputFileName)
   // don't let people write the data over the model
   if (outputFileName == _file_name)
   {
-    fprintf(stderr, "Error: Output file must be different from model file.\n");
+    fprintf(stderr, _("Error: Output file must be different from model file.\n"));
     return -1;
   }
   
@@ -249,7 +249,7 @@ OpenSim::Simulator::set_variable_equation(std::string varName,
   if (v == _variables.end())
   {
     fprintf(stderr, 
-            "Error: Variable '%s' doesn't exist, so can't set equation.\n", 
+            _("Error: Variable '%s' doesn't exist, so can't set equation.\n"), 
             varClean.c_str());
     return -1;
   }
@@ -272,7 +272,7 @@ OpenSim::Simulator::get_variable_equation(std::string varName)
   // check to see if we didn't find anything
   if (v == _variables.end())
   {
-    fprintf(stderr, "Error: Variable '%s' doesn't exist, so no equation.\n", 
+    fprintf(stderr, _("Error: Variable '%s' doesn't exist, so no equation.\n"),
             varClean.c_str());
     return "[null]";
   }
@@ -296,7 +296,7 @@ OpenSim::Simulator::new_variable(std::string varName)
   if (v != _variables.end())
   {
     fprintf(stderr, 
-            "Error: Variable '%s' allready exists, can't make a new one.\n", 
+            _("Error: Variable '%s' allready exists, can't make a new one.\n"),
             varClean.c_str());
     return -1;
   }

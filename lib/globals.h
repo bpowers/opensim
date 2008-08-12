@@ -47,6 +47,10 @@
 #define WALK_BAILED 20
 #define PARSED_OK 0
 
+#include "config.h"
+#include "gettext.h"
+#define _(Msg) gettext(Msg)
+
 /*
 // llvm code generation
 #include "llvm/DerivedTypes.h"
