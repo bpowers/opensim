@@ -13,9 +13,6 @@ AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 AC_PROG_CXX
 AC_PROG_CC
 
-AC_GNU_SOURCE
-AM_GNU_GETTEXT
-
 AC_DISABLE_FAST_INSTALL
 
 AC_LIBTOOL_DLOPEN
@@ -107,10 +104,14 @@ esac],[debug=false])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile  intl/Makefile po/Makefile.in\
+AM_GNU_GETTEXT_VERSION([0.16])
+AM_GNU_GETTEXT([external])
+
+
+AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
                  lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
                  lib/python/visuals/Makefile icons/Makefile  \
-                 lib/python/visuals/widgets/Makefile \
+                 lib/python/visuals/widgets/Makefile po/Makefile.in \
                  lib/python/engine/Makefile share/Makefile activity/Makefile \
                  activity/activity/Makefile activity/icons/Makefile \
                  activity/lib/Makefile activity/site-packages/Makefile],
