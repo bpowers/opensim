@@ -56,6 +56,7 @@ enum sim_output
 
 typedef struct _ModelSimulator        ModelSimulator;
 typedef struct _ModelSimulatorClass   ModelSimulatorClass;
+typedef struct _ModelSimulatorPrivate ModelSimulatorPrivate;
 
 struct _ModelSimulator
 {
@@ -72,6 +73,7 @@ struct _ModelSimulator
    */
    
   /* instance members */
+  ModelSimulatorPrivate *priv;
 };
 
 struct _ModelSimulatorClass
@@ -90,7 +92,7 @@ GType model_simulator_get_type();
 
 /* public */
 int model_simulator_save(ModelSimulator *simulator);
-int model_simulator_save(ModelSimulator *simulator, gboolean partial);
+//int model_simulator_save(ModelSimulator *simulator, gboolean partial);
 
 int model_simulator_new_variable(ModelSimulator *simulator, gchar *var_name, 
                                  gpointer var_pointer);

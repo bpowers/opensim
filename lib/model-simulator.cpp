@@ -27,8 +27,38 @@
 
 #include "model-simulator.h"
 
-extern "c" static void
-model_simulator_class_init(ModelSimulatorClass *kclass)
+G_BEGIN_DECLS
+
+#define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
+
+
+struct _ModelSimulatorPrivate
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS(g_class);
+  int hsize;
+};
+
+
+// C++ equivolent of static 
+namespace 
+{
+  extern "C" void
+  model_simulator_class_init(ModelSimulatorClass *kclass)
+  {
+    g_type_class_add_private(kclass, sizeof (ModelSimulatorPrivate));
+
+    GObjectClass *gobject_class = G_OBJECT_CLASS(kclass);
+  }
+
+
+
+  extern "C" void
+  model_simulator_init(ModelSimulator *self)
+  {
+    ModelSimulatorPrivate *priv;
+    
+    self->priv = priv = MODEL_SIMULATOR_GET_PRIVATE(self);
+  }
 }
+
+G_END_DECLS
+

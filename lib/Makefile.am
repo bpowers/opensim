@@ -1,5 +1,5 @@
-AM_CXXFLAGS            = $(OPENSIM_XML2_CXXFLAGS) $(GLIBMM_CFLAGS)
-AM_LDFLAGS             = $(OPENSIM_XML2_LDFLAGS) $(GLIBMM_LIBS)
+AM_CXXFLAGS            = $(OPENSIM_XML2_CXXFLAGS) $(PACKAGE_CFLAGS)
+AM_LDFLAGS             = $(OPENSIM_XML2_LDFLAGS) $(PACKAGE_LIBS)
 
 INCLUDES               = -I$(top_builddir) -I$(top_srcdir)
 
@@ -11,7 +11,7 @@ pkginclude_HEADERS     = opensim.h
 SUBDIRS                = AST CodeGen IO
 
 noinst_LTLIBRARIES     = libsimobjs.la
-libsimobjs_la_SOURCES  = Simulator.cpp Variable.cpp
+libsimobjs_la_SOURCES  = Simulator.cpp Variable.cpp model-simulator.cpp
 libsimobjs_la_LIBADD   = AST/libAST.la CodeGen/libCodeGen.la \
                          IO/libIO.la
 libsimobjs_la_LDFLAGS  = -no-undefined @LIBINTL@
