@@ -40,19 +40,19 @@ BOOL APIENTRY DllMain(HANDLE hModule,
                       DWORD  ul_reason_for_call,
                       LPVOID lpReserved)
 {
-    switch( ul_reason_for_call ) 
-	{
-    case DLL_PROCESS_ATTACH:
-    case DLL_THREAD_ATTACH:
-		model = NULL;
-		break;
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-		// Bah cases errors.  Just leave junk around for now.
-		//delete model;
-		break;
-    }
-    return TRUE;
+  switch( ul_reason_for_call ) 
+  {
+  case DLL_PROCESS_ATTACH:
+  case DLL_THREAD_ATTACH:
+    model = NULL;
+    break;
+  case DLL_THREAD_DETACH:
+  case DLL_PROCESS_DETACH:
+    // Bah cases errors.  Just leave junk around for now.
+    //delete model;
+    break;
+  }
+  return TRUE;
 }
 
 #else
@@ -67,6 +67,8 @@ my_init(void)
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
   ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, NULL)); 
+  
+  g_object_set(G_OBJECT(gsim), "model_name", "awesome model", NULL);
   
   g_object_unref(gsim);
   
