@@ -65,7 +65,6 @@ struct _ModelSimulator
   /*
    * Properties:
    *   - model_name       (gchar *)    get/set
-   *   - sketch_name      (gchar *)    get/set
    *   - file_name        (gchar *)    get/set
    *   - output_type      (sim_output) get/set
    *   - output_file_name (gchar *)    get/set

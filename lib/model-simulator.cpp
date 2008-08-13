@@ -28,18 +28,18 @@
 #include "model-simulator.h"
 
 
-#define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE)
+#define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
 
 extern "C" void model_simulator_init(ModelSimulator *self);
 extern "C" void model_simulator_class_init(ModelSimulatorClass *kclass);
+
 
 enum
 {
   PROP_0,
 
   PROP_MODEL_NAME,
-  PROP_SKETCH_NAME,
   PROP_FILE_NAME,
   PROP_OUTPUT_TYPE,
   PROP_OUTPUT_FILE_NAME,
@@ -97,15 +97,30 @@ model_simulator_set_property(GObject      *object,
   switch (property_id)
   {
   case PROP_MODEL_NAME:
+    g_return_if_fail(G_VALUE_HOLDS_STRING(value));
     g_free(self->priv->model_name);
     self->priv->model_name = g_value_dup_string(value);
-    g_print("model_name: %s\n", self->priv->model_name);
+    //g_print("model_name: %s\n", self->priv->model_name);
     break;
 
-  case PROP_SKETCH_NAME:
+  case PROP_FILE_NAME:
+    g_return_if_fail(G_VALUE_HOLDS_STRING(value));
     g_free(self->priv->sketch_name);
     self->priv->sketch_name = g_value_dup_string(value);
-    g_print("sketch_name: %s\n", self->priv->sketch_name);
+    //g_print("file_name: %s\n", self->priv->sketch_name);
+    break;
+
+  case PROP_OUTPUT_TYPE:
+    g_return_if_fail(G_VALUE_HOLDS_INT(value));
+    self->priv->output_type = (sim_output)g_value_get_int(value);
+    //g_print("file_name: %s\n", self->priv->sketch_name);
+    break;
+
+  case PROP_OUTPUT_FILE_NAME:
+    g_return_if_fail(G_VALUE_HOLDS_STRING(value));
+    g_free(self->priv->output_file_name);
+    self->priv->output_file_name = g_value_dup_string(value);
+    //g_print("file_name: %s\n", self->priv->sketch_name);
     break;
 
   default:
@@ -131,12 +146,23 @@ model_simulator_get_property (GObject    *object,
     g_value_set_string(value, self->priv->model_name);
     break;
 
-  case PROP_SKETCH_NAME:
-    g_value_set_string(value, self->priv->sketch_name);
+  case PROP_FILE_NAME:
+    g_value_set_string(value, self->priv->file_name);
+    break;
+
+  case PROP_OUTPUT_TYPE:
+    g_value_set_int(value, (int)self->priv->output_type);
+    break;
+
+  case PROP_OUTPUT_FILE_NAME:
+    g_value_set_string(value, self->priv->output_file_name);
+    break;
+
+  case PROP_VALID_MODEL:
+    g_value_set_boolean(value, self->priv->valid_model);
     break;
 
   default:
-    /* We don't have any other property... */
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     break;
   }
@@ -166,13 +192,42 @@ model_simulator_class_init(ModelSimulatorClass *kclass)
                                   PROP_MODEL_NAME,
                                   model_param_spec);
 
-  model_param_spec = g_param_spec_string("sketch_name",
-                                         "current sketch name",
-                                         "Set the name of the current sketch",
-                                         "unnamed sketch" /* default value */,
+  model_param_spec = g_param_spec_string("file_name",
+                                         "full path to file",
+                                         "Where the model is saved to",
+                                         "" /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
-                                  PROP_SKETCH_NAME,
+                                  PROP_FILE_NAME,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_int("output_type",
+                                      "type of output",
+                                      "What kind of output to generate",
+                                      0, 
+                                      sizeof(sim_output)+1,
+                                      sim_emit_Output /* default value */,
+                                      PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_OUTPUT_TYPE,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_string("output_file_name",
+                                         "full path to output file",
+                                         "Where the model output is saved to",
+                                         "" /* default value */,
+                                         PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_OUTPUT_FILE_NAME,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_boolean("valid_model",
+                                          "is model valid",
+                                          "True if the model can be simulated",
+                                          TRUE /* default value */,
+                                          (GParamFlags) (G_PARAM_READABLE));
+  g_object_class_install_property(gobject_class,
+                                  PROP_VALID_MODEL,
                                   model_param_spec);
 }
 
@@ -184,9 +239,9 @@ model_simulator_init(ModelSimulator *self)
   self->priv = MODEL_SIMULATOR_GET_PRIVATE(self);
   
   g_print("sim init\n");
+  self->priv->valid_model = FALSE;
   /*
   self->priv->model_name       = NULL;
-  self->priv->sketch_name      = NULL;
   self->priv->file_name        = NULL;
   self->priv->output_type      = sim_emit_Output;
   self->priv->output_file_name = NULL;

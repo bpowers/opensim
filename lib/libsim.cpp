@@ -66,10 +66,28 @@ my_init(void)
   
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
-  ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, NULL)); 
+  ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
+                                                      NULL)); 
+  gchar *prop;
   
+  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
+  g_print("model_name is now: %s\n", prop);
+  g_free (prop);
+
   g_object_set(G_OBJECT(gsim), "model_name", "awesome model", NULL);
+  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
+  g_print("model_name is now: %s\n", prop);
+  g_free (prop);
   
+  sim_output out;
+  
+  g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
+  g_print("output_type is now: %d\n", out);
+
+  g_object_set(G_OBJECT(gsim), "output_type", sim_emit_AS3, NULL);
+  g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
+  g_print("output_type is now: %d\n", out);
+
   g_object_unref(gsim);
   
   fprintf(stderr, "done creating model\n");
