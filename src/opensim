@@ -29,9 +29,9 @@ from opensim.engine.simulator import sim_emit_Python, sim_emit_AS3, sim_emit_Out
 from opensim.engine.simulator import Simulator
 
 
-VERSION = "0.2.8"
+VERSION = "0.4.0"
 PACKAGE = "python opensim"
-PACKAGE_BUGREPORT = "bugs@opensimproject.org"
+PACKAGE_BUGREPORT = "bobby@laptop.org"
 PROGRAM_NAME = "opensim"
 
 
