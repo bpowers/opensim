@@ -44,6 +44,7 @@ enum sim_output
   sim_emit_AS3     = 5, // full AS3 implementation of model
 };
 
+
 /*
  * Type macros.
  */
@@ -54,9 +55,11 @@ enum sim_output
 #define MODEL_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_SIMULATOR))
 #define MODEL_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
 
+
 typedef struct _ModelSimulator        ModelSimulator;
 typedef struct _ModelSimulatorClass   ModelSimulatorClass;
 typedef struct _ModelSimulatorPrivate ModelSimulatorPrivate;
+
 
 struct _ModelSimulator
 {
@@ -90,6 +93,7 @@ GType model_simulator_get_type();
  */
 
 /* public */
+int model_simulator_load(ModelSimulator *simulator, gchar *model_path);
 int model_simulator_save(ModelSimulator *simulator);
 //int model_simulator_save(ModelSimulator *simulator, gboolean partial);
 

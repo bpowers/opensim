@@ -25,15 +25,25 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include "model-simulator.h"
+#include "globals.h"
+using std::map;
+using std::string;
+using std::vector;
 
+#include "CodeGen/SimBuilder.h"
+#include "IO/IOxml.h"
+#include "IO/IOVenText.h"
+
+#include "model-simulator.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
 
+static gpointer model_simulator_parent_class = NULL;
 extern "C" void model_simulator_init(ModelSimulator *self);
 extern "C" void model_simulator_class_init(ModelSimulatorClass *kclass);
-
+extern "C" void model_simulator_dispose(GObject *gobject);
+extern "C" void model_simulator_finalize(GObject *gobject);
 
 enum
 {
@@ -50,11 +60,13 @@ enum
 struct _ModelSimulatorPrivate
 {
   gchar      *model_name;
-  gchar      *sketch_name;
   gchar      *file_name;
   sim_output  output_type;
   gchar      *output_file_name;
   gboolean    valid_model;
+  
+  OpenSim::SimBuilder *sim_builder;
+  std::map<std::string, OpenSim::Variable *> variables;
 };
 
 
@@ -105,8 +117,8 @@ model_simulator_set_property(GObject      *object,
 
   case PROP_FILE_NAME:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
-    g_free(self->priv->sketch_name);
-    self->priv->sketch_name = g_value_dup_string(value);
+    g_free(self->priv->file_name);
+    self->priv->file_name = g_value_dup_string(value);
     //g_print("file_name: %s\n", self->priv->sketch_name);
     break;
 
@@ -174,7 +186,9 @@ extern "C" void
 model_simulator_class_init(ModelSimulatorClass *kclass)
 {
   g_print("class init\n");
-  
+
+  model_simulator_parent_class = g_type_class_peek_parent(kclass);
+
   g_type_class_add_private(kclass, sizeof (ModelSimulatorPrivate));
 
   GObjectClass *gobject_class = G_OBJECT_CLASS(kclass);
@@ -182,6 +196,9 @@ model_simulator_class_init(ModelSimulatorClass *kclass)
   
   gobject_class->set_property = model_simulator_set_property;
   gobject_class->get_property = model_simulator_get_property;
+  gobject_class->dispose      = model_simulator_dispose;
+  gobject_class->finalize     = model_simulator_finalize;
+
 
   model_param_spec = g_param_spec_string("model_name",
                                          "model name",
@@ -240,6 +257,7 @@ model_simulator_init(ModelSimulator *self)
   
   g_print("sim init\n");
   self->priv->valid_model = FALSE;
+  self->priv->sim_builder = NULL;
   /*
   self->priv->model_name       = NULL;
   self->priv->file_name        = NULL;
@@ -247,5 +265,58 @@ model_simulator_init(ModelSimulator *self)
   self->priv->output_file_name = NULL;
   self->priv->valid_model      = FALSE;
   */
+}
+
+
+
+extern "C" void
+model_simulator_dispose(GObject *gobject)
+{
+  ModelSimulator *self = MODEL_SIMULATOR(gobject);
+
+  /* 
+   * In dispose, you are supposed to free all types referenced from this
+   * object which might themselves hold a reference to self. Generally,
+   * the most simple solution is to unref all members on which you own a 
+   * reference.
+   */
+
+  /* dispose might be called multiple times, so we must guard against
+   * calling g_object_unref() on an invalid GObject.
+   */
+  //if (self->priv->an_object)
+  //{
+  //  g_object_unref (self->priv->an_object);
+  //
+  //  self->priv->an_object = NULL;
+  //}
+
+  /* Chain up to the parent class */
+  G_OBJECT_CLASS(model_simulator_parent_class)->dispose(gobject);
+}
+
+
+
+extern "C" void
+model_simulator_finalize(GObject *gobject)
+{
+  ModelSimulator *self = MODEL_SIMULATOR(gobject);
+
+  // free g_values and such.
+  g_free(self->priv->model_name);
+  g_free(self->priv->file_name);
+  g_free(self->priv->output_file_name);
+
+  /* Chain up to the parent class */
+  G_OBJECT_CLASS(model_simulator_parent_class)->finalize(gobject);
+}
+
+
+
+extern "C" int 
+model_simulator_load(ModelSimulator *simulator, gchar *model_path)
+{
+  g_print("**load**\n");
+  
 }
 
