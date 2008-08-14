@@ -85,7 +85,6 @@ AC_CHECK_FUNCS([isascii])
 
 
 PKG_PROG_PKG_CONFIG()
-PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4 >= 2.16.0])
 
 
 # llvm is disabled for now.
