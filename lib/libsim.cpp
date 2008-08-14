@@ -106,11 +106,18 @@ my_fini(void)
 
 
 extern "C" int WIN_DLL
-opensim_load_model(const char *filename)
+opensim_load_model(const char *file_name)
 {
-  delete model;
+  //delete model;
+  //model = new Simulator(file_name);
   
-  //model = new Simulator(filename);
+  model_simulator_load(gsim, (gchar *)file_name);
+  
+  gchar *prop;
+  
+  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
+  g_print("model_name is now: %s\n", prop);
+  g_free (prop);
   
   return 0;
 }

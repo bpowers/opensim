@@ -33,6 +33,11 @@ using std::vector;
 #include "CodeGen/SimBuilder.h"
 #include "IO/IOxml.h"
 #include "IO/IOVenText.h"
+#include "IO/IOInterface.h"
+using OpenSim::SimBuilder;
+using OpenSim::IOxml;
+using OpenSim::IOVenText;
+using OpenSim::IOInterface;
 
 #include "model-simulator.h"
 
@@ -275,7 +280,8 @@ model_simulator_dispose(GObject *gobject)
   ModelSimulator *self = MODEL_SIMULATOR(gobject);
 
   /* 
-   * In dispose, you are supposed to free all types referenced from this
+   * In dispose, you are supposed to free all typesecifier before 'IOVenText'
+model-simulator.cpp:343: error: cannot convert 'in referenced from this
    * object which might themselves hold a reference to self. Generally,
    * the most simple solution is to unref all members on which you own a 
    * reference.
@@ -317,6 +323,42 @@ extern "C" int
 model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
   g_print("**load**\n");
+
+  SimBuilder *_sim_builder = simulator->priv->sim_builder;
+  std::map<std::string, OpenSim::Variable *> _variables;
+
+  if (_sim_builder)
+  {
+    delete _sim_builder;
+    _sim_builder = NULL;
+  }
+
+  IOInterface *file;
+  string fileName = model_path; 
   
+  // check if its a Vensim model.  if it isn't, assume XML.
+  string extension = "";
+  if (fileName.length() > 3)
+    extension = fileName.substr(fileName.length()-3, 3);
+  if (extension == "mdl")
+  {
+    file = new IOVenText(fileName);
+  }
+  else
+  {
+    file = new IOxml(fileName);
+  }
+  
+  if (file->ValidModelParsed())
+  {
+    _variables = file->Variables();
+    _sim_builder = new SimBuilder(_variables);
+    
+    g_object_set(G_OBJECT(simulator), "model_name", 
+                 file->Name().c_str(), NULL);
+  }
+  
+  delete file;
+  simulator->priv->sim_builder = _sim_builder;
 }
 
