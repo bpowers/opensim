@@ -33,7 +33,9 @@
 using OpenSim::Simulator;
 //using OpenSim::sim_output;
 
-Simulator *model;
+Simulator *model = NULL;
+ModelSimulator *gsim = NULL;
+
 
 #ifdef _WIN32
 BOOL APIENTRY DllMain(HANDLE hModule,
@@ -66,7 +68,7 @@ my_init(void)
   
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
-  ModelSimulator *gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
+  gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
                                                       NULL)); 
   gchar *prop;
   
@@ -87,8 +89,6 @@ my_init(void)
   g_object_set(G_OBJECT(gsim), "output_type", sim_emit_AS3, NULL);
   g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
   g_print("output_type is now: %d\n", out);
-
-  g_object_unref(gsim);
   
   fprintf(stderr, "done creating model\n");
 }
@@ -99,6 +99,8 @@ void __attribute__ ((destructor))
 my_fini(void)
 {
   delete model;
+  
+  g_object_unref(gsim);
 }
 #endif
 
@@ -108,7 +110,7 @@ opensim_load_model(const char *filename)
 {
   delete model;
   
-  model = new Simulator(filename);
+  //model = new Simulator(filename);
   
   return 0;
 }
