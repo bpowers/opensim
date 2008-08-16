@@ -61,12 +61,10 @@ class OpenSimGTK(gobject.GObject):
 
   def view_toggled(self, widget):
 
-    print("view toggled")
-
     if widget is self.view_graphs:
-      self.view_var.set_sensitive(True)
+      self.view_var.show()
     else:
-      self.view_var.set_sensitive(False)
+      self.view_var.hide()
 
 
   def __init__(self, **kwargs):
@@ -128,8 +126,6 @@ class OpenSimGTK(gobject.GObject):
     self.view_canvas = self.wTree.get_widget("but_view_canvas")
     self.view_var = self.wTree.get_widget("but_view_var")
     self.view_graphs = self.wTree.get_widget("but_view_graphs")
-
-    self.view_var.set_sensitive(False)
 
     #insert our goocanvas (since I don't want to deal with 
     #getting it working with glade just yet...)

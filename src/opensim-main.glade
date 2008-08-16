@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Tue Jul 29 16:21:12 2008 -->
+<!--Generated with glade3 3.4.4 on Fri Aug 15 17:32:15 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="main_window">
     <property name="width_request">800</property>
@@ -301,12 +301,12 @@
                 <property name="visible">True</property>
                 <child>
                   <widget class="GtkComboBox" id="but_view_var">
-                    <property name="visible">True</property>
                   </widget>
                 </child>
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">False</property>
               </packing>
             </child>
           </widget>

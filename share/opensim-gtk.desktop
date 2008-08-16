@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version    = 1.0
+Name       = Model
+Type       = Application
+Comment    = system dynamics modeling
+Icon       = model-icon
+Exec       = opensim-gtk
+MimeType   = text/plain
+Categories = Education;
