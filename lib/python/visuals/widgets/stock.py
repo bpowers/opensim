@@ -96,6 +96,23 @@ class StockItem(SimItem):
     return (x0 + center[0], y0 + center[1])
 
 
+  def edge_point(self, end_point):
+    center_x, center_y = self.abs_center()
+    
+    line_angle = math.atan2((end_point[1] - center_y),(end_point[0] - center_x))
+    ref_angle = math.atan2(float(self.height),float(self.width))
+    
+    if line_angle < ref_angle and line_angle > -ref_angle:
+      center_x = center_x + self.width/2
+    elif math.pi-line_angle < ref_angle or line_angle < math.pi-ref_angle:
+      center_x = center_x - self.width/2
+    
+    logging.debug("line: %5.1f, ref %5.1f" % (math.degrees(line_angle), 
+                                              math.degrees(ref_angle)))
+    
+    return (center_x, center_y)
+
+
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)

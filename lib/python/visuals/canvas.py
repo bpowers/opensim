@@ -413,7 +413,8 @@ class Canvas (gtk.ScrolledWindow):
                                      dragging=False, can_focus=True)
         # add info to post in order to finish hooking up rate.
 
-        new_var.lower(None)
+        # FIXME: this is for debugging only.
+        #new_var.lower(None)
         self.display_vars.append(new_var)
         post.append((new_var, start, end))
 

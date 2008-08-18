@@ -248,9 +248,9 @@ class FlowItem(SimItem):
     if item is self.flow_from:
       #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
       self.x1, self.y1 = self.flow_from.abs_center()
-    else:
-      #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
-      self.x2, self.y2 = self.flow_to.abs_center()
+    
+    #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
+    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y1))
 
     self.__needs_resize_calc = True
     self.emit("item_moved_event", self)
@@ -372,7 +372,7 @@ class FlowItem(SimItem):
     self.active_color = [1, .6, .2]
     self.force_redraw()
 
-    logging.debug("h_in : (%s)" % self.name())
+    #logging.debug("h_in : (%s)" % self.name())
 
     self.__old_name = self.name()
     if self.name() == "(new flow)":
@@ -384,7 +384,7 @@ class FlowItem(SimItem):
   def on_highlight_out(self, item, target):
     self.active_color = [0, 0, 0]
 
-    logging.debug("h_out: (%s)" % self.name())
+    #logging.debug("h_out: (%s)" % self.name())
 
     if self._new:
       if self._display_name.placeholder:
