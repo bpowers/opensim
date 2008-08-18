@@ -291,7 +291,8 @@ class LineControl:
     self.cb_id = root.connect("motion_notify_event", 
                               new_var.on_motion_notify)
 
-    new_var.lower(None)
+    new_var.raise_(None)
+    #new_var.lower(None)
     #flow_from.raise_(None)
     self.line = new_var
     self._canvas.display_vars.append(new_var)
