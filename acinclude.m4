@@ -17,8 +17,8 @@ AC_DEFUN(
     AC_CHECK_PROGS([XML2], ['xml2-config'], [$MISSING xml2-config])
 
     AC_MSG_NOTICE([Getting libXML2 compiler and linker flags.])
-    AC_SUBST(OPENSIM_XML2_CXXFLAGS, ['esyscmd(xml2-config --cflags)'])
-    AC_SUBST(OPENSIM_XML2_LDFLAGS,  ['esyscmd(xml2-config --libs)'])
+    AC_SUBST(OPENSIM_XML2_CFLAGS,  ['esyscmd(xml2-config --cflags)'])
+    AC_SUBST(OPENSIM_XML2_LDFLAGS, ['esyscmd(xml2-config --libs)'])
   ]
 )
 

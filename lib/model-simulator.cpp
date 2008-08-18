@@ -40,6 +40,7 @@ using OpenSim::IOVenText;
 using OpenSim::IOInterface;
 
 #include "model-simulator.h"
+#include "IO/model-ioxml.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
@@ -324,6 +325,20 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
   g_print("**load**\n");
 
+
+  ModelIOxml *gsim = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
+                                                      NULL));
+  gchar *prop;
+    
+  model_ioxml_load(gsim, (gchar *)model_path);
+  
+  g_object_get(G_OBJECT(gsim), "file_name", &prop, NULL);
+  g_print("file_name is now: %s\n", prop);
+  g_free (prop);
+  
+  g_object_unref(gsim);
+
+  /*
   SimBuilder *_sim_builder = simulator->priv->sim_builder;
   std::map<std::string, OpenSim::Variable *> _variables;
 
@@ -360,5 +375,6 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   
   delete file;
   simulator->priv->sim_builder = _sim_builder;
+  */
 }
 

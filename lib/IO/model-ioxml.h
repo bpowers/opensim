@@ -76,16 +76,8 @@ GType model_ioxml_get_type();
 /* public */
 int model_ioxml_load(ModelIOxml *ioxml, gchar *model_path);
 int model_ioxml_save(ModelIOxml *ioxml);
-//int model_ioxml_save(ModelIOxml *ioxml, gboolean partial);
 
-int model_ioxml_new_variable(ModelIOxml *ioxml, gchar *var_name, 
-                                 gpointer var_pointer);
-int model_ioxml_get_variable(ModelIOxml *ioxml, gchar *var_name, 
-                                 gpointer var_pointer);
-int model_ioxml_remove_variable(ModelIOxml *ioxml, 
-                                    gchar *var_name);
-
-int model_ioxml_run(ModelIOxml *ioxml);
+int model_ioxml_get_variables(ModelIOxml *ioxml);
 
 
 G_END_DECLS
