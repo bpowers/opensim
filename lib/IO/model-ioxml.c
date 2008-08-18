@@ -29,6 +29,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
+#include "string.h"
+
 #include "model-ioxml.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
@@ -57,6 +59,67 @@ struct _ModelIOxmlPrivate
   
   gboolean  valid;
 };
+
+
+
+static gchar *
+trim(gchar *str)
+{
+  if (str == NULL) return NULL;
+  if (!g_utf8_validate(str, -1, NULL))
+  {
+    g_fprintf(stderr, "Error: a string to trim wasn't valid UTF-8.\n");
+    return NULL;
+  }
+
+  glong length = g_utf8_strlen(str, -1);
+  glong clength = strlen(str);
+  
+  //g_fprintf(stdout, "**len: %d**\n", length);
+  
+  int start = 0;
+  gchar *startp = NULL;
+  int end = 0;
+  
+  gchar *tr;
+  for (tr = str; *tr != '\0'; tr = g_utf8_next_char(tr))
+  {
+    if (*tr != ' ' && *tr != '\t' && *tr != '\n' && *tr != '\r')
+      break;
+      
+    start++;
+  }
+  
+  startp = tr;
+  
+  // now point to last charactor in the string
+  // FIXME: this assumes the last character is not unicode.
+  tr = str + length - sizeof(gchar);
+  for (end = length; end != 0; --end)
+  {
+    if (*tr != ' ' && *tr != '\t' && *tr != '\n' && *tr != '\r')
+      break;
+    
+    tr = g_utf8_prev_char(tr);
+  }
+  
+  //g_fprintf(stdout, " *sta: %d*\n", start);
+  //g_fprintf(stdout, " *end: %d*\n", length-1-end);
+  //g_fprintf(stderr, " *len: %d ('%c' '%c')*\n", tr-startp+sizeof(gchar), *startp, *tr);
+  
+  // end - start + 1 for the current char
+  gsize new_size = tr - startp + sizeof(gchar);
+  // +1 is for null termination
+  gchar *ret_val = (gchar *)g_malloc(new_size+1);
+  strncpy(ret_val, startp, new_size);
+  
+  ret_val[new_size] = '\0';
+  
+  g_free(str);
+  
+  return ret_val;
+}
+
 
 
 GType 
@@ -349,7 +412,7 @@ model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
         {
           txt = xmlNodeListGetString(doc, sub->children, 0);
           var_name = g_strdup(txt);
-          //var_name = trim(var_name);
+          var_name = trim(var_name);
           xmlFree( txt );
 
           continue;
@@ -359,7 +422,7 @@ model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
         {
           txt = xmlNodeListGetString(doc, sub->children, 0);
           equation = g_strdup(txt);
-          //equation = trim(equation);
+          equation = trim(equation);
           xmlFree( txt );
           
           continue;
