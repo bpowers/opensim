@@ -206,8 +206,6 @@ model_ioxml_get_property (GObject    *object,
 static void
 model_ioxml_class_init(ModelIOxmlClass *kclass)
 {
-  g_print("class init\n");
-
   model_ioxml_parent_class = g_type_class_peek_parent(kclass);
 
   g_type_class_add_private(kclass, sizeof (ModelIOxmlPrivate));
@@ -248,8 +246,6 @@ model_ioxml_init(ModelIOxml *self)
   self->priv = MODEL_IOXML_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
-  
-  g_print("ioxml init\n");
 }
 
 
@@ -299,8 +295,8 @@ model_ioxml_finalize(GObject *gobject)
 int 
 model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
 {
-  g_print("**ioxml load**\n");
-
+  g_object_set(G_OBJECT(ioxml), "file_name", model_path, NULL);
+  
   ioxml->priv->valid = FALSE;
   // management of our input
   xmlDocPtr  doc = NULL;
@@ -433,7 +429,7 @@ model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
         
       if (var_name != NULL)
       {
-        g_fprintf(stderr, "variable '%s' with eqn: '%s'\n", var_name, equation);
+        g_fprintf(stderr, "  var '%s'\n    '%s'\n", var_name, equation);
         g_free(var_name);
         g_free(equation);
         //vars[var_name] = ourVar;

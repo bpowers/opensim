@@ -75,11 +75,6 @@ my_init(void)
   g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
   g_print("model_name is now: %s\n", prop);
   g_free (prop);
-
-  g_object_set(G_OBJECT(gsim), "model_name", "awesome model", NULL);
-  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
-  g_print("model_name is now: %s\n", prop);
-  g_free (prop);
   
   sim_output out;
   

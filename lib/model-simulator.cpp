@@ -323,9 +323,6 @@ model_simulator_finalize(GObject *gobject)
 extern "C" int 
 model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
-  g_print("**load**\n");
-
-
   ModelIOxml *gsim = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
                                                       NULL));
   gchar *prop;
