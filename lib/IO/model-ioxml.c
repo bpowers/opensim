@@ -285,6 +285,7 @@ model_ioxml_finalize(GObject *gobject)
 
   // free g_values and such.
   g_free(self->priv->file_name);
+  g_free(self->priv->model_name);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_ioxml_parent_class)->finalize(gobject);
