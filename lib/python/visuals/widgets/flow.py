@@ -232,7 +232,7 @@ class FlowItem(SimItem):
         self.get_canvas().remove_item(self.flow_to)
 
     self.flow_to = flow_to
-    self.x2, self.y2 = self.flow_to.abs_center()
+    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.x2))
     self._new = False
 
     #now make sure we update our endpoints when the targets move

@@ -108,11 +108,21 @@ class StockItem(SimItem):
     
     if line_angle < ref_angle or line_angle > 2*math.pi - ref_angle:
       center_x = center_x + self.width/2
+      center_y = center_y + self.width/2 * math.tan(line_angle)
     elif line_angle > math.pi - ref_angle and line_angle < math.pi + ref_angle:
       center_x = center_x - self.width/2
+      center_y = center_y - self.width/2 * math.tan(line_angle)
     
-    logging.debug("line: %5.1f, ref %5.1f" % (math.degrees(line_angle), 
-                                              math.degrees(ref_angle)))
+    if line_angle >= ref_angle and line_angle <= math.pi - ref_angle:
+      center_x = center_x - self.height/2 * math.tan(line_angle - math.pi/2)
+      center_y = center_y + self.height/2
+    elif line_angle >= math.pi + ref_angle and \
+         line_angle <= 2*math.pi - ref_angle:
+      center_x = center_x + self.height/2 * math.tan(line_angle - math.pi/2)
+      center_y = center_y - self.height/2
+    
+    #logging.debug("line: %5.1f, ref %5.1f" % (math.degrees(line_angle), 
+    #                                          math.degrees(ref_angle)))
     
     return (center_x, center_y)
 
