@@ -99,12 +99,16 @@ class StockItem(SimItem):
   def edge_point(self, end_point):
     center_x, center_y = self.abs_center()
     
-    line_angle = math.atan2((end_point[1] - center_y),(end_point[0] - center_x))
+    line_angle = math.atan2((end_point[1] - center_y), 
+                            (end_point[0] - center_x))
+    if line_angle < 0: line_angle = 2*math.pi + line_angle
+    
+    # should always be between 0 and .5*pi
     ref_angle = math.atan2(float(self.height),float(self.width))
     
-    if line_angle < ref_angle and line_angle > -ref_angle:
+    if line_angle < ref_angle or line_angle > 2*math.pi - ref_angle:
       center_x = center_x + self.width/2
-    elif math.pi-line_angle < ref_angle or line_angle < math.pi-ref_angle:
+    elif line_angle > math.pi - ref_angle and line_angle < math.pi + ref_angle:
       center_x = center_x - self.width/2
     
     logging.debug("line: %5.1f, ref %5.1f" % (math.degrees(line_angle), 
