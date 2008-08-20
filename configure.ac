@@ -9,6 +9,17 @@ AC_CONFIG_AUX_DIR([config])
 
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 
+
+AC_ARG_ENABLE(debug,
+[  --enable-debug          Turn on debugging],
+[case "${enableval}" in
+  yes) debug=true ;;
+  no)  debug=false ;;
+  *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+esac],[debug=false])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -18,7 +29,7 @@ AC_DISABLE_FAST_INSTALL
 AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_INSTALLABLE
 AC_LIBTOOL_WIN32_DLL
-AC_DISABLE_STATIC
+#AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 
@@ -96,16 +107,6 @@ AC_SUBST(GOBJ_LIBS)
 #OPENSIM_LLVM_SETFLAGS
 OPENSIM_XML2_SETFLAGS
 AC_SUBST(LIBLTDL)
-
-
-AC_ARG_ENABLE(debug,
-[  --enable-debug    Turn on debugging],
-[case "${enableval}" in
-  yes) debug=true ;;
-  no)  debug=false ;;
-  *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-esac],[debug=false])
-AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
 AM_GNU_GETTEXT_VERSION([0.16])
