@@ -33,7 +33,8 @@
 
 G_BEGIN_DECLS
 
-enum varType
+
+enum var_type
 {
   var_stock = 1,
   var_aux = 2,

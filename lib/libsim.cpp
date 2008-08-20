@@ -29,6 +29,7 @@
 #include <cstdio>
 
 #include "model-simulator.h"
+#include "model-variable.h"
 #include "Simulator.h"
 using OpenSim::Simulator;
 //using OpenSim::sim_output;
@@ -69,12 +70,12 @@ my_init(void)
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
   gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
-                                                      NULL)); 
+                                      NULL)); 
   gchar *prop;
   
   g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
   g_print("model_name is now: %s\n", prop);
-  g_free (prop);
+  g_free(prop);
   
   sim_output out;
   
@@ -86,6 +87,10 @@ my_init(void)
   g_print("output_type is now: %d\n", out);
   
   fprintf(stderr, "done creating model\n");
+  
+  ModelVariable *gvar = MODEL_VARIABLE(g_object_new(MODEL_TYPE_VARIABLE, 
+                                                    NULL));
+  g_object_unref(gvar);
 }
 
 
@@ -112,7 +117,7 @@ opensim_load_model(const char *file_name)
   
   g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
   g_print("model_name is now: %s\n", prop);
-  g_free (prop);
+  g_free(prop);
   
   return 0;
 }

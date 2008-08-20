@@ -331,7 +331,11 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   
   g_object_get(G_OBJECT(gsim), "file_name", &prop, NULL);
   g_print("file_name is now: %s\n", prop);
-  g_free (prop);
+  g_free(prop);
+  
+  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
+  g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
+  g_free(prop);
   
   g_object_unref(gsim);
 

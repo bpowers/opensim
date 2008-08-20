@@ -25,9 +25,6 @@
 //
 //===---------------------------------------------------------------------===//
 
-// libxml parsing
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
 
 #include "string.h"
 
@@ -41,23 +38,29 @@ static void model_variable_init(ModelVariable *self);
 static void model_variable_class_init(ModelVariableClass *kclass);
 static void model_variable_dispose(GObject *gobject);
 static void model_variable_finalize(GObject *gobject);
-static int parse_input(xmlDocPtr doc, xmlNodePtr mod);
 
 /* for object properties */
 enum
 {
   PROP_0,
-  PROP_MODEL_NAME,
-  PROP_FILE_NAME
+  PROP_NAME,
+  PROP_EQUATION,
+  PROP_UNITS,
+  PROP_COMMENTS,
+  PROP_TYPE,
+  PROP_VALID
 };
 
 
 struct _ModelVariablePrivate
 {
-  gchar    *model_name;
-  gchar    *file_name;
+  gchar         *name;
+  gchar         *equation;
+  gchar         *units;
+  gchar         *comments;
+  enum var_type  type;
   
-  gboolean  valid;
+  gboolean       valid;
 };
 
 
@@ -100,16 +103,35 @@ model_variable_set_property(GObject      *object,
 
   switch (property_id)
   {
-  case PROP_MODEL_NAME:
+  case PROP_NAME:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
-    g_free(self->priv->model_name);
-    self->priv->model_name = g_value_dup_string(value);
+    g_free(self->priv->name);
+    self->priv->name = g_value_dup_string(value);
     break;
-  case PROP_FILE_NAME:
+
+  case PROP_EQUATION:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
-    g_free(self->priv->file_name);
-    self->priv->file_name = g_value_dup_string(value);
+    g_free(self->priv->equation);
+    self->priv->equation = g_value_dup_string(value);
     break;
+
+  case PROP_UNITS:
+    g_return_if_fail(G_VALUE_HOLDS_STRING(value));
+    g_free(self->priv->units);
+    self->priv->units = g_value_dup_string(value);
+    break;
+
+  case PROP_COMMENTS:
+    g_return_if_fail(G_VALUE_HOLDS_STRING(value));
+    g_free(self->priv->comments);
+    self->priv->comments = g_value_dup_string(value);
+    break;
+
+  case PROP_TYPE:
+    g_return_if_fail(G_VALUE_HOLDS_INT(value));
+    self->priv->type = g_value_get_int(value);
+    break;
+
   default:
     /* We don't have any other property... */
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -129,12 +151,30 @@ model_variable_get_property (GObject    *object,
 
   switch (property_id)
   {
-  case PROP_MODEL_NAME:
-    g_value_set_string(value, self->priv->model_name);
+  case PROP_NAME:
+    g_value_set_string(value, self->priv->name);
     break;
-  case PROP_FILE_NAME:
-    g_value_set_string(value, self->priv->file_name);
+
+  case PROP_EQUATION:
+    g_value_set_string(value, self->priv->equation);
     break;
+
+  case PROP_UNITS:
+    g_value_set_string(value, self->priv->units);
+    break;
+
+  case PROP_COMMENTS:
+    g_value_set_string(value, self->priv->comments);
+    break;
+
+  case PROP_TYPE:
+    g_value_set_int(value, (int)self->priv->type);
+    break;
+
+  case PROP_VALID:
+    g_value_set_boolean(value, self->priv->valid);
+    break;
+
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     break;
@@ -158,22 +198,60 @@ model_variable_class_init(ModelVariableClass *kclass)
   gobject_class->dispose      = model_variable_dispose;
   gobject_class->finalize     = model_variable_finalize;
 
-  model_param_spec = g_param_spec_string("model_name",
-                                         "model name",
-                                         "Set model's name",
-                                         "unnamed model" /* default value */,
+  model_param_spec = g_param_spec_string("name",
+                                         "variable name",
+                                         "Set variable's name",
+                                         NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
-                                  PROP_MODEL_NAME,
+                                  PROP_NAME,
                                   model_param_spec);
 
-  model_param_spec = g_param_spec_string("file_name",
-                                         "full path to file",
-                                         "Where the model is saved to",
+  model_param_spec = g_param_spec_string("equation",
+                                         "variable's equation",
+                                         "Get/set variable's equation",
+                                         NULL /* default value */,
+                                         PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_EQUATION,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_string("units",
+                                         "variable's units",
+                                         "Get/set variable's unit",
                                          "" /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
-                                  PROP_FILE_NAME,
+                                  PROP_UNITS,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_string("comments",
+                                         "notes on variable",
+                                         "Get/set information about variable",
+                                         NULL /* default value */,
+                                         PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_COMMENTS,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_int("type",
+                                      "type of variable",
+                                      "What kind of variable we have",
+                                      -1, 
+                                      4, /* max enum number */
+                                      var_undef /* default value */,
+                                      PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_TYPE,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_boolean("valid",
+                                          "is equation valid",
+                                          "True if the equation is good",
+                                          TRUE /* default value */,
+                                          (GParamFlags) (G_PARAM_READABLE));
+  g_object_class_install_property(gobject_class,
+                                  PROP_VALID,
                                   model_param_spec);
 
 }
@@ -224,7 +302,10 @@ model_variable_finalize(GObject *gobject)
   ModelVariable *self = MODEL_VARIABLE(gobject);
 
   // free g_values and such.
-  g_free(self->priv->file_name);
+  g_free(self->priv->name);
+  g_free(self->priv->equation);
+  g_free(self->priv->units);
+  g_free(self->priv->comments);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->finalize(gobject);

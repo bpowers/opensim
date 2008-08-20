@@ -32,6 +32,7 @@
 #include "string.h"
 
 #include "model-ioxml.h"
+#include "../model-variable.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_IOXML_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_IOXML, ModelIOxmlPrivate))
@@ -58,6 +59,8 @@ struct _ModelIOxmlPrivate
   gchar    *file_name;
   
   gboolean  valid;
+  
+  GArray *var_array;
 };
 
 
@@ -246,6 +249,7 @@ model_ioxml_init(ModelIOxml *self)
   self->priv = MODEL_IOXML_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
+  self->priv->var_array = g_array_new(FALSE, FALSE, sizeof(ModelVariable *));
 }
 
 
@@ -265,12 +269,20 @@ model_ioxml_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  //if (self->priv->an_object)
-  //{
-  //  g_object_unref (self->priv->an_object);
-  //
-  //  self->priv->an_object = NULL;
-  //}
+  GArray *array = self->priv->var_array;
+  
+  int i;
+  for (i=0; i<array->len; i++)
+  {
+    //g_fprintf(stderr, "freeing some var\n");
+    ModelVariable *var = NULL;
+    var = g_array_index(array, ModelVariable *, i);
+    if (var)
+    {
+      g_object_unref(var);
+      array->data[i*sizeof(ModelVariable *)] = NULL;
+    }
+  }
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_ioxml_parent_class)->dispose(gobject);
@@ -286,6 +298,8 @@ model_ioxml_finalize(GObject *gobject)
   // free g_values and such.
   g_free(self->priv->file_name);
   g_free(self->priv->model_name);
+  
+  g_array_free(self->priv->var_array, TRUE);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_ioxml_parent_class)->finalize(gobject);
@@ -399,7 +413,7 @@ model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
     
     if (xmlStrEqual(cur->name, (const xmlChar *)"var"))
     {
-      //Variable *ourVar = NULL;
+      ModelVariable *our_var = NULL;
       gchar *var_name;
       gchar *equation;
           
@@ -426,13 +440,18 @@ model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
         }
       }
       
-      //ourVar = new Variable(var_name, equation);
+      our_var = MODEL_VARIABLE(g_object_new(MODEL_TYPE_VARIABLE, 
+                                            NULL));
         
       if (var_name != NULL)
       {
+        g_object_set(G_OBJECT(our_var), "name", var_name, 
+                                        "equation", equation, NULL);
         g_fprintf(stderr, "  var '%s'\n    '%s'\n", var_name, equation);
         g_free(var_name);
         g_free(equation);
+        
+        g_array_append_val(ioxml->priv->var_array, our_var);
         //vars[var_name] = ourVar;
       }
       else
