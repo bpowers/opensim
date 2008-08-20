@@ -331,7 +331,8 @@ model_simulator_finalize(GObject *gobject)
   g_free(self->priv->file_name);
   g_free(self->priv->output_file_name);
   
-  g_array_free(self->priv->var_array, TRUE);
+  if (self->priv->var_array)
+    g_array_free(self->priv->var_array, TRUE);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_simulator_parent_class)->finalize(gobject);
@@ -339,7 +340,7 @@ model_simulator_finalize(GObject *gobject)
 
 
 
-int 
+extern "C" int 
 model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
   ModelIOxml *gio = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
@@ -405,7 +406,7 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 
 
 
-int 
+extern "C" int 
 model_simulator_output_debug_info(ModelSimulator *simulator)
 {
   return MODEL_SIMULATOR_GET_CLASS(simulator)->output_debug_info(simulator);

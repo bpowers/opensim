@@ -25,7 +25,7 @@
 //
 //===---------------------------------------------------------------------===//
 
-
+#include "stdio.h"
 #include "string.h"
 
 #include "model-variable.h"
@@ -301,6 +301,8 @@ model_variable_finalize(GObject *gobject)
 {
   ModelVariable *self = MODEL_VARIABLE(gobject);
 
+  //g_fprintf(stderr, "Info: Variable '%s' finalized!\n", self->priv->name);
+
   // free g_values and such.
   g_free(self->priv->name);
   g_free(self->priv->equation);
@@ -310,7 +312,4 @@ model_variable_finalize(GObject *gobject)
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->finalize(gobject);
 }
-
-
-
 
