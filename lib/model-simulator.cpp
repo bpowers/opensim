@@ -345,26 +345,24 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
   ModelIOxml *gio = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
                                              NULL));
+  gboolean valid_model = FALSE;
   gchar *prop;
   
   model_ioxml_load(gio, (gchar *)model_path);
 
-  g_object_get(G_OBJECT(gio), "model_name", &prop, NULL);
+  g_object_get(G_OBJECT(gio), "model_name", &prop,
+                              "valid",      &valid_model, NULL);
   g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
   g_free(prop);
 
   GArray *vars = model_ioxml_get_variables(gio);
   
-  if (!vars)
-  {
-    fprintf(stderr, "Error: variable array not available from gio\n");
-  }
+  if (!vars) fprintf(stderr, "Warning: variable array not available from IOxml.\n");
   
   simulator->priv->var_array = vars;
 
   g_object_unref(gio);
-
-  /*
+  
   SimBuilder *_sim_builder = simulator->priv->sim_builder;
   std::map<std::string, OpenSim::Variable *> _variables;
 
@@ -373,35 +371,15 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
     delete _sim_builder;
     _sim_builder = NULL;
   }
-
-  IOInterface *file;
-  string fileName = model_path; 
   
-  // check if its a Vensim model.  if it isn't, assume XML.
-  string extension = "";
-  if (fileName.length() > 3)
-    extension = fileName.substr(fileName.length()-3, 3);
-  if (extension == "mdl")
+  if (valid_model)
   {
-    file = new IOVenText(fileName);
-  }
-  else
-  {
-    file = new IOxml(fileName);
+    fprintf(stdout, "Info: We seem to have a valid model so far.\n");
+    //_variables = file->Variables();
+    //_sim_builder = new SimBuilder(_variables);
   }
   
-  if (file->ValidModelParsed())
-  {
-    _variables = file->Variables();
-    _sim_builder = new SimBuilder(_variables);
-    
-    g_object_set(G_OBJECT(simulator), "model_name", 
-                 file->Name().c_str(), NULL);
-  }
-  
-  delete file;
   simulator->priv->sim_builder = _sim_builder;
-  */
 }
 
 

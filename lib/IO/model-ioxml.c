@@ -53,7 +53,8 @@ enum
 {
   PROP_0,
   PROP_MODEL_NAME,
-  PROP_FILE_NAME
+  PROP_FILE_NAME,
+  PROP_VALID_MODEL
 };
 
 
@@ -203,6 +204,9 @@ model_ioxml_get_property (GObject    *object,
   case PROP_FILE_NAME:
     g_value_set_string(value, self->priv->file_name);
     break;
+  case PROP_VALID_MODEL:
+    g_value_set_boolean(value, self->priv->valid);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     break;
@@ -246,6 +250,15 @@ model_ioxml_class_init(ModelIOxmlClass *klass)
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
+                                  model_param_spec);
+
+  model_param_spec = g_param_spec_boolean("valid",
+                                          "is model valid",
+                                          "True if the input seems valid",
+                                          FALSE /* default value */,
+                                          (GParamFlags) (G_PARAM_READABLE));
+  g_object_class_install_property(gobject_class,
+                                  PROP_VALID_MODEL,
                                   model_param_spec);
 
 }
