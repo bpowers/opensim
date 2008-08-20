@@ -92,7 +92,7 @@ class StockItem(SimItem):
     transform = self.get_transform()
     x0, y0 = 0, 0
     if transform is not None:
-      xx, yx, xy, yy, x0, y0 = self.get_transform()
+      xx, yx, xy, yy, x0, y0 = transform
     return (x0 + center[0], y0 + center[1])
 
 
@@ -106,20 +106,23 @@ class StockItem(SimItem):
     # should always be between 0 and .5*pi
     ref_angle = math.atan2(float(self.height),float(self.width))
     
+    width = self.width/2
+    height = self.height/2
+    
     if line_angle < ref_angle or line_angle > 2*math.pi - ref_angle:
-      center_x = center_x + self.width/2
-      center_y = center_y + self.width/2 * math.tan(line_angle)
+      center_x = center_x + width
+      center_y = center_y + width * math.tan(line_angle)
     elif line_angle > math.pi - ref_angle and line_angle < math.pi + ref_angle:
-      center_x = center_x - self.width/2
-      center_y = center_y - self.width/2 * math.tan(line_angle)
+      center_x = center_x - width
+      center_y = center_y - width * math.tan(line_angle)
     
     if line_angle >= ref_angle and line_angle <= math.pi - ref_angle:
-      center_x = center_x - self.height/2 * math.tan(line_angle - math.pi/2)
-      center_y = center_y + self.height/2
+      center_x = center_x - height * math.tan(line_angle - math.pi/2)
+      center_y = center_y + height
     elif line_angle >= math.pi + ref_angle and \
          line_angle <= 2*math.pi - ref_angle:
-      center_x = center_x + self.height/2 * math.tan(line_angle - math.pi/2)
-      center_y = center_y - self.height/2
+      center_x = center_x + height * math.tan(line_angle - math.pi/2)
+      center_y = center_y - height
     
     #logging.debug("line: %5.1f, ref %5.1f" % (math.degrees(line_angle), 
     #                                          math.degrees(ref_angle)))

@@ -85,13 +85,34 @@ class CloudItem(SimItem):
 
 
   def center(self):
-    return (int(self.x + self.width/2), int(self.y + self.height/2))
+    return (int(self.x + self.width/2), int(self.y))
+
 
   def abs_center(self):
     if self.__needs_resize_calc:
+      logging.debug("WEIRD DEBUG")
       return self.center()
     return (int(self.bounds_x1 + self.width/2), 
             int(self.bounds_y2 - self.height/2))
+
+
+  def edge_point(self, end_point):
+    center_x, center_y = self.abs_center()
+    
+    line_angle = math.atan2((end_point[1] - center_y), 
+                            (end_point[0] - center_x))
+    if line_angle < 0: line_angle = 2*math.pi + line_angle
+    
+    
+    radius = (self.width + self.height)/4
+    
+    center_x = center_x + radius * math.cos(line_angle)
+    center_y = center_y + radius * math.sin(line_angle)
+    
+    logging.debug("CLOUD: %5.1f (%d, %d)" % (math.degrees(line_angle), 
+                                             center_x, center_y))
+    
+    return (center_x, center_y)
 
 
   def ensure_size(self, cr):
