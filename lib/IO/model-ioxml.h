@@ -63,7 +63,9 @@ struct _ModelIOxmlClass
 {
   GObjectClass parent_class;
   
-  /* class members */
+  int          (* load)          (ModelIOxml *ioxml, gchar *path);
+  int          (* save)          (ModelIOxml *ioxml);
+  GArray *     (* get_variables) (ModelIOxml *ioxml);
 };
 
 /* used by MODEL_TYPE_IOXML */
@@ -77,7 +79,7 @@ GType model_ioxml_get_type();
 int model_ioxml_load(ModelIOxml *ioxml, gchar *model_path);
 int model_ioxml_save(ModelIOxml *ioxml);
 
-int model_ioxml_get_variables(ModelIOxml *ioxml);
+GArray *model_ioxml_get_variables(ModelIOxml *ioxml);
 
 
 G_END_DECLS

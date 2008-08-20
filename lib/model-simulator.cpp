@@ -326,7 +326,7 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   ModelIOxml *gsim = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
                                                       NULL));
   gchar *prop;
-    
+  
   model_ioxml_load(gsim, (gchar *)model_path);
   
   g_object_get(G_OBJECT(gsim), "file_name", &prop, NULL);
