@@ -40,16 +40,19 @@ using OpenSim::IOVenText;
 using OpenSim::IOInterface;
 
 #include "model-simulator.h"
+#include "model-variable.h"
 #include "IO/model-ioxml.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
 
 static gpointer model_simulator_parent_class = NULL;
-extern "C" void model_simulator_init(ModelSimulator *self);
-extern "C" void model_simulator_class_init(ModelSimulatorClass *kclass);
-extern "C" void model_simulator_dispose(GObject *gobject);
-extern "C" void model_simulator_finalize(GObject *gobject);
+static void model_simulator_init(ModelSimulator *self);
+static void model_simulator_class_init(ModelSimulatorClass *klass);
+static void model_simulator_dispose(GObject *gobject);
+static void model_simulator_finalize(GObject *gobject);
+
+static int model_simulator_default_output_debug_info(ModelSimulator *simulator);
 
 enum
 {
@@ -71,12 +74,14 @@ struct _ModelSimulatorPrivate
   gchar      *output_file_name;
   gboolean    valid_model;
   
+  GArray     *var_array;
+  
   OpenSim::SimBuilder *sim_builder;
-  std::map<std::string, OpenSim::Variable *> variables;
+  std::map<std::string, ModelVariable *> variables;
 };
 
 
-extern "C" GType 
+GType 
 model_simulator_get_type()
 {
   static GType g_define_type_id = 0; 
@@ -104,7 +109,7 @@ model_simulator_get_type()
 
 
 
-extern "C" void
+static void
 model_simulator_set_property(GObject      *object,
                              guint         property_id,
                              const GValue *value,
@@ -150,7 +155,7 @@ model_simulator_set_property(GObject      *object,
 
 
 
-extern "C" void
+static void
 model_simulator_get_property (GObject    *object,
                               guint       property_id,
                               GValue     *value,
@@ -188,16 +193,16 @@ model_simulator_get_property (GObject    *object,
 
 
 
-extern "C" void
-model_simulator_class_init(ModelSimulatorClass *kclass)
+static void
+model_simulator_class_init(ModelSimulatorClass *klass)
 {
   g_print("class init\n");
 
-  model_simulator_parent_class = g_type_class_peek_parent(kclass);
+  model_simulator_parent_class = g_type_class_peek_parent(klass);
 
-  g_type_class_add_private(kclass, sizeof (ModelSimulatorPrivate));
+  g_type_class_add_private(klass, sizeof (ModelSimulatorPrivate));
 
-  GObjectClass *gobject_class = G_OBJECT_CLASS(kclass);
+  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
   GParamSpec *model_param_spec;
   
   gobject_class->set_property = model_simulator_set_property;
@@ -205,6 +210,7 @@ model_simulator_class_init(ModelSimulatorClass *kclass)
   gobject_class->dispose      = model_simulator_dispose;
   gobject_class->finalize     = model_simulator_finalize;
 
+  klass->output_debug_info    = model_simulator_default_output_debug_info;
 
   model_param_spec = g_param_spec_string("model_name",
                                          "model name",
@@ -256,7 +262,7 @@ model_simulator_class_init(ModelSimulatorClass *kclass)
 
 
 
-extern "C" void
+static void
 model_simulator_init(ModelSimulator *self)
 {
   self->priv = MODEL_SIMULATOR_GET_PRIVATE(self);
@@ -275,7 +281,7 @@ model_simulator_init(ModelSimulator *self)
 
 
 
-extern "C" void
+static void
 model_simulator_dispose(GObject *gobject)
 {
   ModelSimulator *self = MODEL_SIMULATOR(gobject);
@@ -291,12 +297,23 @@ model-simulator.cpp:343: error: cannot convert 'in referenced from this
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  //if (self->priv->an_object)
-  //{
-  //  g_object_unref (self->priv->an_object);
-  //
-  //  self->priv->an_object = NULL;
-  //}
+  if (self->priv->var_array)
+  {
+    GArray *array = self->priv->var_array;
+    
+    int i;
+    for (i=0; i<array->len; i++)
+    {
+      //g_fprintf(stderr, "freeing some var\n");
+      ModelVariable *var = NULL;
+      var = g_array_index(array, ModelVariable *, i);
+      if (var)
+      {
+        g_object_unref(var);
+        array->data[i*sizeof(ModelVariable *)] = 0;
+      }
+    }
+  }
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_simulator_parent_class)->dispose(gobject);
@@ -304,7 +321,7 @@ model-simulator.cpp:343: error: cannot convert 'in referenced from this
 
 
 
-extern "C" void
+static void
 model_simulator_finalize(GObject *gobject)
 {
   ModelSimulator *self = MODEL_SIMULATOR(gobject);
@@ -313,6 +330,8 @@ model_simulator_finalize(GObject *gobject)
   g_free(self->priv->model_name);
   g_free(self->priv->file_name);
   g_free(self->priv->output_file_name);
+  
+  g_array_free(self->priv->var_array, TRUE);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_simulator_parent_class)->finalize(gobject);
@@ -320,24 +339,29 @@ model_simulator_finalize(GObject *gobject)
 
 
 
-extern "C" int 
+int 
 model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 {
-  ModelIOxml *gsim = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
-                                                      NULL));
+  ModelIOxml *gio = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
+                                             NULL));
   gchar *prop;
   
-  model_ioxml_load(gsim, (gchar *)model_path);
-  
-  g_object_get(G_OBJECT(gsim), "file_name", &prop, NULL);
-  g_print("file_name is now: %s\n", prop);
-  g_free(prop);
-  
-  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
+  model_ioxml_load(gio, (gchar *)model_path);
+
+  g_object_get(G_OBJECT(gio), "model_name", &prop, NULL);
   g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
   g_free(prop);
+
+  GArray *vars = model_ioxml_get_variables(gio);
   
-  g_object_unref(gsim);
+  if (!vars)
+  {
+    fprintf(stderr, "Error: variable array not available from gio\n");
+  }
+  
+  simulator->priv->var_array = vars;
+
+  g_object_unref(gio);
 
   /*
   SimBuilder *_sim_builder = simulator->priv->sim_builder;
@@ -377,5 +401,51 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   delete file;
   simulator->priv->sim_builder = _sim_builder;
   */
+}
+
+
+
+int 
+model_simulator_output_debug_info(ModelSimulator *simulator)
+{
+  return MODEL_SIMULATOR_GET_CLASS(simulator)->output_debug_info(simulator);
+}
+
+
+
+int 
+model_simulator_default_output_debug_info(ModelSimulator *simulator)
+{
+  fprintf(stdout, "Info: outputting debugging info\n");
+  
+  if (simulator->priv->var_array)
+  { 
+    GArray *array = simulator->priv->var_array;
+
+    fprintf(stdout, "  found variable array of size %d\n", array->len);
+    
+    int i;
+    for (i=0; i<array->len; i++)
+    {
+      //g_fprintf(stderr, "freeing some var\n");
+      ModelVariable *var = NULL;
+      var = g_array_index(array, ModelVariable *, i);
+      gchar *var_name = NULL;
+      gchar *equation = NULL;
+      
+      g_object_get(G_OBJECT(var), "name", &var_name, 
+                                  "equation", &equation, NULL);
+      fprintf(stdout, "    var '%s'\n    '%s'\n", var_name, equation);
+      
+      g_free(var_name);
+      g_free(equation);
+    }
+  }
+  else
+  {
+    fprintf(stdout, "  no array of variables.\n");
+  }
+  
+  return 0;
 }
 

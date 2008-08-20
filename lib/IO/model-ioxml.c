@@ -65,6 +65,7 @@ struct _ModelIOxmlPrivate
   gboolean  valid;
   
   GArray *var_array;
+  gboolean var_array_referenced;
 };
 
 
@@ -258,6 +259,7 @@ model_ioxml_init(ModelIOxml *self)
   
   self->priv->valid = TRUE;
   self->priv->var_array = g_array_new(FALSE, FALSE, sizeof(ModelVariable *));
+  self->priv->var_array_referenced = FALSE;
 }
 
 
@@ -277,18 +279,22 @@ model_ioxml_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  GArray *array = self->priv->var_array;
   
-  int i;
-  for (i=0; i<array->len; i++)
+  if (!self->priv->var_array_referenced)
   {
-    //g_fprintf(stderr, "freeing some var\n");
-    ModelVariable *var = NULL;
-    var = g_array_index(array, ModelVariable *, i);
-    if (var)
+    GArray *array = self->priv->var_array;
+    
+    int i;
+    for (i=0; i<array->len; i++)
     {
-      g_object_unref(var);
-      array->data[i*sizeof(ModelVariable *)] = 0;
+      //g_fprintf(stderr, "freeing some var\n");
+      ModelVariable *var = NULL;
+      var = g_array_index(array, ModelVariable *, i);
+      if (var)
+      {
+        g_object_unref(var);
+        array->data[i*sizeof(ModelVariable *)] = 0;
+      }
     }
   }
 
@@ -307,7 +313,9 @@ model_ioxml_finalize(GObject *gobject)
   g_free(self->priv->file_name);
   g_free(self->priv->model_name);
   
-  g_array_free(self->priv->var_array, TRUE);
+  // if someone else wanted to have the array, it is their 
+  // responsibility to free the data
+  g_array_free(self->priv->var_array, !self->priv->var_array_referenced);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_ioxml_parent_class)->finalize(gobject);
@@ -463,7 +471,7 @@ model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
       {
         g_object_set(G_OBJECT(our_var), "name", var_name, 
                                         "equation", equation, NULL);
-        g_fprintf(stderr, "  var '%s'\n    '%s'\n", var_name, equation);
+        //g_fprintf(stderr, "  var '%s'\n    '%s'\n", var_name, equation);
         g_free(var_name);
         g_free(equation);
         
@@ -514,6 +522,12 @@ model_ioxml_get_variables(ModelIOxml *ioxml)
 static GArray *
 model_ioxml_default_get_variables(ModelIOxml *ioxml)
 {
-  g_fprintf(stderr, "ModelIOxml->get_variables not implemented!\n");
+  ioxml->priv->var_array_referenced = TRUE;
+  
+  GArray *ret = g_array_new(FALSE, FALSE, sizeof(ModelVariable *));
+  ret->data = ioxml->priv->var_array->data;
+  ret->len  = ioxml->priv->var_array->len;
+  
+  return ret;
 }
 

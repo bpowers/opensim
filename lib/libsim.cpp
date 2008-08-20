@@ -119,6 +119,8 @@ opensim_load_model(const char *file_name)
   g_print("model_name is now: %s\n", prop);
   g_free(prop);
   
+  model_simulator_output_debug_info(gsim);
+  
   return 0;
 }
 

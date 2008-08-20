@@ -82,7 +82,7 @@ struct _ModelSimulatorClass
 {
   GObjectClass parent_class;
   
-  /* class members */
+  int          (* output_debug_info) (ModelSimulator *simulator);
 };
 
 /* used by MODEL_TYPE_SIMULATOR */
@@ -105,6 +105,7 @@ int model_simulator_remove_variable(ModelSimulator *simulator,
                                     gchar *var_name);
 
 int model_simulator_run(ModelSimulator *simulator);
+int model_simulator_output_debug_info(ModelSimulator *simulator);
 
 
 G_END_DECLS
