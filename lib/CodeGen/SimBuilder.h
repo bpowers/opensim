@@ -31,6 +31,7 @@
 #include "../globals.h"
 #include "../Simulator.h"
 #include "../Variable.h"
+#include "../model-variable.h"
 
 
 namespace OpenSim
@@ -51,6 +52,7 @@ namespace OpenSim
   {
     /// A map of all of the defined variables, keyed by name.
     std::map<std::string, OpenSim::Variable *> vars;
+    std::map<std::string, ModelVariable *> gvars;
     
     /// A map of all of the defined variable AST nodes, keyed by name.
     std::map<std::string, OpenSim::VariableAST *> varASTs;
@@ -109,6 +111,7 @@ namespace OpenSim
     
   public:
     SimBuilder(std::map<std::string, Variable *> variables);
+    SimBuilder(std::map<std::string, ModelVariable *> variables);
     ~SimBuilder();
     
     int Update();

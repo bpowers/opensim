@@ -35,9 +35,11 @@
 
 static gpointer model_variable_parent_class = NULL;
 static void model_variable_init(ModelVariable *self);
-static void model_variable_class_init(ModelVariableClass *kclass);
+static void model_variable_class_init(ModelVariableClass *klass);
 static void model_variable_dispose(GObject *gobject);
 static void model_variable_finalize(GObject *gobject);
+
+static GArray *model_variable_default_get_tokens(ModelVariable *variable);
 
 /* for object properties */
 enum
@@ -184,19 +186,21 @@ model_variable_get_property (GObject    *object,
 
 
 static void
-model_variable_class_init(ModelVariableClass *kclass)
+model_variable_class_init(ModelVariableClass *klass)
 {
-  model_variable_parent_class = g_type_class_peek_parent(kclass);
+  model_variable_parent_class = g_type_class_peek_parent(klass);
 
-  g_type_class_add_private(kclass, sizeof (ModelVariablePrivate));
+  g_type_class_add_private(klass, sizeof (ModelVariablePrivate));
 
-  GObjectClass *gobject_class = G_OBJECT_CLASS(kclass);
+  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
   GParamSpec *model_param_spec;
   
   gobject_class->set_property = model_variable_set_property;
   gobject_class->get_property = model_variable_get_property;
   gobject_class->dispose      = model_variable_dispose;
   gobject_class->finalize     = model_variable_finalize;
+
+  klass->get_tokens           = model_variable_default_get_tokens;
 
   model_param_spec = g_param_spec_string("name",
                                          "variable name",
@@ -311,5 +315,21 @@ model_variable_finalize(GObject *gobject)
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->finalize(gobject);
+}
+
+
+
+GArray *
+model_variable_get_tokens(ModelVariable *variable)
+{
+  MODEL_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
+}
+
+
+
+static GArray *
+model_variable_default_get_tokens(ModelVariable *variable)
+{
+  g_fprintf(stdout, "get tokens\n");
 }
 

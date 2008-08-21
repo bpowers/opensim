@@ -73,7 +73,7 @@ struct _ModelVariableClass
 {
   GObjectClass parent_class;
   
-  /* class members */
+  GArray *     (* get_tokens) (ModelVariable *variable);
 };
 
 /* used by MODEL_TYPE_VARIABLE */
@@ -84,10 +84,7 @@ GType model_variable_get_type();
  */
 
 /* public */
-//int model_variable_load(ModelVariable *variable, gchar *model_path);
-//int model_variable_save(ModelVariable *variable);
-
-//int model_variable_get_variables(ModelVariable *variable);
+GArray *model_variable_get_tokens(ModelVariable *variable);
 
 
 G_END_DECLS

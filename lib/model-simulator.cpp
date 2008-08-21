@@ -77,7 +77,7 @@ struct _ModelSimulatorPrivate
   GArray     *var_array;
   
   OpenSim::SimBuilder *sim_builder;
-  std::map<std::string, ModelVariable *> variables;
+  std::map<std::string, ModelVariable *> var_map;
 };
 
 
@@ -364,7 +364,22 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   g_object_unref(gio);
   
   SimBuilder *_sim_builder = simulator->priv->sim_builder;
-  std::map<std::string, OpenSim::Variable *> _variables;
+  std::map<std::string, ModelVariable *> _variables;
+
+  // turn our nice list into an ugly map.
+  int i;
+  for (i=0; i<vars->len; i++)
+  {
+    //g_fprintf(stderr, "freeing some var\n");
+    ModelVariable *var = g_array_index(vars, ModelVariable *, i);
+    gchar *var_name = NULL;
+
+    g_object_get(G_OBJECT(var), "name", &var_name, NULL);
+
+    _variables[var_name] = var;
+    
+    g_free(var_name);
+  }
 
   if (_sim_builder)
   {
@@ -375,10 +390,10 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   if (valid_model)
   {
     fprintf(stdout, "Info: We seem to have a valid model so far.\n");
-    //_variables = file->Variables();
-    //_sim_builder = new SimBuilder(_variables);
+    _sim_builder = new SimBuilder(_variables);
   }
   
+  simulator->priv->var_map     = _variables;
   simulator->priv->sim_builder = _sim_builder;
 }
 
@@ -401,7 +416,8 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
   { 
     GArray *array = simulator->priv->var_array;
 
-    fprintf(stdout, "  found variable array of size %d\n", array->len);
+    fprintf(stdout, "  found variable array of size %d (%d)\n", array->len,
+            simulator->priv->var_map.size());
     
     int i;
     for (i=0; i<array->len; i++)
@@ -412,7 +428,7 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
       gchar *var_name = NULL;
       gchar *equation = NULL;
       
-      g_object_get(G_OBJECT(var), "name", &var_name, 
+      g_object_get(G_OBJECT(var), "name",     &var_name, 
                                   "equation", &equation, NULL);
       fprintf(stdout, "    var '%s'\n    '%s'\n", var_name, equation);
       

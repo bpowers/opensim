@@ -74,6 +74,32 @@ OpenSim::SimBuilder::SimBuilder(std::map<std::string, Variable *> variables)
 
 
 
+OpenSim::SimBuilder::SimBuilder(std::map<std::string, ModelVariable *> variables)
+{
+  results = NULL;
+  // save the variables we're passed.
+  gvars = variables;
+    
+  // Install standard binary operators.
+  // 1 is lowest precedence.
+  BinopPrecedence['='] = 2;
+  BinopPrecedence['<'] = 10;
+  BinopPrecedence['>'] = 10;
+  BinopPrecedence['+'] = 20;
+  BinopPrecedence['-'] = 20;
+  BinopPrecedence['*'] = 40;
+  BinopPrecedence['/'] = 40;
+  BinopPrecedence['^'] = 60;// highest.
+
+  _valid_model = false;
+  _errors = 0;
+
+  // creates AST from variable definitions.
+  //InitializeModule();
+}
+
+
+
 OpenSim::SimBuilder::~SimBuilder()
 {
   delete results;

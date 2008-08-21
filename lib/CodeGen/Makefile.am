@@ -1,5 +1,5 @@
-AM_CXXFLAGS            = $(GLIBMM_CFLAGS)
-AM_LDFLAGS             = $(GLIBMM_LIBS)
+AM_CXXFLAGS            = $(GOBJ_CFLAGS)
+AM_LDFLAGS             = $(GOBJ_LIBS)
 
 EXTRA_DIST              = SimBuilder.h \
                           PythonPrintModule.h InterpreterModule.h \
