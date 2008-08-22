@@ -293,23 +293,6 @@ model_variable_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  if (self->priv->toks)
-  {
-    GArray *array = self->priv->toks;
-    
-    int i;
-    for (i=0; i<array->len; i++)
-    {
-      //g_fprintf(stderr, "freeing some var\n");
-      //ModelVariable *var = NULL;
-      //var = g_array_index(array, ModelVariable *, i);
-      //if (var)
-      //{
-      //  g_object_unref(var);
-      //  array->data[i*sizeof(ModelVariable *)] = 0;
-      //}
-    }
-  }
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->dispose(gobject);
@@ -329,6 +312,19 @@ model_variable_finalize(GObject *gobject)
   g_free(self->priv->equation);
   g_free(self->priv->units);
   g_free(self->priv->comments);
+  
+  if (self->priv->toks)
+  {
+    GArray *array = self->priv->toks;
+    
+    int i;
+    for (i=0; i<array->len; i++)
+    {
+      equ_token tok = g_array_index(array, equ_token, i);
+ 
+      if (tok.identifier) g_free(tok.identifier);
+    }
+  }
   
   if (self->priv->toks) g_array_free(self->priv->toks, TRUE);
 
@@ -360,7 +356,7 @@ model_variable_default_get_tokens(ModelVariable *variable)
 static int
 model_variable_tokenize(ModelVariable *variable)
 {
-  GArray *tokens = g_array_new(FALSE, TRUE, sizeof(equ_token));
+  GArray *tokens = g_array_new(FALSE, FALSE, sizeof(equ_token));
 
   if (variable->priv->type == var_undef) variable->priv->type = var_aux;
   
@@ -384,6 +380,7 @@ model_variable_tokenize(ModelVariable *variable)
     equ_token new_tok;
     new_tok.op = 0;
     new_tok.num_val = 0.0;
+    new_tok.identifier = NULL;
     
     // skip whitespace
     while (isspace(last_char)) last_char = equation[char_pos++];
@@ -415,16 +412,12 @@ model_variable_tokenize(ModelVariable *variable)
       new_tok.type = tok_number;
       
       // build the string like we did for identifiers.
-      pos1 = char_pos-1;
       while (isdigit((last_char = equation[char_pos++])) || last_char == '.') 
         continue;
-      pos2 = char_pos-1;
-      
-      new_tok.identifier = g_strndup(&equation[pos1], pos2-pos1);
       
       // convert it to a floating point value.
       // *** FIXME: error checking, please.
-      new_tok.num_val = g_ascii_strtod(new_tok.identifier, NULL);
+      new_tok.num_val = g_ascii_strtod(&equation[pos1], NULL);
       
       tokens = g_array_prepend_val(tokens, new_tok);
     }
@@ -432,7 +425,7 @@ model_variable_tokenize(ModelVariable *variable)
     {
       new_tok.type = tok_operator;
       new_tok.op = last_char;
-      new_tok.identifier = "";
+      new_tok.identifier = NULL;
       
       
       if ((tokens->len == 0) && (new_tok.op == '[')) 
