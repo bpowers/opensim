@@ -110,7 +110,6 @@ namespace OpenSim
     OpenSim::ExprAST *ParseVarRefExpr(std::string IdName);
     
   public:
-    SimBuilder(std::map<std::string, Variable *> variables);
     SimBuilder(std::map<std::string, ModelVariable *> variables);
     ~SimBuilder();
     

@@ -10,16 +10,6 @@ AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 
 
-AC_ARG_ENABLE(debug,
-[  --enable-debug          Turn on debugging],
-[case "${enableval}" in
-  yes) debug=true ;;
-  no)  debug=false ;;
-  *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-esac],[debug=false])
-AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
-
-
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -33,33 +23,6 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
 
-dnl pkg-config
-CS="C#"
-have_csharp=no
-
-dnl C# compiler
-AC_PATH_PROG(CSC, csc, no)
-AC_PATH_PROG(MCS, gmcs, no)
-AC_PATH_PROG(MONO, mono, no)
-
-if test "x$CSC" = "xno" -a "x$MCS" = "xno"  ; then
-	AC_MSG_WARN([No $CS compiler found, skipping $CS SWIG bindings])
-else
-	if test "x$MCS" = "xno" ; then
-		MCS=$CSC
-	fi
-
-	if test "x$MONO" = "xno"; then
-		AC_MSG_WARN([No mono runtime found, skipping $CS SWIG bindings])
-	else
-		AC_SUBST(MCS)
-		have_csharp=yes
-    AC_MSG_NOTICE([Found mono, enabling $CS bindings])
-	fi
-fi
-
-AM_CONDITIONAL(HAVE_CSHARP, test x$have_csharp = xyes) 
-
 have_python=no
 AC_PYTHON_DEVEL([>='2.5'])
 
@@ -67,15 +30,7 @@ if test -z "$PYTHON" ; then
   AC_MSG_WARN([Python not found])
 else
   AM_PATH_PYTHON([2.5])
-  AC_PROG_SWIG(1.3.31)
-  if test -z "$SWIG_LIB" ; then
-    AC_MSG_WARN([SWIG not found, Python wrappers won't be built])
-  else 
-    SWIG_ENABLE_CXX
-    SWIG_MULTI_MODULE_SUPPORT
-    SWIG_PYTHON
-    have_python=yes
-  fi
+  have_python=yes
 fi
 
 AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
