@@ -360,7 +360,7 @@ model_variable_default_get_tokens(ModelVariable *variable)
 static int
 model_variable_tokenize(ModelVariable *variable)
 {
-  GArray *tokens = g_array_new(FALSE, TRUE, sizeof(ModelVariable *));
+  GArray *tokens = g_array_new(FALSE, TRUE, sizeof(equ_token));
 
   if (variable->priv->type == var_undef) variable->priv->type = var_aux;
   
@@ -396,7 +396,8 @@ model_variable_tokenize(ModelVariable *variable)
       // build the string /[a-zA-Z][a-zA-Z0-9_]* /
       // (I'm rusty with regexs, but I think thats right)
       pos1 = char_pos-1;
-      while (isalnum((last_char = equation[char_pos++])) || (last_char == '_')) continue;
+      while (isalnum((last_char = equation[char_pos++])) || (last_char == '_'))
+        continue;
       pos2 = char_pos-1;
       
       new_tok.identifier = g_strndup(&equation[pos1], pos2-pos1);
@@ -415,7 +416,8 @@ model_variable_tokenize(ModelVariable *variable)
       
       // build the string like we did for identifiers.
       pos1 = char_pos-1;
-      while (isdigit((last_char = equation[char_pos++])) || last_char == '.') continue;
+      while (isdigit((last_char = equation[char_pos++])) || last_char == '.') 
+        continue;
       pos2 = char_pos-1;
       
       new_tok.identifier = g_strndup(&equation[pos1], pos2-pos1);
@@ -433,7 +435,8 @@ model_variable_tokenize(ModelVariable *variable)
       new_tok.identifier = "";
       
       
-      if ((tokens->len == 0) && (new_tok.op == '[')) variable->priv->type = var_lookup;
+      if ((tokens->len == 0) && (new_tok.op == '[')) 
+        variable->priv->type = var_lookup;
 
       // prime last_char
       // ** FIXME - this could cause problems if the string ends
@@ -442,30 +445,15 @@ model_variable_tokenize(ModelVariable *variable)
       
       g_array_prepend_val(tokens, new_tok);
     }
-    
-    fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
-            new_tok.op, new_tok.type, 
-            new_tok.identifier, new_tok.num_val);
   }
   
-  if ((tokens->len == 1) && (g_array_index(tokens, equ_token, 0).type == tok_number)) 
+  if ((tokens->len == 1) && 
+      (g_array_index(tokens, equ_token, 0).type == tok_number)) 
   {
     variable->priv->type = var_const;
   }
   
   variable->priv->toks = tokens;
-  
-  g_fprintf(stdout, "Info: didn't segfault in tokenize, yay!\n");
-  
-  int i;
-  for (i=0; i<variable->priv->toks->len; i++)
-  {
-    equ_token tok = g_array_index(variable->priv->toks, equ_token, i);
-    
-    fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
-            tok.op, tok.type, 
-            tok.identifier, tok.num_val);
-  }
   
   return 0;
 }
