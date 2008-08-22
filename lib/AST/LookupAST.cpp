@@ -27,17 +27,16 @@
 #include "General.h"
 #include "ASTConsumer.h"
 using OpenSim::ASTConsumer;
-using OpenSim::Variable;
 
 void 
-OpenSim::LookupAST::SetData(OpenSim::Variable *newData)
+OpenSim::LookupAST::SetData(ModelVariable *newData)
 {
   if (newData) var = newData;
 }
 
 
 
-Variable *
+ModelVariable *
 OpenSim::LookupAST::Data()
 {
   return var;

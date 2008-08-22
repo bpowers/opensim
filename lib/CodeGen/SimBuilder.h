@@ -29,8 +29,7 @@
 
 // openSim stuff
 #include "../globals.h"
-#include "../Simulator.h"
-#include "../Variable.h"
+#include "../model-simulator.h"
 #include "../model-variable.h"
 
 
@@ -51,8 +50,7 @@ namespace OpenSim
   class SimBuilder
   {
     /// A map of all of the defined variables, keyed by name.
-    std::map<std::string, OpenSim::Variable *> vars;
-    std::map<std::string, ModelVariable *> gvars;
+    std::map<std::string, ModelVariable *> vars;
     
     /// A map of all of the defined variable AST nodes, keyed by name.
     std::map<std::string, OpenSim::VariableAST *> varASTs;
@@ -79,19 +77,19 @@ namespace OpenSim
     /// Checks to see if we've started parsing the variable with 
     /// this ID name yet.
     bool IsUnparsedTL(std::string IdName);
-    std::vector<OpenSim::Variable *> topLevelVars;
+    std::vector<ModelVariable *> topLevelVars;
     
     std::map<char, int> BinopPrecedence;
     
     // variable equation token handling
-    std::vector<OpenSim::EquToken> toks;
-    OpenSim::EquToken CurTok;
-    OpenSim::Variable *CurVar;
+    GArray *toks;
+    equ_token CurTok;
+    ModelVariable *CurVar;
     
     OpenSim::ExprAST *CurVarInitial;
     
-    std::vector<std::vector<OpenSim::EquToken> > stack;
-    std::vector<OpenSim::Variable *> var_stack;
+    std::vector<GArray *> stack;
+    std::vector<ModelVariable *> var_stack;
     
     void PushTokens();
     void PopTokens();
@@ -99,7 +97,7 @@ namespace OpenSim
     int GetTokPrecedence();
     
     // expression parsing
-    bool ProcessVar(Variable *var);
+    bool ProcessVar(ModelVariable *var);
     OpenSim::ExprAST *ParseBinOpRHS(int ExprPrec, OpenSim::ExprAST *LHS);
     OpenSim::ExprAST *ParsePrimary();
     OpenSim::ExprAST *ParseUnary();

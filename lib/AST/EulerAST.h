@@ -38,7 +38,7 @@ namespace OpenSim
   {
     std::string name;
     std::string equation;
-    varType type;
+    var_type type;
     
     std::vector<OpenSim::VariableAST *> body;
     

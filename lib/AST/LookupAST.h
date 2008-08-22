@@ -28,7 +28,7 @@
 
 // openSim stuff
 #include "../globals.h"
-#include "../Variable.h"
+#include "../model-variable.h"
 #include "General.h"
 #include "ASTConsumer.h"
 #include "../CodeGen/InterpreterModule.h"
@@ -39,17 +39,17 @@ namespace OpenSim
   class LookupAST : public ExprAST
     {
     protected:
-      OpenSim::Variable *var;
+      ModelVariable *var;
       std::vector< std::pair<double, double> > tuples;
       
     public:
-      LookupAST(OpenSim::Variable *varData, 
+      LookupAST(ModelVariable *varData, 
                 std::vector< std::pair<double, double> > lookup_data) 
       : var(varData), tuples(lookup_data) {}
       ~LookupAST() {}
       
-      void SetData(OpenSim::Variable *newData);
-      OpenSim::Variable *Data();
+      void SetData(ModelVariable *newData);
+      ModelVariable *Data();
       
       const std::vector< std::pair<double, double> > Table();
       
