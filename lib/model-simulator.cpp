@@ -432,6 +432,19 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
                                   "equation", &equation, NULL);
       fprintf(stdout, "    var '%s'\n    '%s'\n", var_name, equation);
       
+      const GArray *toks = model_variable_get_tokens(var);
+      
+      int i;
+      for (i=0; i<toks->len; i++)
+      {
+        //g_fprintf(stderr, "freeing some var\n");
+        equ_token tok = g_array_index(toks, equ_token, i);
+        
+        fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
+                tok.op, tok.type, 
+                tok.identifier, tok.num_val);
+      }
+      
       g_free(var_name);
       g_free(equation);
     }

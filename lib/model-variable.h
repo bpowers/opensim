@@ -45,6 +45,41 @@ enum var_type
 };
 
 
+enum token_type 
+{
+  tok_eof = -1,
+  
+  // commands
+  tok_def = -2, tok_extern = -3,
+  
+  // primary
+  tok_identifier = -4, tok_number = -5,
+  
+  // control
+  tok_if = -6, tok_then = -7, tok_else = -8,
+  tok_for = -9, tok_in = -10,
+  
+  // operators
+  tok_operator = -11,
+  
+  
+  // var definition
+  tok_var = -13
+};
+
+
+
+typedef struct _equ_token equ_token;
+
+struct _equ_token
+{
+  gchar           *identifier;
+  enum token_type  type;
+  double           num_val;
+  char             op;
+};
+
+
 /*
  * Type macros.
  */
@@ -71,9 +106,9 @@ struct _ModelVariable
 
 struct _ModelVariableClass
 {
-  GObjectClass parent_class;
+  GObjectClass   parent_class;
   
-  GArray *     (* get_tokens) (ModelVariable *variable);
+  const GArray * (* get_tokens) (ModelVariable *variable);
 };
 
 /* used by MODEL_TYPE_VARIABLE */
@@ -84,7 +119,7 @@ GType model_variable_get_type();
  */
 
 /* public */
-GArray *model_variable_get_tokens(ModelVariable *variable);
+const GArray *model_variable_get_tokens(ModelVariable *variable);
 
 
 G_END_DECLS

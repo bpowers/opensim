@@ -33,13 +33,14 @@
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
 #define MODEL_VARIABLE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_VARIABLE, ModelVariablePrivate))
 
-static gpointer model_variable_parent_class = NULL;
-static void model_variable_init(ModelVariable *self);
-static void model_variable_class_init(ModelVariableClass *klass);
-static void model_variable_dispose(GObject *gobject);
-static void model_variable_finalize(GObject *gobject);
-
-static GArray *model_variable_default_get_tokens(ModelVariable *variable);
+static gpointer      model_variable_parent_class = NULL;
+static void          model_variable_init(ModelVariable *self);
+static void          model_variable_class_init(ModelVariableClass *klass);
+static void          model_variable_dispose(GObject *gobject);
+static void          model_variable_finalize(GObject *gobject);
+static const GArray *model_variable_default_get_tokens(ModelVariable 
+                                                         *variable);
+static int           model_variable_tokenize(ModelVariable *variable);
 
 /* for object properties */
 enum
@@ -63,6 +64,8 @@ struct _ModelVariablePrivate
   enum var_type  type;
   
   gboolean       valid;
+  
+  GArray        *toks;
 };
 
 
@@ -268,6 +271,9 @@ model_variable_init(ModelVariable *self)
   self->priv = MODEL_VARIABLE_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
+  
+  // lazily initialize toks when needed
+  self->priv->toks  = NULL;
 }
 
 
@@ -287,12 +293,23 @@ model_variable_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  //if (self->priv->an_object)
-  //{
-  //  g_object_unref (self->priv->an_object);
-  //
-  //  self->priv->an_object = NULL;
-  //}
+  if (self->priv->toks)
+  {
+    GArray *array = self->priv->toks;
+    
+    int i;
+    for (i=0; i<array->len; i++)
+    {
+      //g_fprintf(stderr, "freeing some var\n");
+      //ModelVariable *var = NULL;
+      //var = g_array_index(array, ModelVariable *, i);
+      //if (var)
+      //{
+      //  g_object_unref(var);
+      //  array->data[i*sizeof(ModelVariable *)] = 0;
+      //}
+    }
+  }
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->dispose(gobject);
@@ -312,6 +329,8 @@ model_variable_finalize(GObject *gobject)
   g_free(self->priv->equation);
   g_free(self->priv->units);
   g_free(self->priv->comments);
+  
+  if (self->priv->toks) g_array_free(self->priv->toks, TRUE);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(model_variable_parent_class)->finalize(gobject);
@@ -319,7 +338,7 @@ model_variable_finalize(GObject *gobject)
 
 
 
-GArray *
+const GArray *
 model_variable_get_tokens(ModelVariable *variable)
 {
   MODEL_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
@@ -327,9 +346,127 @@ model_variable_get_tokens(ModelVariable *variable)
 
 
 
-static GArray *
+static const GArray *
 model_variable_default_get_tokens(ModelVariable *variable)
 {
+  if (!variable->priv->toks) model_variable_tokenize(variable);
+  
+  return variable->priv->toks;
   g_fprintf(stdout, "get tokens\n");
+}
+
+
+
+static int
+model_variable_tokenize(ModelVariable *variable)
+{
+  GArray *tokens = g_array_new(FALSE, TRUE, sizeof(ModelVariable *));
+
+  if (variable->priv->type == var_undef) variable->priv->type = var_aux;
+  
+  const gchar *equation = variable->priv->equation;  
+  const int length      = g_utf8_strlen(equation, -1);
+  
+  // if the equation is empty return an error
+  if (length == 0) return -1;
+  
+  // keep track of where we are in the equation
+  // and prime our character buffer
+  int char_pos = 0;
+  gchar last_char = equation[char_pos++];
+  
+  int pos1, pos2 = 0;
+  
+  // now we process the equation string one character at a time,
+  // testing to see if it fits into any of the patterns we recognize.
+  while (char_pos <= length)
+  {
+    equ_token new_tok;
+    new_tok.op = 0;
+    new_tok.num_val = 0.0;
+    
+    // skip whitespace
+    while (isspace(last_char)) last_char = equation[char_pos++];
+    
+    // only identifiers start with characters
+    if (isalpha(last_char))
+    {
+      new_tok.type = tok_identifier;
+      
+      // build the string /[a-zA-Z][a-zA-Z0-9_]* /
+      // (I'm rusty with regexs, but I think thats right)
+      pos1 = char_pos-1;
+      while (isalnum((last_char = equation[char_pos++])) || (last_char == '_')) continue;
+      pos2 = char_pos-1;
+      
+      new_tok.identifier = g_strndup(&equation[pos1], pos2-pos1);
+      
+      if ((tokens->len == 0) && (!g_strcmp0(new_tok.identifier,  "INTEG")))
+        variable->priv->type = var_stock;
+      
+      g_array_prepend_val(tokens, new_tok);
+    }
+    else if (isdigit(last_char) || last_char == '.')
+    {
+      // we've got a number, but I'm pretty sure we 
+      // don't catch negative numbers.
+      
+      new_tok.type = tok_number;
+      
+      // build the string like we did for identifiers.
+      pos1 = char_pos-1;
+      while (isdigit((last_char = equation[char_pos++])) || last_char == '.') continue;
+      pos2 = char_pos-1;
+      
+      new_tok.identifier = g_strndup(&equation[pos1], pos2-pos1);
+      
+      // convert it to a floating point value.
+      // *** FIXME: error checking, please.
+      new_tok.num_val = g_ascii_strtod(new_tok.identifier, NULL);
+      
+      tokens = g_array_prepend_val(tokens, new_tok);
+    }
+    else
+    {
+      new_tok.type = tok_operator;
+      new_tok.op = last_char;
+      new_tok.identifier = "";
+      
+      
+      if ((tokens->len == 0) && (new_tok.op == '[')) variable->priv->type = var_lookup;
+
+      // prime last_char
+      // ** FIXME - this could cause problems if the string ends
+      // on an operator?
+      last_char = equation[char_pos++];
+      
+      g_array_prepend_val(tokens, new_tok);
+    }
+    
+    fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
+            new_tok.op, new_tok.type, 
+            new_tok.identifier, new_tok.num_val);
+  }
+  
+  if ((tokens->len == 1) && (g_array_index(tokens, equ_token, 0).type == tok_number)) 
+  {
+    variable->priv->type = var_const;
+  }
+  
+  variable->priv->toks = tokens;
+  
+  g_fprintf(stdout, "Info: didn't segfault in tokenize, yay!\n");
+  
+  int i;
+  for (i=0; i<variable->priv->toks->len; i++)
+  {
+    equ_token tok = g_array_index(variable->priv->toks, equ_token, i);
+    
+    fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
+            tok.op, tok.type, 
+            tok.identifier, tok.num_val);
+  }
+  
+  return 0;
 }
 
