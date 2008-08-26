@@ -202,18 +202,23 @@ OpenSim::SimBuilder::InitializeModule()
 bool 
 OpenSim::SimBuilder::getNextToken()
 {
-  if (toks_index <= 0) return false;
-
   const GArray *toks = model_variable_get_tokens(CurVar);
 
+  if (toks_index >= toks->len) return false;
+
+  //gchar    *var_name = NULL;
+  //g_object_get(G_OBJECT(CurVar), "name", &var_name, NULL);
+                              
   equ_token tok = g_array_index(toks, equ_token, toks_index);
   
-  fprintf(stdout, "  *tok ('%c' '%d') '%s' (%f)\n", 
-          tok.op, tok.type, 
-          tok.identifier, tok.num_val);
-          
+  //fprintf(stdout, "  *tok '%s' ('%c' '%d') '%s' (%f)\n", 
+  //        var_name, tok.op, tok.type, 
+  //        tok.identifier, tok.num_val);
+  
+  //g_free(var_name);
+  
   CurTok = tok;
-  --toks_index;
+  ++toks_index;
 
   return true;
 }
@@ -620,7 +625,7 @@ bool
 OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
 {
   const GArray *toks = model_variable_get_tokens(var);
-  toks_index = toks->len;
+  toks_index = 0;
   
   CurVar = var;
   
@@ -630,7 +635,7 @@ OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
   g_object_get(G_OBJECT(var), "type", &var_t, 
                               "name", &var_name, NULL);
   
-  fprintf(stdout, "Processing var: '%s' (%d)\n", var_name, toks_index);
+  fprintf(stdout, "Processing var: '%s' (%d)\n", var_name, toks->len);
   fflush(stdout);
   
   if (toks->len == 0)

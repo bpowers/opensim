@@ -402,7 +402,7 @@ model_variable_tokenize(ModelVariable *variable)
       if ((tokens->len == 0) && (!g_strcmp0(new_tok.identifier,  "INTEG")))
         variable->priv->type = var_stock;
       
-      g_array_prepend_val(tokens, new_tok);
+      g_array_append_val(tokens, new_tok);
     }
     else if (isdigit(last_char) || last_char == '.')
     {
@@ -419,7 +419,7 @@ model_variable_tokenize(ModelVariable *variable)
       // *** FIXME: error checking, please.
       new_tok.num_val = g_ascii_strtod(&equation[pos1], NULL);
       
-      tokens = g_array_prepend_val(tokens, new_tok);
+      g_array_append_val(tokens, new_tok);
     }
     else
     {
@@ -436,7 +436,7 @@ model_variable_tokenize(ModelVariable *variable)
       // on an operator?
       last_char = equation[char_pos++];
       
-      g_array_prepend_val(tokens, new_tok);
+      g_array_append_val(tokens, new_tok);
     }
   }
   
