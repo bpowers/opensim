@@ -52,7 +52,6 @@ using OpenSim::UnaryExprAST;
 OpenSim::SimBuilder::SimBuilder(std::map<std::string, ModelVariable *> variables)
 {
   results = NULL;
-  toks    = NULL;
   // save the variables we're passed.
   vars = variables;
     
@@ -71,7 +70,7 @@ OpenSim::SimBuilder::SimBuilder(std::map<std::string, ModelVariable *> variables
   _errors = 0;
 
   // creates AST from variable definitions.
-  //InitializeModule();
+  InitializeModule();
 }
 
 
@@ -101,7 +100,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
   if (!_valid_model)
   {
     fprintf(stderr, "opensim: model not valid, not simulating.\n");
-    //return -1;
+    return -1;
   }
 
   ASTConsumer *consumer = NULL;
@@ -203,10 +202,18 @@ OpenSim::SimBuilder::InitializeModule()
 bool 
 OpenSim::SimBuilder::getNextToken()
 {
-  if (toks->len == 0) return false;
+  if (toks_index <= 0) return false;
 
-  CurTok = g_array_index(toks, equ_token, toks->len-1);
-  g_array_remove_index(toks, toks->len-1);
+  const GArray *toks = model_variable_get_tokens(CurVar);
+
+  equ_token tok = g_array_index(toks, equ_token, toks_index);
+  
+  fprintf(stdout, "  *tok ('%c' '%d') '%s' (%f)\n", 
+          tok.op, tok.type, 
+          tok.identifier, tok.num_val);
+          
+  CurTok = tok;
+  --toks_index;
 
   return true;
 }
@@ -219,8 +226,7 @@ OpenSim::SimBuilder::PushTokens()
   // we want to preserve all the tokens, which includes
   // CurTok, so we push it back on the toks vector before
   // pushing that onto our token stack
-  g_array_append_val(toks, CurTok);
-  stack.push_back(toks);
+  index_stack.push_back(toks_index);
   
   var_stack.push_back(CurVar);
 }
@@ -233,8 +239,9 @@ OpenSim::SimBuilder::PopTokens()
   // we don't care about the current vector at toks, so 
   // we just put back the back of the stack and prime 
   // CurTok through getNextToken()
-  toks = stack.back();
-  stack.pop_back();
+  toks_index = index_stack.back();
+  index_stack.pop_back();
+  
   getNextToken();
   
   CurVar = var_stack.back();
@@ -305,7 +312,7 @@ OpenSim::SimBuilder::ParseUnary()
 ExprAST *
 OpenSim::SimBuilder::ParseTable()
 {
-  if (toks->len == model_variable_get_tokens(CurVar)->len-2)
+  if (toks_index == model_variable_get_tokens(CurVar)->len-2)
   {
     // valid lookup value, start parsing it.
     vector< pair<double, double> > tuples;
@@ -412,6 +419,7 @@ OpenSim::SimBuilder::ParsePrimary()
     case tok_number:     
       return ParseNumberExpr();
     default:
+      //fprintf(stderr, "Warning: unknown top level token of type '%d'\n", CurTok.type);
       return 0;
   }
 }
@@ -588,6 +596,7 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 ExprAST *
 OpenSim::SimBuilder::ParseNumberExpr() 
 {
+  fprintf(stdout, "  number expression: '%f'\n", CurTok.num_val);
   ExprAST *Result = new NumberExprAST(CurTok.num_val);
   getNextToken(); // consume the number
 
@@ -610,17 +619,8 @@ OpenSim::SimBuilder::ParseExpression()
 bool 
 OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
 {
-  if (toks) g_array_free(toks, TRUE);
-  
-  const GArray *const_toks = model_variable_get_tokens(var);
-  toks = g_array_new(FALSE, FALSE, sizeof(equ_token));
-  
-  int i;
-  for (i=0; i<const_toks->len; i++);
-  {
-    equ_token copy = g_array_index(const_toks, equ_token, i);
-    g_array_append_val(toks, copy);
-  }
+  const GArray *toks = model_variable_get_tokens(var);
+  toks_index = toks->len;
   
   CurVar = var;
   
@@ -629,6 +629,9 @@ OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
   gchar    *var_name = NULL;
   g_object_get(G_OBJECT(var), "type", &var_t, 
                               "name", &var_name, NULL);
+  
+  fprintf(stdout, "Processing var: '%s' (%d)\n", var_name, toks_index);
+  fflush(stdout);
   
   if (toks->len == 0)
   {

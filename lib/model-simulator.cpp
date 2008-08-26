@@ -270,13 +270,6 @@ model_simulator_init(ModelSimulator *self)
   g_print("sim init\n");
   self->priv->valid_model = FALSE;
   self->priv->sim_builder = NULL;
-  /*
-  self->priv->model_name       = NULL;
-  self->priv->file_name        = NULL;
-  self->priv->output_type      = sim_emit_Output;
-  self->priv->output_file_name = NULL;
-  self->priv->valid_model      = FALSE;
-  */
 }
 
 

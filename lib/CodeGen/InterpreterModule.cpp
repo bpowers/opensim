@@ -46,12 +46,16 @@ using OpenSim::VariableAST;
 
 OpenSim::InterpreterModule::InterpreterModule()
 {
+  fprintf(stdout, "*intmod: constructor*\n");
+  fflush(stdout);
 }
 
 
 
 OpenSim::InterpreterModule::~InterpreterModule() 
 {
+  fprintf(stdout, "*intmod: destructor*\n");
+  fflush(stdout);
 }
 
 
@@ -59,6 +63,9 @@ OpenSim::InterpreterModule::~InterpreterModule()
 void 
 OpenSim::InterpreterModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 {
+  fprintf(stdout, "*intmod: consume*\n");
+  fflush(stdout);
+
   simout = output_file;
   start->Codegen(this);
 }
@@ -68,6 +75,10 @@ OpenSim::InterpreterModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 double
 OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 {
+  fprintf(stdout, "*intmod: visit:simast*\n");
+  fflush(stdout);
+  
+  
   vars = node->NamedVars();
   
   for (int i=0; i < node->Initial().size(); i++) 
@@ -125,6 +136,9 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 {
+  fprintf(stdout, "*intmod: visit:eulerast*\n");
+  fflush(stdout);
+  
   double start = vars["OS_start"]->Codegen(this);
   double end = vars["OS_end"]->Codegen(this);
   double timestep = vars["OS_timestep"]->Codegen(this);
@@ -208,6 +222,9 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 {
+  fprintf(stdout, "*intmod: visit:varast*\n");
+  fflush(stdout);
+  
   ModelVariable *v = node->Data();
   
   gchar *v_name = NULL;
@@ -234,6 +251,9 @@ OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VarRefAST *node)
 {
+  fprintf(stdout, "*intmod: visit:varrefast*\n");
+  fflush(stdout);
+  
   return vals[node->Name()].back();
 }
 
@@ -242,6 +262,9 @@ OpenSim::InterpreterModule::visit(OpenSim::VarRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::NumberExprAST *node)
 {
+  fprintf(stdout, "*intmod: visit:numast*\n");
+  fflush(stdout);
+  
   return node->Val();
 }
 
@@ -250,6 +273,9 @@ OpenSim::InterpreterModule::visit(OpenSim::NumberExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::UnaryExprAST *node)
 {
+  fprintf(stdout, "*intmod: visit:unaryast*\n");
+  fflush(stdout);
+  
   double R = node->RHS->Codegen(this);
   
   switch (node->Op) 
@@ -270,6 +296,9 @@ OpenSim::InterpreterModule::visit(OpenSim::UnaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 {
+  fprintf(stdout, "*intmod: visit:binast*\n");
+  fflush(stdout);
+  
   double L = node->LHS->Codegen(this);
   double R = node->RHS->Codegen(this);
   
@@ -291,6 +320,9 @@ OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 {
+  fprintf(stdout, "*intmod: visit:lookupast*\n");
+  fflush(stdout);
+  
   fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
   
   return 0;
@@ -301,6 +333,9 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 {
+  fprintf(stdout, "*intmod: visit:lookuprefast*\n");
+  fflush(stdout);
+  
   LookupAST *lookup = (LookupAST *) vars[node->TableName()]->AST();
   
   const vector< pair<double, double> > table = lookup->Table();
@@ -339,6 +374,9 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
 {
+  fprintf(stdout, "*intmod: visit:funcref*\n");
+  fflush(stdout);
+  
   std::map<std::string, std::vector<double> > Results();
   if (node->FunctionName() == "MAX")
   {

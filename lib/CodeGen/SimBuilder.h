@@ -82,13 +82,13 @@ namespace OpenSim
     std::map<char, int> BinopPrecedence;
     
     // variable equation token handling
-    GArray *toks;
+    int toks_index;
     equ_token CurTok;
     ModelVariable *CurVar;
     
     OpenSim::ExprAST *CurVarInitial;
     
-    std::vector<GArray *> stack;
+    std::vector<int> index_stack;
     std::vector<ModelVariable *> var_stack;
     
     void PushTokens();

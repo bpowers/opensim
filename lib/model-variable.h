@@ -45,7 +45,7 @@ enum var_type
 };
 
 
-enum token_type 
+enum _token_type 
 {
   tok_eof = -1,
   
@@ -67,16 +67,17 @@ enum token_type
   tok_var = -13
 };
 
+typedef enum _token_type token_type;
 
 
 typedef struct _equ_token equ_token;
 
 struct _equ_token
 {
-  gchar           *identifier;
-  enum token_type  type;
-  double           num_val;
-  char             op;
+  token_type  type;
+  gchar      *identifier;
+  double      num_val;
+  char        op;
 };
 
 
