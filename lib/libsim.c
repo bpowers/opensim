@@ -75,7 +75,7 @@ my_init(void)
   g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
   g_print("output_type is now: %d\n", out);
 
-  g_object_set(G_OBJECT(gsim), "output_type", sim_emit_AS3, NULL);
+  g_object_set(G_OBJECT(gsim), "output_type", sim_emit_Output, NULL);
   g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
   g_print("output_type is now: %d\n", out);
   

@@ -34,7 +34,7 @@
 
 #include "PythonPrintModule.h"
 #include "InterpreterModule.h"
-#include "AS3PrintModule.h"
+//#include "AS3PrintModule.h"
 
 #include "SimBuilder.h"
 
@@ -101,7 +101,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
   if (!_valid_model)
   {
     fprintf(stderr, "opensim: model not valid, not simulating.\n");
-    return -1;
+    //return -1;
   }
 
   ASTConsumer *consumer = NULL;
@@ -112,7 +112,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
       consumer = new PythonPrintModule();
       break;
     case sim_emit_AS3:
-      consumer = new AS3PrintModule();
+      //consumer = new AS3PrintModule();
       break;
     case sim_emit_IR:
       fprintf(stdout, "Error: Sorry, JIT is disabled.\n");
@@ -120,6 +120,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
       //consumer = new CodeGenModule();
       break;
     case sim_emit_Output:
+      fprintf(stdout, "Info: Awesome, interpreting.\n");
       consumer = new InterpreterModule();
       break;
     default:
