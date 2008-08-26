@@ -224,7 +224,7 @@ model_simulator_class_init(ModelSimulatorClass *klass)
   model_param_spec = g_param_spec_string("file_name",
                                          "full path to file",
                                          "Where the model is saved to",
-                                         "" /* default value */,
+                                         NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
@@ -244,7 +244,7 @@ model_simulator_class_init(ModelSimulatorClass *klass)
   model_param_spec = g_param_spec_string("output_file_name",
                                          "full path to output file",
                                          "Where the model output is saved to",
-                                         "" /* default value */,
+                                         NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_OUTPUT_FILE_NAME,
@@ -469,5 +469,33 @@ int
 model_simulator_default_run(ModelSimulator *self)
 {
   fprintf(stdout, "simulating the model\n");
-  return 0;
+  
+  int ret = 0;
+  
+  if (self->priv->sim_builder)
+  {
+    FILE *output_stream = stdout;
+    gchar *output_file_name = self->priv->output_file_name;
+    
+    if (output_file_name) 
+    {
+      fprintf(stdout, "ofn: '%s' %d\n", output_file_name, g_strcmp0(output_file_name, ""));
+      output_stream = fopen(output_file_name, "w+");
+      
+      if (!output_stream) 
+      {
+        fprintf(stderr, "Error: Could not open output file for writing.\n");
+        return -1;
+      }
+    }
+    
+    ret = self->priv->sim_builder->Parse(self->priv->output_type, 
+                                         output_stream);
+    
+    
+    // if we opened it, close the output stream
+    if (output_stream != stdout) fclose(output_stream);
+  }
+  
+  return ret;
 }
