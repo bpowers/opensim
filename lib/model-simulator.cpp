@@ -25,6 +25,10 @@
 //
 //===---------------------------------------------------------------------===//
 
+#include <map>
+#include <vector>
+#include <string>
+
 #include "globals.h"
 using std::map;
 using std::string;

@@ -27,6 +27,7 @@
 #ifndef OSIM_ASTCONSUMER_H
 #define OSIM_ASTCONSUMER_H
 
+#include "stdio.h"
 #include "../globals.h"
 
 

@@ -26,15 +26,10 @@
 
 // for the windows ifdef
 #include "globals.h"
-#include <cstdio>
+#include <stdio.h>
 
 #include "model-simulator.h"
 #include "model-variable.h"
-#include "Simulator.h"
-using OpenSim::Simulator;
-//using OpenSim::sim_output;
-
-Simulator *model = NULL;
 ModelSimulator *gsim = NULL;
 
 
@@ -47,7 +42,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
   {
   case DLL_PROCESS_ATTACH:
   case DLL_THREAD_ATTACH:
-    model = NULL;
+    //model = NULL;
     break;
   case DLL_THREAD_DETACH:
   case DLL_PROCESS_DETACH:
@@ -63,8 +58,6 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 void __attribute__ ((constructor)) 
 my_init(void)
 {
-  model = NULL;
-  
   fprintf(stderr, "creating model\n");
   
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
@@ -98,14 +91,12 @@ my_init(void)
 void __attribute__ ((destructor)) 
 my_fini(void)
 {
-  delete model;
-  
   g_object_unref(gsim);
 }
 #endif
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_load_model(const char *file_name)
 {
   //delete model;
@@ -125,38 +116,36 @@ opensim_load_model(const char *file_name)
 }
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_save_model()
 {
-  return 0;
-}
-
-
-
-extern "C" int WIN_DLL
-opensim_set_output_type(OpenSim::sim_output output_type)
-{
-  if (model) return model->set_output_type(output_type);
-
   return -1;
 }
 
 
 
-extern "C" int WIN_DLL
-opensim_set_output_file(const char *file_name)
+int WIN_DLL
+opensim_set_output_type(sim_output output_type)
 {
-  if (model) return model->set_output_file(file_name);
   
   return -1;
 }
 
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
+opensim_set_output_file(const char *file_name)
+{
+  
+  return -1;
+}
+
+
+
+int WIN_DLL
 opensim_simulate()
 {
-  if (model) return model->simulate();
+  if (gsim) return model_simulator_run(gsim);
   
   return -1;
 }

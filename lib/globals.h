@@ -38,10 +38,6 @@
 #define WIN_DLL 
 #endif 
 
-#include <string>
-#include <map>
-#include <vector>
-
 #define WALK_BAILED 20
 #define PARSED_OK 0
 

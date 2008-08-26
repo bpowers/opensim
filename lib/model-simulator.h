@@ -34,8 +34,7 @@
 
 G_BEGIN_DECLS
 
-
-enum sim_output 
+enum _sim_output 
 {
   sim_emit_IR      = 1, // not supported
   sim_emit_Python  = 2, // full Python implementation of model
@@ -44,6 +43,7 @@ enum sim_output
   sim_emit_AS3     = 5, // full AS3 implementation of model
 };
 
+typedef enum _sim_output sim_output;
 
 /*
  * Type macros.
