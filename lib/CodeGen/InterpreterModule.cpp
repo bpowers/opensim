@@ -31,6 +31,7 @@
 #include "../AST/VariableAST.h"
 #include "../AST/LookupAST.h"
 #include "../AST/General.h"
+#include "../model-variable.h"
 
 #include <cstdlib>
 #include <algorithm>
@@ -41,7 +42,6 @@ using std::map;
 using std::pair;
 
 using OpenSim::VariableAST;
-using OpenSim::Variable;
 
 
 OpenSim::InterpreterModule::InterpreterModule()
@@ -73,15 +73,22 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   for (int i=0; i < node->Initial().size(); i++) 
   {
     VariableAST *v_ast = node->Initial()[i];
-    Variable *v = v_ast->Data();
+    ModelVariable *v = v_ast->Data();
+    
+    gchar *v_name = NULL;
+    var_type v_type = var_undef;
+    
+    g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
     
     // define constants
-    if (v->Type() == var_const)
-      vals[v->Name()].push_back(v_ast->AST()->Codegen(this));
+    if (v_type == var_const)
+      vals[v_name].push_back(v_ast->AST()->Codegen(this));
     
     // calculate the initial values of stocks
-    if (v->Type() == var_stock)
-      vals[v->Name()].push_back(v_ast->Initial()->Codegen(this));
+    if (v_type == var_stock)
+      vals[v_name].push_back(v_ast->Initial()->Codegen(this));
+    
+    g_free(v_name);
   }
   
   string headers = "time";
@@ -90,10 +97,19 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
-    Variable *v = v_ast->Data();
+    ModelVariable *v = v_ast->Data();
+    gchar *v_name = NULL;
+    var_type v_type = var_undef;
+    
+    g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
 
-    if (v->Type() == var_stock || v->Type() == var_aux)
-      headers += "," + v->Name();
+    if (v_type == var_stock || v_type == var_aux)
+    {
+      headers += ",";
+      headers += v_name;
+    }
+    
+    g_free(v_name);
   }
   headers += "\n";
   
@@ -132,13 +148,21 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     if (do_save)
       fprintf(simout, "%f", time);
     
-    vector<VariableAST *> body = node->Body();
-    for (vector<VariableAST *>::iterator itr = body.begin();
-         itr != body.end(); ++itr)
+    if (do_save)
     {
-      (*itr)->Codegen(this);
-      if (do_save)
-        fprintf(simout, ",%f", vals[(*itr)->Data()->Name()].back());
+      vector<VariableAST *> body = node->Body();
+      for (vector<VariableAST *>::iterator itr = body.begin();
+           itr != body.end(); ++itr)
+      {
+        (*itr)->Codegen(this);
+        
+        gchar *v_name = NULL;
+        g_object_get(G_OBJECT((*itr)->Data()), "name", v_name, NULL);
+        
+        fprintf(simout, ",%f", vals[v_name].back());
+        
+        g_free(v_name);
+      }
     }
     
     if (do_save)
@@ -147,13 +171,21 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     for (map<string, VariableAST *>::iterator itr = vars.begin(); 
          itr != vars.end(); itr++) 
     {
-      Variable *v = itr->second->Data();
+      ModelVariable *v = itr->second->Data();
+      gchar *v_name = NULL;
+      var_type v_type = var_undef;
+      
+      g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
       
       // update stocks at end of the loop
-      if (v->Type() == var_stock)
+      if (v_type == var_stock)
       {
-        vals[v->Name()].push_back(vals[v->Name() + "_NEXT"].back());
+        string name_next = v_name;
+        name_next += "_NEXT";
+        vals[v_name].push_back(vals[name_next].back());
       }
+      
+      g_free(v_name);
     }
     
     // figure out if we should save things the next time around
@@ -176,16 +208,23 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 {
-  Variable *v = node->Data();
-  string next = "";
+  ModelVariable *v = node->Data();
   
-  if (v->Type() == var_stock)
+  gchar *v_name = NULL;
+  var_type v_type = var_undef;
+  
+  g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
+  
+  string next = v_name;
+  g_free(v_name);
+  
+  if (v_type == var_stock)
   {
-    next = "_NEXT";
+    next += "_NEXT";
   }
 
   double value = node->AST()->Codegen(this);
-  vals[v->Name() + next].push_back(value);
+  vals[next].push_back(value);
   
   return value;
 }

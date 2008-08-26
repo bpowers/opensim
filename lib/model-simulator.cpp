@@ -31,13 +31,7 @@ using std::string;
 using std::vector;
 
 #include "CodeGen/SimBuilder.h"
-#include "IO/IOxml.h"
-#include "IO/IOVenText.h"
-#include "IO/IOInterface.h"
 using OpenSim::SimBuilder;
-using OpenSim::IOxml;
-using OpenSim::IOVenText;
-using OpenSim::IOInterface;
 
 #include "model-simulator.h"
 #include "model-variable.h"
