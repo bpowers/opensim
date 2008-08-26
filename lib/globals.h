@@ -38,8 +38,6 @@
 #define WIN_DLL 
 #endif 
 
-#include <cstdio>
-
 #include <string>
 #include <map>
 #include <vector>
@@ -48,8 +46,6 @@
 #define PARSED_OK 0
 
 #include "config.h"
-#include "gettext.h"
-#define _(Msg) gettext(Msg)
 
 /*
 // llvm code generation
