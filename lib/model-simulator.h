@@ -83,6 +83,7 @@ struct _ModelSimulatorClass
   GObjectClass parent_class;
   
   int          (* output_debug_info) (ModelSimulator *simulator);
+  int          (* run) (ModelSimulator *simulator);
 };
 
 /* used by MODEL_TYPE_SIMULATOR */

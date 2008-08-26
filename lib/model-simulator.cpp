@@ -47,6 +47,7 @@ static void model_simulator_dispose(GObject *gobject);
 static void model_simulator_finalize(GObject *gobject);
 
 static int model_simulator_default_output_debug_info(ModelSimulator *simulator);
+static int model_simulator_default_run(ModelSimulator *simulator);
 
 enum
 {
@@ -205,6 +206,7 @@ model_simulator_class_init(ModelSimulatorClass *klass)
   gobject_class->finalize     = model_simulator_finalize;
 
   klass->output_debug_info    = model_simulator_default_output_debug_info;
+  klass->run                  = model_simulator_default_run;
 
   model_param_spec = g_param_spec_string("model_name",
                                          "model name",
@@ -451,3 +453,17 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
   return 0;
 }
 
+
+
+extern "C" int
+model_simulator_run(ModelSimulator *simulator)
+{
+  return MODEL_SIMULATOR_GET_CLASS(simulator)->run(simulator);
+}
+
+int 
+model_simulator_default_run(ModelSimulator *self)
+{
+  fprintf(stdout, "simulating the model\n");
+  return 0;
+}
