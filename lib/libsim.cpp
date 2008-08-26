@@ -96,7 +96,7 @@ my_fini(void)
 #endif
 
 
-int WIN_DLL
+extern "C" int WIN_DLL
 opensim_load_model(const char *file_name)
 {
   //delete model;
@@ -116,7 +116,7 @@ opensim_load_model(const char *file_name)
 }
 
 
-int WIN_DLL
+extern "C" int WIN_DLL
 opensim_save_model()
 {
   return -1;
@@ -124,7 +124,7 @@ opensim_save_model()
 
 
 
-int WIN_DLL
+extern "C" int WIN_DLL
 opensim_set_output_type(sim_output output_type)
 {
   
@@ -133,7 +133,7 @@ opensim_set_output_type(sim_output output_type)
 
 
 
-int WIN_DLL
+extern "C" int WIN_DLL
 opensim_set_output_file(const char *file_name)
 {
   
@@ -142,7 +142,7 @@ opensim_set_output_file(const char *file_name)
 
 
 
-int WIN_DLL
+extern "C" int WIN_DLL
 opensim_simulate()
 {
   if (gsim) return model_simulator_run(gsim);

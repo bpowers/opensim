@@ -18,6 +18,6 @@ libsimobjs_la_LIBADD   = AST/libAST.la CodeGen/libCodeGen.la \
 libsimobjs_la_LDFLAGS  = -no-undefined @LIBINTL@
 
 lib_LTLIBRARIES        = libsim.la
-libsim_la_SOURCES      = libsim.c
+libsim_la_SOURCES      = libsim.cpp
 libsim_la_LIBADD       = libsimobjs.la
 
