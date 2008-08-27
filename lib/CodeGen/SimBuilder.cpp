@@ -423,7 +423,8 @@ OpenSim::SimBuilder::ParsePrimary()
     case tok_number:     
       return ParseNumberExpr();
     default:
-      //fprintf(stderr, "Warning: unknown top level token of type '%d'\n", CurTok.type);
+      //fprintf(stderr, "Warning: unknown top level token of type '%d'\n", 
+      //        CurTok.type);
       return 0;
   }
 }
