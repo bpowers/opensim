@@ -58,32 +58,10 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 void __attribute__ ((constructor)) 
 my_init(void)
 {
-  fprintf(stderr, "creating model\n");
-  
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
   gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
                                       NULL)); 
-  gchar *prop;
-  
-  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
-  g_print("model_name is now: %s\n", prop);
-  g_free(prop);
-  
-  sim_output out;
-  
-  g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
-  g_print("output_type is now: %d\n", out);
-
-  g_object_set(G_OBJECT(gsim), "output_type", sim_emit_Output, NULL);
-  g_object_get(G_OBJECT(gsim), "output_type", &out, NULL);
-  g_print("output_type is now: %d\n", out);
-  
-  fprintf(stderr, "done creating model\n");
-  
-  ModelVariable *gvar = MODEL_VARIABLE(g_object_new(MODEL_TYPE_VARIABLE, 
-                                                    NULL));
-  g_object_unref(gvar);
 }
 
 
@@ -99,18 +77,7 @@ my_fini(void)
 extern "C" int WIN_DLL
 opensim_load_model(const char *file_name)
 {
-  //delete model;
-  //model = new Simulator(file_name);
-  
-  model_simulator_load(gsim, (gchar *)file_name);
-  
-  gchar *prop;
-  
-  g_object_get(G_OBJECT(gsim), "model_name", &prop, NULL);
-  g_print("model_name is now: %s\n", prop);
-  g_free(prop);
-  
-  return 0;
+  return model_simulator_load(gsim, (gchar *)file_name);
 }
 
 
@@ -125,8 +92,11 @@ opensim_save_model()
 extern "C" int WIN_DLL
 opensim_set_output_type(sim_output output_type)
 {
+  if (!gsim) return -1;
   
-  return -1;
+  g_object_set(G_OBJECT(gsim), "output_type", output_type, NULL);
+
+  return 0;
 }
 
 
@@ -134,6 +104,9 @@ opensim_set_output_type(sim_output output_type)
 extern "C" int WIN_DLL
 opensim_set_output_file(const char *file_name)
 {
+  if (!gsim) return -1;
+  
+  g_object_set(G_OBJECT(gsim), "output_file_name", file_name, NULL);
   
   return -1;
 }

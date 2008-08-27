@@ -119,7 +119,6 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
       //consumer = new CodeGenModule();
       break;
     case sim_emit_Output:
-      fprintf(stdout, "Info: Awesome, interpreting.\n");
       consumer = new InterpreterModule();
       break;
     default:

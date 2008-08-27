@@ -195,8 +195,6 @@ model_simulator_get_property (GObject    *object,
 static void
 model_simulator_class_init(ModelSimulatorClass *klass)
 {
-  g_print("class init\n");
-
   model_simulator_parent_class = g_type_class_peek_parent(klass);
 
   g_type_class_add_private(klass, sizeof (ModelSimulatorPrivate));
@@ -267,7 +265,6 @@ model_simulator_init(ModelSimulator *self)
 {
   self->priv = MODEL_SIMULATOR_GET_PRIVATE(self);
   
-  g_print("sim init\n");
   self->priv->valid_model = FALSE;
   self->priv->sim_builder = NULL;
 }
@@ -382,7 +379,6 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   
   if (valid_model)
   {
-    fprintf(stdout, "Info: We seem to have a valid model so far.\n");
     _sim_builder = new SimBuilder(_variables);
   }
   
@@ -463,8 +459,6 @@ model_simulator_run(ModelSimulator *simulator)
 int 
 model_simulator_default_run(ModelSimulator *self)
 {
-  fprintf(stdout, "simulating the model\n");
-  
   int ret = 0;
   
   if (self->priv->sim_builder)
