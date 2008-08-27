@@ -231,7 +231,7 @@ OpenSim::SimBuilder::PushTokens()
   // we want to preserve all the tokens, which includes
   // CurTok, so we push it back on the toks vector before
   // pushing that onto our token stack
-  index_stack.push_back(toks_index);
+  index_stack.push_back(--toks_index);
   
   var_stack.push_back(CurVar);
 }
@@ -247,10 +247,10 @@ OpenSim::SimBuilder::PopTokens()
   toks_index = index_stack.back();
   index_stack.pop_back();
   
-  getNextToken();
-  
   CurVar = var_stack.back();
   var_stack.pop_back();
+  
+  getNextToken();
 }
 
 
@@ -491,7 +491,7 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     
     if (CurTok.op != ',')
     {
-      fprintf(stdout, "Error: expected ')' while parsing %c.", CurTok.op);
+      fprintf(stdout, "Error: expected ')' while parsing %c.\n", CurTok.op);
       _errors++;
       
       return 0;
@@ -601,7 +601,7 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 ExprAST *
 OpenSim::SimBuilder::ParseNumberExpr() 
 {
-  fprintf(stdout, "  number expression: '%f'\n", CurTok.num_val);
+  //fprintf(stdout, "  number expression: '%f'\n", CurTok.num_val);
   ExprAST *Result = new NumberExprAST(CurTok.num_val);
   getNextToken(); // consume the number
 
@@ -629,14 +629,10 @@ OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
   
   CurVar = var;
   
-  
   var_type  var_t = var_undef;
   gchar    *var_name = NULL;
   g_object_get(G_OBJECT(var), "type", &var_t, 
                               "name", &var_name, NULL);
-  
-  fprintf(stdout, "Processing var: '%s' (%d)\n", var_name, toks->len);
-  fflush(stdout);
   
   if (toks->len == 0)
   {

@@ -412,6 +412,11 @@ model_variable_tokenize(ModelVariable *variable)
       new_tok.type = tok_number;
       
       // build the string like we did for identifiers.
+      //while (isdigit((last_char = equation[char_pos++])) || last_char == '.') 
+      //  continue;
+      
+      // build the string like we did for identifiers.
+      pos1 = char_pos-1;
       while (isdigit((last_char = equation[char_pos++])) || last_char == '.') 
         continue;
       
@@ -419,7 +424,7 @@ model_variable_tokenize(ModelVariable *variable)
       // *** FIXME: error checking, please.
       new_tok.num_val = g_ascii_strtod(&equation[pos1], NULL);
       
-      g_array_append_val(tokens, new_tok);
+      tokens = g_array_append_val(tokens, new_tok);
     }
     else
     {

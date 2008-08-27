@@ -458,6 +458,8 @@ model_simulator_run(ModelSimulator *simulator)
   return MODEL_SIMULATOR_GET_CLASS(simulator)->run(simulator);
 }
 
+
+
 int 
 model_simulator_default_run(ModelSimulator *self)
 {

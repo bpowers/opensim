@@ -46,16 +46,12 @@ using OpenSim::VariableAST;
 
 OpenSim::InterpreterModule::InterpreterModule()
 {
-  fprintf(stdout, "*intmod: constructor*\n");
-  fflush(stdout);
 }
 
 
 
 OpenSim::InterpreterModule::~InterpreterModule() 
 {
-  fprintf(stdout, "*intmod: destructor*\n");
-  fflush(stdout);
 }
 
 
@@ -63,9 +59,6 @@ OpenSim::InterpreterModule::~InterpreterModule()
 void 
 OpenSim::InterpreterModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 {
-  fprintf(stdout, "*intmod: consume*\n");
-  fflush(stdout);
-
   simout = output_file;
   start->Codegen(this);
 }
@@ -75,10 +68,6 @@ OpenSim::InterpreterModule::Consume(OpenSim::SimAST *start, FILE *output_file)
 double
 OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 {
-  fprintf(stdout, "*intmod: visit:simast*\n");
-  fflush(stdout);
-  
-  
   vars = node->NamedVars();
   
   for (int i=0; i < node->Initial().size(); i++) 
@@ -89,7 +78,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
     gchar *v_name = NULL;
     var_type v_type = var_undef;
     
-    g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
+    g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
     
     // define constants
     if (v_type == var_const)
@@ -103,6 +92,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   }
   
   string headers = "time";
+  
   vector<VariableAST *> body = node->Integrator()->Body();
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
@@ -112,7 +102,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
     gchar *v_name = NULL;
     var_type v_type = var_undef;
     
-    g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
+    g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
 
     if (v_type == var_stock || v_type == var_aux)
     {
@@ -122,6 +112,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
     
     g_free(v_name);
   }
+  
   headers += "\n";
   
   fprintf(simout, headers.c_str());
@@ -136,9 +127,6 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 {
-  fprintf(stdout, "*intmod: visit:eulerast*\n");
-  fflush(stdout);
-  
   double start = vars["OS_start"]->Codegen(this);
   double end = vars["OS_end"]->Codegen(this);
   double timestep = vars["OS_timestep"]->Codegen(this);
@@ -171,7 +159,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
         (*itr)->Codegen(this);
         
         gchar *v_name = NULL;
-        g_object_get(G_OBJECT((*itr)->Data()), "name", v_name, NULL);
+        g_object_get(G_OBJECT((*itr)->Data()), "name", &v_name, NULL);
         
         fprintf(simout, ",%f", vals[v_name].back());
         
@@ -189,7 +177,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
       gchar *v_name = NULL;
       var_type v_type = var_undef;
       
-      g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
+      g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
       
       // update stocks at end of the loop
       if (v_type == var_stock)
@@ -222,15 +210,12 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 {
-  fprintf(stdout, "*intmod: visit:varast*\n");
-  fflush(stdout);
-  
   ModelVariable *v = node->Data();
   
   gchar *v_name = NULL;
   var_type v_type = var_undef;
   
-  g_object_get(G_OBJECT(v), "name", v_name, "type", v_type, NULL);
+  g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
   
   string next = v_name;
   g_free(v_name);
@@ -251,9 +236,6 @@ OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VarRefAST *node)
 {
-  fprintf(stdout, "*intmod: visit:varrefast*\n");
-  fflush(stdout);
-  
   return vals[node->Name()].back();
 }
 
@@ -262,9 +244,6 @@ OpenSim::InterpreterModule::visit(OpenSim::VarRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::NumberExprAST *node)
 {
-  fprintf(stdout, "*intmod: visit:numast*\n");
-  fflush(stdout);
-  
   return node->Val();
 }
 
@@ -273,9 +252,6 @@ OpenSim::InterpreterModule::visit(OpenSim::NumberExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::UnaryExprAST *node)
 {
-  fprintf(stdout, "*intmod: visit:unaryast*\n");
-  fflush(stdout);
-  
   double R = node->RHS->Codegen(this);
   
   switch (node->Op) 
@@ -296,9 +272,6 @@ OpenSim::InterpreterModule::visit(OpenSim::UnaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 {
-  fprintf(stdout, "*intmod: visit:binast*\n");
-  fflush(stdout);
-  
   double L = node->LHS->Codegen(this);
   double R = node->RHS->Codegen(this);
   
@@ -320,9 +293,6 @@ OpenSim::InterpreterModule::visit(OpenSim::BinaryExprAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 {
-  fprintf(stdout, "*intmod: visit:lookupast*\n");
-  fflush(stdout);
-  
   fprintf(stderr, "Warning: visit unimplemented for LookupAST\n");
   
   return 0;
@@ -333,9 +303,6 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 {
-  fprintf(stdout, "*intmod: visit:lookuprefast*\n");
-  fflush(stdout);
-  
   LookupAST *lookup = (LookupAST *) vars[node->TableName()]->AST();
   
   const vector< pair<double, double> > table = lookup->Table();
@@ -374,9 +341,6 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
 {
-  fprintf(stdout, "*intmod: visit:funcref*\n");
-  fflush(stdout);
-  
   std::map<std::string, std::vector<double> > Results();
   if (node->FunctionName() == "MAX")
   {
