@@ -147,14 +147,14 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     if (do_save)
       fprintf(simout, "%f", time);
     
-    if (do_save)
+    vector<VariableAST *> body = node->Body();
+    for (vector<VariableAST *>::iterator itr = body.begin();
+         itr != body.end(); ++itr)
     {
-      vector<VariableAST *> body = node->Body();
-      for (vector<VariableAST *>::iterator itr = body.begin();
-           itr != body.end(); ++itr)
+      (*itr)->Codegen(this);
+      
+      if (do_save)
       {
-        (*itr)->Codegen(this);
-        
         gchar *v_name = NULL;
         g_object_get(G_OBJECT((*itr)->Data()), "name", &v_name, NULL);
         
