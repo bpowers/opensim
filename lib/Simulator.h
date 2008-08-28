@@ -30,7 +30,6 @@
 
 #include <string>
 #include <map>
-#include <vector>
 
 namespace OpenSim
 {
@@ -46,9 +45,11 @@ namespace OpenSim
     sim_emit_AS3 = 5,     // full AS3 implementation of model
   };
   
+  
   class SimBuilder;
   class Variable;
   
+
   class Simulator
   {
     /// Name of the loaded model.

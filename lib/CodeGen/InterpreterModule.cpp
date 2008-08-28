@@ -82,11 +82,11 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
     
     // define constants
     if (v_type == var_const)
-      vals[v_name].push_back(v_ast->AST()->Codegen(this));
+      vals[v_name] = v_ast->AST()->Codegen(this);
     
     // calculate the initial values of stocks
     if (v_type == var_stock)
-      vals[v_name].push_back(v_ast->Initial()->Codegen(this));
+      vals[v_name] = v_ast->Initial()->Codegen(this);
     
     g_free(v_name);
   }
@@ -143,10 +143,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   
   for (double time = start; time <= end; time += timestep)
   {
-    vals["time"].push_back(time);
-
-    // check if we're going to save this iteration, and if so output
-    // time on the beginning of the line.
+    vals["time"] = time;
     if (do_save)
       fprintf(simout, "%f", time);
     
@@ -161,7 +158,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
         gchar *v_name = NULL;
         g_object_get(G_OBJECT((*itr)->Data()), "name", &v_name, NULL);
         
-        fprintf(simout, ",%f", vals[v_name].back());
+        fprintf(simout, ",%f", vals[v_name]);
         
         g_free(v_name);
       }
@@ -184,7 +181,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
       {
         string name_next = v_name;
         name_next += "_NEXT";
-        vals[v_name].push_back(vals[name_next].back());
+        vals[v_name] = vals[name_next];
       }
       
       g_free(v_name);
@@ -226,7 +223,7 @@ OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
   }
 
   double value = node->AST()->Codegen(this);
-  vals[next].push_back(value);
+  vals[next] = value;
   
   return value;
 }
@@ -236,7 +233,7 @@ OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VarRefAST *node)
 {
-  return vals[node->Name()].back();
+  return vals[node->Name()];
 }
 
 
@@ -257,7 +254,6 @@ OpenSim::InterpreterModule::visit(OpenSim::UnaryExprAST *node)
   switch (node->Op) 
   {
     case '-': return -R;
-    case '+': return R;
     default: break;
   }
   
@@ -341,7 +337,6 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
 {
-  std::map<std::string, std::vector<double> > Results();
   if (node->FunctionName() == "MAX")
   {
     const std::vector<ExprAST *> args = node->Args();
@@ -362,10 +357,3 @@ OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
   return 0;
 }
 
-
-
-std::map<std::string, std::vector<double> > *
-OpenSim::InterpreterModule::CopyResults()
-{
-  return new std::map<std::string, std::vector<double> >(vals);
-}

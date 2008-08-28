@@ -65,8 +65,6 @@ namespace OpenSim
     
     /// Pointer to the root of the constructed model AST.
     OpenSim::SimAST *root;
-
-    std::map<std::string, std::vector<double> > *results;
     
     /// Internal method to process the variables and construct an AST.
     void InitializeModule();
@@ -113,7 +111,6 @@ namespace OpenSim
     
     int Update();
     int Parse(sim_output ourWalk, FILE *output_file);
-    std::map<std::string, std::vector<double> > Results();
   };
 }
 

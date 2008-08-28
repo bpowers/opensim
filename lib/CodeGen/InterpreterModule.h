@@ -45,7 +45,7 @@ namespace OpenSim
   
   class InterpreterModule : public ASTConsumer
   {
-    std::map<std::string, std::vector<double> > vals;
+    std::map<std::string, double> vals;
     std::map<std::string, OpenSim::VariableAST *> vars;
 
     FILE *simout;
@@ -66,8 +66,6 @@ namespace OpenSim
     virtual double visit(OpenSim::LookupAST *node);
     virtual double visit(OpenSim::LookupRefAST *node);
     virtual double visit(OpenSim::FunctionRefAST *node);
-
-    std::map<std::string, std::vector<double> > *CopyResults();
   };
 }
 
