@@ -29,8 +29,8 @@
 #define OSIM_SIMULATOR_H
 
 #include <string>
-#include <map>
 #include <vector>
+#include <map>
 
 namespace OpenSim
 {
@@ -46,9 +46,11 @@ namespace OpenSim
     sim_emit_AS3 = 5,     // full AS3 implementation of model
   };
   
+  
   class SimBuilder;
   class Variable;
   
+
   class Simulator
   {
     /// Name of the loaded model.

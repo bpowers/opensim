@@ -148,7 +148,7 @@ OpenSim::Simulator::sim_thread()
   
   if (_output_type == sim_emit_Output)
   {
-    _results = _sim_builder->Results();
+    //_results = _sim_builder->Results();
   }
   
   return;
