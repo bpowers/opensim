@@ -540,12 +540,13 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
   
   ModelVariable *requestedVar = vars[IdName];
   
-  var_type requested_var_type = var_undef;
-  gchar *var_name = NULL;
-  g_object_get(G_OBJECT(requestedVar), "type", &requested_var_type, 
-                                       "name", &var_name, NULL);
+  var_type var_type = var_undef;
+  gchar *requested_var_name = NULL;
+  g_object_get(G_OBJECT(requestedVar), "name", &requested_var_name, NULL);
   
-  if ((requested_var_type != var_stock) && IsUnparsedTL(IdName))
+  g_object_get(G_OBJECT(CurVar), "type", &var_type, NULL);
+  
+  if ((var_type != var_stock) && IsUnparsedTL(IdName))
   {
     for (vector<ModelVariable *>::iterator itr = topLevelVars.begin();
          itr != topLevelVars.end(); ++itr)
@@ -568,8 +569,8 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
     PopTokens();
   }
   
-  VarRefAST *ret = new VarRefAST(var_name); 
-  g_free(var_name);
+  VarRefAST *ret = new VarRefAST(requested_var_name); 
+  g_free(requested_var_name);
   
   return ret;
 }
@@ -579,7 +580,6 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 ExprAST *
 OpenSim::SimBuilder::ParseNumberExpr() 
 {
-  //fprintf(stdout, "  number expression: '%f'\n", CurTok.num_val);
   ExprAST *Result = new NumberExprAST(CurTok.num_val);
   getNextToken(); // consume the number
 
