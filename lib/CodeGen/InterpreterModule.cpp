@@ -25,7 +25,9 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include "InterpreterModule.h"
+#include <stdlib.h>
+#include <algorithm>
+
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
@@ -33,8 +35,8 @@
 #include "../AST/General.h"
 #include "../model-variable.h"
 
-#include <cstdlib>
-#include <algorithm>
+#include "InterpreterModule.h"
+
 using std::max;
 using std::string;
 using std::vector;
@@ -92,13 +94,13 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   }
   
   string headers = "time";
-  
   vector<VariableAST *> body = node->Integrator()->Body();
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
     ModelVariable *v = v_ast->Data();
+
     gchar *v_name = NULL;
     var_type v_type = var_undef;
     
@@ -152,14 +154,12 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
          itr != body.end(); ++itr)
     {
       (*itr)->Codegen(this);
-      
       if (do_save)
       {
         gchar *v_name = NULL;
+        
         g_object_get(G_OBJECT((*itr)->Data()), "name", &v_name, NULL);
-        
         fprintf(simout, ",%f", vals[v_name]);
-        
         g_free(v_name);
       }
     }
@@ -171,17 +171,18 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
          itr != vars.end(); itr++) 
     {
       ModelVariable *v = itr->second->Data();
+      
       gchar *v_name = NULL;
       var_type v_type = var_undef;
       
-      g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
+      g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);  
       
       // update stocks at end of the loop
       if (v_type == var_stock)
       {
-        string name_next = v_name;
-        name_next += "_NEXT";
-        vals[v_name] = vals[name_next];
+        string next_name = v_name;
+        next_name += "_NEXT";
+        vals[v_name] = vals[next_name];
       }
       
       g_free(v_name);

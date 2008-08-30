@@ -412,6 +412,7 @@ OpenSim::SimBuilder::ParsePrimary()
 bool 
 OpenSim::SimBuilder::IsUnparsedTL(std::string IdName)
 {
+  bool ret = false;
   // this is somewhat expensive, but we check to see if there is a
   // variable with the specified name in topLevelVars.
   for (vector<ModelVariable *>::iterator itr = topLevelVars.begin();
@@ -420,15 +421,12 @@ OpenSim::SimBuilder::IsUnparsedTL(std::string IdName)
     gchar *name = NULL;
     
     g_object_get(G_OBJECT(*itr), "name", &name, NULL);
-    if (!g_strcmp0(IdName.c_str(), name)) 
-    {
-      g_free(name);
-      return true;
-    }
+    if (!g_strcmp0(IdName.c_str(), name))
+      ret = true;
     g_free(name);
   }
 
-  return false;
+  return ret;
 }
 
 
@@ -540,13 +538,10 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
   
   ModelVariable *requestedVar = vars[IdName];
   
-  var_type var_type = var_undef;
-  gchar *requested_var_name = NULL;
-  g_object_get(G_OBJECT(requestedVar), "name", &requested_var_name, NULL);
+  var_type v_type = var_undef;
+  g_object_get(G_OBJECT(requestedVar), "type", &v_type,  NULL);
   
-  g_object_get(G_OBJECT(CurVar), "type", &var_type, NULL);
-  
-  if ((var_type != var_stock) && IsUnparsedTL(IdName))
+  if ((v_type != var_stock) && IsUnparsedTL(IdName))
   {
     for (vector<ModelVariable *>::iterator itr = topLevelVars.begin();
          itr != topLevelVars.end(); ++itr)
@@ -569,8 +564,7 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
     PopTokens();
   }
   
-  VarRefAST *ret = new VarRefAST(requested_var_name); 
-  g_free(requested_var_name);
+  VarRefAST *ret = new VarRefAST(IdName); 
   
   return ret;
 }
