@@ -173,6 +173,8 @@ model_variable_get_property (GObject    *object,
     break;
 
   case PROP_TYPE:
+    // we determine type when we analyze the tokens
+    if (!self->priv->toks) model_variable_tokenize(self);
     g_value_set_int(value, (int)self->priv->type);
     break;
 
@@ -348,7 +350,6 @@ model_variable_default_get_tokens(ModelVariable *variable)
   if (!variable->priv->toks) model_variable_tokenize(variable);
   
   return variable->priv->toks;
-  g_fprintf(stdout, "get tokens\n");
 }
 
 
