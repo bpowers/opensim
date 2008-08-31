@@ -61,7 +61,7 @@ enum
   PROP_FILE_NAME,
   PROP_OUTPUT_TYPE,
   PROP_OUTPUT_FILE_NAME,
-  PROP_VALID_OPENSIM
+  PROP_VALID_MODEL
 };
 
 
@@ -71,7 +71,7 @@ struct _OpensimSimulatorPrivate
   gchar      *file_name;
   sim_output  output_type;
   gchar      *output_file_name;
-  gboolean    valid_opensim;
+  gboolean    valid_model;
   
   GArray     *var_array;
   
@@ -180,8 +180,8 @@ opensim_simulator_get_property (GObject    *object,
     g_value_set_string(value, self->priv->output_file_name);
     break;
 
-  case PROP_VALID_OPENSIM:
-    g_value_set_boolean(value, self->priv->valid_opensim);
+  case PROP_VALID_MODEL:
+    g_value_set_boolean(value, self->priv->valid_model);
     break;
 
   default:
@@ -216,7 +216,7 @@ opensim_simulator_class_init(OpensimSimulatorClass *klass)
                                            "unnamed model" /* default value */,
                                            PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
-                                  PROP_OPENSIM_NAME,
+                                  PROP_MODEL_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("file_name",
@@ -248,13 +248,13 @@ opensim_simulator_class_init(OpensimSimulatorClass *klass)
                                   PROP_OUTPUT_FILE_NAME,
                                   opensim_param_spec);
 
-  opensim_param_spec = g_param_spec_boolean("valid_opensim",
-                                          "is opensim valid",
-                                          "True if the opensim can be simulated",
+  opensim_param_spec = g_param_spec_boolean("valid_model",
+                                          "is model valid",
+                                          "True if the model can be simulated",
                                           TRUE /* default value */,
                                           (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
-                                  PROP_VALID_OPENSIM,
+                                  PROP_VALID_MODEL,
                                   opensim_param_spec);
 }
 
@@ -265,7 +265,7 @@ opensim_simulator_init(OpensimSimulator *self)
 {
   self->priv = OPENSIM_SIMULATOR_GET_PRIVATE(self);
   
-  self->priv->valid_opensim = FALSE;
+  self->priv->valid_model = FALSE;
   self->priv->sim_builder = NULL;
 }
 
@@ -334,7 +334,7 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path)
 {
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
                                              NULL));
-  gboolean valid_opensim = FALSE;
+  gboolean valid_model = FALSE;
   gchar *prop;
   
   opensim_ioxml_load(gio, (gchar *)opensim_path);
@@ -376,7 +376,7 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path)
     _sim_builder = NULL;
   }
   
-  if (valid_opensim)
+  if (valid_model)
   {
     _sim_builder = new SimBuilder(_variables);
   }

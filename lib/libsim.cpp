@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 #include "opensim-simulator.h"
-#include "model-variable.h"
+#include "opensim-variable.h"
 OpensimSimulator *gsim = NULL;
 
 

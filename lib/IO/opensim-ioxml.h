@@ -25,8 +25,8 @@
 //
 //===---------------------------------------------------------------------===//
 
-#ifndef __MODEL_IOXML_H__
-#define __MODEL_IOXML_H__
+#ifndef __OPENSIM_IOXML_H__
+#define __OPENSIM_IOXML_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -38,50 +38,50 @@ G_BEGIN_DECLS
 /*
  * Type macros.
  */
-#define MODEL_TYPE_IOXML            (model_ioxml_get_type())
-#define MODEL_IOXML(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MODEL_TYPE_IOXML, ModelIOxml))
-#define MODEL_IOXML_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MODEL_TYPE_IOXML, ModelIOxmlClass))
-#define MODEL_IS_IOXML(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MODEL_TYPE_IOXML))
-#define MODEL_IS_IOXML_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_IOXML))
-#define MODEL_IOXML_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_IOXML, ModelIOxmlClass))
+#define OPENSIM_TYPE_IOXML            (opensim_ioxml_get_type())
+#define OPENSIM_IOXML(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENSIM_TYPE_IOXML, OpensimIOxml))
+#define OPENSIM_IOXML_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), OPENSIM_TYPE_IOXML, OpensimIOxmlClass))
+#define OPENSIM_IS_IOXML(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), OPENSIM_TYPE_IOXML))
+#define OPENSIM_IS_IOXML_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), OPENSIM_TYPE_IOXML))
+#define OPENSIM_IOXML_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), OPENSIM_TYPE_IOXML, OpensimIOxmlClass))
 
 
-typedef struct _ModelIOxml        ModelIOxml;
-typedef struct _ModelIOxmlClass   ModelIOxmlClass;
-typedef struct _ModelIOxmlPrivate ModelIOxmlPrivate;
+typedef struct _OpensimIOxml        OpensimIOxml;
+typedef struct _OpensimIOxmlClass   OpensimIOxmlClass;
+typedef struct _OpensimIOxmlPrivate OpensimIOxmlPrivate;
 
 
-struct _ModelIOxml
+struct _OpensimIOxml
 {
   GObject parent_instance;
    
   /* instance members */
-  ModelIOxmlPrivate *priv;
+  OpensimIOxmlPrivate *priv;
 };
 
-struct _ModelIOxmlClass
+struct _OpensimIOxmlClass
 {
   GObjectClass parent_class;
   
-  int          (* load)          (ModelIOxml *ioxml, gchar *path);
-  int          (* save)          (ModelIOxml *ioxml);
-  GArray *     (* get_variables) (ModelIOxml *ioxml);
+  int          (* load)          (OpensimIOxml *ioxml, gchar *path);
+  int          (* save)          (OpensimIOxml *ioxml);
+  GArray *     (* get_variables) (OpensimIOxml *ioxml);
 };
 
-/* used by MODEL_TYPE_IOXML */
-GType model_ioxml_get_type();
+/* used by OPENSIM_TYPE_IOXML */
+GType opensim_ioxml_get_type();
 
 /*
  * Method definitions.
  */
 
 /* public */
-int model_ioxml_load(ModelIOxml *ioxml, gchar *model_path);
-int model_ioxml_save(ModelIOxml *ioxml);
+int opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path);
+int opensim_ioxml_save(OpensimIOxml *ioxml);
 
-GArray *model_ioxml_get_variables(ModelIOxml *ioxml);
+GArray *opensim_ioxml_get_variables(OpensimIOxml *ioxml);
 
 
 G_END_DECLS
 
-#endif /* __MODEL_IOXML_H__ */
+#endif /* __OPENSIM_IOXML_H__ */

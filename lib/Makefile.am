@@ -7,7 +7,7 @@ INCLUDES               = -I$(top_builddir) -I$(top_srcdir)
 MAINTAINERCLEANFILES   = Makefile.in
 
 EXTRA_DIST             = opensim-simulator.h opensim-variable.h globals.h opensim.h
-pkginclude_HEADERS     = opensim.h model-simulator.h model-variable.h
+pkginclude_HEADERS     = opensim.h opensim-simulator.h opensim-variable.h
 
 SUBDIRS                = AST CodeGen IO
 

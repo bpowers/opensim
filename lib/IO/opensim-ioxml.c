@@ -31,22 +31,22 @@
 
 #include "string.h"
 
-#include "model-ioxml.h"
-#include "../model-variable.h"
+#include "opensim-ioxml.h"
+#include "../opensim-variable.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
-#define MODEL_IOXML_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_IOXML, ModelIOxmlPrivate))
+#define OPENSIM_IOXML_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_IOXML, OpensimIOxmlPrivate))
 
-static gpointer model_ioxml_parent_class = NULL;
-static void model_ioxml_init(ModelIOxml *self);
-static void model_ioxml_class_init(ModelIOxmlClass *klass);
-static void model_ioxml_dispose(GObject *gobject);
-static void model_ioxml_finalize(GObject *gobject);
+static gpointer opensim_ioxml_parent_class = NULL;
+static void opensim_ioxml_init(OpensimIOxml *self);
+static void opensim_ioxml_class_init(OpensimIOxmlClass *klass);
+static void opensim_ioxml_dispose(GObject *gobject);
+static void opensim_ioxml_finalize(GObject *gobject);
 static int parse_input(xmlDocPtr doc, xmlNodePtr mod);
 
-static int model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_name);
-static int model_ioxml_default_save(ModelIOxml *ioxml);
-static GArray *model_ioxml_default_get_variables(ModelIOxml *ioxml);
+static int opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_name);
+static int opensim_ioxml_default_save(OpensimIOxml *ioxml);
+static GArray *opensim_ioxml_default_get_variables(OpensimIOxml *ioxml);
 
 /* for object properties */
 enum
@@ -58,7 +58,7 @@ enum
 };
 
 
-struct _ModelIOxmlPrivate
+struct _OpensimIOxmlPrivate
 {
   gchar    *model_name;
   gchar    *file_name;
@@ -132,24 +132,24 @@ trim(gchar *str)
 
 
 GType 
-model_ioxml_get_type()
+opensim_ioxml_get_type()
 {
   static GType g_define_type_id = 0; 
   if (G_UNLIKELY(g_define_type_id == 0)) 
   { 
     static const GTypeInfo g_define_type_info = { 
-      sizeof (ModelIOxmlClass), 
+      sizeof (OpensimIOxmlClass), 
       (GBaseInitFunc) NULL, 
       (GBaseFinalizeFunc) NULL, 
-      (GClassInitFunc) model_ioxml_class_init, 
+      (GClassInitFunc) opensim_ioxml_class_init, 
       (GClassFinalizeFunc) NULL, 
       NULL,   // class_data 
-      sizeof (ModelIOxml), 
+      sizeof (OpensimIOxml), 
       0,      // n_preallocs 
-      (GInstanceInitFunc) model_ioxml_init, 
+      (GInstanceInitFunc) opensim_ioxml_init, 
     }; 
     g_define_type_id = g_type_register_static(G_TYPE_OBJECT, 
-                                              "ModelIOxmlType", 
+                                              "OpensimIOxmlType", 
                                               &g_define_type_info, 
                                               (GTypeFlags) 0); 
   } 
@@ -160,12 +160,12 @@ model_ioxml_get_type()
 
 
 void
-model_ioxml_set_property(GObject      *object,
+opensim_ioxml_set_property(GObject      *object,
                              guint         property_id,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-  ModelIOxml *self = MODEL_IOXML(object);
+  OpensimIOxml *self = OPENSIM_IOXML(object);
 
   switch (property_id)
   {
@@ -189,12 +189,12 @@ model_ioxml_set_property(GObject      *object,
 
 
 void
-model_ioxml_get_property (GObject    *object,
+opensim_ioxml_get_property (GObject    *object,
                               guint       property_id,
                               GValue     *value,
                               GParamSpec *pspec)
 {
-  ModelIOxml *self = MODEL_IOXML(object);
+  OpensimIOxml *self = OPENSIM_IOXML(object);
 
   switch (property_id)
   {
@@ -216,71 +216,71 @@ model_ioxml_get_property (GObject    *object,
 
 
 static void
-model_ioxml_class_init(ModelIOxmlClass *klass)
+opensim_ioxml_class_init(OpensimIOxmlClass *klass)
 {
-  model_ioxml_parent_class = g_type_class_peek_parent(klass);
+  opensim_ioxml_parent_class = g_type_class_peek_parent(klass);
 
-  g_type_class_add_private(klass, sizeof (ModelIOxmlPrivate));
+  g_type_class_add_private(klass, sizeof (OpensimIOxmlPrivate));
 
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  GParamSpec *model_param_spec;
+  GParamSpec *opensim_param_spec;
   
-  gobject_class->set_property = model_ioxml_set_property;
-  gobject_class->get_property = model_ioxml_get_property;
-  gobject_class->dispose      = model_ioxml_dispose;
-  gobject_class->finalize     = model_ioxml_finalize;
+  gobject_class->set_property = opensim_ioxml_set_property;
+  gobject_class->get_property = opensim_ioxml_get_property;
+  gobject_class->dispose      = opensim_ioxml_dispose;
+  gobject_class->finalize     = opensim_ioxml_finalize;
 
-  klass->load                 = model_ioxml_default_load;
-  klass->save                 = model_ioxml_default_save;
-  klass->get_variables        = model_ioxml_default_get_variables;
+  klass->load                 = opensim_ioxml_default_load;
+  klass->save                 = opensim_ioxml_default_save;
+  klass->get_variables        = opensim_ioxml_default_get_variables;
 
-  model_param_spec = g_param_spec_string("model_name",
+  opensim_param_spec = g_param_spec_string("model_name",
                                          "model name",
                                          "Set model's name",
                                          "unnamed model" /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_MODEL_NAME,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("file_name",
+  opensim_param_spec = g_param_spec_string("file_name",
                                          "full path to file",
                                          "Where the model is saved to",
                                          "" /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_boolean("valid",
+  opensim_param_spec = g_param_spec_boolean("valid",
                                           "is model valid",
                                           "True if the input seems valid",
                                           FALSE /* default value */,
                                           (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
                                   PROP_VALID_MODEL,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
 }
 
 
 
 static void
-model_ioxml_init(ModelIOxml *self)
+opensim_ioxml_init(OpensimIOxml *self)
 {
-  self->priv = MODEL_IOXML_GET_PRIVATE(self);
+  self->priv = OPENSIM_IOXML_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
-  self->priv->var_array = g_array_new(FALSE, FALSE, sizeof(ModelVariable *));
+  self->priv->var_array = g_array_new(FALSE, FALSE, sizeof(OpensimVariable *));
   self->priv->var_array_referenced = FALSE;
 }
 
 
 
 static void
-model_ioxml_dispose(GObject *gobject)
+opensim_ioxml_dispose(GObject *gobject)
 {
-  ModelIOxml *self = MODEL_IOXML(gobject);
+  OpensimIOxml *self = OPENSIM_IOXML(gobject);
 
   /* 
    * In dispose, you are supposed to free all typesecifier before 'IOVenText'
@@ -301,26 +301,26 @@ model_ioxml_dispose(GObject *gobject)
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
-      ModelVariable *var = NULL;
-      var = g_array_index(array, ModelVariable *, i);
+      OpensimVariable *var = NULL;
+      var = g_array_index(array, OpensimVariable *, i);
       if (var)
       {
         g_object_unref(var);
-        array->data[i*sizeof(ModelVariable *)] = 0;
+        array->data[i*sizeof(OpensimVariable *)] = 0;
       }
     }
   }
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_ioxml_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(opensim_ioxml_parent_class)->dispose(gobject);
 }
 
 
 
 static void
-model_ioxml_finalize(GObject *gobject)
+opensim_ioxml_finalize(GObject *gobject)
 {
-  ModelIOxml *self = MODEL_IOXML(gobject);
+  OpensimIOxml *self = OPENSIM_IOXML(gobject);
 
   // free g_values and such.
   g_free(self->priv->file_name);
@@ -331,21 +331,21 @@ model_ioxml_finalize(GObject *gobject)
   g_array_free(self->priv->var_array, !self->priv->var_array_referenced);
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_ioxml_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(opensim_ioxml_parent_class)->finalize(gobject);
 }
 
 
 
 int
-model_ioxml_load(ModelIOxml *ioxml, gchar *model_path)
+opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path)
 {
-  MODEL_IOXML_GET_CLASS(ioxml)->load(ioxml, model_path);
+  OPENSIM_IOXML_GET_CLASS(ioxml)->load(ioxml, model_path);
 }
 
 
 
 static int 
-model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
+opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 {
   g_object_set(G_OBJECT(ioxml), "file_name", model_path, NULL);
   
@@ -426,19 +426,19 @@ model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
     return;
   }
   
-  gboolean haveModelName = FALSE;
+  gboolean haveOpensimName = FALSE;
     
   for (cur = mod->children; cur != NULL; cur = cur->next)
   {
     if (xmlStrEqual(cur->name, (const xmlChar *)"name"))
     {
-      if (haveModelName)
+      if (haveOpensimName)
       {
         fprintf(stderr, "Error: A model can only have one name.\n");
         return;
       }
       else 
-        haveModelName = TRUE;
+        haveOpensimName = TRUE;
     
       txt = xmlNodeListGetString(doc, cur->children, 0);
       if (txt)
@@ -450,7 +450,7 @@ model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
     
     if (xmlStrEqual(cur->name, (const xmlChar *)"var"))
     {
-      ModelVariable *our_var = NULL;
+      OpensimVariable *our_var = NULL;
       gchar *var_name;
       gchar *equation;
           
@@ -477,7 +477,7 @@ model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
         }
       }
       
-      our_var = MODEL_VARIABLE(g_object_new(MODEL_TYPE_VARIABLE, 
+      our_var = OPENSIM_VARIABLE(g_object_new(OPENSIM_TYPE_VARIABLE, 
                                             NULL));
         
       if (var_name != NULL)
@@ -509,35 +509,35 @@ model_ioxml_default_load(ModelIOxml *ioxml, gchar *model_path)
 
 
 int
-model_ioxml_save(ModelIOxml *ioxml)
+opensim_ioxml_save(OpensimIOxml *ioxml)
 {
-  MODEL_IOXML_GET_CLASS(ioxml)->save(ioxml);
+  OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml);
 }
 
 
 
 static int
-model_ioxml_default_save(ModelIOxml *ioxml)
+opensim_ioxml_default_save(OpensimIOxml *ioxml)
 {
-  g_fprintf(stderr, "ModelIOxml->save not implemented!\n");
+  g_fprintf(stderr, "OpensimIOxml->save not implemented!\n");
 }
 
 
 
 GArray *
-model_ioxml_get_variables(ModelIOxml *ioxml)
+opensim_ioxml_get_variables(OpensimIOxml *ioxml)
 {
-  MODEL_IOXML_GET_CLASS(ioxml)->get_variables(ioxml);
+  OPENSIM_IOXML_GET_CLASS(ioxml)->get_variables(ioxml);
 }
 
 
 
 static GArray *
-model_ioxml_default_get_variables(ModelIOxml *ioxml)
+opensim_ioxml_default_get_variables(OpensimIOxml *ioxml)
 {
   ioxml->priv->var_array_referenced = TRUE;
   
-  GArray *ret = g_array_new(FALSE, FALSE, sizeof(ModelVariable *));
+  GArray *ret = g_array_new(FALSE, FALSE, sizeof(OpensimVariable *));
   ret->data = ioxml->priv->var_array->data;
   ret->len  = ioxml->priv->var_array->len;
   
