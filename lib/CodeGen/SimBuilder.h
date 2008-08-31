@@ -110,7 +110,7 @@ namespace OpenSim
     ~SimBuilder();
     
     int Update();
-    int Parse(sim_output ourWalk, FILE *output_file);
+    int Parse(int ourWalk, FILE *output_file);
   };
 }
 

@@ -90,7 +90,7 @@ opensim_save_model()
 
 
 extern "C" int WIN_DLL
-opensim_set_output_type(sim_output output_type)
+opensim_set_output_type(int output_type)
 {
   if (!gsim) return -1;
   

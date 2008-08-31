@@ -3,6 +3,7 @@ headers
 #include <Python.h>
 #include "pygobject.h"
 #include "../../opensim-simulator.h"
+#include "../../opensim-variable.h"
 %%
 modulename opensim.engine
 %%

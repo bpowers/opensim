@@ -53,6 +53,32 @@ static void opensim_simulator_finalize(GObject *gobject);
 static int opensim_simulator_default_output_debug_info(OpensimSimulator *simulator);
 static int opensim_simulator_default_run(OpensimSimulator *simulator);
 
+
+extern "C" GType
+opensim_sim_output_get_type (void)
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if (g_once_init_enter (&g_define_type_id__volatile))
+    {
+      static const GFlagsValue values[] = {
+        { sim_emit_IR, "sim_emit_IR", "emit LLVM ir" },
+        { sim_emit_Python, "sim_emit_Python", "emit Python" },
+        { sim_emit_Fortran, "sim_emit_Fortran", "emit Fortran 90" },
+        { sim_emit_Output, "sim_emit_Output", "emit results" },
+        { sim_emit_AS3, "sim_emit_AS3", "emit ActionScript 3" },
+        { 0, NULL, NULL }
+      };
+      GType g_define_type_id =
+        g_flags_register_static (g_intern_static_string ("OpensimOutput"), values);
+      g_once_init_leave (&g_define_type_id__volatile, g_define_type_id);
+    }
+
+  return g_define_type_id__volatile;
+}
+
+
+
 enum
 {
   PROP_0,
@@ -69,7 +95,7 @@ struct _OpensimSimulatorPrivate
 {
   gchar      *model_name;
   gchar      *file_name;
-  sim_output  output_type;
+  int  output_type;
   gchar      *output_file_name;
   gboolean    valid_model;
   
@@ -134,7 +160,7 @@ opensim_simulator_set_property(GObject      *object,
 
   case PROP_OUTPUT_TYPE:
     g_return_if_fail(G_VALUE_HOLDS_INT(value));
-    self->priv->output_type = (sim_output)g_value_get_int(value);
+    self->priv->output_type = g_value_get_int(value);
     //g_print("file_name: %s\n", self->priv->sketch_name);
     break;
 
@@ -232,7 +258,7 @@ opensim_simulator_class_init(OpensimSimulatorClass *klass)
                                       "type of output",
                                       "What kind of output to generate",
                                       0, 
-                                      sizeof(sim_output)+1,
+                                      5,
                                       sim_emit_Output /* default value */,
                                       PARAM_READWRITE);
   g_object_class_install_property(gobject_class,

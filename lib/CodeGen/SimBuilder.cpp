@@ -93,7 +93,7 @@ OpenSim::SimBuilder::Update()
 
 
 int 
-OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
+OpenSim::SimBuilder::Parse(int ourWalk, FILE *output_file)
 {
   if (!_valid_model)
   {

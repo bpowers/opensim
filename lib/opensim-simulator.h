@@ -35,7 +35,18 @@
 
 G_BEGIN_DECLS
 
-enum _sim_output 
+#ifndef __cplusplus
+enum
+{
+  sim_emit_IR      = 1, /* not supported                       */
+  sim_emit_Python  = 2, /* full Python implementation of opensim */
+  sim_emit_Fortran = 3, /* not implemented yet                 */
+  sim_emit_Output  = 4, /* results of interpreting opensim       */
+  sim_emit_AS3     = 5, /* full AS3 implementation of opensim    */
+} OpensimOutput;
+#endif
+#ifdef __cplusplus
+enum sim_output
 {
   sim_emit_IR      = 1, /* not supported                       */
   sim_emit_Python  = 2, /* full Python implementation of opensim */
@@ -43,8 +54,10 @@ enum _sim_output
   sim_emit_Output  = 4, /* results of interpreting opensim       */
   sim_emit_AS3     = 5, /* full AS3 implementation of opensim    */
 };
+#endif
 
-typedef enum _sim_output sim_output;
+GType opensim_sim_output_get_type (void) G_GNUC_CONST;
+#define OPENSIM_TYPE_OUTPUT (opensim_sim_output_get_type ())
 
 /*
  * Type macros.
