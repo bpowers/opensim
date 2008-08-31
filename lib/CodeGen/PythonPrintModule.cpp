@@ -32,7 +32,7 @@
 #include "../AST/VariableAST.h"
 #include "../AST/General.h"
 #include "../AST/LookupAST.h"
-#include "../model-variable.h"
+#include "../opensim-variable.h"
 
 #include "PythonPrintModule.h"
 
@@ -102,7 +102,7 @@ def sim_lookup(table, index):\n\
   for (int i=0; i < node->Initial().size(); i++) 
   {
     VariableAST *v_ast = node->Initial()[i];
-    ModelVariable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
     
     var_type type = var_undef;
     gchar *name = NULL;
@@ -145,7 +145,7 @@ def sim_lookup(table, index):\n\
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
-    ModelVariable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
     
     var_type type = var_undef;
     gchar *name = NULL;
@@ -246,7 +246,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::VariableAST *node)
 {
-  ModelVariable *v = node->Data();
+  OpensimVariable *v = node->Data();
   
   gchar *name = NULL;
   g_object_get(G_OBJECT(v), "name", &name, NULL);

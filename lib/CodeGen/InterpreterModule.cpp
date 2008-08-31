@@ -33,7 +33,7 @@
 #include "../AST/VariableAST.h"
 #include "../AST/LookupAST.h"
 #include "../AST/General.h"
-#include "../model-variable.h"
+#include "../opensim-variable.h"
 
 #include "InterpreterModule.h"
 
@@ -75,7 +75,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   for (int i=0; i < node->Initial().size(); i++) 
   {
     VariableAST *v_ast = node->Initial()[i];
-    ModelVariable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
     
     gchar *v_name = NULL;
     var_type v_type = var_undef;
@@ -99,7 +99,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
-    ModelVariable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
 
     gchar *v_name = NULL;
     var_type v_type = var_undef;
@@ -170,7 +170,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     for (map<string, VariableAST *>::iterator itr = vars.begin(); 
          itr != vars.end(); itr++) 
     {
-      ModelVariable *v = itr->second->Data();
+      OpensimVariable *v = itr->second->Data();
       
       gchar *v_name = NULL;
       var_type v_type = var_undef;
@@ -208,7 +208,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 {
-  ModelVariable *v = node->Data();
+  OpensimVariable *v = node->Data();
   
   gchar *v_name = NULL;
   var_type v_type = var_undef;
