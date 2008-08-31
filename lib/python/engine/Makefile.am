@@ -15,15 +15,15 @@ opensim-simulator.c: opensim-simulator.defs opensim-simulator.override
 	opensim-simulator.defs > $@
 
 opensimdir = $(pkgpythondir)
-opensim_LTLIBRARIES = _engine.la
+opensim_LTLIBRARIES = engine.la
 
 activitydir = $(top_srcdir)/activity/site-packages/opensim
 activity_PYTHON = $(opensim_PYTHON)
 
-_engine_la_SOURCES = opensim-simulator.c
-_engine_la_CFLAGS  = $(PYGOBJ_CFLAGS) $(PYTHON_INCLUDES) $(GOBJ_CFLAGS)
-_engine_la_LDFLAGS = $(PYTHON_LDFLAGS) $(PYGOBJ_LIBS) -module
-_engine_la_LIBADD  = $(top_builddir)/lib/libsim.la
+engine_la_SOURCES = opensim-simulator.c opensim-enginemodule.c
+engine_la_CFLAGS  = $(PYGOBJ_CFLAGS) $(PYTHON_INCLUDES) $(GOBJ_CFLAGS)
+engine_la_LDFLAGS = $(PYTHON_LDFLAGS) $(PYGOBJ_LIBS) -module
+engine_la_LIBADD  = $(top_builddir)/lib/libsim.la
 
 endif
 
