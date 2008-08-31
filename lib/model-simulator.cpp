@@ -1,4 +1,4 @@
-//===--- Simulator.cpp - Base class for interacting with models ----------===//
+//===--- Simulator.cpp - Base class for interacting with opensims ----------===//
 //
 // Copyright 2008 Bobby Powers
 //
@@ -19,9 +19,9 @@
 //
 //===---------------------------------------------------------------------===//
 //
-// This class represents models at a high level, suitible for inclusion
+// This class represents opensims at a high level, suitible for inclusion
 // in projects as part of a library.
-// TODO: implement features for dynamically changing models.
+// TODO: implement features for dynamically changing opensims.
 //
 //===---------------------------------------------------------------------===//
 
@@ -37,21 +37,21 @@ using std::vector;
 #include "CodeGen/SimBuilder.h"
 using OpenSim::SimBuilder;
 
-#include "model-simulator.h"
-#include "model-variable.h"
-#include "IO/model-ioxml.h"
+#include "opensim-simulator.h"
+#include "opensim-variable.h"
+#include "IO/opensim-ioxml.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
-#define MODEL_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorPrivate))
+#define OPENSIM_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorPrivate))
 
-static gpointer model_simulator_parent_class = NULL;
-static void model_simulator_init(ModelSimulator *self);
-static void model_simulator_class_init(ModelSimulatorClass *klass);
-static void model_simulator_dispose(GObject *gobject);
-static void model_simulator_finalize(GObject *gobject);
+static gpointer opensim_simulator_parent_class = NULL;
+static void opensim_simulator_init(OpensimSimulator *self);
+static void opensim_simulator_class_init(OpensimSimulatorClass *klass);
+static void opensim_simulator_dispose(GObject *gobject);
+static void opensim_simulator_finalize(GObject *gobject);
 
-static int model_simulator_default_output_debug_info(ModelSimulator *simulator);
-static int model_simulator_default_run(ModelSimulator *simulator);
+static int opensim_simulator_default_output_debug_info(OpensimSimulator *simulator);
+static int opensim_simulator_default_run(OpensimSimulator *simulator);
 
 enum
 {
@@ -61,44 +61,44 @@ enum
   PROP_FILE_NAME,
   PROP_OUTPUT_TYPE,
   PROP_OUTPUT_FILE_NAME,
-  PROP_VALID_MODEL
+  PROP_VALID_OPENSIM
 };
 
 
-struct _ModelSimulatorPrivate
+struct _OpensimSimulatorPrivate
 {
   gchar      *model_name;
   gchar      *file_name;
   sim_output  output_type;
   gchar      *output_file_name;
-  gboolean    valid_model;
+  gboolean    valid_opensim;
   
   GArray     *var_array;
   
   OpenSim::SimBuilder *sim_builder;
-  std::map<std::string, ModelVariable *> var_map;
+  std::map<std::string, OpensimVariable *> var_map;
 };
 
 
 GType 
-model_simulator_get_type()
+opensim_simulator_get_type()
 {
   static GType g_define_type_id = 0; 
   if (G_UNLIKELY(g_define_type_id == 0)) 
     { 
       static const GTypeInfo g_define_type_info = { 
-        sizeof (ModelSimulatorClass), 
+        sizeof (OpensimSimulatorClass), 
         (GBaseInitFunc) NULL, 
         (GBaseFinalizeFunc) NULL, 
-        (GClassInitFunc) model_simulator_class_init, 
+        (GClassInitFunc) opensim_simulator_class_init, 
         (GClassFinalizeFunc) NULL, 
         NULL,   // class_data 
-        sizeof (ModelSimulator), 
+        sizeof (OpensimSimulator), 
         0,      // n_preallocs 
-        (GInstanceInitFunc) model_simulator_init, 
+        (GInstanceInitFunc) opensim_simulator_init, 
       }; 
       g_define_type_id = g_type_register_static(G_TYPE_OBJECT, 
-                                                "ModelSimulatorType", 
+                                                "OpensimSimulatorType", 
                                                 &g_define_type_info, 
                                                 (GTypeFlags) 0); 
     } 
@@ -109,12 +109,12 @@ model_simulator_get_type()
 
 
 static void
-model_simulator_set_property(GObject      *object,
+opensim_simulator_set_property(GObject      *object,
                              guint         property_id,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-  ModelSimulator *self = MODEL_SIMULATOR(object);
+  OpensimSimulator *self = OPENSIM_SIMULATOR(object);
 
   switch (property_id)
   {
@@ -155,12 +155,12 @@ model_simulator_set_property(GObject      *object,
 
 
 static void
-model_simulator_get_property (GObject    *object,
-                              guint       property_id,
-                              GValue     *value,
-                              GParamSpec *pspec)
+opensim_simulator_get_property (GObject    *object,
+                                guint       property_id,
+                                GValue     *value,
+                                GParamSpec *pspec)
 {
-  ModelSimulator *self = MODEL_SIMULATOR(object);
+  OpensimSimulator *self = OPENSIM_SIMULATOR(object);
 
   switch (property_id)
   {
@@ -180,8 +180,8 @@ model_simulator_get_property (GObject    *object,
     g_value_set_string(value, self->priv->output_file_name);
     break;
 
-  case PROP_VALID_MODEL:
-    g_value_set_boolean(value, self->priv->valid_model);
+  case PROP_VALID_OPENSIM:
+    g_value_set_boolean(value, self->priv->valid_opensim);
     break;
 
   default:
@@ -193,42 +193,42 @@ model_simulator_get_property (GObject    *object,
 
 
 static void
-model_simulator_class_init(ModelSimulatorClass *klass)
+opensim_simulator_class_init(OpensimSimulatorClass *klass)
 {
-  model_simulator_parent_class = g_type_class_peek_parent(klass);
+  opensim_simulator_parent_class = g_type_class_peek_parent(klass);
 
-  g_type_class_add_private(klass, sizeof (ModelSimulatorPrivate));
+  g_type_class_add_private(klass, sizeof (OpensimSimulatorPrivate));
 
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  GParamSpec *model_param_spec;
+  GParamSpec *opensim_param_spec;
   
-  gobject_class->set_property = model_simulator_set_property;
-  gobject_class->get_property = model_simulator_get_property;
-  gobject_class->dispose      = model_simulator_dispose;
-  gobject_class->finalize     = model_simulator_finalize;
+  gobject_class->set_property = opensim_simulator_set_property;
+  gobject_class->get_property = opensim_simulator_get_property;
+  gobject_class->dispose      = opensim_simulator_dispose;
+  gobject_class->finalize     = opensim_simulator_finalize;
 
-  klass->output_debug_info    = model_simulator_default_output_debug_info;
-  klass->run                  = model_simulator_default_run;
+  klass->output_debug_info    = opensim_simulator_default_output_debug_info;
+  klass->run                  = opensim_simulator_default_run;
 
-  model_param_spec = g_param_spec_string("model_name",
-                                         "model name",
-                                         "Set model's name",
-                                         "unnamed model" /* default value */,
-                                         PARAM_READWRITE);
+  opensim_param_spec = g_param_spec_string("model_name",
+                                           "model name",
+                                           "Set model's name",
+                                           "unnamed model" /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
-                                  PROP_MODEL_NAME,
-                                  model_param_spec);
+                                  PROP_OPENSIM_NAME,
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("file_name",
+  opensim_param_spec = g_param_spec_string("file_name",
                                          "full path to file",
-                                         "Where the model is saved to",
+                                         "Where the opensim is saved to",
                                          NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_int("output_type",
+  opensim_param_spec = g_param_spec_int("output_type",
                                       "type of output",
                                       "What kind of output to generate",
                                       0, 
@@ -237,48 +237,47 @@ model_simulator_class_init(ModelSimulatorClass *klass)
                                       PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_OUTPUT_TYPE,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("output_file_name",
+  opensim_param_spec = g_param_spec_string("output_file_name",
                                          "full path to output file",
-                                         "Where the model output is saved to",
+                                         "Where the opensim output is saved to",
                                          NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_OUTPUT_FILE_NAME,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_boolean("valid_model",
-                                          "is model valid",
-                                          "True if the model can be simulated",
+  opensim_param_spec = g_param_spec_boolean("valid_opensim",
+                                          "is opensim valid",
+                                          "True if the opensim can be simulated",
                                           TRUE /* default value */,
                                           (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
-                                  PROP_VALID_MODEL,
-                                  model_param_spec);
+                                  PROP_VALID_OPENSIM,
+                                  opensim_param_spec);
 }
 
 
 
 static void
-model_simulator_init(ModelSimulator *self)
+opensim_simulator_init(OpensimSimulator *self)
 {
-  self->priv = MODEL_SIMULATOR_GET_PRIVATE(self);
+  self->priv = OPENSIM_SIMULATOR_GET_PRIVATE(self);
   
-  self->priv->valid_model = FALSE;
+  self->priv->valid_opensim = FALSE;
   self->priv->sim_builder = NULL;
 }
 
 
 
 static void
-model_simulator_dispose(GObject *gobject)
+opensim_simulator_dispose(GObject *gobject)
 {
-  ModelSimulator *self = MODEL_SIMULATOR(gobject);
+  OpensimSimulator *self = OPENSIM_SIMULATOR(gobject);
 
   /* 
    * In dispose, you are supposed to free all typesecifier before 'IOVenText'
-model-simulator.cpp:343: error: cannot convert 'in referenced from this
    * object which might themselves hold a reference to self. Generally,
    * the most simple solution is to unref all members on which you own a 
    * reference.
@@ -295,26 +294,26 @@ model-simulator.cpp:343: error: cannot convert 'in referenced from this
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
-      ModelVariable *var = NULL;
-      var = g_array_index(array, ModelVariable *, i);
+      OpensimVariable *var = NULL;
+      var = g_array_index(array, OpensimVariable *, i);
       if (var)
       {
         g_object_unref(var);
-        array->data[i*sizeof(ModelVariable *)] = 0;
+        array->data[i*sizeof(OpensimVariable *)] = 0;
       }
     }
   }
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_simulator_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(opensim_simulator_parent_class)->dispose(gobject);
 }
 
 
 
 static void
-model_simulator_finalize(GObject *gobject)
+opensim_simulator_finalize(GObject *gobject)
 {
-  ModelSimulator *self = MODEL_SIMULATOR(gobject);
+  OpensimSimulator *self = OPENSIM_SIMULATOR(gobject);
 
   // free g_values and such.
   g_free(self->priv->model_name);
@@ -325,27 +324,27 @@ model_simulator_finalize(GObject *gobject)
     g_array_free(self->priv->var_array, TRUE);
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_simulator_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(opensim_simulator_parent_class)->finalize(gobject);
 }
 
 
 
 extern "C" int 
-model_simulator_load(ModelSimulator *simulator, gchar *model_path)
+opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path)
 {
-  ModelIOxml *gio = MODEL_IOXML(g_object_new(MODEL_TYPE_IOXML, 
+  OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
                                              NULL));
-  gboolean valid_model = FALSE;
+  gboolean valid_opensim = FALSE;
   gchar *prop;
   
-  model_ioxml_load(gio, (gchar *)model_path);
+  opensim_ioxml_load(gio, (gchar *)opensim_path);
 
   g_object_get(G_OBJECT(gio), "model_name", &prop,
                               "valid",      &valid_model, NULL);
   g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
   g_free(prop);
 
-  GArray *vars = model_ioxml_get_variables(gio);
+  GArray *vars = opensim_ioxml_get_variables(gio);
   
   if (!vars) fprintf(stderr, "Warning: variable array not available from IOxml.\n");
   
@@ -354,14 +353,14 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
   g_object_unref(gio);
   
   SimBuilder *_sim_builder = simulator->priv->sim_builder;
-  std::map<std::string, ModelVariable *> _variables;
+  std::map<std::string, OpensimVariable *> _variables;
 
   // turn our nice list into an ugly map.
   int i;
   for (i=0; i<vars->len; i++)
   {
     //g_fprintf(stderr, "freeing some var\n");
-    ModelVariable *var = g_array_index(vars, ModelVariable *, i);
+    OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
     gchar *var_name = NULL;
 
     g_object_get(G_OBJECT(var), "name", &var_name, NULL);
@@ -377,7 +376,7 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
     _sim_builder = NULL;
   }
   
-  if (valid_model)
+  if (valid_opensim)
   {
     _sim_builder = new SimBuilder(_variables);
   }
@@ -389,15 +388,15 @@ model_simulator_load(ModelSimulator *simulator, gchar *model_path)
 
 
 extern "C" int 
-model_simulator_output_debug_info(ModelSimulator *simulator)
+opensim_simulator_output_debug_info(OpensimSimulator *simulator)
 {
-  return MODEL_SIMULATOR_GET_CLASS(simulator)->output_debug_info(simulator);
+  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->output_debug_info(simulator);
 }
 
 
 
 int 
-model_simulator_default_output_debug_info(ModelSimulator *simulator)
+opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
 {
   fprintf(stdout, "Info: outputting debugging info\n");
   
@@ -412,8 +411,8 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
-      ModelVariable *var = NULL;
-      var = g_array_index(array, ModelVariable *, i);
+      OpensimVariable *var = NULL;
+      var = g_array_index(array, OpensimVariable *, i);
       gchar *var_name = NULL;
       gchar *equation = NULL;
       
@@ -421,7 +420,7 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
                                   "equation", &equation, NULL);
       fprintf(stdout, "    var '%s'\n    '%s'\n", var_name, equation);
       
-      const GArray *toks = model_variable_get_tokens(var);
+      const GArray *toks = opensim_variable_get_tokens(var);
       
       int i;
       for (i=0; i<toks->len; i++)
@@ -449,15 +448,15 @@ model_simulator_default_output_debug_info(ModelSimulator *simulator)
 
 
 extern "C" int
-model_simulator_run(ModelSimulator *simulator)
+opensim_simulator_run(OpensimSimulator *simulator)
 {
-  return MODEL_SIMULATOR_GET_CLASS(simulator)->run(simulator);
+  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->run(simulator);
 }
 
 
 
 int 
-model_simulator_default_run(ModelSimulator *self)
+opensim_simulator_default_run(OpensimSimulator *self)
 {
   int ret = 0;
   

@@ -28,9 +28,9 @@
 #include "globals.h"
 #include <stdio.h>
 
-#include "model-simulator.h"
+#include "opensim-simulator.h"
 #include "model-variable.h"
-ModelSimulator *gsim = NULL;
+OpensimSimulator *gsim = NULL;
 
 
 #ifdef _WIN32
@@ -60,8 +60,8 @@ my_init(void)
 {
   g_type_init_with_debug_flags((GTypeDebugFlags) G_TYPE_DEBUG_MASK);
   
-  gsim = MODEL_SIMULATOR(g_object_new(MODEL_TYPE_SIMULATOR, 
-                                      NULL)); 
+  gsim = OPENSIM_SIMULATOR(g_object_new(OPENSIM_TYPE_SIMULATOR, 
+                                        NULL)); 
 }
 
 
@@ -77,7 +77,7 @@ my_fini(void)
 extern "C" int WIN_DLL
 opensim_load_model(const char *file_name)
 {
-  return model_simulator_load(gsim, (gchar *)file_name);
+  return opensim_simulator_load(gsim, (gchar *)file_name);
 }
 
 
@@ -116,7 +116,7 @@ opensim_set_output_file(const char *file_name)
 extern "C" int WIN_DLL
 opensim_simulate()
 {
-  if (gsim) return model_simulator_run(gsim);
+  if (gsim) return opensim_simulator_run(gsim);
   
   return -1;
 }

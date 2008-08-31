@@ -1,4 +1,4 @@
-/*===--- Simulator.h - Base class for interacting with models  -*- C++ -*-===
+/*===--- Simulator.h - Base class for interacting with opensims  -*- C++ -*-===
  *
  * Copyright 2008 Bobby Powers
  *
@@ -19,15 +19,15 @@
  *
  *===---------------------------------------------------------------------===
  *
- * This class represents models at a high level, suitible for inclusion
+ * This class represents opensims at a high level, suitible for inclusion
  * in projects as part of a library.
- * TODO: implement features for dynamically changing models.
+ * TODO: implement features for dynamically changing opensims.
  *
  *===---------------------------------------------------------------------===
  */
 
-#ifndef __MODEL_SIMULATOR_H__
-#define __MODEL_SIMULATOR_H__
+#ifndef __OPENSIM_SIMULATOR_H__
+#define __OPENSIM_SIMULATOR_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -38,10 +38,10 @@ G_BEGIN_DECLS
 enum _sim_output 
 {
   sim_emit_IR      = 1, /* not supported                       */
-  sim_emit_Python  = 2, /* full Python implementation of model */
+  sim_emit_Python  = 2, /* full Python implementation of opensim */
   sim_emit_Fortran = 3, /* not implemented yet                 */
-  sim_emit_Output  = 4, /* results of interpreting model       */
-  sim_emit_AS3     = 5, /* full AS3 implementation of model    */
+  sim_emit_Output  = 4, /* results of interpreting opensim       */
+  sim_emit_AS3     = 5, /* full AS3 implementation of opensim    */
 };
 
 typedef enum _sim_output sim_output;
@@ -49,20 +49,20 @@ typedef enum _sim_output sim_output;
 /*
  * Type macros.
  */
-#define MODEL_TYPE_SIMULATOR            (model_simulator_get_type())
-#define MODEL_SIMULATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MODEL_TYPE_SIMULATOR, ModelSimulator))
-#define MODEL_SIMULATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
-#define MODEL_IS_SIMULATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MODEL_TYPE_SIMULATOR))
-#define MODEL_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_SIMULATOR))
-#define MODEL_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_SIMULATOR, ModelSimulatorClass))
+#define OPENSIM_TYPE_SIMULATOR            (opensim_simulator_get_type())
+#define OPENSIM_SIMULATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulator))
+#define OPENSIM_SIMULATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorClass))
+#define OPENSIM_IS_SIMULATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), OPENSIM_TYPE_SIMULATOR))
+#define OPENSIM_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), OPENSIM_TYPE_SIMULATOR))
+#define OPENSIM_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorClass))
 
 
-typedef struct _ModelSimulator        ModelSimulator;
-typedef struct _ModelSimulatorClass   ModelSimulatorClass;
-typedef struct _ModelSimulatorPrivate ModelSimulatorPrivate;
+typedef struct _OpensimSimulator        OpensimSimulator;
+typedef struct _OpensimSimulatorClass   OpensimSimulatorClass;
+typedef struct _OpensimSimulatorPrivate OpensimSimulatorPrivate;
 
 
-struct _ModelSimulator
+struct _OpensimSimulator
 {
   GObject parent_instance;
   
@@ -72,45 +72,45 @@ struct _ModelSimulator
    *   - file_name        (gchar *)    get/set
    *   - output_type      (sim_output) get/set
    *   - output_file_name (gchar *)    get/set
-   *   - valid_model      (gboolean)   get
+   *   - valid_opensim      (gboolean)   get
    */
    
   /* instance members */
-  ModelSimulatorPrivate *priv;
+  OpensimSimulatorPrivate *priv;
 };
 
-struct _ModelSimulatorClass
+struct _OpensimSimulatorClass
 {
   GObjectClass parent_class;
   
-  int          (* output_debug_info) (ModelSimulator *simulator);
-  int          (* run) (ModelSimulator *simulator);
+  int          (* output_debug_info) (OpensimSimulator *simulator);
+  int          (* run) (OpensimSimulator *simulator);
 };
 
-/* used by MODEL_TYPE_SIMULATOR */
-GType model_simulator_get_type();
+/* used by OPENSIM_TYPE_SIMULATOR */
+GType opensim_simulator_get_type();
 
 /*
  * Method definitions.
  */
 
 /* public */
-int model_simulator_load(ModelSimulator *simulator, gchar *model_path);
-/* int model_simulator_save(ModelSimulator *simulator);
-int model_simulator_save(ModelSimulator *simulator, gboolean partial);
+int opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path);
+/* int opensim_simulator_save(OpensimSimulator *simulator);
+int opensim_simulator_save(OpensimSimulator *simulator, gboolean partial);
 
-int model_simulator_new_variable(ModelSimulator *simulator, gchar *var_name, 
+int opensim_simulator_new_variable(OpensimSimulator *simulator, gchar *var_name, 
                                  gpointer var_pointer);
-int model_simulator_get_variable(ModelSimulator *simulator, gchar *var_name, 
+int opensim_simulator_get_variable(OpensimSimulator *simulator, gchar *var_name, 
                                  gpointer var_pointer);
-int model_simulator_remove_variable(ModelSimulator *simulator, 
+int opensim_simulator_remove_variable(OpensimSimulator *simulator, 
                                     gchar *var_name);
 */
-int model_simulator_run(ModelSimulator *simulator);
-int model_simulator_output_debug_info(ModelSimulator *simulator);
+int opensim_simulator_run(OpensimSimulator *simulator);
+int opensim_simulator_output_debug_info(OpensimSimulator *simulator);
 
 
 G_END_DECLS
 
-#endif /* __MODEL_SIMULATOR_H__ */
+#endif /* __OPENSIM_SIMULATOR_H__ */
 
