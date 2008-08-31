@@ -14,10 +14,10 @@ model-simulator.c: model-simulator.defs model-simulator.override
 	--override model-simulator.override \
 	model-simulator.defs > $@
 
-opensimdir = $(pkgpythondir)/engine
+opensimdir = $(pkgpythondir)
 opensim_LTLIBRARIES = _engine.la
 
-activitydir = $(top_srcdir)/activity/site-packages/opensim/engine
+activitydir = $(top_srcdir)/activity/site-packages/opensim
 activity_PYTHON = $(opensim_PYTHON)
 
 _engine_la_SOURCES = model-simulator.c
