@@ -49,7 +49,7 @@ using OpenSim::EulerAST;
 using OpenSim::UnaryExprAST;
 
 
-OpenSim::SimBuilder::SimBuilder(std::map<std::string, ModelVariable *> variables)
+OpenSim::SimBuilder::SimBuilder(std::map<std::string, OpensimVariable *> variables)
 {
   // save the variables we're passed.
   vars = variables;
@@ -141,7 +141,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 void 
 OpenSim::SimBuilder::InitializeModule()
 {
-  for (map<string, ModelVariable *>::iterator itr = vars.begin(); 
+  for (map<string, OpensimVariable *>::iterator itr = vars.begin(); 
        itr != vars.end(); itr++) 
   {
     topLevelVars.push_back(itr->second);
@@ -155,7 +155,7 @@ OpenSim::SimBuilder::InitializeModule()
   // removed from this vector.
   while (topLevelVars.size() > 0)
   {
-    ModelVariable *var = topLevelVars.back();
+    OpensimVariable *var = topLevelVars.back();
     topLevelVars.pop_back();
 
     ProcessVar(var);
@@ -179,7 +179,7 @@ OpenSim::SimBuilder::InitializeModule()
 bool 
 OpenSim::SimBuilder::getNextToken()
 {
-  const GArray *toks = model_variable_get_tokens(CurVar);
+  const GArray *toks = opensim_variable_get_tokens(CurVar);
 
   if (toks_index >= toks->len) return false;
 
@@ -294,7 +294,7 @@ OpenSim::SimBuilder::ParseUnary()
 ExprAST *
 OpenSim::SimBuilder::ParseTable()
 {
-  if (toks_index == model_variable_get_tokens(CurVar)->len-2)
+  if (toks_index == opensim_variable_get_tokens(CurVar)->len-2)
   {
     // valid lookup value, start parsing it.
     vector< pair<double, double> > tuples;
@@ -415,7 +415,7 @@ OpenSim::SimBuilder::IsUnparsedTL(std::string IdName)
   bool ret = false;
   // this is somewhat expensive, but we check to see if there is a
   // variable with the specified name in topLevelVars.
-  for (vector<ModelVariable *>::iterator itr = topLevelVars.begin();
+  for (vector<OpensimVariable *>::iterator itr = topLevelVars.begin();
        itr != topLevelVars.end(); ++itr)
   {
     gchar *name = NULL;
@@ -536,14 +536,14 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
     return NULL;
   }
   
-  ModelVariable *requestedVar = vars[IdName];
+  OpensimVariable *requestedVar = vars[IdName];
   
   var_type v_type = var_undef;
   g_object_get(G_OBJECT(requestedVar), "type", &v_type,  NULL);
   
   if ((v_type != var_stock) && IsUnparsedTL(IdName))
   {
-    for (vector<ModelVariable *>::iterator itr = topLevelVars.begin();
+    for (vector<OpensimVariable *>::iterator itr = topLevelVars.begin();
          itr != topLevelVars.end(); ++itr)
     {
       gchar *name = NULL;
@@ -594,9 +594,9 @@ OpenSim::SimBuilder::ParseExpression()
 
 
 bool 
-OpenSim::SimBuilder::ProcessVar(ModelVariable *var)
+OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
 {
-  const GArray *toks = model_variable_get_tokens(var);
+  const GArray *toks = opensim_variable_get_tokens(var);
   toks_index = 0;
   
   CurVar = var;

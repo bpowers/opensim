@@ -1,4 +1,4 @@
-//===--- model-variable.h - Base class for representing sim variables ----===//
+//===--- opensim-variable.h - Base class for representing sim variables ----===//
 //
 // Copyright 2008 Bobby Powers
 //
@@ -24,8 +24,8 @@
 //===---------------------------------------------------------------------===//
 
 
-#ifndef __MODEL_VARIABLE_H__
-#define __MODEL_VARIABLE_H__
+#ifndef __OPENSIM_VARIABLE_H__
+#define __OPENSIM_VARIABLE_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -84,45 +84,45 @@ struct _equ_token
 /*
  * Type macros.
  */
-#define MODEL_TYPE_VARIABLE            (model_variable_get_type())
-#define MODEL_VARIABLE(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MODEL_TYPE_VARIABLE, ModelVariable))
-#define MODEL_VARIABLE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MODEL_TYPE_VARIABLE, ModelVariableClass))
-#define MODEL_IS_VARIABLE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MODEL_TYPE_VARIABLE))
-#define MODEL_IS_VARIABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MODEL_TYPE_VARIABLE))
-#define MODEL_VARIABLE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MODEL_TYPE_VARIABLE, ModelVariableClass))
+#define OPENSIM_TYPE_VARIABLE            (opensim_variable_get_type())
+#define OPENSIM_VARIABLE(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENSIM_TYPE_VARIABLE, OpensimVariable))
+#define OPENSIM_VARIABLE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), OPENSIM_TYPE_VARIABLE, OpensimVariableClass))
+#define OPENSIM_IS_VARIABLE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), OPENSIM_TYPE_VARIABLE))
+#define OPENSIM_IS_VARIABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), OPENSIM_TYPE_VARIABLE))
+#define OPENSIM_VARIABLE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), OPENSIM_TYPE_VARIABLE, OpensimVariableClass))
 
 
-typedef struct _ModelVariable        ModelVariable;
-typedef struct _ModelVariableClass   ModelVariableClass;
-typedef struct _ModelVariablePrivate ModelVariablePrivate;
+typedef struct _OpensimVariable        OpensimVariable;
+typedef struct _OpensimVariableClass   OpensimVariableClass;
+typedef struct _OpensimVariablePrivate OpensimVariablePrivate;
 
 
-struct _ModelVariable
+struct _OpensimVariable
 {
   GObject parent_instance;
    
   /* instance members */
-  ModelVariablePrivate *priv;
+  OpensimVariablePrivate *priv;
 };
 
-struct _ModelVariableClass
+struct _OpensimVariableClass
 {
   GObjectClass   parent_class;
   
-  const GArray * (* get_tokens) (ModelVariable *variable);
+  const GArray * (* get_tokens) (OpensimVariable *variable);
 };
 
-/* used by MODEL_TYPE_VARIABLE */
-GType model_variable_get_type();
+/* used by OPENSIM_TYPE_VARIABLE */
+GType opensim_variable_get_type();
 
 /*
  * Method definitions.
  */
 
 /* public */
-const GArray *model_variable_get_tokens(ModelVariable *variable);
+const GArray *opensim_variable_get_tokens(OpensimVariable *variable);
 
 
 G_END_DECLS
 
-#endif /* __MODEL_VARIABLE_H__ */
+#endif /* __OPENSIM_VARIABLE_H__ */

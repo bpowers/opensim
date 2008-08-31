@@ -1,4 +1,4 @@
-//===--- Variable.cpp - Base class for interacting with models ----------===//
+//===--- Variable.cpp - Base class for interacting with opensims ----------===//
 //
 // Copyright 2008 Bobby Powers
 //
@@ -19,28 +19,28 @@
 //
 //===---------------------------------------------------------------------===//
 //
-// This class represents models at a high level, suitible for inclusion
+// This class represents opensims at a high level, suitible for inclusion
 // in projects as part of a library.
-// TODO: implement features for dynamically changing models.
+// TODO: implement features for dynamically changing opensims.
 //
 //===---------------------------------------------------------------------===//
 
 #include "stdio.h"
 #include "string.h"
 
-#include "model-variable.h"
+#include "opensim-variable.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
-#define MODEL_VARIABLE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), MODEL_TYPE_VARIABLE, ModelVariablePrivate))
+#define OPENSIM_VARIABLE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_VARIABLE, OpensimVariablePrivate))
 
-static gpointer      model_variable_parent_class = NULL;
-static void          model_variable_init(ModelVariable *self);
-static void          model_variable_class_init(ModelVariableClass *klass);
-static void          model_variable_dispose(GObject *gobject);
-static void          model_variable_finalize(GObject *gobject);
-static const GArray *model_variable_default_get_tokens(ModelVariable 
+static gpointer      opensim_variable_parent_class = NULL;
+static void          opensim_variable_init(OpensimVariable *self);
+static void          opensim_variable_class_init(OpensimVariableClass *klass);
+static void          opensim_variable_dispose(GObject *gobject);
+static void          opensim_variable_finalize(GObject *gobject);
+static const GArray *opensim_variable_default_get_tokens(OpensimVariable 
                                                          *variable);
-static int           model_variable_tokenize(ModelVariable *variable);
+static int           opensim_variable_tokenize(OpensimVariable *variable);
 
 /* for object properties */
 enum
@@ -55,7 +55,7 @@ enum
 };
 
 
-struct _ModelVariablePrivate
+struct _OpensimVariablePrivate
 {
   gchar         *name;
   gchar         *equation;
@@ -71,24 +71,24 @@ struct _ModelVariablePrivate
 
 
 GType 
-model_variable_get_type()
+opensim_variable_get_type()
 {
   static GType g_define_type_id = 0; 
   if (G_UNLIKELY(g_define_type_id == 0)) 
   { 
     static const GTypeInfo g_define_type_info = { 
-      sizeof (ModelVariableClass), 
+      sizeof (OpensimVariableClass), 
       (GBaseInitFunc) NULL, 
       (GBaseFinalizeFunc) NULL, 
-      (GClassInitFunc) model_variable_class_init, 
+      (GClassInitFunc) opensim_variable_class_init, 
       (GClassFinalizeFunc) NULL, 
       NULL,   // class_data 
-      sizeof (ModelVariable), 
+      sizeof (OpensimVariable), 
       0,      // n_preallocs 
-      (GInstanceInitFunc) model_variable_init, 
+      (GInstanceInitFunc) opensim_variable_init, 
     }; 
     g_define_type_id = g_type_register_static(G_TYPE_OBJECT, 
-                                              "ModelVariableType", 
+                                              "OpensimVariableType", 
                                               &g_define_type_info, 
                                               (GTypeFlags) 0); 
   } 
@@ -99,12 +99,12 @@ model_variable_get_type()
 
 
 void
-model_variable_set_property(GObject      *object,
+opensim_variable_set_property(GObject      *object,
                              guint         property_id,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-  ModelVariable *self = MODEL_VARIABLE(object);
+  OpensimVariable *self = OPENSIM_VARIABLE(object);
 
   switch (property_id)
   {
@@ -147,12 +147,12 @@ model_variable_set_property(GObject      *object,
 
 
 void
-model_variable_get_property (GObject    *object,
+opensim_variable_get_property (GObject    *object,
                               guint       property_id,
                               GValue     *value,
                               GParamSpec *pspec)
 {
-  ModelVariable *self = MODEL_VARIABLE(object);
+  OpensimVariable *self = OPENSIM_VARIABLE(object);
 
   switch (property_id)
   {
@@ -174,7 +174,7 @@ model_variable_get_property (GObject    *object,
 
   case PROP_TYPE:
     // we determine type when we analyze the tokens
-    if (!self->priv->toks) model_variable_tokenize(self);
+    if (!self->priv->toks) opensim_variable_tokenize(self);
     g_value_set_int(value, (int)self->priv->type);
     break;
 
@@ -191,59 +191,59 @@ model_variable_get_property (GObject    *object,
 
 
 static void
-model_variable_class_init(ModelVariableClass *klass)
+opensim_variable_class_init(OpensimVariableClass *klass)
 {
-  model_variable_parent_class = g_type_class_peek_parent(klass);
+  opensim_variable_parent_class = g_type_class_peek_parent(klass);
 
-  g_type_class_add_private(klass, sizeof (ModelVariablePrivate));
+  g_type_class_add_private(klass, sizeof (OpensimVariablePrivate));
 
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  GParamSpec *model_param_spec;
+  GParamSpec *opensim_param_spec;
   
-  gobject_class->set_property = model_variable_set_property;
-  gobject_class->get_property = model_variable_get_property;
-  gobject_class->dispose      = model_variable_dispose;
-  gobject_class->finalize     = model_variable_finalize;
+  gobject_class->set_property = opensim_variable_set_property;
+  gobject_class->get_property = opensim_variable_get_property;
+  gobject_class->dispose      = opensim_variable_dispose;
+  gobject_class->finalize     = opensim_variable_finalize;
 
-  klass->get_tokens           = model_variable_default_get_tokens;
+  klass->get_tokens           = opensim_variable_default_get_tokens;
 
-  model_param_spec = g_param_spec_string("name",
+  opensim_param_spec = g_param_spec_string("name",
                                          "variable name",
                                          "Set variable's name",
                                          NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_NAME,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("equation",
+  opensim_param_spec = g_param_spec_string("equation",
                                          "variable's equation",
                                          "Get/set variable's equation",
                                          NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_EQUATION,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("units",
+  opensim_param_spec = g_param_spec_string("units",
                                          "variable's units",
                                          "Get/set variable's unit",
                                          "" /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_UNITS,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_string("comments",
+  opensim_param_spec = g_param_spec_string("comments",
                                          "notes on variable",
                                          "Get/set information about variable",
                                          NULL /* default value */,
                                          PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_COMMENTS,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_int("type",
+  opensim_param_spec = g_param_spec_int("type",
                                       "type of variable",
                                       "What kind of variable we have",
                                       -1, 
@@ -252,25 +252,25 @@ model_variable_class_init(ModelVariableClass *klass)
                                       PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_TYPE,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
-  model_param_spec = g_param_spec_boolean("valid",
+  opensim_param_spec = g_param_spec_boolean("valid",
                                           "is equation valid",
                                           "True if the equation is good",
                                           TRUE /* default value */,
                                           (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
                                   PROP_VALID,
-                                  model_param_spec);
+                                  opensim_param_spec);
 
 }
 
 
 
 static void
-model_variable_init(ModelVariable *self)
+opensim_variable_init(OpensimVariable *self)
 {
-  self->priv = MODEL_VARIABLE_GET_PRIVATE(self);
+  self->priv = OPENSIM_VARIABLE_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
   
@@ -281,9 +281,9 @@ model_variable_init(ModelVariable *self)
 
 
 static void
-model_variable_dispose(GObject *gobject)
+opensim_variable_dispose(GObject *gobject)
 {
-  ModelVariable *self = MODEL_VARIABLE(gobject);
+  OpensimVariable *self = OPENSIM_VARIABLE(gobject);
 
   /* 
    * In dispose, you are supposed to free all typesecifier before 'IOVenText'
@@ -297,15 +297,15 @@ model_variable_dispose(GObject *gobject)
    */
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_variable_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(opensim_variable_parent_class)->dispose(gobject);
 }
 
 
 
 static void
-model_variable_finalize(GObject *gobject)
+opensim_variable_finalize(GObject *gobject)
 {
-  ModelVariable *self = MODEL_VARIABLE(gobject);
+  OpensimVariable *self = OPENSIM_VARIABLE(gobject);
 
   //g_fprintf(stderr, "Info: Variable '%s' finalized!\n", self->priv->name);
 
@@ -331,23 +331,23 @@ model_variable_finalize(GObject *gobject)
   if (self->priv->toks) g_array_free(self->priv->toks, TRUE);
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(model_variable_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(opensim_variable_parent_class)->finalize(gobject);
 }
 
 
 
 const GArray *
-model_variable_get_tokens(ModelVariable *variable)
+opensim_variable_get_tokens(OpensimVariable *variable)
 {
-  MODEL_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
+  OPENSIM_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
 }
 
 
 
 static const GArray *
-model_variable_default_get_tokens(ModelVariable *variable)
+opensim_variable_default_get_tokens(OpensimVariable *variable)
 {
-  if (!variable->priv->toks) model_variable_tokenize(variable);
+  if (!variable->priv->toks) opensim_variable_tokenize(variable);
   
   return variable->priv->toks;
 }
@@ -355,7 +355,7 @@ model_variable_default_get_tokens(ModelVariable *variable)
 
 
 static int
-model_variable_tokenize(ModelVariable *variable)
+opensim_variable_tokenize(OpensimVariable *variable)
 {
   GArray *tokens = g_array_new(FALSE, FALSE, sizeof(equ_token));
 

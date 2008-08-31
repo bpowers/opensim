@@ -29,14 +29,14 @@
 using OpenSim::ASTConsumer;
 
 void 
-OpenSim::LookupAST::SetData(ModelVariable *newData)
+OpenSim::LookupAST::SetData(OpensimVariable *newData)
 {
   if (newData) var = newData;
 }
 
 
 
-ModelVariable *
+OpensimVariable *
 OpenSim::LookupAST::Data()
 {
   return var;

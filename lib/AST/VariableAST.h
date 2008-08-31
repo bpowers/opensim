@@ -28,7 +28,7 @@
 
 // openSim stuff
 #include "../globals.h"
-#include "../model-variable.h"
+#include "../opensim-variable.h"
 #include "General.h"
 #include "ASTConsumer.h"
 #include "../CodeGen/InterpreterModule.h"
@@ -41,15 +41,15 @@ namespace OpenSim
   protected:
     OpenSim::ExprAST *node;
     OpenSim::ExprAST *initialNode;
-    ModelVariable *var;
+    OpensimVariable *var;
     
   public:
-    VariableAST(ModelVariable *varData, OpenSim::ExprAST *nodeData) 
+    VariableAST(OpensimVariable *varData, OpenSim::ExprAST *nodeData) 
       : var(varData), node(nodeData) {}
     ~VariableAST() {}
     
-    void SetData(ModelVariable *newData);
-    ModelVariable *Data();
+    void SetData(OpensimVariable *newData);
+    OpensimVariable *Data();
     
     void SetInitial(OpenSim::ExprAST *newInitial) {initialNode = newInitial;}
     OpenSim::ExprAST *Initial() {return initialNode;}

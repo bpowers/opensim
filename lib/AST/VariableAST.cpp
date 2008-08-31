@@ -30,14 +30,14 @@ using OpenSim::ASTConsumer;
 
 
 void 
-OpenSim::VariableAST::SetData(ModelVariable *newData)
+OpenSim::VariableAST::SetData(OpensimVariable *newData)
 {
   if (newData) var = newData;
 }
 
 
 
-ModelVariable *
+OpensimVariable *
 OpenSim::VariableAST::Data()
 {
   return var;
