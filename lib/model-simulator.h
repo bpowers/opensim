@@ -1,29 +1,30 @@
-//===--- Simulator.h - Base class for interacting with models  -*- C++ -*-===//
-//
-// Copyright 2008 Bobby Powers
-//
-// This file is part of OpenSim.
-// 
-// OpenSim is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// OpenSim is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with OpenSim.  If not, see <http://www.gnu.org/licenses/>.
-//
-//===---------------------------------------------------------------------===//
-//
-// This class represents models at a high level, suitible for inclusion
-// in projects as part of a library.
-// TODO: implement features for dynamically changing models.
-//
-//===---------------------------------------------------------------------===//
+/*===--- Simulator.h - Base class for interacting with models  -*- C++ -*-===
+ *
+ * Copyright 2008 Bobby Powers
+ *
+ * This file is part of OpenSim.
+ * 
+ * OpenSim is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * OpenSim is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with OpenSim.  If not, see <http: *www.gnu.org/licenses/>.
+ *
+ *===---------------------------------------------------------------------===
+ *
+ * This class represents models at a high level, suitible for inclusion
+ * in projects as part of a library.
+ * TODO: implement features for dynamically changing models.
+ *
+ *===---------------------------------------------------------------------===
+ */
 
 #ifndef __MODEL_SIMULATOR_H__
 #define __MODEL_SIMULATOR_H__
@@ -36,11 +37,11 @@ G_BEGIN_DECLS
 
 enum _sim_output 
 {
-  sim_emit_IR      = 1, // not supported
-  sim_emit_Python  = 2, // full Python implementation of model
-  sim_emit_Fortran = 3, // not implemented yet
-  sim_emit_Output  = 4, // results of interpreting model
-  sim_emit_AS3     = 5, // full AS3 implementation of model
+  sim_emit_IR      = 1, /* not supported                       */
+  sim_emit_Python  = 2, /* full Python implementation of model */
+  sim_emit_Fortran = 3, /* not implemented yet                 */
+  sim_emit_Output  = 4, /* results of interpreting model       */
+  sim_emit_AS3     = 5, /* full AS3 implementation of model    */
 };
 
 typedef enum _sim_output sim_output;
@@ -95,8 +96,8 @@ GType model_simulator_get_type();
 
 /* public */
 int model_simulator_load(ModelSimulator *simulator, gchar *model_path);
-int model_simulator_save(ModelSimulator *simulator);
-//int model_simulator_save(ModelSimulator *simulator, gboolean partial);
+/* int model_simulator_save(ModelSimulator *simulator);
+int model_simulator_save(ModelSimulator *simulator, gboolean partial);
 
 int model_simulator_new_variable(ModelSimulator *simulator, gchar *var_name, 
                                  gpointer var_pointer);
@@ -104,7 +105,7 @@ int model_simulator_get_variable(ModelSimulator *simulator, gchar *var_name,
                                  gpointer var_pointer);
 int model_simulator_remove_variable(ModelSimulator *simulator, 
                                     gchar *var_name);
-
+*/
 int model_simulator_run(ModelSimulator *simulator);
 int model_simulator_output_debug_info(ModelSimulator *simulator);
 

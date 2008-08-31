@@ -22,16 +22,22 @@ AC_LIBTOOL_WIN32_DLL
 #AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-
 have_python=no
-AC_PYTHON_DEVEL([>='2.5'])
+AM_PATH_PYTHON([2.5])
 
 if test -z "$PYTHON" ; then
   AC_MSG_WARN([Python not found])
 else
-  AM_PATH_PYTHON([2.5])
+  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+
+  PKG_CHECK_MODULES(PYGOBJ, [pygtk-2.0])
+  AC_SUBST(PYGOBJ_CFLAGS)
+  AC_SUBST(PYGOBJ_LIBS)
+
   have_python=yes
 fi
+
+
 
 AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
 

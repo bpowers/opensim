@@ -13,5 +13,5 @@ opensim_c_SOURCES       = main.c
 opensim_c_LDADD         = @LIBLTDL@ @LIBADD_DL@
 
 opensim_d_SOURCES       = main-nonltdl.c
-opensim_d_LDADD         = -lsim
+opensim_d_LDADD         = $(top_builddir)/lib/libsim.la
 
