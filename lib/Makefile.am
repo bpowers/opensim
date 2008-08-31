@@ -6,13 +6,13 @@ INCLUDES               = -I$(top_builddir) -I$(top_srcdir)
 
 MAINTAINERCLEANFILES   = Makefile.in
 
-EXTRA_DIST             = model-simulator.h model-variable.h globals.h opensim.h
+EXTRA_DIST             = opensim-simulator.h opensim-variable.h globals.h opensim.h
 pkginclude_HEADERS     = opensim.h model-simulator.h model-variable.h
 
 SUBDIRS                = AST CodeGen IO
 
 noinst_LTLIBRARIES     = libsimobjs.la
-libsimobjs_la_SOURCES  = model-simulator.cpp model-variable.c
+libsimobjs_la_SOURCES  = opensim-simulator.cpp opensim-variable.c
 libsimobjs_la_LIBADD   = AST/libAST.la CodeGen/libCodeGen.la \
                          IO/libIO.la
 libsimobjs_la_LDFLAGS  = -no-undefined @LIBINTL@
