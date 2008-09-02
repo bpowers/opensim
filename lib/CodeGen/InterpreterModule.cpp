@@ -72,7 +72,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 {
   vars = node->NamedVars();
   
-  for (int i=0; i < node->Initial().size(); i++) 
+  for (unsigned int i=0; i < node->Initial().size(); ++i) 
   {
     VariableAST *v_ast = node->Initial()[i];
     OpensimVariable *v = v_ast->Data();
@@ -139,7 +139,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   bool do_save = true;
   
   string format = "";
-  for (int i=0; i<node->Body().size(); ++i)
+  for (unsigned int i=0; i<node->Body().size(); ++i)
     format += "%d,";
   format += "\n";
   
@@ -190,7 +190,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     
     // figure out if we should save things the next time around
     // save every n iterations, and also on the last iteration
-    save_count++;
+    ++save_count;
     if (save_count >= save_iterations || time + timestep > end)
     {
       do_save = true;
@@ -315,7 +315,7 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
   else if (index > table[table.size()-1].first)
     return table[table.size()-1].second;
   
-  for (int i=0; i < table.size(); i++)
+  for (unsigned int i=0; i < table.size(); ++i)
   {
     if (index == table[i].first)
       return table[i].second;

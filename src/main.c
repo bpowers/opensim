@@ -33,6 +33,7 @@
 
 // standard library
 #include "stdio.h"
+#include "string.h"
 #include "getopt.h"
 #include "unistd.h"
 
@@ -190,8 +191,8 @@ main (int argc, const char * argv[])
     }
   }
   
-  char *errormsg = NULL;
-  lt_dlhandle module = NULL;
+  //char *errormsg = NULL;
+  lt_dlhandle opensim = NULL;
   int errors = 0;
   
   errors = lt_dlinit ();
@@ -203,7 +204,7 @@ main (int argc, const char * argv[])
   }
   
   // dynamically load the opensim library.
-  lt_dlhandle opensim = lt_dlopenext("libsim");
+  opensim = lt_dlopenext("libsim");
   
   if (opensim == NULL)
   {

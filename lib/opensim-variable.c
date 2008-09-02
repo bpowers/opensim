@@ -27,6 +27,7 @@
 
 #include "stdio.h"
 #include "string.h"
+#include "ctype.h"
 
 #include "opensim-variable.h"
 
@@ -283,7 +284,7 @@ opensim_variable_init(OpensimVariable *self)
 static void
 opensim_variable_dispose(GObject *gobject)
 {
-  OpensimVariable *self = OPENSIM_VARIABLE(gobject);
+  //OpensimVariable *self = OPENSIM_VARIABLE(gobject);
 
   /* 
    * In dispose, you are supposed to free all typesecifier before 'IOVenText'
@@ -339,7 +340,7 @@ opensim_variable_finalize(GObject *gobject)
 const GArray *
 opensim_variable_get_tokens(OpensimVariable *variable)
 {
-  OPENSIM_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
+  return OPENSIM_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
 }
 
 

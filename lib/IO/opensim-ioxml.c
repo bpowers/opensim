@@ -25,6 +25,9 @@
 //
 //===---------------------------------------------------------------------===//
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 // libxml parsing
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -42,7 +45,6 @@ static void opensim_ioxml_init(OpensimIOxml *self);
 static void opensim_ioxml_class_init(OpensimIOxmlClass *klass);
 static void opensim_ioxml_dispose(GObject *gobject);
 static void opensim_ioxml_finalize(GObject *gobject);
-static int parse_input(xmlDocPtr doc, xmlNodePtr mod);
 
 static int opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_name);
 static int opensim_ioxml_default_save(OpensimIOxml *ioxml);
@@ -82,10 +84,7 @@ trim(gchar *str)
   }
 
   glong length = g_utf8_strlen(str, -1);
-  glong clength = strlen(str);
-  
-  //g_fprintf(stdout, "**len: %d**\n", length);
-  
+
   int start = 0;
   gchar *startp = NULL;
   int end = 0;
@@ -339,7 +338,7 @@ opensim_ioxml_finalize(GObject *gobject)
 int
 opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path)
 {
-  OPENSIM_IOXML_GET_CLASS(ioxml)->load(ioxml, model_path);
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->load(ioxml, model_path);
 }
 
 
@@ -363,7 +362,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
   {
     fprintf(stderr, "Error: Document not parsed successfully.\n");
     xmlFreeDoc(doc);
-    return;
+    return -1;
   }
     
     
@@ -373,7 +372,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
   {
     fprintf(stderr, "Error: Document has no root element.\n");
     xmlFreeDoc(doc);
-    return;
+    return -1;
   }
     
     
@@ -383,7 +382,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
   {
     fprintf(stderr, "Error: Document of the wrong type, root node != opensim\n");
     xmlFreeDoc(doc);
-    return;
+    return -1;
   }
     
     
@@ -397,7 +396,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
     fprintf(stderr, "Error: Markup must be version 1.0\n");
     xmlFree(txt);
     xmlFreeDoc(doc);
-    return;
+    return -1;
   }
   else 
   {
@@ -423,7 +422,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
   {
     fprintf(stderr, "Error: No 'model' node.\n");
     xmlFreeDoc(doc);
-    return;
+    return -1;
   }
   
   gboolean haveOpensimName = FALSE;
@@ -435,7 +434,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
       if (haveOpensimName)
       {
         fprintf(stderr, "Error: A model can only have one name.\n");
-        return;
+        return -1;
       }
       else 
         haveOpensimName = TRUE;
@@ -504,6 +503,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
   // *** right now we're assumming that just by having a 
   // validly parsed file, we have a valid equation... *** //
   ioxml->priv->valid = TRUE;
+  return 0;
 }
 
 
@@ -511,7 +511,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 int
 opensim_ioxml_save(OpensimIOxml *ioxml)
 {
-  OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml);
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml);
 }
 
 
@@ -520,6 +520,7 @@ static int
 opensim_ioxml_default_save(OpensimIOxml *ioxml)
 {
   g_fprintf(stderr, "OpensimIOxml->save not implemented!\n");
+  return -1;
 }
 
 
@@ -527,7 +528,7 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml)
 GArray *
 opensim_ioxml_get_variables(OpensimIOxml *ioxml)
 {
-  OPENSIM_IOXML_GET_CLASS(ioxml)->get_variables(ioxml);
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->get_variables(ioxml);
 }
 
 

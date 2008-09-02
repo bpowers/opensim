@@ -80,7 +80,7 @@ namespace OpenSim
     std::map<char, int> BinopPrecedence;
     
     // variable equation token handling
-    int toks_index;
+    unsigned int toks_index;
     equ_token CurTok;
     OpensimVariable *CurVar;
     

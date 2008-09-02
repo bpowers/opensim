@@ -99,7 +99,7 @@ def sim_lookup(table, index):\n\
   
   vars = node->NamedVars();
   
-  for (int i=0; i < node->Initial().size(); i++) 
+  for (unsigned int i=0; i < node->Initial().size(); i++) 
   {
     VariableAST *v_ast = node->Initial()[i];
     OpensimVariable *v = v_ast->Data();
@@ -318,7 +318,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::LookupAST *node)
   
   fprintf(simout, "[");
   
-  for (int i=0; i<table.size(); i++)
+  for (unsigned int i=0; i<table.size(); i++)
   {
     fprintf(simout, "(%f, %f)", table[i].first, table[i].second);
     
