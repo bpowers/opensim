@@ -12,8 +12,7 @@ model_startup.sh
 NEWS
 setup.py
 lib/libgoocanvas.so.3
-lib/libglibmm-2.4.so.1
-lib/libsigc-2.0.so.0
+lib/libsim.so.0
 site-packages/opensim/visuals/widgets/__init__.py
 site-packages/opensim/visuals/widgets/item.py
 site-packages/opensim/visuals/widgets/stock.py
