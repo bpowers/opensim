@@ -36,7 +36,7 @@
 G_BEGIN_DECLS
 
 #ifndef __cplusplus
-enum
+typedef enum
 {
   sim_emit_IR      = 1, /* not supported                       */
   sim_emit_Python  = 2, /* full Python implementation of opensim */
@@ -56,8 +56,8 @@ enum sim_output
 };
 #endif
 
-GType opensim_sim_output_get_type (void) G_GNUC_CONST;
-#define OPENSIM_TYPE_OUTPUT (opensim_sim_output_get_type ())
+GType opensim_output_get_type (void) G_GNUC_CONST;
+#define OPENSIM_TYPE_OUTPUT (opensim_output_get_type())
 
 /*
  * Type macros.
@@ -85,7 +85,7 @@ struct _OpensimSimulator
    *   - file_name        (gchar *)    get/set
    *   - output_type      (sim_output) get/set
    *   - output_file_name (gchar *)    get/set
-   *   - valid_opensim      (gboolean)   get
+   *   - valid_model      (gboolean)   get
    */
    
   /* instance members */
@@ -108,7 +108,7 @@ GType opensim_simulator_get_type();
  */
 
 /* public */
-int opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path);
+int opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path);
 /* int opensim_simulator_save(OpensimSimulator *simulator);
 int opensim_simulator_save(OpensimSimulator *simulator, gboolean partial);
 

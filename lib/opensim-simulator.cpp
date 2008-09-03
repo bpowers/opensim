@@ -58,24 +58,24 @@ static int opensim_simulator_default_run(OpensimSimulator *simulator);
 
 
 extern "C" GType
-opensim_sim_output_get_type (void)
+opensim_output_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if (g_once_init_enter (&g_define_type_id__volatile))
-    {
-      static const GFlagsValue values[] = {
-        { sim_emit_IR, "sim_emit_IR", "emit LLVM ir" },
-        { sim_emit_Python, "sim_emit_Python", "emit Python" },
-        { sim_emit_Fortran, "sim_emit_Fortran", "emit Fortran 90" },
-        { sim_emit_Output, "sim_emit_Output", "emit results" },
-        { sim_emit_AS3, "sim_emit_AS3", "emit ActionScript 3" },
-        { 0, NULL, NULL }
-      };
-      GType g_define_type_id =
-        g_flags_register_static (g_intern_static_string ("OpensimOutput"), values);
-      g_once_init_leave (&g_define_type_id__volatile, g_define_type_id);
-    }
+  {
+    static const GEnumValue values[] = {
+      { sim_emit_IR, "sim_emit_IR", "llvm" },
+      { sim_emit_Python, "sim_emit_Python", "python" },
+      { sim_emit_Fortran, "sim_emit_Fortran", "fortran" },
+      { sim_emit_Output, "sim_emit_Output", "output" },
+      { sim_emit_AS3, "sim_emit_AS3", "as3" },
+      { 0, NULL, NULL }
+    };
+    GType g_define_type_id =
+      g_enum_register_static (g_intern_static_string ("OpensimOutput"), values);
+    g_once_init_leave (&g_define_type_id__volatile, g_define_type_id);
+  }
 
   return g_define_type_id__volatile;
 }
