@@ -2,5 +2,5 @@
 src/opensim
 src/opensim-gtk
 src/main.c
-lib/model-simulator.cpp
-lib/model-variable.c
+lib/opensim-simulator.cpp
+lib/opensim-variable.c
