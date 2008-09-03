@@ -1,4 +1,4 @@
-//===--- Variable.cpp - Base class for interacting with opensims ----------===//
+//===--- opensim-variable.c - Base class for interacting with opensims --===//
 //
 // Copyright 2008 Bobby Powers
 //
@@ -149,9 +149,9 @@ opensim_variable_set_property(GObject      *object,
 
 void
 opensim_variable_get_property (GObject    *object,
-                              guint       property_id,
-                              GValue     *value,
-                              GParamSpec *pspec)
+                               guint       property_id,
+                               GValue     *value,
+                               GParamSpec *pspec)
 {
   OpensimVariable *self = OPENSIM_VARIABLE(object);
 
@@ -209,57 +209,57 @@ opensim_variable_class_init(OpensimVariableClass *klass)
   klass->get_tokens           = opensim_variable_default_get_tokens;
 
   opensim_param_spec = g_param_spec_string("name",
-                                         "variable name",
-                                         "Set variable's name",
-                                         NULL /* default value */,
-                                         PARAM_READWRITE);
+                                           "variable name",
+                                           "Set variable's name",
+                                           NULL /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("equation",
-                                         "variable's equation",
-                                         "Get/set variable's equation",
-                                         NULL /* default value */,
-                                         PARAM_READWRITE);
+                                           "variable's equation",
+                                           "Get/set variable's equation",
+                                           NULL /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_EQUATION,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("units",
-                                         "variable's units",
-                                         "Get/set variable's unit",
-                                         "" /* default value */,
-                                         PARAM_READWRITE);
+                                           "variable's units",
+                                           "Get/set variable's unit",
+                                           "" /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_UNITS,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("comments",
-                                         "notes on variable",
-                                         "Get/set information about variable",
-                                         NULL /* default value */,
-                                         PARAM_READWRITE);
+                                           "notes on variable",
+                                           "Get/set information about variable",
+                                           NULL /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_COMMENTS,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_int("type",
-                                      "type of variable",
-                                      "What kind of variable we have",
-                                      -1, 
-                                      4, /* max enum number */
-                                      var_undef /* default value */,
-                                      PARAM_READWRITE);
+                                        "type of variable",
+                                        "What kind of variable we have",
+                                        -1, 
+                                        4, /* max enum number */
+                                        var_undef /* default value */,
+                                        PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_TYPE,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_boolean("valid",
-                                          "is equation valid",
-                                          "True if the equation is good",
-                                          TRUE /* default value */,
-                                          (GParamFlags) (G_PARAM_READABLE));
+                                            "is equation valid",
+                                            "True if the equation is good",
+                                            TRUE /* default value */,
+                                            (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
                                   PROP_VALID,
                                   opensim_param_spec);
