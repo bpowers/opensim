@@ -294,7 +294,8 @@ OpenSim::SimBuilder::ParseUnary()
 ExprAST *
 OpenSim::SimBuilder::ParseTable()
 {
-  if (toks_index == opensim_variable_get_tokens(CurVar)->len-2)
+  // honestly, i forget why this needs to be 2...
+  if (toks_index == 2)
   {
     // valid lookup value, start parsing it.
     vector< pair<double, double> > tuples;
@@ -382,8 +383,15 @@ OpenSim::SimBuilder::ParseTable()
     return new LookupAST(CurVar, tuples);
   }
   
+  gchar *v_name = NULL;
+  
+  g_object_get(G_OBJECT(CurVar), "name", &v_name, NULL);
   // shouldn't reach here.
-  fprintf(stderr, "Error: '[' in a weird and undefined place.\n");
+  fprintf(stderr, 
+          "Error: '[' in a weird and undefined place for %s (%d).\n", 
+          v_name, toks_index);
+
+  g_free(v_name);
   return 0;
 }
 
