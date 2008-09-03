@@ -53,17 +53,6 @@ static const struct option longopts[] =
 };
 
 
-typedef int os_load (const char *);
-typedef int os_set_type (enum sim_output);
-typedef int os_set_out (const char *);
-typedef int os_simulate ();
-
-
-os_load *load = NULL;
-os_set_type *set_type = NULL;
-os_set_out *set_out = NULL;
-os_simulate *sim = NULL;
-
 
 static void print_help();
 static void print_version();
