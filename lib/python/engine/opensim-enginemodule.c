@@ -15,7 +15,8 @@ initengine(void)
  
     engine_register_classes (d);
  
-    if (PyErr_Occurred ()) {
+    if (PyErr_Occurred ()) 
+    {
         Py_FatalError ("can't initialise module engine");
     }
 }

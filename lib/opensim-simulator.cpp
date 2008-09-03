@@ -41,8 +41,11 @@ using OpenSim::SimBuilder;
 #include "opensim-variable.h"
 #include "IO/opensim-ioxml.h"
 
-#define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
-#define OPENSIM_SIMULATOR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorPrivate))
+#define PARAM_READWRITE (GParamFlags) \
+        (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
+#define OPENSIM_SIMULATOR_GET_PRIVATE(obj) \
+        (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_SIMULATOR, \
+                                            OpensimSimulatorPrivate))
 
 static gpointer opensim_simulator_parent_class = NULL;
 static void opensim_simulator_init(OpensimSimulator *self);
@@ -356,14 +359,14 @@ opensim_simulator_finalize(GObject *gobject)
 
 
 extern "C" int 
-opensim_simulator_load(OpensimSimulator *simulator, gchar *opensim_path)
+opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
 {
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
                                              NULL));
   gboolean valid_model = FALSE;
   gchar *prop;
   
-  opensim_ioxml_load(gio, (gchar *)opensim_path);
+  opensim_ioxml_load(gio, model_path);
 
   g_object_get(G_OBJECT(gio), "model_name", &prop,
                               "valid",      &valid_model, NULL);
