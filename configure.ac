@@ -30,7 +30,7 @@ if test -z "$PYTHON" ; then
 else
   AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
 
-  PKG_CHECK_MODULES(PYGOBJ, [pygtk-2.0])
+  PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
   AC_SUBST(PYGOBJ_CFLAGS)
   AC_SUBST(PYGOBJ_LIBS)
 
