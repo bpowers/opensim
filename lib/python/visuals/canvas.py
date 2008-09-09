@@ -31,7 +31,7 @@ import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
 import libxml2
-from opensim.engine.simulator import Simulator
+from opensim.engine import Simulator
 import tools
 
 

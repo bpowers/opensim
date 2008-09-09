@@ -29,8 +29,8 @@
 
 // openSim stuff
 #include "../globals.h"
-#include "../Simulator.h"
-#include "../Variable.h"
+#include "../opensim-simulator.h"
+#include "../opensim-variable.h"
 
 
 namespace OpenSim
@@ -50,7 +50,7 @@ namespace OpenSim
   class SimBuilder
   {
     /// A map of all of the defined variables, keyed by name.
-    std::map<std::string, OpenSim::Variable *> vars;
+    std::map<std::string, OpensimVariable *> vars;
     
     /// A map of all of the defined variable AST nodes, keyed by name.
     std::map<std::string, OpenSim::VariableAST *> varASTs;
@@ -75,19 +75,19 @@ namespace OpenSim
     /// Checks to see if we've started parsing the variable with 
     /// this ID name yet.
     bool IsUnparsedTL(std::string IdName);
-    std::vector<OpenSim::Variable *> topLevelVars;
+    std::vector<OpensimVariable *> topLevelVars;
     
     std::map<char, int> BinopPrecedence;
     
     // variable equation token handling
-    std::vector<OpenSim::EquToken> toks;
-    OpenSim::EquToken CurTok;
-    OpenSim::Variable *CurVar;
+    unsigned int toks_index;
+    equ_token CurTok;
+    OpensimVariable *CurVar;
     
     OpenSim::ExprAST *CurVarInitial;
     
-    std::vector<std::vector<OpenSim::EquToken> > stack;
-    std::vector<OpenSim::Variable *> var_stack;
+    std::vector<int> index_stack;
+    std::vector<OpensimVariable *> var_stack;
     
     void PushTokens();
     void PopTokens();
@@ -95,7 +95,7 @@ namespace OpenSim
     int GetTokPrecedence();
     
     // expression parsing
-    bool ProcessVar(Variable *var);
+    bool ProcessVar(OpensimVariable *var);
     OpenSim::ExprAST *ParseBinOpRHS(int ExprPrec, OpenSim::ExprAST *LHS);
     OpenSim::ExprAST *ParsePrimary();
     OpenSim::ExprAST *ParseUnary();
@@ -106,11 +106,11 @@ namespace OpenSim
     OpenSim::ExprAST *ParseVarRefExpr(std::string IdName);
     
   public:
-    SimBuilder(std::map<std::string, Variable *> variables);
+    SimBuilder(std::map<std::string, OpensimVariable *> variables);
     ~SimBuilder();
     
     int Update();
-    int Parse(sim_output ourWalk, FILE *output_file);
+    int Parse(int ourWalk, FILE *output_file);
   };
 }
 

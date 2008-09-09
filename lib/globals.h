@@ -38,14 +38,10 @@
 #define WIN_DLL 
 #endif 
 
-#include <cstdio>
-
-#include <string>
-#include <map>
-#include <vector>
-
 #define WALK_BAILED 20
 #define PARSED_OK 0
+
+#include "config.h"
 
 /*
 // llvm code generation

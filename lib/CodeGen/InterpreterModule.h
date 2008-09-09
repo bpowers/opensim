@@ -28,6 +28,9 @@
 #ifndef OSIM_INTERPRETERMODULE_H
 #define OSIM_INTERPRETERMODULE_H
 
+#include <map>
+#include <vector>
+#include <string>
 #include "../globals.h"
 #include "../AST/ASTConsumer.h"
 

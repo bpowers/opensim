@@ -25,15 +25,18 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include "InterpreterModule.h"
+#include <stdlib.h>
+#include <algorithm>
+
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
 #include "../AST/LookupAST.h"
 #include "../AST/General.h"
+#include "../opensim-variable.h"
 
-#include <cstdlib>
-#include <algorithm>
+#include "InterpreterModule.h"
+
 using std::max;
 using std::string;
 using std::vector;
@@ -41,7 +44,6 @@ using std::map;
 using std::pair;
 
 using OpenSim::VariableAST;
-using OpenSim::Variable;
 
 
 OpenSim::InterpreterModule::InterpreterModule()
@@ -70,18 +72,25 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 {
   vars = node->NamedVars();
   
-  for (int i=0; i < node->Initial().size(); i++) 
+  for (unsigned int i=0; i < node->Initial().size(); ++i) 
   {
     VariableAST *v_ast = node->Initial()[i];
-    Variable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
+    
+    gchar *v_name = NULL;
+    var_type v_type = var_undef;
+    
+    g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
     
     // define constants
-    if (v->Type() == var_const)
-      vals[v->Name()] = v_ast->AST()->Codegen(this);
+    if (v_type == var_const)
+      vals[v_name] = v_ast->AST()->Codegen(this);
     
     // calculate the initial values of stocks
-    if (v->Type() == var_stock)
-      vals[v->Name()] = v_ast->Initial()->Codegen(this);
+    if (v_type == var_stock)
+      vals[v_name] = v_ast->Initial()->Codegen(this);
+    
+    g_free(v_name);
   }
   
   string headers = "time";
@@ -90,11 +99,22 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
-    Variable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
 
-    if (v->Type() == var_stock || v->Type() == var_aux)
-      headers += "," + v->Name();
+    gchar *v_name = NULL;
+    var_type v_type = var_undef;
+    
+    g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
+
+    if (v_type == var_stock || v_type == var_aux)
+    {
+      headers += ",";
+      headers += v_name;
+    }
+    
+    g_free(v_name);
   }
+  
   headers += "\n";
   
   fprintf(simout, headers.c_str());
@@ -119,7 +139,7 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
   bool do_save = true;
   
   string format = "";
-  for (int i=0; i<node->Body().size(); ++i)
+  for (unsigned int i=0; i<node->Body().size(); ++i)
     format += "%d,";
   format += "\n";
   
@@ -135,7 +155,13 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     {
       (*itr)->Codegen(this);
       if (do_save)
-        fprintf(simout, ",%f", vals[(*itr)->Data()->Name()]);
+      {
+        gchar *v_name = NULL;
+        
+        g_object_get(G_OBJECT((*itr)->Data()), "name", &v_name, NULL);
+        fprintf(simout, ",%f", vals[v_name]);
+        g_free(v_name);
+      }
     }
     
     if (do_save)
@@ -144,18 +170,27 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
     for (map<string, VariableAST *>::iterator itr = vars.begin(); 
          itr != vars.end(); itr++) 
     {
-      Variable *v = itr->second->Data();
+      OpensimVariable *v = itr->second->Data();
+      
+      gchar *v_name = NULL;
+      var_type v_type = var_undef;
+      
+      g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);  
       
       // update stocks at end of the loop
-      if (v->Type() == var_stock)
+      if (v_type == var_stock)
       {
-        vals[v->Name()] = vals[v->Name() + "_NEXT"];
+        string next_name = v_name;
+        next_name += "_NEXT";
+        vals[v_name] = vals[next_name];
       }
+      
+      g_free(v_name);
     }
     
     // figure out if we should save things the next time around
     // save every n iterations, and also on the last iteration
-    save_count++;
+    ++save_count;
     if (save_count >= save_iterations || time + timestep > end)
     {
       do_save = true;
@@ -173,16 +208,23 @@ OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::VariableAST *node)
 {
-  Variable *v = node->Data();
-  string next = "";
+  OpensimVariable *v = node->Data();
   
-  if (v->Type() == var_stock)
+  gchar *v_name = NULL;
+  var_type v_type = var_undef;
+  
+  g_object_get(G_OBJECT(v), "name", &v_name, "type", &v_type, NULL);
+  
+  string next = v_name;
+  g_free(v_name);
+  
+  if (v_type == var_stock)
   {
-    next = "_NEXT";
+    next += "_NEXT";
   }
 
   double value = node->AST()->Codegen(this);
-  vals[v->Name() + next] = value;
+  vals[next] = value;
   
   return value;
 }
@@ -273,7 +315,7 @@ OpenSim::InterpreterModule::visit(OpenSim::LookupRefAST *node)
   else if (index > table[table.size()-1].first)
     return table[table.size()-1].second;
   
-  for (int i=0; i < table.size(); i++)
+  for (unsigned int i=0; i < table.size(); ++i)
   {
     if (index == table[i].first)
       return table[i].second;

@@ -25,21 +25,23 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include "PythonPrintModule.h"
+#include <cstdlib>
+
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
 #include "../AST/General.h"
 #include "../AST/LookupAST.h"
+#include "../opensim-variable.h"
 
-#include <cstdlib>
+#include "PythonPrintModule.h"
+
 using std::pair;
 using std::string;
 using std::vector;
 using std::map;
 
 using OpenSim::VariableAST;
-using OpenSim::Variable;
 
 OpenSim::PythonPrintModule::PythonPrintModule()
 {
@@ -97,16 +99,20 @@ def sim_lookup(table, index):\n\
   
   vars = node->NamedVars();
   
-  for (int i=0; i < node->Initial().size(); i++) 
+  for (unsigned int i=0; i < node->Initial().size(); i++) 
   {
     VariableAST *v_ast = node->Initial()[i];
-    Variable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
+    
+    var_type type = var_undef;
+    gchar *name = NULL;
+    
+    g_object_get(G_OBJECT(v), "name", &name, "type", &type, NULL);
     
     // define constants at the top of the file
-    if (v->Type() == var_const || v->Type() == var_lookup)
+    if (type == var_const || type == var_lookup)
     {
-      string constant = v->Name() + " = ";
-      fprintf(simout, constant.c_str());
+      fprintf(simout, "%s = ", name);
       
       v_ast->AST()->Codegen(this);
       
@@ -114,15 +120,18 @@ def sim_lookup(table, index):\n\
     }
     
     // define constants at the top of the file
-    if (v->Type() == var_stock)
+    if (type == var_stock)
     {
-      string stock = v->Name() + " = ";
+      string stock = name;
+      stock += " = ";
       fprintf(simout, stock.c_str());
       
       v_ast->Initial()->Codegen(this);
       
       fprintf(simout, "\n");
     }
+    
+    g_free(name);
   }
   
   // calculations for savestep stuff
@@ -136,10 +145,20 @@ def sim_lookup(table, index):\n\
        itr != body.end(); ++itr)
   {
     VariableAST *v_ast = *itr;
-    Variable *v = v_ast->Data();
+    OpensimVariable *v = v_ast->Data();
     
-    if (v->Type() == var_stock || v->Type() == var_aux)
-      headers += "," + v->Name();
+    var_type type = var_undef;
+    gchar *name = NULL;
+    
+    g_object_get(G_OBJECT(v), "name", &name, "type", &type, NULL);
+    
+    if (type == var_stock || type == var_aux)
+    {
+      headers += ",";
+      headers += name;
+    }
+      
+    g_free(name);
   }
   headers += "')\n\n";
   fprintf(simout, headers.c_str());
@@ -169,12 +188,20 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
   {
+    var_type type = var_undef;
+    gchar *name = NULL;
+    
+    g_object_get(G_OBJECT((*itr)->Data()), "name", &name, "type", &type, NULL);
+    
     // only codegen non-stocks first
-    if ((*itr)->Data()->Type() != var_stock) (*itr)->Codegen(this);
+    if (type != var_stock) (*itr)->Codegen(this);
     
     // for print statements...
     format_statement += ",%f";
-    variable_list += ", " + (*itr)->Data()->Name();
+    variable_list += ", ";
+    variable_list += name;
+    
+    g_free(name);
   }
   
   string prints = "\n" + whitespace + "#generally put print statements here\n";
@@ -192,8 +219,11 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   for (vector<VariableAST *>::iterator itr = body.begin();
        itr != body.end(); ++itr)
   {
+    var_type type = var_undef; 
+    g_object_get(G_OBJECT((*itr)->Data()), "type", &type, NULL);
+    
     // now update the stocks at the end
-    if ((*itr)->Data()->Type() == var_stock) (*itr)->Codegen(this);
+    if (type == var_stock) (*itr)->Codegen(this);
   }
   
   // update OS_do_save
@@ -216,10 +246,17 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::VariableAST *node)
 {
-  Variable *v = node->Data();
+  OpensimVariable *v = node->Data();
   
-  string message = whitespace + v->Name() + " = ";
+  gchar *name = NULL;
+  g_object_get(G_OBJECT(v), "name", &name, NULL);
+  
+  string message = whitespace;
+  message += name;
+  message += " = ";
   fprintf(simout, message.c_str());
+  
+  g_free(name);
   
   node->AST()->Codegen(this);
   
@@ -281,7 +318,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::LookupAST *node)
   
   fprintf(simout, "[");
   
-  for (int i=0; i<table.size(); i++)
+  for (unsigned int i=0; i<table.size(); i++)
   {
     fprintf(simout, "(%f, %f)", table[i].first, table[i].second);
     

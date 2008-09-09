@@ -27,18 +27,17 @@
 #include "General.h"
 #include "ASTConsumer.h"
 using OpenSim::ASTConsumer;
-using OpenSim::Variable;
 
 
 void 
-OpenSim::VariableAST::SetData(OpenSim::Variable *newData)
+OpenSim::VariableAST::SetData(OpensimVariable *newData)
 {
   if (newData) var = newData;
 }
 
 
 
-Variable *
+OpensimVariable *
 OpenSim::VariableAST::Data()
 {
   return var;

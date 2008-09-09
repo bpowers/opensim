@@ -1,0 +1,14 @@
+%%
+headers
+#include <Python.h>
+#include "pygobject.h"
+#include "../../opensim-variable.h"
+#include "../../opensim-simulator.h"
+%%
+modulename opensim.engine
+%%
+import gobject.GObject as PyGObject_Type
+%%
+ignore-glob
+  *_get_type
+%%

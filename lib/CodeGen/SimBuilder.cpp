@@ -24,7 +24,8 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include "SimBuilder.h"
+#include <cstdio>
+
 #include "../AST/SimAST.h"
 #include "../AST/EulerAST.h"
 #include "../AST/VariableAST.h"
@@ -33,22 +34,22 @@
 
 #include "PythonPrintModule.h"
 #include "InterpreterModule.h"
-#include "AS3PrintModule.h"
+//#include "AS3PrintModule.h"
 
-#include <cstdio>
+#include "SimBuilder.h"
+
 using std::pair;
 using std::string;
 using std::vector;
 using std::map;
 
-using OpenSim::Variable;
 using OpenSim::ExprAST;
 using OpenSim::NumberExprAST;
 using OpenSim::EulerAST;
 using OpenSim::UnaryExprAST;
 
 
-OpenSim::SimBuilder::SimBuilder(std::map<std::string, Variable *> variables)
+OpenSim::SimBuilder::SimBuilder(std::map<std::string, OpensimVariable *> variables)
 {
   // save the variables we're passed.
   vars = variables;
@@ -92,7 +93,7 @@ OpenSim::SimBuilder::Update()
 
 
 int 
-OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
+OpenSim::SimBuilder::Parse(int ourWalk, FILE *output_file)
 {
   if (!_valid_model)
   {
@@ -108,7 +109,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
       consumer = new PythonPrintModule();
       break;
     case sim_emit_AS3:
-      consumer = new AS3PrintModule();
+      //consumer = new AS3PrintModule();
       break;
     case sim_emit_IR:
       fprintf(stdout, "Error: Sorry, JIT is disabled.\n");
@@ -140,7 +141,7 @@ OpenSim::SimBuilder::Parse(sim_output ourWalk, FILE *output_file)
 void 
 OpenSim::SimBuilder::InitializeModule()
 {
-  for (map<string, Variable *>::iterator itr = vars.begin(); 
+  for (map<string, OpensimVariable *>::iterator itr = vars.begin(); 
        itr != vars.end(); itr++) 
   {
     topLevelVars.push_back(itr->second);
@@ -154,7 +155,7 @@ OpenSim::SimBuilder::InitializeModule()
   // removed from this vector.
   while (topLevelVars.size() > 0)
   {
-    Variable *var = topLevelVars.back();
+    OpensimVariable *var = topLevelVars.back();
     topLevelVars.pop_back();
 
     ProcessVar(var);
@@ -178,10 +179,23 @@ OpenSim::SimBuilder::InitializeModule()
 bool 
 OpenSim::SimBuilder::getNextToken()
 {
-  if (toks.size() == 0) return false;
+  const GArray *toks = opensim_variable_get_tokens(CurVar);
 
-  CurTok = toks.back();
-  toks.pop_back();
+  if (toks_index >= toks->len) return false;
+
+  //gchar    *var_name = NULL;
+  //g_object_get(G_OBJECT(CurVar), "name", &var_name, NULL);
+                              
+  equ_token tok = g_array_index(toks, equ_token, toks_index);
+  
+  //fprintf(stdout, "  *tok '%s' ('%c' '%d') '%s' (%f)\n", 
+  //        var_name, tok.op, tok.type, 
+  //        tok.identifier, tok.num_val);
+  
+  //g_free(var_name);
+  
+  CurTok = tok;
+  ++toks_index;
 
   return true;
 }
@@ -194,8 +208,7 @@ OpenSim::SimBuilder::PushTokens()
   // we want to preserve all the tokens, which includes
   // CurTok, so we push it back on the toks vector before
   // pushing that onto our token stack
-  toks.push_back(CurTok);
-  stack.push_back(toks);
+  index_stack.push_back(--toks_index);
   
   var_stack.push_back(CurVar);
 }
@@ -208,12 +221,13 @@ OpenSim::SimBuilder::PopTokens()
   // we don't care about the current vector at toks, so 
   // we just put back the back of the stack and prime 
   // CurTok through getNextToken()
-  toks = stack.back();
-  stack.pop_back();
-  getNextToken();
+  toks_index = index_stack.back();
+  index_stack.pop_back();
   
   CurVar = var_stack.back();
   var_stack.pop_back();
+  
+  getNextToken();
 }
 
 
@@ -231,7 +245,7 @@ OpenSim::SimBuilder::ParseBinOpRHS(int ExprPrec, ExprAST *LHS)
     if (TokPrec < ExprPrec) return LHS;
     
     // Okay, we know this is a binop.
-    char BinOp = CurTok.Op;
+    char BinOp = CurTok.op;
     getNextToken();  // eat binop
     
     // Parse the primary expression after the binary operator.
@@ -258,11 +272,11 @@ ExprAST *
 OpenSim::SimBuilder::ParseUnary() 
 {
   // If the current token is not an operator, it must be a primary expr.
-  if (CurTok.Type != tok_operator)
+  if (CurTok.type != tok_operator)
     return ParsePrimary();
   
   // If this is a unary operator, read it.
-  char cur_op = CurTok.Op;
+  char cur_op = CurTok.op;
   getNextToken();
   
   if (cur_op == '[')
@@ -280,7 +294,8 @@ OpenSim::SimBuilder::ParseUnary()
 ExprAST *
 OpenSim::SimBuilder::ParseTable()
 {
-  if (toks.size() == CurVar->EquationTokens().size()-2)
+  // honestly, i forget why this needs to be 2...
+  if (toks_index == 2)
   {
     // valid lookup value, start parsing it.
     vector< pair<double, double> > tuples;
@@ -288,29 +303,29 @@ OpenSim::SimBuilder::ParseTable()
     // for well formed entries, should have n entries with the format
     // (index,value)
     
-    while (CurTok.Type == tok_operator && CurTok.Op == '(') 
+    while (CurTok.type == tok_operator && CurTok.op == '(') 
     {
       double x, y;
       
       // get the index of the tuple
       getNextToken();
-      if (CurTok.Type != tok_number)
+      if (CurTok.type != tok_number)
       {
         fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
-                CurTok.Identifier.c_str());
+                CurTok.identifier);
         _errors++;
         
         break;
       }
       
-      x = CurTok.NumVal;
+      x = CurTok.num_val;
       
       // get the comma in the tuple
       getNextToken();
-      if (CurTok.Type != tok_operator || CurTok.Op != ',')
+      if (CurTok.type != tok_operator || CurTok.op != ',')
       {
         fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
-                CurTok.Identifier.c_str());
+                CurTok.identifier);
         _errors++;
         
         break;
@@ -318,23 +333,23 @@ OpenSim::SimBuilder::ParseTable()
       
       // get the index of the tuple
       getNextToken();
-      if (CurTok.Type != tok_number)
+      if (CurTok.type != tok_number)
       {
         fprintf(stderr, "Error: Expecting a number in lookup, not '%s'\n",
-                CurTok.Identifier.c_str());
+                CurTok.identifier);
         _errors++;
         
         break;
       }
       
-      y = CurTok.NumVal;
+      y = CurTok.num_val;
       
       // get the closing parenthesis
       getNextToken();
-      if (CurTok.Type != tok_operator || CurTok.Op != ')')
+      if (CurTok.type != tok_operator || CurTok.op != ')')
       {
         fprintf(stderr, "Error: Expecting a ')' in lookup, not '%s'\n",
-                CurTok.Identifier.c_str());
+                CurTok.identifier);
         _errors++;
         
         break;
@@ -348,13 +363,13 @@ OpenSim::SimBuilder::ParseTable()
       
       // get the comma in the tuple
       getNextToken();
-      if (CurTok.Type != tok_operator || CurTok.Op != ',')
+      if (CurTok.type != tok_operator || CurTok.op != ',')
       {
         // its not an error if its the closing bracket
-        if (CurTok.Type != tok_operator || CurTok.Op != ']')
+        if (CurTok.type != tok_operator || CurTok.op != ']')
         {
           fprintf(stderr, "Error: Expecting a comma in lookup, not '%s'\n",
-                  CurTok.Identifier.c_str());
+                  CurTok.identifier);
           _errors++;
         }
         
@@ -368,8 +383,15 @@ OpenSim::SimBuilder::ParseTable()
     return new LookupAST(CurVar, tuples);
   }
   
+  gchar *v_name = NULL;
+  
+  g_object_get(G_OBJECT(CurVar), "name", &v_name, NULL);
   // shouldn't reach here.
-  fprintf(stderr, "Error: '[' in a weird and undefined place.\n");
+  fprintf(stderr, 
+          "Error: '[' in a weird and undefined place for %s (%d).\n", 
+          v_name, toks_index);
+
+  g_free(v_name);
   return 0;
 }
 
@@ -380,13 +402,15 @@ OpenSim::SimBuilder::ParsePrimary()
 {
   // we check what type of primary identifier we could have,
   // but currently only support identifiers and numbers.
-  switch (CurTok.Type) 
+  switch (CurTok.type) 
   {
     case tok_identifier: 
       return ParseIdentifierExpr();
     case tok_number:     
       return ParseNumberExpr();
     default:
+      //fprintf(stderr, "Warning: unknown top level token of type '%d'\n", 
+      //        CurTok.type);
       return 0;
   }
 }
@@ -396,15 +420,21 @@ OpenSim::SimBuilder::ParsePrimary()
 bool 
 OpenSim::SimBuilder::IsUnparsedTL(std::string IdName)
 {
+  bool ret = false;
   // this is somewhat expensive, but we check to see if there is a
   // variable with the specified name in topLevelVars.
-  for (vector<Variable *>::iterator itr = topLevelVars.begin();
+  for (vector<OpensimVariable *>::iterator itr = topLevelVars.begin();
        itr != topLevelVars.end(); ++itr)
   {
-    if (IdName == (*itr)->Name()) return true;
+    gchar *name = NULL;
+    
+    g_object_get(G_OBJECT(*itr), "name", &name, NULL);
+    if (!g_strcmp0(IdName.c_str(), name))
+      ret = true;
+    g_free(name);
   }
 
-  return false;
+  return ret;
 }
 
 
@@ -412,7 +442,7 @@ OpenSim::SimBuilder::IsUnparsedTL(std::string IdName)
 ExprAST *
 OpenSim::SimBuilder::ParseIdentifierExpr() 
 {
-  std::string IdName = CurTok.Identifier;
+  std::string IdName = CurTok.identifier;
   bool table_function = false;
   char close_op = ')';
   
@@ -420,12 +450,12 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
   getNextToken();  
   
   // its a simple variable reference if we don't have brackets
-  if (CurTok.Op != '(' && CurTok.Op != '[') 
+  if (CurTok.op != '(' && CurTok.op != '[') 
   {
     return ParseVarRefExpr(IdName);
   }
   
-  if (CurTok.Op == '[') 
+  if (CurTok.op == '[') 
   {
     table_function = true;
     close_op = ']';
@@ -435,17 +465,17 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
   
   // okay, we have a call in parenthesis, eat the opening bracket
   getNextToken();
-  while (CurTok.Op != close_op) 
+  while (CurTok.op != close_op) 
   {
     ExprAST *Arg = ParseExpression();
     if (!Arg) return 0;
     Args.push_back(Arg);
     
-    if (CurTok.Op == close_op) break;
+    if (CurTok.op == close_op) break;
     
-    if (CurTok.Op != ',')
+    if (CurTok.op != ',')
     {
-      fprintf(stdout, "Error: expected ')' while parsing %c.", CurTok.Op);
+      fprintf(stdout, "Error: expected ')' while parsing %c.\n", CurTok.op);
       _errors++;
       
       return 0;
@@ -469,7 +499,12 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     
     CurVarInitial = Args[1];
     
-    ExprAST *stock_call = new VarRefAST(CurVar->Name());
+    
+    gchar *name = NULL;
+    g_object_get(G_OBJECT(CurVar), "name", &name, NULL);  
+    ExprAST *stock_call = new VarRefAST(name);
+    g_free(name);
+    
     ExprAST *dt = new VarRefAST("OS_timestep");
     ExprAST *change = new BinaryExprAST('*', Args[0], dt);
     
@@ -509,18 +544,27 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
     return NULL;
   }
   
-  Variable *requestedVar = vars[IdName];
+  OpensimVariable *requestedVar = vars[IdName];
   
-  if ((requestedVar->Type() != var_stock) && IsUnparsedTL(IdName))
+  var_type v_type = var_undef;
+  g_object_get(G_OBJECT(requestedVar), "type", &v_type,  NULL);
+  
+  if ((v_type != var_stock) && IsUnparsedTL(IdName))
   {
-    for (vector<Variable *>::iterator itr = topLevelVars.begin();
+    for (vector<OpensimVariable *>::iterator itr = topLevelVars.begin();
          itr != topLevelVars.end(); ++itr)
     {
-      if (IdName == (*itr)->Name())
+      gchar *name = NULL;
+      
+      g_object_get(G_OBJECT(*itr), "name", &name, NULL);
+      if (!g_strcmp0(IdName.c_str(), name))
       {
+        g_free(name);
         topLevelVars.erase(itr);
         break;
       }
+      
+      g_free(name);
     }
     
     PushTokens();
@@ -528,7 +572,9 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
     PopTokens();
   }
   
-  return new VarRefAST(requestedVar->Name()); 
+  VarRefAST *ret = new VarRefAST(IdName); 
+  
+  return ret;
 }
 
 
@@ -536,7 +582,7 @@ OpenSim::SimBuilder::ParseVarRefExpr(std::string IdName)
 ExprAST *
 OpenSim::SimBuilder::ParseNumberExpr() 
 {
-  ExprAST *Result = new NumberExprAST(CurTok.NumVal);
+  ExprAST *Result = new NumberExprAST(CurTok.num_val);
   getNextToken(); // consume the number
 
   return Result;
@@ -556,16 +602,25 @@ OpenSim::SimBuilder::ParseExpression()
 
 
 bool 
-OpenSim::SimBuilder::ProcessVar(Variable *var)
+OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
 {
-  toks = var->EquationTokens();
+  const GArray *toks = opensim_variable_get_tokens(var);
+  toks_index = 0;
+  
   CurVar = var;
   
-  if (toks.size() == 0)
+  var_type  var_t = var_undef;
+  gchar    *var_name = NULL;
+  g_object_get(G_OBJECT(var), "type", &var_t, 
+                              "name", &var_name, NULL);
+  
+  if (toks->len == 0)
   {
     fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
-            var->Name().c_str());
+            var_name);
     _errors++;
+    
+    g_free(var_name);
     return false;
   }
 
@@ -578,31 +633,31 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
   
   // all stocks go through processVar, and before we add them we need
   // to set their initial values AST nodes.
-  if (var->Type() == var_stock)
+  if (var_t == var_stock)
   {
     newNode->SetInitial(CurVarInitial);
     
     if (CurVarInitial == 0)
     {
       fprintf(stderr, "Error: stock '%s' has empty initial value field\n", 
-              var->Name().c_str());
+              var_name);
       _errors++;
+      
+      g_free(var_name);
       return false;
     }
     
     CurVarInitial = 0;
   }
   
-  if (newNode->Data()->Type() == var_aux
-      || newNode->Data()->Type() == var_stock)
+  if (var_t == var_aux || var_t == var_stock)
     body.push_back(newNode);
   
-  if (newNode->Data()->Type() == var_const
-      || newNode->Data()->Type() == var_lookup
-      || newNode->Data()->Type() == var_stock)
+  if (var_t == var_const || var_t == var_lookup || var_t == var_stock)
     initial.push_back(newNode);
   
-  varASTs[var->Name()] = newNode;
+  varASTs[var_name] = newNode;
+  g_free(var_name);
 
   return val ? true : false;
 }
@@ -612,10 +667,10 @@ OpenSim::SimBuilder::ProcessVar(Variable *var)
 int 
 OpenSim::SimBuilder::GetTokPrecedence() 
 {
-  if (!(CurTok.Type == tok_operator)) return -1;
+  if (!(CurTok.type == tok_operator)) return -1;
 
   // Make sure it's a declared binop.
-  int TokPrec = BinopPrecedence[CurTok.Op];
+  int TokPrec = BinopPrecedence[CurTok.op];
   
   // less than 0 means that its not in the map
   if (TokPrec <= 0) return -1;
