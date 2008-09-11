@@ -32,7 +32,6 @@ import gtk
 from sugar.graphics.toggletoolbutton import ToggleToolButton
 from sugar.graphics.toolcombobox import ToolComboBox
 from sugar.graphics.toolbutton import ToolButton
-from sugar.graphics.icon import Icon
 import logging
 
 from constants import *
@@ -85,7 +84,7 @@ class SimulateToolbar(gtk.Toolbar):
 
     self.start = gtk.Entry()
     self.start.set_size_request(int(gtk.gdk.screen_width() / 12), -1)
-    self.start.set_text(_('2008'))
+    self.start.set_text(_('0'))
     self._add_widget(self.start)
 
     separator = gtk.SeparatorToolItem()
@@ -99,7 +98,7 @@ class SimulateToolbar(gtk.Toolbar):
 
     self.start = gtk.Entry()
     self.start.set_size_request(int(gtk.gdk.screen_width() / 12), -1)
-    self.start.set_text(_('2050'))
+    self.start.set_text(_('100'))
     self._add_widget(self.start)
 
     separator = gtk.SeparatorToolItem()
