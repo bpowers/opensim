@@ -234,28 +234,28 @@ opensim_ioxml_class_init(OpensimIOxmlClass *klass)
   klass->get_variables        = opensim_ioxml_default_get_variables;
 
   opensim_param_spec = g_param_spec_string("model_name",
-                                         "model name",
-                                         "Set model's name",
-                                         "unnamed model" /* default value */,
-                                         PARAM_READWRITE);
+                                           "model name",
+                                           "Set model's name",
+                                           "unnamed model" /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_MODEL_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("file_name",
-                                         "full path to file",
-                                         "Where the model is saved to",
-                                         "" /* default value */,
-                                         PARAM_READWRITE);
+                                           "full path to file",
+                                           "Where the model is saved to",
+                                           "" /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_boolean("valid",
-                                          "is model valid",
-                                          "True if the input seems valid",
-                                          FALSE /* default value */,
-                                          (GParamFlags) (G_PARAM_READABLE));
+                                            "is model valid",
+                                            "True if the input seems valid",
+                                            FALSE /* default value */,
+                                            (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
                                   PROP_VALID_MODEL,
                                   opensim_param_spec);
