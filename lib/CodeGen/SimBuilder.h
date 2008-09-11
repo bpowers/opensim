@@ -106,10 +106,12 @@ namespace OpenSim
     OpenSim::ExprAST *ParseVarRefExpr(std::string IdName);
     
   public:
-    SimBuilder(std::map<std::string, OpensimVariable *> variables);
+    SimBuilder(std::map<std::string, OpensimVariable *> &variables);
     ~SimBuilder();
     
     int Update();
+    int Update(std::map<std::string, OpensimVariable *> &variables);
+    
     int Parse(int ourWalk, FILE *output_file);
   };
 }

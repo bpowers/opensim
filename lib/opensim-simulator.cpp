@@ -614,7 +614,7 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   
   g_free(clean_name);
   
-  self->sim_builder->Update ();
+  self->sim_builder->Update (self->var_map);
   
   return NULL;
 }

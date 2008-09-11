@@ -49,7 +49,8 @@ using OpenSim::EulerAST;
 using OpenSim::UnaryExprAST;
 
 
-OpenSim::SimBuilder::SimBuilder(std::map<std::string, OpensimVariable *> variables)
+OpenSim::SimBuilder::SimBuilder(std::map<std::string, 
+                                         OpensimVariable *> &variables)
 {
   // save the variables we're passed.
   vars = variables;
@@ -84,12 +85,28 @@ int
 OpenSim::SimBuilder::Update()
 {
   // this can be optimized, but for now should do.
+  // FIXME: we MUST be leaking memory here, but at 4am I don't care.
   delete root;
+  
+  varASTs = std::map<std::string, OpenSim::VariableAST *>();
+  body = std::vector<OpenSim::VariableAST *>();
+  initial = std::vector<OpenSim::VariableAST *>();
+  
   InitializeModule();
 
   return 0;
 }
 
+
+
+int
+OpenSim::SimBuilder::Update(std::map<std::string, 
+                                         OpensimVariable *> &variables)
+{
+  // save the variables we're passed.
+  vars = variables;
+  this->Update();
+}
 
 
 int 
