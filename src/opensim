@@ -28,7 +28,7 @@ import sys, gobject, getopt
 from opensim.engine import Simulator
 
 
-VERSION = "0.4.2"
+VERSION = "0.4.3"
 PACKAGE = "python opensim"
 PACKAGE_BUGREPORT = "bobby@laptop.org"
 PROGRAM_NAME = "opensim"
