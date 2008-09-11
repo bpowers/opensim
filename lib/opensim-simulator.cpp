@@ -28,6 +28,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <cstring>
 
 #include "globals.h"
 using std::map;
@@ -58,7 +59,7 @@ static int opensim_simulator_default_load(OpensimSimulator *simulator,
                                           gchar *model_path);
 static int opensim_simulator_default_save(OpensimSimulator *simulator);
 
-static OpensimVariable *opensim_simulator_default_new_variable(
+static int opensim_simulator_default_new_variable(
                                          OpensimSimulator *simulator, 
                                          gchar *var_name, 
                                          gchar *var_eqn);
@@ -74,7 +75,7 @@ static int opensim_simulator_default_output_debug_info(
 
 
 extern "C" GType
-opensim_output_get_type()
+opensim_output_get_type ()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -114,7 +115,7 @@ struct _OpensimSimulatorPrivate
 {
   gchar      *model_name;
   gchar      *file_name;
-  int  output_type;
+  int         output_type;
   gchar      *output_file_name;
   gboolean    valid_model;
   
@@ -268,39 +269,39 @@ opensim_simulator_class_init(OpensimSimulatorClass *klass)
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("file_name",
-                                         "full path to file",
-                                         "Where the opensim is saved to",
-                                         NULL /* default value */,
-                                         PARAM_READWRITE);
+                                           "full path to file",
+                                           "Where the opensim is saved to",
+                                           NULL /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_FILE_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_int("output_type",
-                                      "type of output",
-                                      "What kind of output to generate",
-                                      0, 
-                                      5,
-                                      sim_emit_Output /* default value */,
-                                      PARAM_READWRITE);
+                                        "type of output",
+                                        "What kind of output to generate",
+                                        0, 
+                                        5,
+                                        sim_emit_Output /* default value */,
+                                        PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_OUTPUT_TYPE,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_string("output_file_name",
-                                         "full path to output file",
-                                         "Where the opensim output is saved to",
-                                         NULL /* default value */,
-                                         PARAM_READWRITE);
+                                           "full path to output file",
+                                           "Where to save output",
+                                           NULL /* default value */,
+                                           PARAM_READWRITE);
   g_object_class_install_property(gobject_class,
                                   PROP_OUTPUT_FILE_NAME,
                                   opensim_param_spec);
 
   opensim_param_spec = g_param_spec_boolean("valid_model",
-                                          "is model valid",
-                                          "True if the model can be simulated",
-                                          TRUE /* default value */,
-                                          (GParamFlags) (G_PARAM_READABLE));
+                                            "is model valid",
+                                            "True if simulatable",
+                                            TRUE /* default value */,
+                                            (GParamFlags) (G_PARAM_READABLE));
   g_object_class_install_property(gobject_class,
                                   PROP_VALID_MODEL,
                                   opensim_param_spec);
@@ -314,7 +315,10 @@ opensim_simulator_init(OpensimSimulator *self)
   self->priv = OPENSIM_SIMULATOR_GET_PRIVATE(self);
   
   self->priv->valid_model = FALSE;
-  self->priv->sim_builder = NULL;
+  self->priv->var_array   = g_array_new(FALSE, FALSE, 
+                                        sizeof(OpensimVariable *));
+  self->priv->var_map     = map<string, OpensimVariable *>();
+  self->priv->sim_builder = new SimBuilder(self->priv->var_map);
 }
 
 
@@ -380,12 +384,19 @@ opensim_simulator_finalize(GObject *gobject)
 extern "C" int 
 opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
 {
+  OpensimSimulatorPrivate *self = simulator->priv;
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
                                              NULL));
   gboolean valid_model = FALSE;
   gchar *prop;
   
-  opensim_ioxml_load(gio, model_path);
+  int load_status = opensim_ioxml_load(gio, model_path);
+
+  if (load_status != 0)
+  {
+    fprintf(stderr, "Error: couldn't load model.\n");
+    return -1;
+  }
 
   g_object_get(G_OBJECT(gio), "model_name", &prop,
                               "valid",      &valid_model, NULL);
@@ -394,20 +405,19 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
 
   GArray *vars = opensim_ioxml_get_variables(gio);
   
-  if (!vars) fprintf(stderr, "Warning: variable array not available from IOxml.\n");
+  if (!vars) 
+    fprintf(stderr, "Warning: variable array not available from IOxml.\n");
   
   simulator->priv->var_array = vars;
 
   g_object_unref(gio);
   
-  SimBuilder *_sim_builder = simulator->priv->sim_builder;
   std::map<std::string, OpensimVariable *> _variables;
 
   // turn our nice list into an ugly map.
   int i;
   for (i=0; i<vars->len; i++)
   {
-    //g_fprintf(stderr, "freeing some var\n");
     OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
     gchar *var_name = NULL;
 
@@ -418,19 +428,18 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
     g_free(var_name);
   }
 
-  if (_sim_builder)
+  if (self->sim_builder)
   {
-    delete _sim_builder;
-    _sim_builder = NULL;
+    delete self->sim_builder;
+    self->sim_builder = NULL;
   }
   
   if (valid_model)
   {
-    _sim_builder = new SimBuilder(_variables);
+    self->sim_builder = new SimBuilder(_variables);
   }
   
-  simulator->priv->var_map     = _variables;
-  simulator->priv->sim_builder = _sim_builder;
+  simulator->priv->var_map = _variables;
 }
 
 
@@ -515,7 +524,7 @@ opensim_simulator_default_run(OpensimSimulator *self)
     
     if (output_file_name) 
     {
-      fprintf(stdout, "ofn: '%s' %d\n", output_file_name, g_strcmp0(output_file_name, ""));
+      //fprintf(stdout, "ofn: '%s' %d\n", output_file_name, g_strcmp0(output_file_name, ""));
       output_stream = fopen(output_file_name, "w+");
       
       if (!output_stream) 
@@ -554,7 +563,7 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
 
 
 
-extern "C" OpensimVariable *
+extern "C" int
 opensim_simulator_new_variable(OpensimSimulator *simulator, 
                                gchar *var_name, 
                                gchar *var_eqn)
@@ -566,11 +575,47 @@ opensim_simulator_new_variable(OpensimSimulator *simulator,
 
 
 
-static OpensimVariable *
-opensim_simulator_default_new_variable(OpensimSimulator *simulator, 
-                                       gchar *var_name, 
-                                       gchar *var_eqn)
+static gchar *
+clean_string(gchar *str)
 {
+  gchar *cpy = g_strdup(str);
+  size_t i;
+  for (i=0; i<strlen(cpy); ++i)
+    if (cpy[i] == ' ') cpy[i] = '_';
+  
+  return cpy;
+}
+
+
+
+static int
+opensim_simulator_default_new_variable (OpensimSimulator *simulator, 
+                                        gchar *var_name, 
+                                        gchar *var_eqn)
+{
+  OpensimSimulatorPrivate *self = simulator->priv;
+  gchar *clean_name = clean_string(var_name);
+  
+  if (var_name == NULL || !g_strcmp0 (var_name, "")) 
+  {
+    fprintf(stderr, "Error: variable must have a name\n");
+    return NULL;
+  }
+  
+  OpensimVariable *new_var = 
+    OPENSIM_VARIABLE (g_object_new (OPENSIM_TYPE_VARIABLE, NULL));
+  
+  g_object_set (G_OBJECT (new_var), "name", clean_name, 
+                                    "equation", var_eqn, NULL);
+  
+  g_array_append_val (self->var_array, new_var);
+  
+  self->var_map[clean_name] = new_var;
+  
+  g_free(clean_name);
+  
+  self->sim_builder->Update ();
+  
   return NULL;
 }
 
