@@ -239,13 +239,13 @@ opensim_simulator_get_property (GObject    *object,
 
 
 static void
-opensim_simulator_class_init(OpensimSimulatorClass *klass)
+opensim_simulator_class_init (OpensimSimulatorClass *klass)
 {
-  opensim_simulator_parent_class = g_type_class_peek_parent(klass);
+  opensim_simulator_parent_class = g_type_class_peek_parent (klass);
 
-  g_type_class_add_private(klass, sizeof (OpensimSimulatorPrivate));
+  g_type_class_add_private (klass, sizeof (OpensimSimulatorPrivate));
 
-  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GParamSpec *opensim_param_spec;
   
   gobject_class->set_property = opensim_simulator_set_property;
@@ -259,52 +259,52 @@ opensim_simulator_class_init(OpensimSimulatorClass *klass)
   klass->output_debug_info    = opensim_simulator_default_output_debug_info;
   klass->run                  = opensim_simulator_default_run;
 
-  opensim_param_spec = g_param_spec_string("model_name",
-                                           "model name",
-                                           "Set model's name",
-                                           "unnamed model" /* default value */,
-                                           PARAM_READWRITE);
-  g_object_class_install_property(gobject_class,
-                                  PROP_MODEL_NAME,
-                                  opensim_param_spec);
+  opensim_param_spec = g_param_spec_string ("model_name",
+                                            "model name",
+                                            "Set model's name",
+                                            "unnamed model" /* default value */,
+                                            PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_MODEL_NAME,
+                                   opensim_param_spec);
 
-  opensim_param_spec = g_param_spec_string("file_name",
-                                           "full path to file",
-                                           "Where the opensim is saved to",
-                                           NULL /* default value */,
-                                           PARAM_READWRITE);
-  g_object_class_install_property(gobject_class,
-                                  PROP_FILE_NAME,
-                                  opensim_param_spec);
+  opensim_param_spec = g_param_spec_string ("file_name",
+                                            "full path to file",
+                                            "Where the opensim is saved to",
+                                            NULL /* default value */,
+                                            PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_FILE_NAME,
+                                   opensim_param_spec);
 
-  opensim_param_spec = g_param_spec_int("output_type",
-                                        "type of output",
-                                        "What kind of output to generate",
-                                        0, 
-                                        5,
-                                        sim_emit_Output /* default value */,
-                                        PARAM_READWRITE);
-  g_object_class_install_property(gobject_class,
-                                  PROP_OUTPUT_TYPE,
-                                  opensim_param_spec);
+  opensim_param_spec = g_param_spec_int ("output_type",
+                                         "type of output",
+                                         "What kind of output to generate",
+                                         0, 
+                                         5,
+                                         sim_emit_Output /* default value */,
+                                         PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_OUTPUT_TYPE,
+                                   opensim_param_spec);
 
-  opensim_param_spec = g_param_spec_string("output_file_name",
-                                           "full path to output file",
-                                           "Where to save output",
-                                           NULL /* default value */,
-                                           PARAM_READWRITE);
-  g_object_class_install_property(gobject_class,
-                                  PROP_OUTPUT_FILE_NAME,
-                                  opensim_param_spec);
+  opensim_param_spec = g_param_spec_string ("output_file_name",
+                                            "full path to output file",
+                                            "Where to save output",
+                                            NULL /* default value */,
+                                            PARAM_READWRITE);
+  g_object_class_install_property (gobject_class,
+                                   PROP_OUTPUT_FILE_NAME,
+                                   opensim_param_spec);
 
-  opensim_param_spec = g_param_spec_boolean("valid_model",
-                                            "is model valid",
-                                            "True if simulatable",
-                                            TRUE /* default value */,
-                                            (GParamFlags) (G_PARAM_READABLE));
-  g_object_class_install_property(gobject_class,
-                                  PROP_VALID_MODEL,
-                                  opensim_param_spec);
+  opensim_param_spec = g_param_spec_boolean ("valid_model",
+                                             "is model valid",
+                                             "True if simulatable",
+                                             TRUE /* default value */,
+                                             (GParamFlags) (G_PARAM_READABLE));
+  g_object_class_install_property (gobject_class,
+                                   PROP_VALID_MODEL,
+                                   opensim_param_spec);
 }
 
 
