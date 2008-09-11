@@ -1,4 +1,4 @@
-/*===--- Simulator.h - Base class for interacting with opensims  -*- C++ -*-===
+/*===--- opensim-simulator.h - Base class for interacting with opensim ---===
  *
  * Copyright 2008 Bobby Powers
  *
@@ -58,7 +58,7 @@ enum sim_output
 #endif
 
 GType opensim_output_get_type (void) G_GNUC_CONST;
-#define OPENSIM_TYPE_OUTPUT (opensim_output_get_type())
+#define OPENSIM_TYPE_OUTPUT (opensim_output_get_type ())
 
 /*
  * Type macros.
@@ -120,26 +120,38 @@ struct _OpensimSimulatorClass
 };
 
 /* used by OPENSIM_TYPE_SIMULATOR */
-GType opensim_simulator_get_type();
+GType opensim_simulator_get_type ();
 
 /*
  * Method definitions.
  */
 
 /* public */
-int opensim_simulator_run(OpensimSimulator *simulator);
-int opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path);
-int opensim_simulator_save(OpensimSimulator *simulator);
+int 
+opensim_simulator_run (OpensimSimulator *simulator);
 
-OpensimVariable *opensim_simulator_new_variable(OpensimSimulator *simulator, 
-                                               gchar *var_name, 
-                                               gchar *var_eqn);
-OpensimVariable *opensim_simulator_get_variable(OpensimSimulator *simulator, 
-                                               gchar *var_name);
-int opensim_simulator_remove_variable(OpensimSimulator *simulator, 
-                                      gchar *var_name);
+int 
+opensim_simulator_load (OpensimSimulator *simulator, 
+                        gchar            *model_path);
 
-int opensim_simulator_output_debug_info(OpensimSimulator *simulator);
+int 
+opensim_simulator_save (OpensimSimulator *simulator);
+
+OpensimVariable *
+opensim_simulator_new_variable (OpensimSimulator *simulator, 
+                                gchar            *var_name, 
+                                gchar            *var_eqn);
+
+OpensimVariable *
+opensim_simulator_get_variable (OpensimSimulator *simulator, 
+                                gchar            *var_name);
+
+int 
+opensim_simulator_remove_variable (OpensimSimulator *simulator, 
+                                   gchar            *var_name);
+
+int 
+opensim_simulator_output_debug_info (OpensimSimulator *simulator);
 
 
 G_END_DECLS
