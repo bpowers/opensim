@@ -32,6 +32,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "opensim-variable.h"
 
 G_BEGIN_DECLS
 
@@ -63,11 +64,19 @@ GType opensim_output_get_type (void) G_GNUC_CONST;
  * Type macros.
  */
 #define OPENSIM_TYPE_SIMULATOR            (opensim_simulator_get_type())
-#define OPENSIM_SIMULATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulator))
-#define OPENSIM_SIMULATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorClass))
-#define OPENSIM_IS_SIMULATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), OPENSIM_TYPE_SIMULATOR))
-#define OPENSIM_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), OPENSIM_TYPE_SIMULATOR))
-#define OPENSIM_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), OPENSIM_TYPE_SIMULATOR, OpensimSimulatorClass))
+#define OPENSIM_SIMULATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), \
+                                           OPENSIM_TYPE_SIMULATOR, \
+                                           OpensimSimulator))
+#define OPENSIM_SIMULATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), \
+                                           OPENSIM_TYPE_SIMULATOR, \
+                                           OpensimSimulatorClass))
+#define OPENSIM_IS_SIMULATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+                                           OPENSIM_TYPE_SIMULATOR))
+#define OPENSIM_IS_SIMULATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), \
+                                           OPENSIM_TYPE_SIMULATOR))
+#define OPENSIM_SIMULATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), \
+                                           OPENSIM_TYPE_SIMULATOR, \
+                                           OpensimSimulatorClass))
 
 
 typedef struct _OpensimSimulator        OpensimSimulator;
@@ -96,8 +105,18 @@ struct _OpensimSimulatorClass
 {
   GObjectClass parent_class;
   
-  int          (* output_debug_info) (OpensimSimulator *simulator);
-  int          (* run) (OpensimSimulator *simulator);
+  int               (* output_debug_info) (OpensimSimulator *simulator);
+  int               (* run)               (OpensimSimulator *simulator);
+  int               (* load)              (OpensimSimulator *simulator,
+                                           gchar            *model_path);
+  int               (* save)              (OpensimSimulator *simulator);
+  OpensimVariable * (* new_variable)      (OpensimSimulator *simulator,
+                                           gchar            *var_name,
+                                           gchar            *var_eqn);
+  OpensimVariable * (* get_variable)      (OpensimSimulator *simulator,
+                                           gchar            *var_name);
+  int               (* remove_variable)   (OpensimSimulator *simulator,
+                                           gchar            *var_name);
 };
 
 /* used by OPENSIM_TYPE_SIMULATOR */
@@ -108,18 +127,18 @@ GType opensim_simulator_get_type();
  */
 
 /* public */
-int opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path);
-/* int opensim_simulator_save(OpensimSimulator *simulator);
-int opensim_simulator_save(OpensimSimulator *simulator, gboolean partial);
-
-int opensim_simulator_new_variable(OpensimSimulator *simulator, gchar *var_name, 
-                                 gpointer var_pointer);
-int opensim_simulator_get_variable(OpensimSimulator *simulator, gchar *var_name, 
-                                 gpointer var_pointer);
-int opensim_simulator_remove_variable(OpensimSimulator *simulator, 
-                                    gchar *var_name);
-*/
 int opensim_simulator_run(OpensimSimulator *simulator);
+int opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path);
+int opensim_simulator_save(OpensimSimulator *simulator);
+
+OpensimVariable *opensim_simulator_new_variable(OpensimSimulator *simulator, 
+                                               gchar *var_name, 
+                                               gchar *var_eqn);
+OpensimVariable *opensim_simulator_get_variable(OpensimSimulator *simulator, 
+                                               gchar *var_name);
+int opensim_simulator_remove_variable(OpensimSimulator *simulator, 
+                                      gchar *var_name);
+
 int opensim_simulator_output_debug_info(OpensimSimulator *simulator);
 
 
