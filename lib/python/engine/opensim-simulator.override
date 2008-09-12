@@ -1,6 +1,7 @@
 %%
 headers
 #include <Python.h>
+#define NO_IMPORT_PYGOBJECT
 #include "pygobject.h"
 #include "../../opensim-variable.h"
 #include "../../opensim-simulator.h"
