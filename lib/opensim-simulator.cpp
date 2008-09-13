@@ -513,14 +513,15 @@ opensim_simulator_run(OpensimSimulator *simulator)
 
 
 int 
-opensim_simulator_default_run(OpensimSimulator *self)
+opensim_simulator_default_run(OpensimSimulator *simulator)
 {
+  OpensimSimulatorPrivate *self = simulator->priv;
   int ret = 0;
   
-  if (self->priv->sim_builder)
+  if (self->sim_builder)
   {
     FILE *output_stream = stdout;
-    gchar *output_file_name = self->priv->output_file_name;
+    gchar *output_file_name = self->output_file_name;
     
     if (output_file_name) 
     {
@@ -534,8 +535,7 @@ opensim_simulator_default_run(OpensimSimulator *self)
       }
     }
     
-    ret = self->priv->sim_builder->Parse(self->priv->output_type, 
-                                         output_stream);
+    ret = self->sim_builder->Parse(self->output_type, output_stream);
     
     
     // if we opened it, close the output stream

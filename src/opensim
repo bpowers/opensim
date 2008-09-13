@@ -25,6 +25,7 @@
 #===-----------------------------------------------------------------------===#
 
 import sys, gobject, getopt
+from opensim import engine
 from opensim.engine import Simulator
 
 
@@ -111,26 +112,26 @@ def main():
 
   model_file = args[0]
   
-  #new_walk = Output.output
+  new_walk = engine.emit_Output
 
-  #if target is not None:
-  #  if target == "python":
-  #    new_walk = Output.python
-  #  elif target == "as3":
-  #    new_walk = Output.as3
-  #  elif target == "interpret":
-  #    new_walk = Output.output
-  #  else:
-  #    print("%s: invalid target language: %s." % (PROGRAM_NAME, target))
-  #    print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
-  #    sys.exit(2)
+  if target is not None:
+    if target == "python":
+      new_walk = engine.emit_Python
+    elif target == "as3":
+      new_walk = engine.emit_AS3
+    elif target == "interpret":
+      new_walk = engine.emit_Output
+    else:
+      print("%s: invalid target language: %s." % (PROGRAM_NAME, target))
+      print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
+      sys.exit(2)
 
   sim = Simulator()
   sim.load(model_file)
-  #sim.set_output_type(new_walk)
+  sim.props.output_type = new_walk
 
-  #if output is not None:
-  #  sim.set_output_file(output)
+  if output is not None:
+    sim.props.output_file_name = output
 
   sim.run()
 

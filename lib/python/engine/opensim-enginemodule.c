@@ -16,7 +16,7 @@ initengine(void)
  
     engine_simulator_register_classes(d);
     engine_variable_register_classes(d);
-    //engine_simulator_add_constants(d, NULL);
+    engine_simulator_add_constants(m, "sim_");
  
     if (PyErr_Occurred()) 
     {
