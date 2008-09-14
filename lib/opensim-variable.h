@@ -34,7 +34,7 @@
 G_BEGIN_DECLS
 
 
-enum var_type
+enum _var_type
 {
   var_stock = 1,
   var_aux = 2,
@@ -43,6 +43,8 @@ enum var_type
   
   var_undef = -1
 };
+
+typedef enum _var_type var_type;
 
 
 enum _token_type 

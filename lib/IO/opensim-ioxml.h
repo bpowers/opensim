@@ -77,7 +77,10 @@ GType opensim_ioxml_get_type();
 
 /* public */
 int opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path);
-int opensim_ioxml_save(OpensimIOxml *ioxml);
+int opensim_ioxml_save(OpensimIOxml *ioxml, 
+                       gchar *save_file,
+                       gchar *model_name, 
+                       GArray *vars);
 
 GArray *opensim_ioxml_get_variables(OpensimIOxml *ioxml);
 

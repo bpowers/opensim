@@ -62,7 +62,7 @@ struct _OpensimVariablePrivate
   gchar         *equation;
   gchar         *units;
   gchar         *comments;
-  enum var_type  type;
+  var_type       type;
   
   gboolean       valid;
   

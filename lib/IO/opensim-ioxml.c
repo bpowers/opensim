@@ -47,7 +47,10 @@ static void opensim_ioxml_dispose(GObject *gobject);
 static void opensim_ioxml_finalize(GObject *gobject);
 
 static int opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_name);
-static int opensim_ioxml_default_save(OpensimIOxml *ioxml);
+static int opensim_ioxml_default_save(OpensimIOxml *ioxml, 
+                                      gchar *save_file,
+                                      gchar *model_name, 
+                                      GArray *vars);
 static GArray *opensim_ioxml_default_get_variables(OpensimIOxml *ioxml);
 
 /* for object properties */
@@ -509,7 +512,10 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 
 
 int
-opensim_ioxml_save(OpensimIOxml *ioxml)
+opensim_ioxml_save(OpensimIOxml *ioxml, 
+                   gchar *save_file,
+                   gchar *model_name, 
+                   GArray *vars)
 {
   return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml);
 }
@@ -517,9 +523,49 @@ opensim_ioxml_save(OpensimIOxml *ioxml)
 
 
 static int
-opensim_ioxml_default_save(OpensimIOxml *ioxml)
+opensim_ioxml_default_save(OpensimIOxml *ioxml, 
+                           gchar *save_file,
+                           gchar *model_name, 
+                           GArray *vars)
 {
-  g_fprintf(stderr, "OpensimIOxml->save not implemented!\n");
+  // FIXME: model_name should be set somewhere
+  if (!model_name) model_name = "created in Model";
+
+  fprintf(save_file, "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+\n\
+<opensim markup=\"1.0\">\n\
+<model>\n\
+  <name>%s</name>\n\n", model_name);
+
+
+  // loop through vars here.
+  int i;
+  for (i=0; i < vars->len; i++)
+  {
+    OpensimVariable *var = NULL;
+    var = g_array_index(vars, OpensimVariable *, i);
+    
+    gchar *name = NULL;
+    gchar *equation = NULL;
+    
+    g_object_get_properties(G_OBJECT(var), "name", &name, "equation", &equation);
+    
+    fprintf(save_file, "\
+  <var>\n\
+    <name>%s</name>\n\
+    <equation>\n\
+      %s\n\
+    </equation>\n\
+  </var>\n\n", name, equation);
+    
+    g_free(name);
+    g_free(equation);
+  }
+
+  fprintf(save_file, "</model>\nS\n</opensim>\n");
+
+
   return -1;
 }
 
