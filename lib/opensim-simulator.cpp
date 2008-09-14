@@ -558,7 +558,22 @@ opensim_simulator_save(OpensimSimulator *simulator)
 static int 
 opensim_simulator_default_save(OpensimSimulator *simulator)
 {
-  return -1;
+  OpensimSimulatorPrivate *self = simulator->priv;
+  OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
+                                                 NULL));
+  
+  int load_status = opensim_ioxml_save(gio, self->file_name, 
+                                       self->model_name, self->var_array);
+  
+  if (load_status != 0)
+  {
+    fprintf(stderr, "Error: couldn't save model.\n");
+    return -1;
+  }
+  
+  g_object_unref(gio);
+  
+  return 0;
 }
 
 

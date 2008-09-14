@@ -19,6 +19,7 @@ def run():
   #print 'currently: ', sim.get_property('output-type')
   sim.props.output_type =  engine.emit_Python
   #sim.run()
+  sim.props.file_name = "test_sim.osm"
   sim.save()
 
 if __name__ == '__main__':

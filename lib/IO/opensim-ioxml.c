@@ -537,6 +537,7 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
   if (!save_file)
   {
     fprintf(stderr, "Error: couldn't open file for writing: '%s'\n", save_file_name);
+    return -1;
   }
   
   // FIXME: model_name should be set somewhere
@@ -580,7 +581,7 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
   // clean up
   if (save_file != stdout) fclose(save_file);
   
-  return -1;
+  return 0;
 }
 
 
