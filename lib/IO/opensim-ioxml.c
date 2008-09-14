@@ -37,8 +37,10 @@
 #include "opensim-ioxml.h"
 #include "../opensim-variable.h"
 
-#define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
-#define OPENSIM_IOXML_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_IOXML, OpensimIOxmlPrivate))
+#define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE \
+                                                        | G_PARAM_CONSTRUCT)
+#define OPENSIM_IOXML_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), \
+                                        OPENSIM_TYPE_IOXML, OpensimIOxmlPrivate))
 
 static gpointer opensim_ioxml_parent_class = NULL;
 static void opensim_ioxml_init(OpensimIOxml *self);
@@ -48,7 +50,7 @@ static void opensim_ioxml_finalize(GObject *gobject);
 
 static int opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_name);
 static int opensim_ioxml_default_save(OpensimIOxml *ioxml, 
-                                      gchar *save_file,
+                                      gchar *save_file_name,
                                       gchar *model_name, 
                                       GArray *vars);
 static GArray *opensim_ioxml_default_get_variables(OpensimIOxml *ioxml);
@@ -113,10 +115,6 @@ trim(gchar *str)
     
     tr = g_utf8_prev_char(tr);
   }
-  
-  //g_fprintf(stdout, " *sta: %d*\n", start);
-  //g_fprintf(stdout, " *end: %d*\n", length-1-end);
-  //g_fprintf(stderr, " *len: %d ('%c' '%c')*\n", tr-startp+sizeof(gchar), *startp, *tr);
   
   // end - start + 1 for the current char
   gsize new_size = tr - startp + sizeof(gchar);
@@ -513,32 +511,45 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 
 int
 opensim_ioxml_save(OpensimIOxml *ioxml, 
-                   gchar *save_file,
+                   gchar *save_file_name,
                    gchar *model_name, 
                    GArray *vars)
 {
-  return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml);
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml, save_file_name, 
+                                              model_name, vars);
 }
 
 
 
 static int
 opensim_ioxml_default_save(OpensimIOxml *ioxml, 
-                           gchar *save_file,
+                           gchar *save_file_name,
                            gchar *model_name, 
                            GArray *vars)
 {
+  FILE *save_file = NULL;
+  
+  if (save_file_name)
+    save_file = fopen(save_file_name, "w");
+  else 
+    save_file = stdout;
+  
+  if (!save_file)
+  {
+    fprintf(stderr, "Error: couldn't open file for writing: '%s'\n", save_file_name);
+  }
+  
   // FIXME: model_name should be set somewhere
   if (!model_name) model_name = "created in Model";
-
+  
   fprintf(save_file, "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 \n\
 <opensim markup=\"1.0\">\n\
 <model>\n\
   <name>%s</name>\n\n", model_name);
-
-
+  
+  
   // loop through vars here.
   int i;
   for (i=0; i < vars->len; i++)
@@ -549,7 +560,8 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
     gchar *name = NULL;
     gchar *equation = NULL;
     
-    g_object_get_properties(G_OBJECT(var), "name", &name, "equation", &equation);
+    g_object_get(G_OBJECT(var), "name", &name, "equation", &equation,
+                                NULL, NULL);
     
     fprintf(save_file, "\
   <var>\n\
@@ -562,10 +574,12 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
     g_free(name);
     g_free(equation);
   }
-
-  fprintf(save_file, "</model>\nS\n</opensim>\n");
-
-
+  
+  fprintf(save_file, "</model>\n\n</opensim>\n");
+  
+  // clean up
+  if (save_file != stdout) fclose(save_file);
+  
   return -1;
 }
 

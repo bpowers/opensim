@@ -18,8 +18,8 @@ def run():
   #print 'sim props: ', list(engine.Simulator.props)
   #print 'currently: ', sim.get_property('output-type')
   sim.props.output_type =  engine.emit_Python
-  sim.run()
-
+  #sim.run()
+  sim.save()
 
 if __name__ == '__main__':
   run()

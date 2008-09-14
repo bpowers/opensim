@@ -64,7 +64,10 @@ struct _OpensimIOxmlClass
   GObjectClass parent_class;
   
   int          (* load)          (OpensimIOxml *ioxml, gchar *path);
-  int          (* save)          (OpensimIOxml *ioxml);
+  int          (* save)          (OpensimIOxml *ioxml, 
+                                  gchar *save_file_name,
+                                  gchar *model_name, 
+                                  GArray *vars);
   GArray *     (* get_variables) (OpensimIOxml *ioxml);
 };
 
@@ -78,7 +81,7 @@ GType opensim_ioxml_get_type();
 /* public */
 int opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path);
 int opensim_ioxml_save(OpensimIOxml *ioxml, 
-                       gchar *save_file,
+                       gchar *save_file_name,
                        gchar *model_name, 
                        GArray *vars);
 
