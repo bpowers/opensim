@@ -110,6 +110,11 @@ enum
   PROP_VALID_MODEL
 };
 
+enum
+{
+  M_SIG_SAVING = 0
+};
+
 
 struct _OpensimSimulatorPrivate
 {
@@ -118,6 +123,8 @@ struct _OpensimSimulatorPrivate
   int         output_type;
   gchar      *output_file_name;
   gboolean    valid_model;
+  
+  guint       signal[1];
   
   GArray     *var_array;
   
@@ -305,6 +312,9 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
   g_object_class_install_property (gobject_class,
                                    PROP_VALID_MODEL,
                                    opensim_param_spec);
+  
+  // time for signals!
+  //self->signal[M_SIG_SAVING] = 
 }
 
 
@@ -590,6 +600,7 @@ opensim_simulator_new_variable(OpensimSimulator *simulator,
 
 
 
+// remove leading and trailign whitespace.
 static gchar *
 clean_string(gchar *str)
 {
