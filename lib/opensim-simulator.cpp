@@ -25,6 +25,7 @@
 //
 //===---------------------------------------------------------------------===//
 
+
 #include <map>
 #include <vector>
 #include <string>
@@ -41,6 +42,7 @@ using OpenSim::SimBuilder;
 #include "opensim-simulator.h"
 #include "opensim-variable.h"
 #include "IO/opensim-ioxml.h"
+
 
 #define PARAM_READWRITE (GParamFlags) \
         (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
@@ -112,8 +114,13 @@ enum
 
 enum
 {
-  M_SIG_SAVING = 0
+  M_SIG_SAVING,
+
+  LAST_SIGNAL
 };
+
+
+static guint simulator_signal[LAST_SIGNAL] = {0};
 
 
 struct _OpensimSimulatorPrivate
@@ -123,8 +130,6 @@ struct _OpensimSimulatorPrivate
   int         output_type;
   gchar      *output_file_name;
   gboolean    valid_model;
-  
-  guint       signal[1];
   
   GArray     *var_array;
   
@@ -314,7 +319,18 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
                                    opensim_param_spec);
   
   // time for signals!
-  //self->signal[M_SIG_SAVING] = 
+  simulator_signal[M_SIG_SAVING] = 
+    g_signal_new("saving", 
+                 OPENSIM_TYPE_SIMULATOR,
+                 GSignalFlags(G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE 
+                                | G_SIGNAL_NO_HOOKS),
+                 NULL,
+                 NULL,
+                 NULL,
+                 g_cclosure_marshal_VOID__POINTER,
+                 G_TYPE_NONE,
+                 1,
+                 G_TYPE_POINTER);
 }
 
 
@@ -535,7 +551,6 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     
     if (output_file_name) 
     {
-      //fprintf(stdout, "ofn: '%s' %d\n", output_file_name, g_strcmp0(output_file_name, ""));
       output_stream = fopen(output_file_name, "w+");
       
       if (!output_stream) 
@@ -574,6 +589,9 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
   
   int load_status = opensim_ioxml_save(gio, self->file_name, 
                                        self->model_name, self->var_array);
+
+  g_signal_emit (self, simulator_signal[M_SIG_SAVING], NULL);
+
   
   if (load_status != 0)
   {
