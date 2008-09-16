@@ -84,7 +84,7 @@ opensim_load_model(const char *file_name)
 extern "C" int WIN_DLL
 opensim_save_model()
 {
-  return -1;
+  return opensim_simulator_save(gsim);
 }
 
 

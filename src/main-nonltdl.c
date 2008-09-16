@@ -187,7 +187,8 @@ main (int argc, const char * argv[])
     opensim_set_output_file(output);
   }
   
-  opensim_simulate();
+  //opensim_simulate();
+  opensim_save_model();
   
   return 0;
 }
