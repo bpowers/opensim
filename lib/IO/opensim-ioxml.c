@@ -43,17 +43,25 @@
                                         OPENSIM_TYPE_IOXML, OpensimIOxmlPrivate))
 
 static gpointer opensim_ioxml_parent_class = NULL;
-static void opensim_ioxml_init(OpensimIOxml *self);
-static void opensim_ioxml_class_init(OpensimIOxmlClass *klass);
-static void opensim_ioxml_dispose(GObject *gobject);
-static void opensim_ioxml_finalize(GObject *gobject);
+static void opensim_ioxml_init                     (OpensimIOxml *self);
+static void opensim_ioxml_class_init               (OpensimIOxmlClass *klass);
+static void opensim_ioxml_dispose                  (GObject *gobject);
+static void opensim_ioxml_finalize                 (GObject *gobject);
 
-static int opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_name);
-static int opensim_ioxml_default_save(OpensimIOxml *ioxml, 
-                                      gchar *save_file_name,
-                                      gchar *model_name, 
-                                      GArray *vars);
-static GArray *opensim_ioxml_default_get_variables(OpensimIOxml *ioxml);
+static int opensim_ioxml_default_load              (OpensimIOxml *ioxml, 
+                                                    gchar *model_name);
+static int opensim_ioxml_default_save              (OpensimIOxml *ioxml, 
+                                                    OpensimSimulator *sim);
+static int opensim_ioxml_default_write_header      (OpensimIOxml *ioxml,
+                                                    OpensimSimulator *sim,
+                                                    FILE *save_file);
+static int opensim_ioxml_default_write_body        (OpensimIOxml *ioxml,
+                                                    OpensimSimulator *sim,
+                                                    FILE *save_file);
+static int opensim_ioxml_default_write_footer      (OpensimIOxml *ioxml,
+                                                    OpensimSimulator *sim,
+                                                    FILE *save_file);
+static GArray *opensim_ioxml_default_get_variables (OpensimIOxml *ioxml);
 
 /* for object properties */
 enum
@@ -232,6 +240,9 @@ opensim_ioxml_class_init(OpensimIOxmlClass *klass)
 
   klass->load                 = opensim_ioxml_default_load;
   klass->save                 = opensim_ioxml_default_save;
+  klass->write_header         = opensim_ioxml_default_write_header;
+  klass->write_body           = opensim_ioxml_default_write_body;
+  klass->write_footer         = opensim_ioxml_default_write_footer;
   klass->get_variables        = opensim_ioxml_default_get_variables;
 
   opensim_param_spec = g_param_spec_string("model_name",
@@ -458,20 +469,20 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
       {
         if (xmlStrEqual(sub->name, (const xmlChar *)"name"))
         {
-          txt = xmlNodeListGetString(doc, sub->children, 0);
-          var_name = g_strdup(txt);
-          var_name = trim(var_name);
-          xmlFree( txt );
+          txt = xmlNodeListGetString (doc, sub->children, 0);
+          var_name = g_strdup ((gchar *)txt);
+          var_name = trim (var_name);
+          xmlFree (txt);
 
           continue;
         }
         
-        if (xmlStrEqual(sub->name, (const xmlChar *)"equation"))
+        if (xmlStrEqual (sub->name, (const xmlChar *)"equation"))
         {
-          txt = xmlNodeListGetString(doc, sub->children, 0);
-          equation = g_strdup(txt);
-          equation = trim(equation);
-          xmlFree( txt );
+          txt = xmlNodeListGetString (doc, sub->children, 0);
+          equation = g_strdup ((gchar *)txt);
+          equation = trim (equation);
+          xmlFree (txt);
           
           continue;
         }
@@ -511,22 +522,33 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 
 int
 opensim_ioxml_save(OpensimIOxml *ioxml, 
-                   gchar *save_file_name,
-                   gchar *model_name, 
-                   GArray *vars)
+                   OpensimSimulator *sim)
 {
-  return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml, save_file_name, 
-                                              model_name, vars);
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->save(ioxml, sim);
 }
 
 
 
 static int
 opensim_ioxml_default_save(OpensimIOxml *ioxml, 
-                           gchar *save_file_name,
-                           gchar *model_name, 
-                           GArray *vars)
+                           OpensimSimulator *sim)
 {
+  gchar *save_file_name = NULL;
+  gchar *model_name = NULL;
+  
+  GArray *vars = opensim_simulator_get_variables(sim);
+  if (!vars)
+  {
+    fprintf(stderr, "Error: couldn't get any variables to save\n");
+    return -1;
+  }
+  
+  g_object_get (G_OBJECT (sim), "file_name", &save_file_name,
+                                "model_name", &model_name,
+                                NULL, NULL);
+  
+  
+  
   FILE *save_file = NULL;
   
   if (save_file_name)
@@ -582,6 +604,66 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
   if (save_file != stdout) fclose(save_file);
   
   return 0;
+}
+
+
+
+int
+opensim_ioxml_write_header (OpensimIOxml *ioxml, 
+                            OpensimSimulator *sim, 
+                            FILE *save_file)
+{
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->write_header (ioxml, sim, save_file);
+}
+
+
+
+int
+opensim_ioxml_default_write_header (OpensimIOxml *ioxml, 
+                                    OpensimSimulator *sim, 
+                                    FILE *save_file)
+{
+  return -1;
+}
+
+
+
+int
+opensim_ioxml_write_body (OpensimIOxml *ioxml, 
+                          OpensimSimulator *sim, 
+                          FILE *save_file)
+{
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->write_body (ioxml, sim, save_file);
+}
+
+
+
+int
+opensim_ioxml_default_write_body (OpensimIOxml *ioxml, 
+                                  OpensimSimulator *sim, 
+                                  FILE *save_file)
+{
+  return -1;
+}
+
+
+
+int
+opensim_ioxml_write_footer (OpensimIOxml *ioxml, 
+                            OpensimSimulator *sim, 
+                            FILE *save_file)
+{
+  return OPENSIM_IOXML_GET_CLASS(ioxml)->write_footer (ioxml, sim, save_file);
+}
+
+
+
+int
+opensim_ioxml_default_write_footer (OpensimIOxml *ioxml, 
+                                    OpensimSimulator *sim, 
+                                    FILE *save_file)
+{
+  return -1;
 }
 
 

@@ -116,6 +116,7 @@ struct _OpensimSimulatorClass
                                            gchar            *var_eqn);
   OpensimVariable * (* get_variable)      (OpensimSimulator *simulator,
                                            gchar            *var_name);
+  GArray *          (* get_variables)      (OpensimSimulator *simulator);
   int               (* remove_variable)   (OpensimSimulator *simulator,
                                            gchar            *var_name);
 };
@@ -129,27 +130,30 @@ GType opensim_simulator_get_type ();
 
 /* public */
 int 
-opensim_simulator_run (OpensimSimulator *simulator);
+opensim_simulator_run               (OpensimSimulator *simulator);
 
 int 
-opensim_simulator_load (OpensimSimulator *simulator, 
-                        gchar            *model_path);
+opensim_simulator_load              (OpensimSimulator *simulator, 
+                                     gchar            *model_path);
 
 int 
-opensim_simulator_save (OpensimSimulator *simulator);
+opensim_simulator_save              (OpensimSimulator *simulator);
 
 int
-opensim_simulator_new_variable (OpensimSimulator *simulator, 
-                                gchar            *var_name, 
-                                gchar            *var_eqn);
+opensim_simulator_new_variable      (OpensimSimulator *simulator, 
+                                     gchar            *var_name, 
+                                     gchar            *var_eqn);
 
 OpensimVariable *
-opensim_simulator_get_variable (OpensimSimulator *simulator, 
-                                gchar            *var_name);
+opensim_simulator_get_variable      (OpensimSimulator *simulator, 
+                                     gchar            *var_name);
+
+GArray *
+opensim_simulator_get_variables     (OpensimSimulator *simulator);
 
 int 
-opensim_simulator_remove_variable (OpensimSimulator *simulator, 
-                                   gchar            *var_name);
+opensim_simulator_remove_variable   (OpensimSimulator *simulator, 
+                                     gchar            *var_name);
 
 int 
 opensim_simulator_output_debug_info (OpensimSimulator *simulator);

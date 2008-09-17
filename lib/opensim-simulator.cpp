@@ -51,29 +51,31 @@ using OpenSim::SimBuilder;
                                             OpensimSimulatorPrivate))
 
 static gpointer opensim_simulator_parent_class = NULL;
-static void opensim_simulator_init(OpensimSimulator *self);
-static void opensim_simulator_class_init(OpensimSimulatorClass *klass);
-static void opensim_simulator_dispose(GObject *gobject);
-static void opensim_simulator_finalize(GObject *gobject);
+static void opensim_simulator_init        (OpensimSimulator *self);
+static void opensim_simulator_class_init  (OpensimSimulatorClass *klass);
+static void opensim_simulator_dispose     (GObject *gobject);
+static void opensim_simulator_finalize    (GObject *gobject);
 
-static int opensim_simulator_default_run(OpensimSimulator *simulator);
-static int opensim_simulator_default_load(OpensimSimulator *simulator, 
-                                          gchar *model_path);
-static int opensim_simulator_default_save(OpensimSimulator *simulator);
+static int opensim_simulator_default_run  (OpensimSimulator *simulator);
+static int opensim_simulator_default_load (OpensimSimulator *simulator, 
+                                           gchar *model_path);
+static int opensim_simulator_default_save (OpensimSimulator *simulator);
 
-static int opensim_simulator_default_new_variable(
-                                         OpensimSimulator *simulator, 
-                                         gchar *var_name, 
-                                         gchar *var_eqn);
-static OpensimVariable *opensim_simulator_default_get_variable(
-                                         OpensimSimulator *simulator, 
-                                         gchar *var_name);
-static int opensim_simulator_default_remove_variable(
-                                         OpensimSimulator *simulator, 
-                                         gchar *var_name);
+static int opensim_simulator_default_new_variable
+                                          (OpensimSimulator *simulator, 
+                                           gchar *var_name, 
+                                           gchar *var_eqn);
+static OpensimVariable *opensim_simulator_default_get_variable
+                                          (OpensimSimulator *simulator, 
+                                           gchar *var_name);
+static GArray *opensim_simulator_default_get_variables
+                                          (OpensimSimulator *simulator);
+static int opensim_simulator_default_remove_variable
+                                          (OpensimSimulator *simulator, 
+                                           gchar *var_name);
 
-static int opensim_simulator_default_output_debug_info(
-                                         OpensimSimulator *simulator);
+static int opensim_simulator_default_output_debug_info
+                                          (OpensimSimulator *simulator);
 
 
 extern "C" GType
@@ -268,6 +270,7 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
   klass->save                 = opensim_simulator_default_save;
   klass->new_variable         = opensim_simulator_default_new_variable;
   klass->get_variable         = opensim_simulator_default_get_variable;
+  klass->get_variables        = opensim_simulator_default_get_variables;
   klass->output_debug_info    = opensim_simulator_default_output_debug_info;
   klass->run                  = opensim_simulator_default_run;
 
@@ -587,8 +590,7 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
                                                  NULL));
   
-  int load_status = opensim_ioxml_save(gio, self->file_name, 
-                                       self->model_name, self->var_array);
+  int load_status = opensim_ioxml_save(gio, simulator);
 
   g_signal_emit_by_name (simulator, "saving");
 
@@ -666,18 +668,34 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
 
 
 extern "C" OpensimVariable *
-opensim_simulator_get_variable(OpensimSimulator *simulator, 
-                               gchar *var_name)
+opensim_simulator_get_variable (OpensimSimulator *simulator, 
+                                gchar *var_name)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->get_variable(simulator,
-                                                              var_name);
+  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->get_variable (simulator,
+                                                               var_name);
 }
 
 
 
 static OpensimVariable *
-opensim_simulator_default_get_variable(OpensimSimulator *simulator, 
-                                       gchar *var_name)
+opensim_simulator_default_get_variable (OpensimSimulator *simulator, 
+                                        gchar *var_name)
+{
+  return NULL;
+}
+
+
+
+extern "C" GArray *
+opensim_simulator_get_variables (OpensimSimulator *simulator)
+{
+  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->get_variables (simulator);
+}
+
+
+
+static GArray *
+opensim_simulator_default_get_variables (OpensimSimulator *simulator)
 {
   return NULL;
 }

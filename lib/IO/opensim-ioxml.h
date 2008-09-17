@@ -31,6 +31,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "../opensim-simulator.h"
 
 G_BEGIN_DECLS
 
@@ -65,10 +66,17 @@ struct _OpensimIOxmlClass
   
   int          (* load)          (OpensimIOxml *ioxml, gchar *path);
   int          (* save)          (OpensimIOxml *ioxml, 
-                                  gchar *save_file_name,
-                                  gchar *model_name, 
-                                  GArray *vars);
+                                  OpensimSimulator *sim);
   GArray *     (* get_variables) (OpensimIOxml *ioxml);
+  int          (* write_header)  (OpensimIOxml *ioxml, 
+                                  OpensimSimulator *sim,
+                                  FILE *save_file);
+  int          (* write_body)    (OpensimIOxml *ioxml, 
+                                  OpensimSimulator *sim,
+                                  FILE *save_file);
+  int          (* write_footer)  (OpensimIOxml *ioxml, 
+                                  OpensimSimulator *sim,
+                                  FILE *save_file);
 };
 
 /* used by OPENSIM_TYPE_IOXML */
@@ -79,11 +87,23 @@ GType opensim_ioxml_get_type();
  */
 
 /* public */
-int opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path);
-int opensim_ioxml_save(OpensimIOxml *ioxml, 
-                       gchar *save_file_name,
-                       gchar *model_name, 
-                       GArray *vars);
+int opensim_ioxml_load         (OpensimIOxml *ioxml, 
+                                gchar *model_path);
+
+int opensim_ioxml_save         (OpensimIOxml *ioxml, 
+                                OpensimSimulator *sim);
+
+int opensim_ioxml_write_header (OpensimIOxml *ioxml, 
+                                OpensimSimulator *sim,
+                                FILE *save_file);
+
+int opensim_ioxml_write_body   (OpensimIOxml *ioxml, 
+                                OpensimSimulator *sim,
+                                FILE *save_file);
+
+int opensim_ioxml_write_footer (OpensimIOxml *ioxml, 
+                                OpensimSimulator *sim,
+                                FILE *save_file);
 
 GArray *opensim_ioxml_get_variables(OpensimIOxml *ioxml);
 
