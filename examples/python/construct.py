@@ -2,8 +2,8 @@
 
 from opensim import engine
 
-def save_extra():
-  print "sweet, saving"
+def save_extra(sim):
+  print "sweet, saving %s" % sim.props.model_name
 
 def run():
   sim = engine.Simulator()

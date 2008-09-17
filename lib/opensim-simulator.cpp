@@ -320,16 +320,17 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
   
   // time for signals!
   simulator_signal[M_SIG_SAVING] = 
-    g_signal_newv ("saving",
-                   G_TYPE_FROM_CLASS (gobject_class),
-                   G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-                   NULL /* closure */,
-                   NULL /* accumulator */,
-                   NULL /* accumulator data */,
-                   g_cclosure_marshal_VOID__VOID,
-                   G_TYPE_NONE /* return_type */,
-                   0     /* n_params */,
-                   NULL  /* param_types */);
+    g_signal_new ("saving",
+                  G_TYPE_FROM_CLASS (gobject_class),
+                  GSignalFlags (G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE \
+                                | G_SIGNAL_NO_HOOKS),
+                  NULL /* closure */,
+                  NULL /* accumulator */,
+                  NULL /* accumulator data */,
+                  g_cclosure_marshal_VOID__VOID,
+                  G_TYPE_NONE /* return_type */,
+                  0     /* n_params */,
+                  NULL  /* param_types */);
 }
 
 
@@ -589,7 +590,7 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
   int load_status = opensim_ioxml_save(gio, self->file_name, 
                                        self->model_name, self->var_array);
 
-  g_signal_emit_by_name (self, "saving", NULL);
+  g_signal_emit_by_name (simulator, "saving");
 
   
   if (load_status != 0)
