@@ -534,20 +534,7 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
                            OpensimSimulator *sim)
 {
   gchar *save_file_name = NULL;
-  gchar *model_name = NULL;
-  
-  GArray *vars = opensim_simulator_get_variables(sim);
-  if (!vars)
-  {
-    fprintf(stderr, "Error: couldn't get any variables to save\n");
-    return -1;
-  }
-  
-  g_object_get (G_OBJECT (sim), "file_name", &save_file_name,
-                                "model_name", &model_name,
-                                NULL, NULL);
-  
-  
+  g_object_get (G_OBJECT (sim), "file_name", &save_file_name, NULL, NULL);
   
   FILE *save_file = NULL;
   
@@ -559,51 +546,20 @@ opensim_ioxml_default_save(OpensimIOxml *ioxml,
   if (!save_file)
   {
     fprintf(stderr, "Error: couldn't open file for writing: '%s'\n", save_file_name);
+    if (save_file_name) g_free (save_file_name);
     return -1;
   }
   
-  // FIXME: model_name should be set somewhere
-  if (!model_name) model_name = "created in Model";
-  
-  fprintf(save_file, "\
-<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-\n\
-<opensim markup=\"1.0\">\n\
-<model>\n\
-  <name>%s</name>\n\n", model_name);
-  
-  
-  // loop through vars here.
-  int i;
-  for (i=0; i < vars->len; i++)
-  {
-    OpensimVariable *var = NULL;
-    var = g_array_index(vars, OpensimVariable *, i);
-    
-    gchar *name = NULL;
-    gchar *equation = NULL;
-    
-    g_object_get(G_OBJECT(var), "name", &name, "equation", &equation,
-                                NULL, NULL);
-    
-    fprintf(save_file, "\
-  <var>\n\
-    <name>%s</name>\n\
-    <equation>\n\
-      %s\n\
-    </equation>\n\
-  </var>\n\n", name, equation);
-    
-    g_free(name);
-    g_free(equation);
-  }
-  
-  fprintf(save_file, "</model>\n\n</opensim>\n");
+  int h_ret = opensim_ioxml_write_header (ioxml, sim, save_file);
+  int b_ret = opensim_ioxml_write_body   (ioxml, sim, save_file);
+  int f_ret = opensim_ioxml_write_footer (ioxml, sim, save_file);
   
   // clean up
   if (save_file != stdout) fclose(save_file);
   
-  return 0;
+  if (save_file_name) g_free (save_file_name);
+  
+  return h_ret + b_ret + f_ret;
 }
 
 
@@ -623,7 +579,12 @@ opensim_ioxml_default_write_header (OpensimIOxml *ioxml,
                                     OpensimSimulator *sim, 
                                     FILE *save_file)
 {
-  return -1;
+  fprintf(save_file, "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+\n\
+<opensim markup=\"1.0\">\n\n");
+
+  return 0;
 }
 
 
@@ -643,7 +604,54 @@ opensim_ioxml_default_write_body (OpensimIOxml *ioxml,
                                   OpensimSimulator *sim, 
                                   FILE *save_file)
 {
-  return -1;
+  GArray *vars = opensim_simulator_get_variables(sim);
+  if (!vars)
+  {
+    fprintf(stderr, "Error: couldn't get any variables to save\n");
+    return -1;
+  }
+  
+  gchar *model_name = NULL;
+  g_object_get (G_OBJECT (sim), "model_name", &model_name, NULL, NULL);
+  
+  fprintf(save_file, "\
+<model>\n\
+  <name>%s</name>\n\n", model_name);
+  
+  g_free(model_name);
+  
+  
+  // loop through vars here.
+  int i;
+  for (i=0; i < vars->len; i++)
+  {
+    OpensimVariable *var = NULL;
+    var = g_array_index(vars, OpensimVariable *, i);
+    
+    gchar *name = NULL;
+    gchar *equation = NULL;
+    
+    g_object_get(G_OBJECT(var), "name", &name, "equation", &equation,
+                 NULL, NULL);
+    
+    fprintf(save_file, "\
+  <var>\n\
+    <name>%s</name>\n\
+    <equation>\n\
+      %s\n\
+    </equation>\n\
+  </var>\n\n", name, equation);
+    
+    g_free(name);
+    g_free(equation);
+  }
+  
+  fprintf(save_file, "\
+</model>\n");
+  
+  g_array_free(vars, TRUE);
+  
+  return 0;
 }
 
 
@@ -663,7 +671,9 @@ opensim_ioxml_default_write_footer (OpensimIOxml *ioxml,
                                     OpensimSimulator *sim, 
                                     FILE *save_file)
 {
-  return -1;
+  fprintf(save_file, "\n</opensim>\n");
+  
+  return 0;
 }
 
 

@@ -697,7 +697,17 @@ opensim_simulator_get_variables (OpensimSimulator *simulator)
 static GArray *
 opensim_simulator_default_get_variables (OpensimSimulator *simulator)
 {
-  return NULL;
+  OpensimSimulatorPrivate *self = simulator->priv;
+  
+  if (!self->var_array) return NULL;
+  
+  GArray *ret = g_array_new (FALSE, FALSE, sizeof(OpensimSimulator *));
+  
+  // copy the pointers from our array to the one we return, so changes
+  // in the one we return don't mess us up
+  g_array_append_vals(ret, self->var_array->data, self->var_array->len);
+  
+  return ret;
 }
 
 
