@@ -587,23 +587,42 @@ static int
 opensim_simulator_default_save(OpensimSimulator *simulator)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
-  OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
-                                                 NULL));
   
-  int load_status = opensim_ioxml_save(gio, simulator);
-
-  g_signal_emit_by_name (simulator, "saving");
-
+  FILE *save_file = NULL;
   
-  if (load_status != 0)
+  if (self->file_name)
+    save_file = fopen(self->file_name, "w");
+  else 
+    save_file = stdout;
+  
+  if (!save_file)
   {
-    fprintf(stderr, "Error: couldn't save model.\n");
+    fprintf(stderr, "Error: couldn't open file for writing: '%s'\n", 
+            self->file_name);
     return -1;
   }
   
+  OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
+                                                 NULL));
+  
+  int h_ret = opensim_ioxml_write_header (gio, simulator, save_file);
+  int b_ret = opensim_ioxml_write_body (gio, simulator, save_file);
+  
+  g_signal_emit_by_name (simulator, "saving");
+  
+  int f_ret = opensim_ioxml_write_footer (gio, simulator, save_file);
+  
+  // these should only return <= 0, so this is okay i think
+  if (h_ret + b_ret + f_ret != 0)
+    fprintf(stderr, "Error: there were some problems saving the model.\n");
+  
   g_object_unref(gio);
   
-  return 0;
+  // clean up
+  if (save_file != stdout) fclose(save_file);
+  
+  
+  return h_ret + b_ret + f_ret;
 }
 
 

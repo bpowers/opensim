@@ -3,7 +3,9 @@
 from opensim import engine
 
 def save_extra(sim):
-  print "sweet, saving %s" % sim.props.model_name
+  print "\n<construct>"
+  print "  oh so sweet metadata for %s" % sim.props.model_name
+  print "</construct>"
 
 def run():
   sim = engine.Simulator()
