@@ -330,10 +330,10 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
                   NULL /* closure */,
                   NULL /* accumulator */,
                   NULL /* accumulator data */,
-                  g_cclosure_marshal_VOID__VOID,
+                  g_cclosure_marshal_VOID__POINTER,
                   G_TYPE_NONE /* return_type */,
-                  0     /* n_params */,
-                  NULL  /* param_types */);
+                  1     /* n_params */,
+                  G_TYPE_POINTER  /* param_types */);
 }
 
 
@@ -608,7 +608,7 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
   int h_ret = opensim_ioxml_write_header (gio, simulator, save_file);
   int b_ret = opensim_ioxml_write_body (gio, simulator, save_file);
   
-  g_signal_emit_by_name (simulator, "saving");
+  g_signal_emit_by_name (simulator, "saving", save_file);
   
   int f_ret = opensim_ioxml_write_footer (gio, simulator, save_file);
   
