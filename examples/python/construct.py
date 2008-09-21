@@ -12,7 +12,6 @@ def save_extra(sim, save_file_pointer):
   save_file.write ("</more_info>\n")
 
 
-
 def run ():
   sim = engine.Simulator ()
   
@@ -39,5 +38,7 @@ def run ():
   sim.props.file_name = "test_sim.osm"
   sim.save ()
 
+
+# run if we're the main module
 if __name__ == '__main__':
   run ()
