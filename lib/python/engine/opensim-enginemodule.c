@@ -7,7 +7,8 @@ void engine_simulator_add_constants(PyObject *d, const char *strip);
 void engine_variable_register_classes(PyObject *d); 
 
 
-// GROSS HACK to pass a file pointer from C to Python and wrap it as a File object.
+// GROSS HACK to pass a file pointer from C to Python and wrap it as a 
+// Python File object.
 static PyObject *
 opensim_get_file (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
