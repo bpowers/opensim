@@ -157,7 +157,8 @@ package model
       var ret_val:SimData =  new SimData()
       ret_val.index = data["time"]
       ret_val.data = data[var_name]
-      for(var counter:Number = ret_val.data.length; counter <= data["OS_end"][0]; counter++)
+      var data_len:Number = (data["OS_end"][0] - data["OS_start"][0])/data["OS_savestep"][0]
+      for (var counter:Number = ret_val.data.length; counter < data_len; counter++)
       {
 		ret_val.data.push(0)
       }
