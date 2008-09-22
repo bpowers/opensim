@@ -1,6 +1,0 @@
-#/usr/bin/env sh
-
-opensim -t as3 examples/rabbit.osm -o examples/test.as
-
-cp share/SimData.as ~/Desktop/sandbox/dialect/Examples/OpenSim/OpenSimTest_ResourceDirectory/model/SimData.as
-cp examples/test.as ~/Desktop/sandbox/dialect/Examples/OpenSim/OpenSimTest_ResourceDirectory/model/OpenSim.as
