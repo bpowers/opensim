@@ -339,15 +339,16 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
 
 
 static void
-opensim_simulator_init(OpensimSimulator *self)
+opensim_simulator_init (OpensimSimulator *simulator)
 {
-  self->priv = OPENSIM_SIMULATOR_GET_PRIVATE(self);
+  simulator->priv = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
   
-  self->priv->valid_model = FALSE;
-  self->priv->var_array   = g_array_new(FALSE, FALSE, 
-                                        sizeof(OpensimVariable *));
-  self->priv->var_map     = map<string, OpensimVariable *>();
-  self->priv->sim_builder = new SimBuilder(self->priv->var_map);
+  OpensimSimulatorPrivate *self = simulator->priv;
+  
+  self->valid_model = TRUE;
+  self->var_array   = g_array_new (FALSE, FALSE, sizeof (OpensimVariable *));
+  self->var_map     = map<string, OpensimVariable *> ();
+  self->sim_builder = new SimBuilder (self->var_map);
 }
 
 
@@ -424,6 +425,7 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
   if (load_status != 0)
   {
     fprintf(stderr, "Error: couldn't load model.\n");
+    self->valid_model = FALSE;
     return -1;
   }
 
@@ -546,6 +548,12 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   int ret = 0;
+  
+  if (!self->valid_model)
+  {
+    fprintf(stderr, "Warning: Model wasn't valid so it wasn't simulated\n");
+    return -1;
+  }
   
   if (self->sim_builder)
   {
