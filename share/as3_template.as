@@ -157,6 +157,10 @@ package model
       var ret_val:SimData =  new SimData()
       ret_val.index = data["time"]
       ret_val.data = data[var_name]
+      for(var counter:Number = ret_val.data.length; counter <= data["OS_end"][0]; counter++)
+      {
+		ret_val.data.push(0)
+      }
       return ret_val
     }
 
