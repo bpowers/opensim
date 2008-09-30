@@ -26,49 +26,49 @@
 
 
 import pygtk
-pygtk.require("2.0")
+pygtk.require ("2.0")
 
 import os, sys, gtk, gtk.glade, gobject, goocanvas, math
 import logging
 import opensim.visuals as sim
 
 
-class OpenSimGTK(gobject.GObject):
+class OpenSimGTK (gobject.GObject):
 
-  def drawing_tool_toggled(self, widget):
+  def drawing_tool_toggled (self, widget):
 
     # if a widget is being un-toggled, then we don't have
     # to worry about it (otherwise breaks toggle effect)
-    if widget.get_active() is False:
+    if widget.get_active () is False:
       # make sure we catch the case where no tool is active.
-      if widget.type == self.canvas.get_active_tool():
-        self.canvas.set_active_tool(sim.NONE)
+      if widget.type == self.canvas.get_active_tool ():
+        self.canvas.set_active_tool (sim.NONE)
       return
 
     # switch between possible widgets.
     if widget.type != sim.VARIABLE:
-      self.button_variable.set_active(False)    
+      self.button_variable.set_active (False)    
     if widget.type != sim.INFLUENCE:
-      self.button_influence.set_active(False)
+      self.button_influence.set_active (False)
     if widget.type != sim.STOCK:
-      self.button_stock.set_active(False)
+      self.button_stock.set_active (False)
     if widget.type != sim.FLOW:
-      self.button_flow.set_active(False)
+      self.button_flow.set_active (False)
 
     # let the canvas know what tool is active
     self.canvas.set_active_tool(widget.type)
 
 
-  def view_toggled(self, widget):
+  def view_toggled (self, widget):
 
     if widget is self.view_graphs:
-      self.view_var.show()
+      self.view_var.show ()
     else:
-      self.view_var.hide()
+      self.view_var.hide ()
 
 
-  def __init__(self, **kwargs):
-    super(OpenSimGTK, self).__init__(**kwargs)
+  def __init__ (self, **kwargs):
+    super (OpenSimGTK, self).__init__ (**kwargs)
 
     # this is for the SAVE file, not the data directory
     self.file_path = None
@@ -82,7 +82,7 @@ class OpenSimGTK(gobject.GObject):
     # back to the ones in share_paths
     if os.environ.has_key('XDG_DATA_DIRS'):
       xdg_string = environ['XDG_DATA_DIRS']
-      all_paths = xdg_string.split(':').append(share_paths)
+      all_paths = xdg_string.split (':').append (share_paths)
 
     for i, path in enumerate(all_paths):
       path = os.path.join(path, "opensim")
@@ -95,14 +95,14 @@ class OpenSimGTK(gobject.GObject):
       raise Exception
 
     #Set and load the Glade file
-    self.gladefile = os.path.join(self.data_path, "opensim-main.glade")
-    self.wTree = gtk.glade.XML(self.gladefile) 
+    self.gladefile = os.path.join (self.data_path, "opensim-main.glade")
+    self.wTree = gtk.glade.XML (self.gladefile) 
 
     #Get the Main Window, and connect the "destroy" event
-    self.window = self.wTree.get_widget("main_window")
-    self.window.set_icon_from_file(os.path.join(self.data_path, 
-                                   "model-icon.svg"))
-    self.window.set_title('new simulation | Model')
+    self.window = self.wTree.get_widget ("main_window")
+    self.window.set_icon_from_file (os.path.join (self.data_path, 
+                                    "model-icon.svg"))
+    self.window.set_title ('new simulation | Model')
 
     dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
            "on_view_toggled" : self.view_toggled,
@@ -114,118 +114,118 @@ class OpenSimGTK(gobject.GObject):
     self.wTree.signal_autoconnect(dic)
     
     #Get our 4 buttons & add type attributes to them
-    self.button_variable = self.wTree.get_widget("but_variable")
+    self.button_variable = self.wTree.get_widget ("but_variable")
     self.button_variable.type = sim.VARIABLE
-    self.button_influence = self.wTree.get_widget("but_influence")
+    self.button_influence = self.wTree.get_widget ("but_influence")
     self.button_influence.type = sim.INFLUENCE
-    self.button_stock = self.wTree.get_widget("but_stock")
+    self.button_stock = self.wTree.get_widget ("but_stock")
     self.button_stock.type = sim.STOCK
-    self.button_flow = self.wTree.get_widget("but_flow")
+    self.button_flow = self.wTree.get_widget ("but_flow")
     self.button_flow.type = sim.FLOW
 
-    self.view_canvas = self.wTree.get_widget("but_view_canvas")
-    self.view_var = self.wTree.get_widget("but_view_var")
-    self.view_graphs = self.wTree.get_widget("but_view_graphs")
+    self.view_canvas = self.wTree.get_widget ("but_view_canvas")
+    self.view_var = self.wTree.get_widget ("but_view_var")
+    self.view_graphs = self.wTree.get_widget ("but_view_graphs")
 
     #insert our goocanvas (since I don't want to deal with 
     #getting it working with glade just yet...)
-    main_vbox = self.wTree.get_widget("main_vbox")
-    main_tool_bar = self.wTree.get_widget("main_tool_bar")
+    main_vbox = self.wTree.get_widget ("main_vbox")
+    main_tool_bar = self.wTree.get_widget ("main_tool_bar")
 
-    self.canvas = sim.Canvas()
-    self.status_bar = gtk.Statusbar()
+    self.canvas = sim.Canvas ()
+    self.status_bar = gtk.Statusbar ()
 
-    main_vbox.pack_start(self.canvas, True, True, 0)
-    main_vbox.pack_start(self.status_bar, False, False, 0)
+    main_vbox.pack_start (self.canvas, True, True, 0)
+    main_vbox.pack_start (self.status_bar, False, False, 0)
 
-    self.canvas.show()
-    self.status_bar.show()
+    self.canvas.show ()
+    self.status_bar.show ()
 
 
-  def create_dialog(self, requested_title, requested_action):
+  def create_dialog (self, requested_title, requested_action):
 
     save_or_open = gtk.STOCK_OPEN
     if requested_action is gtk.FILE_CHOOSER_ACTION_SAVE:
       save_or_open = gtk.STOCK_SAVE
 
-    dialog = gtk.FileChooserDialog(title=requested_title,
-                                   action=requested_action,
-                                   buttons=(gtk.STOCK_CANCEL,
-                                            gtk.RESPONSE_CANCEL,
-                                            save_or_open,gtk.RESPONSE_OK))
-    dialog.set_default_response(gtk.RESPONSE_OK)
+    dialog = gtk.FileChooserDialog (title=requested_title,
+                                    action=requested_action,
+                                    buttons=(gtk.STOCK_CANCEL,
+                                             gtk.RESPONSE_CANCEL,
+                                             save_or_open,gtk.RESPONSE_OK))
+    dialog.set_default_response (gtk.RESPONSE_OK)
    
-    filter = gtk.FileFilter()
-    filter.set_name("Models")
-    filter.add_pattern("*.osm")
-    filter.add_pattern("*.mdl")
-    dialog.add_filter(filter)
+    filter = gtk.FileFilter ()
+    filter.set_name ("Models")
+    filter.add_pattern ("*.osm")
+    filter.add_pattern ("*.mdl")
+    dialog.add_filter (filter)
 
-    filter = gtk.FileFilter()
-    filter.set_name("All files")
-    filter.add_pattern("*")
-    dialog.add_filter(filter)   
+    filter = gtk.FileFilter ()
+    filter.set_name ("All files")
+    filter.add_pattern ("*")
+    dialog.add_filter (filter)   
 
     return_val = None   
-    response = dialog.run()
+    response = dialog.run ()
     if response == gtk.RESPONSE_OK:
-      return_val = dialog.get_filename()
+      return_val = dialog.get_filename ()
 
-    dialog.destroy()
+    dialog.destroy ()
     return return_val
 
 
-  def open_clicked(self, widget):
-    model_file = self.create_dialog("Open Existing Model...",
-                                    gtk.FILE_CHOOSER_ACTION_OPEN)
+  def open_clicked (self, widget):
+    model_file = self.create_dialog ("Open Existing Model...",
+                                     gtk.FILE_CHOOSER_ACTION_OPEN)
     if model_file:
       self.file_path = model_file
-      self.read_file(self.file_path)
+      self.read_file (self.file_path)
 
 
-  def save_clicked(self, widget):
+  def save_clicked (self, widget):
     if self.file_path:
-      self.write_file(self.file_path)
+      self.write_file (self.file_path)
     else:
-      self.save_as_clicked(self)
+      self.save_as_clicked (self)
 
 
-  def save_as_clicked(self, widget):
-    model_file = self.create_dialog("Save Model As...",
-                                    gtk.FILE_CHOOSER_ACTION_SAVE)
+  def save_as_clicked (self, widget):
+    model_file = self.create_dialog ("Save Model As...",
+                                     gtk.FILE_CHOOSER_ACTION_SAVE)
     if model_file:
       self.file_path = model_file
-      self.write_file(self.file_path)
+      self.write_file (self.file_path)
 
 
-  def write_file(self, file_path):
+  def write_file (self, file_path):
     '''
     Implement this method to save your activity's state.
     '''
-    logging.debug('opensim-gtk: writing file')
-    self.canvas.save_model(file_path)
-    logging.debug('opensim-gtk: done writing file')
+    logging.debug ('opensim-gtk: writing file')
+    self.canvas.save_model (file_path)
+    logging.debug ('opensim-gtk: done writing file')
 
     
-  def read_file(self, file_path):
+  def read_file (self, file_path):
     '''
     Implement this method to resume state saved in write_file().
     '''
-    logging.debug('opensim-gtk: reading file')
-    self.canvas.open_model(file_path)
-    logging.debug('opensim-gtk: done reading file')
+    logging.debug ('opensim-gtk: reading file')
+    self.canvas.open_model (file_path)
+    logging.debug ('opensim-gtk: done reading file')
 
 
-  def main(self):
-    gtk.main()
+  def main (self):
+    gtk.main ()
 
 
 
-gobject.type_register(OpenSimGTK)
+gobject.type_register (OpenSimGTK)
 
 
 if __name__ == "__main__":
-  logging.basicConfig(level=logging.DEBUG)
-  gui = OpenSimGTK()
-  gui.main()
+  logging.basicConfig (level=logging.DEBUG)
+  gui = OpenSimGTK ()
+  gui.main ()
 
