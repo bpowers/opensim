@@ -4,8 +4,8 @@ from opensim import engine
 
 
 # callback function that is executed when sim.save () is called
-def save_extra(sim, save_file_pointer):
-  save_file = engine.get_file(sim, save_file_pointer)
+def save_extra (sim, save_file_pointer):
+  save_file = engine.get_file (sim, save_file_pointer)
   
   save_file.write ("\n<more_info>\n")
   save_file.write ("  oh so sweet metadata for %s\n" % sim.props.model_name)
