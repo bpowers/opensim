@@ -31,6 +31,7 @@ import gobject, gtk, cairo, pango, goocanvas, math
 import constants as sim
 import widgets
 import libxml2
+from opensim import engine
 from opensim.engine import Simulator
 import tools
 
@@ -146,6 +147,8 @@ class Canvas (gtk.ScrolledWindow):
     self.engine = self.goocanvas.engine 
     self.goocanvas.sim = self
     self.display_vars = []
+
+    self.engine.connect("saving", self.save_visual_state)
 
     display = gtk.gdk.display_get_default()
     screen = display.get_default_screen()
@@ -463,20 +466,18 @@ class Canvas (gtk.ScrolledWindow):
     logging.debug("Canvas: Dropping highlight to save.")
     self.goocanvas.drop_highlight()
     logging.debug("Canvas: Setting model file and saving.")
-    self.engine.set_model_file(file_path)
-    self.engine.save()
-
-    f = open(file_path, 'a')
-    try:
-      self.save_visual_state(f)
-      f.write("</opensim>\n")
-    finally:
-      f.close()
+    self.engine.props.file_name = file_path
+    self.engine.save ()
 
     logging.debug("Canvas: Saved model.")
 
 
-  def save_visual_state(self, f):
+  def save_visual_state(self, widget, save_file_pointer):
+    print self
+    print widget
+    print save_file_pointer
+    
+    f = engine.get_file (self, widget)
     logging.debug("Canvas: Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
