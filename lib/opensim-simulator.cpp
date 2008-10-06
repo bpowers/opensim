@@ -421,14 +421,14 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
   gchar *prop;
   
   int load_status = opensim_ioxml_load(gio, model_path);
-
+  
   if (load_status != 0)
   {
     fprintf(stderr, "Error: couldn't load model.\n");
     self->valid_model = FALSE;
     return -1;
   }
-
+  
   g_object_get(G_OBJECT(gio), "model_name", &prop,
                               "valid",      &valid_model, NULL);
   g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
@@ -555,28 +555,31 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     return -1;
   }
   
-  if (self->sim_builder)
+  if (!self->sim_builder)
   {
-    FILE *output_stream = stdout;
-    gchar *output_file_name = self->output_file_name;
-    
-    if (output_file_name) 
-    {
-      output_stream = fopen(output_file_name, "w+");
-      
-      if (!output_stream) 
-      {
-        fprintf(stderr, "Error: Could not open output file for writing.\n");
-        return -1;
-      }
-    }
-    
-    ret = self->sim_builder->Parse(self->output_type, output_stream);
-    
-    
-    // if we opened it, close the output stream
-    if (output_stream != stdout) fclose(output_stream);
+    fprintf(stderr, "Error: Simulator doesn't have sim_builder.\n");
+    return -1;
   }
+  
+  FILE *output_stream = stdout;
+  gchar *output_file_name = self->output_file_name;
+  
+  if (output_file_name) 
+  {
+    output_stream = fopen(output_file_name, "w+");
+    
+    if (!output_stream) 
+    {
+      fprintf(stderr, "Error: Could not open output file for writing.\n");
+      return -1;
+    }
+  }
+  
+  ret = self->sim_builder->Parse(self->output_type, output_stream);
+  
+  
+  // if we opened it, close the output stream
+  if (output_stream != stdout) fclose(output_stream);
   
   return ret;
 }
@@ -741,9 +744,9 @@ opensim_simulator_default_get_variables (OpensimSimulator *simulator)
                                        
 extern "C" int 
 opensim_simulator_remove_variable(OpensimSimulator *simulator, 
-                                          gchar *var_name)
+                                  gchar *var_name)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->remove_variable(simulator,
+  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->remove_variable(simulator, 
                                                                  var_name);
 }
 
