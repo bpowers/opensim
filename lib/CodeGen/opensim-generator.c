@@ -24,12 +24,12 @@
 //
 //===---------------------------------------------------------------------===//
 
-#include <cstdio>
+#include <stdio.h>
 
 #include "opensim-generator.h"
 
-#include "opensim-simulator.h"
-#include "opensim-variable.h"
+#include "../opensim-simulator.h"
+#include "../opensim-variable.h"
 
 
 #define OPENSIM_GENERATOR_GET_PRIVATE(obj) \
@@ -38,10 +38,18 @@
 
 
 static gpointer opensim_generator_parent_class = NULL;
-static void opensim_generator_init        (OpensimGenerator *self);
-static void opensim_generator_class_init  (OpensimGeneratorClass *klass);
-static void opensim_generator_dispose     (GObject *gobject);
-static void opensim_generator_finalize    (GObject *gobject);
+static void opensim_generator_init          (OpensimGenerator *self);
+static void opensim_generator_class_init    (OpensimGeneratorClass *klass);
+static void opensim_generator_dispose       (GObject *gobject);
+static void opensim_generator_finalize      (GObject *gobject);
+       void opensim_generator_get_property  (GObject      *object,
+                                             guint         property_id,
+                                             GValue       *value,
+                                             GParamSpec   *pspec);
+       void opensim_generator_set_property  (GObject      *object,
+                                             guint         property_id,
+                                             const GValue *value,
+                                             GParamSpec   *pspec);
 
 static int opensim_generator_default_rebase (OpensimGenerator *simulator, 
                                              GHashTable *variables);
@@ -51,13 +59,12 @@ static int opensim_generator_default_parse  (OpensimGenerator *simulator,
                                              FILE *output_file);
 
 static int build_bytecode ();
-
 static int get_tok_precedence (int op_char);
 
 struct _OpensimGeneratorPrivate
 {
-  BOOL       valid_model;
-  int        errors;
+  int         errors;
+  gboolean    valid_model;
   
   GArray     *top_level_vars;
   
@@ -100,7 +107,8 @@ opensim_variable_set_property(GObject      *object,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
-  OpensimVariable *self = OPENSIM_GENERATOR(object);
+  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -119,7 +127,8 @@ opensim_variable_get_property (GObject    *object,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  OpensimVariable *self = OPENSIM_GENERATOR(object);
+  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -156,8 +165,8 @@ opensim_generator_class_init(OpensimGeneratorClass *klass)
 static void
 opensim_generator_init(OpensimGenerator *generator)
 {
-  generator->priv = OPENSIM_GENERATOR_GET_PRIVATE(self);
-  OpensimGenerator *self = generator->priv;
+  generator->priv = OPENSIM_GENERATOR_GET_PRIVATE(generator);
+  OpensimGeneratorPrivate *self = generator->priv;
   
   self->valid_model    = FALSE;
   self->errors         = 0;
@@ -205,11 +214,34 @@ opensim_generator_finalize(GObject *gobject)
 }
 
 
+
+int
+opensim_simulator_rebase (OpensimGenerator *generator,
+                          GHashTable       *variables)
+{
+  return OPENSIM_GENERATOR_GET_CLASS (generator)->rebase (generator,
+                                                          variables);
+}
+
+
+
+static int
+opensim_generator_default_rebase (OpensimGenerator *generator,
+                                  GHashTable       *variables)
+{
+  /* just do it... */
+  
+  return 0;
+}
+
+
+
 int
 opensim_simulator_update (OpensimGenerator *generator)
 {
   return OPENSIM_GENERATOR_GET_CLASS (generator)->update (generator);
 }
+
 
 
 static int
@@ -219,6 +251,29 @@ opensim_generator_default_update (OpensimGenerator *generator)
 
   /* just do it... */
 
+  return 0;
+}
+
+
+
+int
+opensim_simulator_parse (OpensimGenerator *generator,
+                         int               our_walk,
+                         FILE             *output_file)
+{
+  return OPENSIM_GENERATOR_GET_CLASS (generator)->parse (generator,
+                                                         our_walk,
+                                                         output_file);
+}
+
+
+
+static int
+opensim_generator_default_parse (OpensimGenerator *generator,
+                                 int               our_walk,
+                                 FILE             *output_file)
+{
+  
   return 0;
 }
 
@@ -801,7 +856,7 @@ get_tok_precedence (int op_char)
 {
   // standard mathmatical operators.
   
-  switch op_char 
+  switch (op_char) 
   {
   case '=':
     return 2;
@@ -817,7 +872,7 @@ get_tok_precedence (int op_char)
     return 40;
   case '/':
     return 40;
-  case '/':
+  case '^':
     return 60;
   default:
     return -1;
