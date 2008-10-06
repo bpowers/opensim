@@ -26,91 +26,206 @@
 
 #include <cstdio>
 
-#include "../AST/SimAST.h"
-#include "../AST/EulerAST.h"
-#include "../AST/VariableAST.h"
-#include "../AST/LookupAST.h"
-#include "../AST/General.h"
+#include "opensim-generator.h"
 
-#include "PythonPrintModule.h"
-#include "InterpreterModule.h"
-//#include "AS3PrintModule.h"
-
-#include "SimBuilder.h"
-
-using std::pair;
-using std::string;
-using std::vector;
-using std::map;
-
-using OpenSim::ExprAST;
-using OpenSim::NumberExprAST;
-using OpenSim::EulerAST;
-using OpenSim::UnaryExprAST;
+#include "opensim-simulator.h"
+#include "opensim-variable.h"
 
 
-OpenSim::SimBuilder::SimBuilder(std::map<std::string, 
-                                         OpensimVariable *> &variables)
+#define OPENSIM_GENERATOR_GET_PRIVATE(obj) \
+        (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_GENERATOR, \
+                                            OpensimGeneratorPrivate))
+
+
+static gpointer opensim_generator_parent_class = NULL;
+static void opensim_generator_init        (OpensimGenerator *self);
+static void opensim_generator_class_init  (OpensimGeneratorClass *klass);
+static void opensim_generator_dispose     (GObject *gobject);
+static void opensim_generator_finalize    (GObject *gobject);
+
+static int opensim_generator_default_rebase (OpensimGenerator *simulator, 
+                                             GHashTable *variables);
+static int opensim_generator_default_update (OpensimGenerator *simulator);
+static int opensim_generator_default_parse  (OpensimGenerator *simulator, 
+                                             int our_walk,
+                                             FILE *output_file);
+
+static int build_bytecode ();
+
+static int get_tok_precedence (int op_char);
+
+struct _OpensimGeneratorPrivate
 {
-  // save the variables we're passed.
-  vars = variables;
-    
-  // Install standard binary operators.
-  // 1 is lowest precedence.
-  BinopPrecedence['='] = 2;
-  BinopPrecedence['<'] = 10;
-  BinopPrecedence['>'] = 10;
-  BinopPrecedence['+'] = 20;
-  BinopPrecedence['-'] = 20;
-  BinopPrecedence['*'] = 40;
-  BinopPrecedence['/'] = 40;
-  BinopPrecedence['^'] = 60;// highest.
+  BOOL       valid_model;
+  int        errors;
+  
+  GArray     *top_level_vars;
+  
+  GHashTable *vars;
+  GByteArray *bytecode;
+};
 
-  _valid_model = false;
-  _errors = 0;
 
-  // creates AST from variable definitions.
-  InitializeModule();
+
+GType 
+opensim_generator_get_type()
+{
+  static GType g_define_type_id = 0; 
+  if (G_UNLIKELY(g_define_type_id == 0)) 
+  { 
+    static const GTypeInfo g_define_type_info = { 
+      sizeof (OpensimGeneratorClass), 
+      (GBaseInitFunc) NULL, 
+      (GBaseFinalizeFunc) NULL, 
+      (GClassInitFunc) opensim_generator_class_init, 
+      (GClassFinalizeFunc) NULL, 
+      NULL,   // class_data 
+      sizeof (OpensimGenerator), 
+      0,      // n_preallocs 
+      (GInstanceInitFunc) opensim_generator_init, 
+    }; 
+    g_define_type_id = g_type_register_static(G_TYPE_OBJECT, 
+                                              "OpensimGeneratorType", 
+                                              &g_define_type_info, 
+                                              (GTypeFlags) 0); 
+  } 
+  return g_define_type_id; 
 }
 
 
 
-OpenSim::SimBuilder::~SimBuilder()
+void
+opensim_variable_set_property(GObject      *object,
+                              guint         property_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
 {
+  OpensimVariable *self = OPENSIM_GENERATOR(object);
+  
+  switch (property_id)
+  {
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+      break;
+  }
 }
 
+
+
+void
+opensim_variable_get_property (GObject    *object,
+                               guint       property_id,
+                               GValue     *value,
+                               GParamSpec *pspec)
+{
+  OpensimVariable *self = OPENSIM_GENERATOR(object);
+  
+  switch (property_id)
+  {
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+    break;
+  }
+}
+
+
+
+static void
+opensim_generator_class_init(OpensimGeneratorClass *klass)
+{
+  opensim_generator_parent_class = g_type_class_peek_parent(klass);
+  
+  g_type_class_add_private(klass, sizeof (OpensimGeneratorPrivate));
+  
+  GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
+  GParamSpec *opensim_param_spec;
+  
+  gobject_class->set_property = opensim_generator_set_property;
+  gobject_class->get_property = opensim_generator_get_property;
+  gobject_class->dispose      = opensim_generator_dispose;
+  gobject_class->finalize     = opensim_generator_finalize;
+  
+  klass->rebase               = opensim_generator_default_rebase;
+  klass->update               = opensim_generator_default_update;
+  klass->parse                = opensim_generator_default_parse;  
+}
+
+
+
+static void
+opensim_generator_init(OpensimGenerator *generator)
+{
+  generator->priv = OPENSIM_GENERATOR_GET_PRIVATE(self);
+  OpensimGenerator *self = generator->priv;
+  
+  self->valid_model    = FALSE;
+  self->errors         = 0;
+  
+  self->top_level_vars = NULL;
+  self->vars           = NULL;
+  self->bytecode       = NULL;
+}
+
+
+
+static void
+opensim_generator_dispose(GObject *gobject)
+{
+  //OpensimVariable *self = OPENSIM_VARIABLE(gobject);
+  
+  /* 
+   * In dispose, you are supposed to free all typesecifier before 'IOVenText'
+   * object which might themselves hold a reference to self. Generally,
+   * the most simple solution is to unref all members on which you own a 
+   * reference.
+   */
+  
+  /* dispose might be called multiple times, so we must guard against
+   * calling g_object_unref() on an invalid GObject.
+   */
+  
+  /* Chain up to the parent class */
+  G_OBJECT_CLASS(opensim_generator_parent_class)->dispose(gobject);
+}
+
+
+
+static void
+opensim_generator_finalize(GObject *gobject)
+{
+  OpensimGenerator *generator = OPENSIM_GENERATOR(gobject);
+  OpensimGeneratorPrivate *self = generator->priv;
+  
+  /* free any memory (and strings we've allocated */
+  if (self->bytecode) g_byte_array_free (self->bytecode, TRUE);
+  
+  /* Chain up to the parent class */
+  G_OBJECT_CLASS(opensim_generator_parent_class)->finalize(gobject);
+}
 
 
 int
-OpenSim::SimBuilder::Update()
+opensim_simulator_update (OpensimGenerator *generator)
+{
+  return OPENSIM_GENERATOR_GET_CLASS (generator)->update (generator);
+}
+
+
+static int
+opensim_generator_default_update (OpensimGenerator *generator)
 {
   // this can be optimized, but for now should do.
-  // FIXME: we MUST be leaking memory here, but at 4am I don't care.
-  delete root;
-  
-  varASTs = std::map<std::string, OpenSim::VariableAST *>();
-  body = std::vector<OpenSim::VariableAST *>();
-  initial = std::vector<OpenSim::VariableAST *>();
-  
-  InitializeModule();
+
+  /* just do it... */
 
   return 0;
 }
 
-
-
-int
-OpenSim::SimBuilder::Update(std::map<std::string, 
-                                         OpensimVariable *> &variables)
-{
-  // save the variables we're passed.
-  vars = variables;
-  this->Update();
-}
-
+/*
 
 int 
-OpenSim::SimBuilder::Parse(int ourWalk, FILE *output_file)
+OpenSim::SimBuilder::Parse(int our_walk, FILE *output_file)
 {
   if (!_valid_model)
   {
@@ -678,19 +793,33 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
 
   return val ? true : false;
 }
+*/
 
 
-
-int 
-OpenSim::SimBuilder::GetTokPrecedence() 
+static int 
+get_tok_precedence (int op_char) 
 {
-  if (!(CurTok.type == tok_operator)) return -1;
-
-  // Make sure it's a declared binop.
-  int TokPrec = BinopPrecedence[CurTok.op];
+  // standard mathmatical operators.
   
-  // less than 0 means that its not in the map
-  if (TokPrec <= 0) return -1;
-
-  return TokPrec;
+  switch op_char 
+  {
+  case '=':
+    return 2;
+  case '<':
+    return 10;
+  case '>':
+    return 10;
+  case '+':
+    return 20;
+  case '-':
+    return 20;
+  case '*':
+    return 40;
+  case '/':
+    return 40;
+  case '/':
+    return 60;
+  default:
+    return -1;
+  }
 }

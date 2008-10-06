@@ -24,96 +24,86 @@
 //
 //===---------------------------------------------------------------------===//
 
-#ifndef OSIM_SIMBUILDER_H
-#define OSIM_SIMBUILDER_H
+#ifndef __OPENSIM_GENERATOR_H__
+#define __OPENSIM_GENERATOR_H__
+
+#include <glib.h>
+#include <glib-object.h>
+#include <glib/gprintf.h>
 
 // openSim stuff
 #include "../globals.h"
 #include "../opensim-simulator.h"
 #include "../opensim-variable.h"
 
+G_BEGIN_DECLS
 
-namespace OpenSim
+/*
+ * Type macros.
+ */
+#define OPENSIM_TYPE_GENERATOR            (opensim_simulator_get_type())
+#define OPENSIM_GENERATOR(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), \
+                                           OPENSIM_TYPE_GENERATOR, \
+                                           OpensimGenerator))
+#define OPENSIM_GENERATOR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), \
+                                           OPENSIM_TYPE_GENERATOR, \
+                                           OpensimGeneratorClass))
+#define OPENSIM_IS_GENERATOR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+                                           OPENSIM_TYPE_GENERATOR))
+#define OPENSIM_IS_GENERATOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), \
+                                           OPENSIM_TYPE_GENERATOR))
+#define OPENSIM_GENERATOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), \
+                                           OPENSIM_TYPE_GENERATOR, \
+                                           OpensimGeneratorClass))
+
+
+typedef struct _OpensimGenerator        OpensimGenerator;
+typedef struct _OpensimGeneratorClass   OpensimGeneratorClass;
+typedef struct _OpensimGeneratorPrivate OpensimGeneratorPrivate;
+
+
+struct _OpensimGenerator
 {
-  class ExprAST;
-  class VariableAST;
-  class SimAST;
-  class CodeGenModule;
-  class PythonPrintModule;
-  class InterpreterModule;
+  GObject parent_instance;
   
+  /*
+   * Properties:
+   *
+   */
   
-  /// SimBuilder - main class for building and interacting with models
-  /// and their ASTs.  Currently SimBuilder supports building and walking
-  /// model ASTs from file, but not modifying or saving them.
-  ///
-  class SimBuilder
-  {
-    /// A map of all of the defined variables, keyed by name.
-    std::map<std::string, OpensimVariable *> vars;
-    
-    /// A map of all of the defined variable AST nodes, keyed by name.
-    std::map<std::string, OpenSim::VariableAST *> varASTs;
-    
-    /// A vector of all of the top level variable AST nodes, in the
-    /// order in which they need to be solved, back to front.
-    std::vector<OpenSim::VariableAST *> body;
-    
-    /// A vector of all of the top level variable AST nodes, in the
-    /// order in which they need to be solved, back to front.
-    std::vector<OpenSim::VariableAST *> initial;
-    
-    /// Pointer to the root of the constructed model AST.
-    OpenSim::SimAST *root;
-    
-    /// Internal method to process the variables and construct an AST.
-    void InitializeModule();
-    bool _valid_model;
-    int _errors;
-    
-    
-    /// Checks to see if we've started parsing the variable with 
-    /// this ID name yet.
-    bool IsUnparsedTL(std::string IdName);
-    std::vector<OpensimVariable *> topLevelVars;
-    
-    std::map<char, int> BinopPrecedence;
-    
-    // variable equation token handling
-    unsigned int toks_index;
-    equ_token CurTok;
-    OpensimVariable *CurVar;
-    
-    OpenSim::ExprAST *CurVarInitial;
-    
-    std::vector<int> index_stack;
-    std::vector<OpensimVariable *> var_stack;
-    
-    void PushTokens();
-    void PopTokens();
-    bool getNextToken();
-    int GetTokPrecedence();
-    
-    // expression parsing
-    bool ProcessVar(OpensimVariable *var);
-    OpenSim::ExprAST *ParseBinOpRHS(int ExprPrec, OpenSim::ExprAST *LHS);
-    OpenSim::ExprAST *ParsePrimary();
-    OpenSim::ExprAST *ParseUnary();
-    OpenSim::ExprAST *ParseTable();
-    OpenSim::ExprAST *ParseNumberExpr();
-    OpenSim::ExprAST *ParseExpression();
-    OpenSim::ExprAST *ParseIdentifierExpr();
-    OpenSim::ExprAST *ParseVarRefExpr(std::string IdName);
-    
-  public:
-    SimBuilder(std::map<std::string, OpensimVariable *> &variables);
-    ~SimBuilder();
-    
-    int Update();
-    int Update(std::map<std::string, OpensimVariable *> &variables);
-    
-    int Parse(int ourWalk, FILE *output_file);
-  };
-}
+  /* instance members */
+  OpensimGeneratorPrivate *priv;
+};
 
-#endif // OSIM_SIMBUILDER_H
+struct _OpensimGeneratorClass
+{
+  GObjectClass parent_class;
+  
+  int               (* rebase) (OpensimGenerator *generator,
+                                GHashTable       *variables);
+  int               (* update) (OpensimGenerator *generator);
+  int               (* parse)  (OpensimGenerator *generator,
+                                int               our_walk,
+                                FILE             *output_file);
+};
+
+
+/* used by OPENSIM_TYPE_SIMULATOR */
+GType generator ();
+
+int
+opensim_generator_rebase (OpensimGenerator *generator, 
+                          GHashTable *variables);
+
+int 
+opensim_generator_update (OpensimGenerator *generator);
+
+int 
+opensim_generator_parse  (OpensimGenerator *generator, 
+                          int our_walk,
+                          FILE *output_file);
+
+
+G_END_DECLS
+
+#endif // __OPENSIM_GENERATOR_H__
