@@ -36,6 +36,7 @@
 #include "string.h"
 #include "getopt.h"
 #include "unistd.h"
+#include "sys/time.h"
 
 // openSim headers
 #include "opensim.h"
@@ -48,6 +49,7 @@ static const struct option longopts[] =
   { "target", required_argument, NULL, 't' },
   { "output", required_argument, NULL, 'o' },
   { "help", no_argument, NULL, 'h' },
+  { "performance", no_argument, NULL, 'p' },
   { "version", no_argument, NULL, 'v' },
   { NULL, 0, NULL, 0 }
 };
@@ -69,6 +71,9 @@ main (int argc, const char * argv[])
   int too_many_inputs = 0;
   int specify_target = 0;
   int specify_output = 0;
+  int test = 0;
+  struct timeval time_start;
+  struct timeval time_end;
   const char *input_file;
   const char *target;
   const char *output;
@@ -78,8 +83,8 @@ main (int argc, const char * argv[])
   // main processing loop for argument parsing.
   // getopt will loop through all of the arguments,
   // returning the ones it knows.
-  while ((optc = getopt_long(argc, (char * const *)argv, 
-                             "t:o:hv", longopts, NULL)) != -1)
+  while ((optc = getopt_long (argc, (char * const *)argv, 
+                              "t:o:hvp", longopts, NULL)) != -1)
   {
     switch (optc)
     {
@@ -89,16 +94,19 @@ main (int argc, const char * argv[])
         return 0;
         break;
       case 't':
-        target = (const char *)optarg;
+        target = (const char *) optarg;
         specify_target = 1;
         break;
       case 'h':
-        print_help();
+        print_help ();
         return 0;
         break;
       case 'o':
-        output = (const char *)optarg;
+        output = (const char *) optarg;
         specify_output = 1;
+        break;
+      case 'p':
+        test = 1;
         break;
       default:
         lose = 1;
@@ -122,14 +130,14 @@ main (int argc, const char * argv[])
     // did to get here.  They could have either listed too many files,
     // too few files, or a bad option
     if (too_many_inputs)
-      fprintf(stderr, "%s: only one input file may be specified.\n",
-              program_name);
+      fprintf (stderr, "%s: only one input file may be specified.\n",
+               program_name);
     else if (!got_input_file && !lose)
-      fprintf(stderr, "%s: no input file specified.\n",
-              program_name);
+      fprintf (stderr, "%s: no input file specified.\n",
+               program_name);
     
-    fprintf(stderr, "Try `%s --help' for more information.\n",
-            program_name);
+    fprintf (stderr, "Try `%s --help' for more information.\n",
+             program_name);
     return -1;
   }
    
@@ -139,56 +147,70 @@ main (int argc, const char * argv[])
   // handle explicitly requesting a target type
   if (specify_target)
   {
-    if (!strcmp(target, "python"))
+    if (!strcmp (target, "python"))
     {
       new_walk = sim_emit_Python;
     }
-    else if (!strcmp(target, "as3"))
+    else if (!strcmp (target, "as3"))
     {
       new_walk = sim_emit_AS3;
     }
-    else if (!strcmp(target, "llvm-ir"))
+    else if (!strcmp (target, "llvm-ir"))
     {
       new_walk = sim_emit_IR;
     }
-    else if (!strcmp(target, "fortran"))
+    else if (!strcmp (target, "fortran"))
     {
       new_walk = sim_emit_Fortran;
       
       // just remove these lines in a few days when we support Fortran
-      fprintf(stderr, "%s: Fortran support will be here soon!.\n",
-              program_name);
+      fprintf (stderr, "%s: Fortran support will be here soon!.\n",
+               program_name);
       
-      fprintf(stderr, "Try `%s --help' for more information.\n",
-              program_name);
+      fprintf (stderr, "Try `%s --help' for more information.\n",
+               program_name);
       return -1;
     }
-    else if (!strcmp(target, "interpret"))
+    else if (!strcmp (target, "interpret"))
     {
       new_walk = sim_emit_Output;
     }
     else
     {
-      fprintf(stderr, "%s: invalid target language:%s.\n",
-              program_name, target);
+      fprintf (stderr, "%s: invalid target language:%s.\n",
+               program_name, target);
       
-      fprintf(stderr, "Try `%s --help' for more information.\n",
-              program_name);
+      fprintf (stderr, "Try `%s --help' for more information.\n",
+               program_name);
       return -1;
     }
   }
   
+  if (test) gettimeofday (&time_start, NULL);  
   
-  opensim_load_model(input_file);
-  opensim_set_output_type(new_walk);
+  opensim_load_model (input_file);
+  opensim_set_output_type (new_walk);
   
   if (specify_output)
   {
-    opensim_set_output_file(output);
+    opensim_set_output_file (output);
   }
+
+  // for a performance test, we should direct output to /dev/null
+  if (test) opensim_set_output_file ("/dev/null");
+
   
-  opensim_simulate();
+  opensim_simulate ();
   
+  if (test)
+  {
+    gettimeofday (&time_end, NULL);
+    
+    int time_ms = (time_end.tv_usec - time_start.tv_usec) + 
+                  (time_end.tv_sec - time_start.tv_sec) * 1e6;
+    
+    fprintf (stdout, "%d\n", time_ms);
+  }
   return 0;
 }
 
@@ -198,7 +220,7 @@ static void
 print_help()
 {
   printf("\
-Usage: %s [-htvo] input_file\n", program_name);
+Usage: %s [-htvop] input_file\n", program_name);
 
   fputs("\
 Simulate system dynamics models.\n\n\
@@ -222,6 +244,9 @@ Options:\n", stdout);
   
   fputs("\
   -o, --output=FILE   output model to the specified file\n", stdout);  
+
+  fputs("\
+  -p, --performance   output time taken to run model in ms\n", stdout);
 
   printf("\n");
 
