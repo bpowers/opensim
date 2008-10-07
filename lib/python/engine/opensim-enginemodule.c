@@ -17,7 +17,14 @@ opensim_get_file (PyGObject *self, PyObject *args, PyObject *kwargs)
   PyObject *input_file_object;
   PyObject *ret;
   
-  if (!PyArg_ParseTupleAndKeywords (args, kwargs,"OO:get_file", kwlist, 
+  if ((args == NULL || !PyTuple_Check(args)) ||
+      (kwargs != NULL && !PyDict_Check(kwargs)) ||
+      kwlist == NULL)
+  {
+    fprintf(stderr, "DANGER DANGER WILL ROBINSON\n");
+  }
+  
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, "OO:get_file", kwlist, 
                                     &py_sim, &input_file_object))
     return NULL;
   
