@@ -68,6 +68,8 @@ struct _OpensimGenerator
   
   /*
    * Properties:
+   * valid_model - get
+   * errors      - get
    *
    */
   

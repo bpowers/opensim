@@ -63,13 +63,16 @@ static int get_tok_precedence (int op_char);
 
 struct _OpensimGeneratorPrivate
 {
-  int         errors;
-  gboolean    valid_model;
+  int              errors;
+  gboolean         valid_model;
   
-  GArray     *top_level_vars;
+  GArray          *top_level_vars;
   
-  GHashTable *vars;
-  GByteArray *bytecode;
+  GHashTable      *vars;
+  GByteArray      *bytecode;
+  
+  OpensimVariable *cur_var;
+  int              tok_index;
 };
 
 
@@ -102,7 +105,7 @@ opensim_generator_get_type()
 
 
 void
-opensim_variable_set_property(GObject      *object,
+opensim_generator_set_property(GObject      *object,
                               guint         property_id,
                               const GValue *value,
                               GParamSpec   *pspec)
@@ -122,7 +125,7 @@ opensim_variable_set_property(GObject      *object,
 
 
 void
-opensim_variable_get_property (GObject    *object,
+opensim_generator_get_property (GObject    *object,
                                guint       property_id,
                                GValue     *value,
                                GParamSpec *pspec)
@@ -174,6 +177,9 @@ opensim_generator_init(OpensimGenerator *generator)
   self->top_level_vars = NULL;
   self->vars           = NULL;
   self->bytecode       = NULL;
+  
+  self->cur_var        = NULL;
+  self->tok_index      = 0;
 }
 
 
@@ -786,15 +792,17 @@ OpenSim::SimBuilder::ParseExpression()
   return ParseBinOpRHS(0, LHS);
 }
 
+*/
 
-
-bool 
-OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
+static gboolean 
+process_var (OpensimGenerator *generator, OpensimVariable *var)
 {
-  const GArray *toks = opensim_variable_get_tokens(var);
-  toks_index = 0;
+  OpensimGeneratorPrivate *self = generator->priv;
   
-  CurVar = var;
+  const GArray *toks = opensim_variable_get_tokens (var);
+  self->tok_index = 0;
+  
+  self->cur_var = var;
   
   var_type  var_t = var_undef;
   gchar    *var_name = NULL;
@@ -805,15 +813,16 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
   {
     fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
             var_name);
-    _errors++;
+    self->errors++;
     
     g_free(var_name);
-    return false;
+    return FALSE;
   }
 
+  /*
   // prime CurToken
-  getNextToken();
-  ExprAST *val = ParseExpression();
+  get_next_token ();
+  ExprAST *val = parse_expression ();
   
   // this is our variable
   VariableAST *newNode = new VariableAST(var, val);
@@ -844,11 +853,12 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
     initial.push_back(newNode);
   
   varASTs[var_name] = newNode;
+   
+  */
   g_free(var_name);
 
-  return val ? true : false;
+  return FALSE;//val ? TRUE : FALSE;
 }
-*/
 
 
 static int 
