@@ -10,22 +10,13 @@ void engine_variable_register_classes(PyObject *d);
 // GROSS HACK to pass a file pointer from C to Python and wrap it as a 
 // Python File object.
 static PyObject *
-opensim_get_file (PyGObject *self, PyObject *args, PyObject *kwargs)
+opensim_get_file (PyGObject *self, PyObject *args)
 {
-  static char *kwlist[] = { "simulator", "file", NULL };
   PyObject *py_sim;
   PyObject *input_file_object;
   PyObject *ret;
   
-  if ((args == NULL || !PyTuple_Check(args)) ||
-      (kwargs != NULL && !PyDict_Check(kwargs)) ||
-      kwlist == NULL)
-  {
-    fprintf(stderr, "DANGER DANGER WILL ROBINSON\n");
-  }
-  
-  if (!PyArg_ParseTupleAndKeywords (args, kwargs, "OO:get_file", kwlist, 
-                                    &py_sim, &input_file_object))
+  if (!PyArg_ParseTuple (args, "OO:get_file", &py_sim, &input_file_object))
     return NULL;
   
   
