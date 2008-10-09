@@ -473,11 +473,7 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def save_visual_state(self, widget, save_file_pointer):
-    print self
-    print widget
-    print save_file_pointer
-    
-    f = engine.get_file (self, widget)
+    f = engine.get_file (widget, save_file_pointer)
     logging.debug("Canvas: Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
