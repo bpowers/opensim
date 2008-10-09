@@ -235,7 +235,7 @@ static int
 opensim_generator_default_rebase (OpensimGenerator *generator,
                                   GHashTable       *variables)
 {
-  /* just do it... */
+  /* first replace hash table, then call update */
   
   return 0;
 }
@@ -253,9 +253,7 @@ opensim_simulator_update (OpensimGenerator *generator)
 static int
 opensim_generator_default_update (OpensimGenerator *generator)
 {
-  // this can be optimized, but for now should do.
-
-  /* just do it... */
+  /* delete generated data structures and then initialize module */
 
   return 0;
 }
@@ -279,58 +277,48 @@ opensim_generator_default_parse (OpensimGenerator *generator,
                                  int               our_walk,
                                  FILE             *output_file)
 {
+  OpensimGeneratorPrivate *self = generator->priv;
+  
+  if (!self->valid_model)
+  {
+    fprintf (stderr, "Error: model not valid; not running.\n");
+    return -1;
+  }
+  
+  switch (our_walk)
+  {
+  case sim_emit_Python:
+    
+    break;
+    
+  case sim_emit_AS3:
+    
+    break;
+    
+  case sim_emit_IR:
+    fprintf (stderr, "Error: Sorry, JIT is disabled.\n");
+    return -2;
+    break;
+    
+  case sim_emit_Output:
+    
+    break;
+    
+  default:
+    fprintf (stderr, "Error: unrecognized internal walk_type.\n");
+    break;
+  }
   
   return 0;
 }
 
-/*
 
-int 
-OpenSim::SimBuilder::Parse(int our_walk, FILE *output_file)
+
+static int initialize_module ()
 {
-  if (!_valid_model)
-  {
-    fprintf(stderr, "opensim: model not valid, not simulating.\n");
-    return -1;
-  }
-
-  ASTConsumer *consumer = NULL;
-  
-  switch (ourWalk)
-  {
-    case sim_emit_Python:
-      consumer = new PythonPrintModule();
-      break;
-    case sim_emit_AS3:
-      //consumer = new AS3PrintModule();
-      break;
-    case sim_emit_IR:
-      fprintf(stdout, "Error: Sorry, JIT is disabled.\n");
-      return -2;
-      //consumer = new CodeGenModule();
-      break;
-    case sim_emit_Output:
-      consumer = new InterpreterModule();
-      break;
-    default:
-      break;
-  }
-  
-  // if we were able to create a consumer, have it 
-  // eat the AST and spit something out.
-  if (consumer) 
-  {
-    consumer->Consume(root, output_file);
-    delete consumer;
-    
-    return 0;
-  }
-  
   return -1;
 }
-
-
-
+/*
 void 
 OpenSim::SimBuilder::InitializeModule()
 {
@@ -806,16 +794,16 @@ process_var (OpensimGenerator *generator, OpensimVariable *var)
   
   var_type  var_t = var_undef;
   gchar    *var_name = NULL;
-  g_object_get(G_OBJECT(var), "type", &var_t, 
-                              "name", &var_name, NULL);
+  g_object_get (G_OBJECT (var), "type", &var_t, 
+                                "name", &var_name, NULL);
   
   if (toks->len == 0)
   {
-    fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
-            var_name);
+    fprintf (stderr, "Error: variable '%s' has empty equation field\n", 
+             var_name);
     self->errors++;
     
-    g_free(var_name);
+    g_free (var_name);
     return FALSE;
   }
 
@@ -855,7 +843,7 @@ process_var (OpensimGenerator *generator, OpensimVariable *var)
   varASTs[var_name] = newNode;
    
   */
-  g_free(var_name);
+  g_free (var_name);
 
   return FALSE;//val ? TRUE : FALSE;
 }
