@@ -183,7 +183,7 @@ class ViewToolbar(gtk.Toolbar):
     
     # connect these after both exist to get rid of some of the errors 
     # we were getting on activity startup
-    self.view_graphs.connect('toggle', self.__toggled)    
+    self.view_graphs.connect('toggled', self.__toggled)    
     self.view_canvas.connect('toggled', self.__toggled)
     
     separator = gtk.SeparatorToolItem()
