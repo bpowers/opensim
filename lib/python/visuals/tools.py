@@ -167,7 +167,6 @@ class ViewToolbar(gtk.Toolbar):
 
     self.view_canvas = ToggleToolButton('opensim-canvas')
     self.view_canvas.set_tooltip(_('View model diagram'))
-    self.view_canvas.connect('toggled', self.__toggled)
     self.insert(self.view_canvas, -1)
     self.view_canvas.set_active(True)
     self.view_canvas.show()
@@ -179,11 +178,14 @@ class ViewToolbar(gtk.Toolbar):
 
     self.view_graphs = ToggleToolButton('opensim-graphs')
     self.view_graphs.set_tooltip(_('View simulation graphs'))
-    #self.run.props.accelerator = '<Ctrl>Q'
-    self.view_graphs.connect('toggled', self.__toggled)
     self.insert(self.view_graphs, -1)
     self.view_graphs.show()
-
+    
+    # connect these after both exist to get rid of some of the errors 
+    # we were getting on activity startup
+    self.view_graphs.connect('toggle', self.__toggled)    
+    self.view_canvas.connect('toggled', self.__toggled)
+    
     separator = gtk.SeparatorToolItem()
     separator.props.draw = False
     self.insert(separator, -1)
