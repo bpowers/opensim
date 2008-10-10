@@ -1,6 +1,2428 @@
-2008-08-11  gettextize  <bug-gnu-gettext@gnu.org>
+commit 9273122790b6e8369799cab6973f2c795c1704a7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 10 19:33:03 2008 +0000
 
-	* Makefile.am (SUBDIRS): Add intl, po.
-	(ACLOCAL_AMFLAGS): New variable.
-	* configure.ac (AC_CONFIG_FILES): Add intl/Makefile, po/Makefile.in.
+    initial, somewhat rough, flow arrowheads!
 
+commit 9ffae1ec31fb452c7b4927c2e1dd1afd6eb9e42e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 10 19:32:02 2008 +0000
+
+    fix typo in 'toggleD' signal
+
+commit 36530c810e1129a8e2ccd31e1b0f4ac31a6f075f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 10 17:49:38 2008 +0000
+
+    canvas correctly loads saved model, fix activity startup errors
+    
+    I updated the python canvas to correctly pass saved models to
+    the engine, fixing the exception that was causing the canvas
+    to bail out of loading models early.
+    
+    Moved the connections for the model and graph buttons to after
+    both objects were created, so that the toggle callback always
+    has both widgets available to make comparisons to.
+
+commit 56dfd45d33700f4c38baec0e479626ea175883c7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Oct 9 14:59:03 2008 -0400
+
+    save_visual_state works again
+
+commit d587396e5a7eecfc60fb00c82d4fe5dd3cc06006
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 8 23:07:52 2008 -0400
+
+    stubbed out default_parse in generator and some whitespace issues
+
+commit d2c25ff6944936fb3221adc61a589bbb057c8673
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 7 02:28:20 2008 -0400
+
+    remove kwargs from get_file function, since we weren't using them anyway
+    
+    this seems to fix the linux problems, and at this point in the night I really
+    can't find the focus to get to the root of this.
+
+commit 910dcbe77bb9040bb4030307d93cafc94f7a1c68
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 7 01:58:10 2008 -0400
+
+    check for null args in effort to find linux incompat
+
+commit 5d87b3faf9c805f22be65e723bc7997704d021e5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 7 01:14:18 2008 -0400
+
+    additional command line option '-p' for speed testing the interpreter
+    
+    I added a new option that will give the time it takes in milliseconds to load
+    a model and simulate it as output, as well as a simple python program to run
+    the rabbit model 10 times to get the average running time.  It turns out to
+    have a low standard deviation
+
+commit 74cfe9e046aedaa46c47b850374f194915c3bae4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 21:09:22 2008 -0400
+
+    some work on stubbing out process_var in generator
+
+commit e37479f33a46023d5c0287ce308428473ad63f95
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 19:23:00 2008 -0400
+
+    opensim-generator stub complete and compiles
+
+commit 92d010ea4e5740e575349080c59d764394df3761
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 18:34:58 2008 -0400
+
+    renamed opensim-generator.c to opensim-generator.cpp
+
+commit d2e8cd00aa1df45d6b7c0d73d5355da59a1ad5b8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 18:33:18 2008 -0400
+
+    basic work to gobjectify (and c-ify) generator
+
+commit c706a795eca2ce3c11da122a8f09e274b093a427
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 15:19:51 2008 -0400
+
+    copy SimBuilder as base for opensim-generator
+
+commit 1a9fc1f52e99c8c658dd2bdc2576c174d0bd1838
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 6 15:14:56 2008 -0400
+
+    refactored gsim_run to catch an additional error & gsim whitespace changes
+    
+    we didn't actually return an error if there wasn't a sim_builder,  as we
+    probably should.
+
+commit 3e307289676550d501f6d9fefbc4b687b1020210
+Merge: a01410d... e6f7dd9...
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 3 11:18:41 2008 -0400
+
+    Merge branch 'master' of git+ssh://bobbyp@dev.laptop.org/git/activities/model
+
+commit a01410d34f48f25046c7cbee6774c1cc8fb2d146
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 3 11:18:22 2008 -0400
+
+    update canvas to use new 'saving' signal rather than old hack for visual data
+
+commit b252d0c748b6ec3117f88c6ccd496d59b791ced8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 3 11:17:48 2008 -0400
+
+    added shell script for updating libraries included in bundle
+    
+    i got tired of manually doing this...
+
+commit e6f7dd90c98c2be77de48ec164ab660d16888410
+Merge: a80b96a... a07eed5...
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 30 12:31:18 2008 -0400
+
+    Merge branch 'master' of git+ssh://bobbyp@dev.laptop.org/git/activities/model
+
+commit a80b96a90b1bc4bcf3a15edc5ccf7863b18160ba
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 30 12:30:03 2008 -0400
+
+    whitespace changes in construct.py example
+
+commit a07eed55701f9379117a13cdd71f625c0411c38a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Sep 22 00:31:42 2008 -0400
+
+    opensim-gtk whitespace changes
+    
+    I like the gnu style for parenthesis now
+
+commit 5faebb974c6a1d6d06b86c6a627a20b95988ba7b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 22:40:41 2008 -0400
+
+    fix some assumptions in AS3 template
+    
+    start time is not necessarily 0, and savestep is not necessarily 1
+
+commit bd0d8571996289d61bf0004b183ba921ddc0c599
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 22:29:06 2008 -0400
+
+    merged Billy's as3_template.as
+    
+    he says this is necessary to make it work
+
+commit 58d93eb1eaf66823c7e1244eb979e95950db10d1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 22:12:13 2008 -0400
+
+    remove as3_test and cleanup python engine makefile
+    
+    simple formatting in makefile, as3_test is no longer needed now that
+    we know what the AS3 should look like
+
+commit 302316aed0c52d7c681ef8191a24893646d0e92b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 21:14:12 2008 -0400
+
+    add check for valid model before running
+    
+    we had a regression when converting from C++ -> gobject where we
+    lost a check to make sure it was a valid model before simulating
+
+commit b6754a75dcbf5e8ac03a7b19caba9ff8fb0890e5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 18:45:53 2008 -0400
+
+    small whitespace fix and one line comment for construct.py
+
+commit 8935ad4753246dd79246d1ca704d71deb5da5bc4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 18:42:40 2008 -0400
+
+    clean up construct.py example, and enforce 80-char lines in enginemodule
+    
+    removed some testing code from construct, and add comments to make it
+    easier to understand what is doing what
+
+commit 48dd9ed659aae751a37f4400d020868a18025129
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 18:35:46 2008 -0400
+
+    clean up
+
+commit b18cc9abdb9d679ebf9ffeb32250895585052ab0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 18:01:11 2008 -0400
+
+    revert save_file in opensim-d driver
+    
+    had temporarily converted the opensim-d driver to only call the save_file ()
+    method, as opposed to the expected run () method, in order to assist in
+    development of the 'saving' signal.
+
+commit a28db2b73c04df2b633725aa30de0c8b8682c222
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 21 17:58:49 2008 -0400
+
+    working signals across c->python bridge, but in a gross way
+
+commit 3272bd3ec5d84a38741de92fd8138ac56a771dc2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 17 17:39:58 2008 -0400
+
+    simulator emits signal in the correct place
+
+commit 30b7bf51f68b0a283d1a882fd6d0058a4467024b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 17 17:27:28 2008 -0400
+
+    finished splitting up ioxml's save into header, body, and footer methods
+
+commit bb96706fe5769ba2fd5faeba9c2ecf1701b6d635
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 17 15:59:55 2008 -0400
+
+    refactoring ioxml to write header, body and footer seperately
+    
+    this will let us nicely have a 'saving' signal so that other functions can write stuff into the save files
+
+commit 8a26561682287d4b3e8057d338eae112040551be
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 17 14:23:41 2008 -0400
+
+    wirling signal
+
+commit 60bb38a821a54db6327cacd8bb87e8c1bf589e1d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 16 09:56:03 2008 -0400
+
+    signal now takes void argument, but still segfaults
+
+commit 260924201d45d1b1200868833ea53d50e5008ab1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Sep 15 00:32:50 2008 -0400
+
+    compiling signals, but segfaults on save
+
+commit d057a435652b823ac843cac4ff3bfe9f3cb4bdd4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 14 19:28:02 2008 -0400
+
+    small comments about signals
+
+commit 41690346208afa21293d3c43c59ed0a21b21cb35
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 14 18:23:57 2008 -0400
+
+    working save files for text/command line models
+
+commit cdc7d1135b8afdb9dda5f52f4de7a3816129e4c7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 14 03:04:50 2008 -0400
+
+    implemented save in ioxml, just need to call it now frm gsim
+
+commit b32cffe0d6f27b601112c05ddfb45d75fe839a89
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Sep 14 02:09:20 2008 -0400
+
+    partial, but broken, save support
+
+commit 9f7320155f15fc4aa318d456235cb9921492c4d0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 13:11:23 2008 -0400
+
+    whitespace fixes
+
+commit d68c8e85b081ee3e6292663c2fd55c4b92f6f112
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 13:04:14 2008 -0400
+
+    move example models into own subdirectory
+
+commit c9993aa36b7587b5e2a098c96d9f02995d843efe
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Sep 13 17:00:49 2008 -0400
+
+    working enums, python simulator properties, full python driver (again)
+
+commit a76201c628db974a17bc437c2ed9892f890943f6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Sep 13 13:46:35 2008 -0400
+
+    updated codegen to svn971
+
+commit b251eda6889be1070181137da8fae0ae333f986e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Sep 12 14:46:53 2008 -0400
+
+    fixes to enable python bindings on mac
+    
+    tip from here:
+    http://archive.netbsd.se/?ml=fink-devel&a=2008-01&t=6038121
+
+commit 4d83473ed6a7032ee2e8ed31b8ce2cd05b66426f
+Author: Bobby Powers <bobby@syru114-206.syr.edu>
+Date:   Fri Sep 12 14:31:21 2008 -0400
+
+    add license to activity.info and bump activity version
+
+commit 7b317f3fc0a23e85b2affd6227bd63ee5ae63756
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 04:16:29 2008 -0400
+
+    update version # to 0.4.3
+
+commit 8c076e2f588fa83d2e1317035771dd75231617bd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 04:14:38 2008 -0400
+
+    example of how to construct a model in python
+
+commit 27ec452b72710561f988f2e2e9f050ec7e4a91da
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 04:13:38 2008 -0400
+
+    we correctly create variables
+
+commit 82eecc53d961b3e3ab3e6ae963b1d6548cab6c86
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 03:35:17 2008 -0400
+
+    work on new variables, but segfaults when it runs
+
+commit 1ba1fb5aca3ebb083798f78fddc162058f7e67a8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 03:15:39 2008 -0400
+
+    whitespace formatting in ioxml
+
+commit 8264005ad8291b26e4fef6af1d5a493f1714f789
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Sep 11 00:50:28 2008 -0400
+
+    reformatted gsim header
+
+commit 3a0aa19253ab5c95448917d6aeaf3b33ab3549de
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 10 23:35:01 2008 -0400
+
+    more reasonable start and end dates
+
+commit c6e6d2846ab2bbe8cd10ae54b26d2bafa197e585
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 10 23:29:51 2008 -0400
+
+    stubs for full simulator functions
+
+commit 60bac7a5d554931959da0b68e99f7db48c2455d3
+Merge: d2debcf... b091b02...
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 9 13:59:10 2008 -0400
+
+    Merge branch 'gobject'
+    
+    Conflicts:
+    
+    	acinclude.m4
+    	configure.ac
+    	lib/CodeGen/InterpreterModule.cpp
+    	lib/CodeGen/SimBuilder.h
+    	lib/Makefile.am
+    	lib/Simulator.h
+    	lib/libsim.cpp
+    	lib/python/engine/__init__.py
+
+commit b091b02ebc0a46334bf56553c49912a4ce21a47a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 9 13:41:05 2008 -0400
+
+    whitespace changes
+
+commit f50945415c4e250b574d0d1f738955abfc93c9f6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Sep 8 19:57:00 2008 -0400
+
+    check for pyobject, not pygtk
+
+commit f6b3f0e1a805a00e1a739db7db59ec1713d73da2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 3 01:36:49 2008 -0400
+
+    update pofiles.in to reflect namespaces changes
+
+commit cab94c467a1b2a6849026318b97b60765193ab05
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 3 01:33:33 2008 -0400
+
+    updated manifest and removed goocanvas la
+
+commit 4ca00c26d2083ebe7d7004f29ee8a6ea35dd7dde
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Sep 3 01:24:40 2008 -0400
+
+    python wrapper now has both vars and sim, but still no enums
+
+commit e87bd4fc116dd649cca8cafa92bf1b2636c3e44c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 23:35:19 2008 -0400
+
+    formatting improvements
+
+commit 6df9345dacb3b27c792b9ba66f6e92fffeb159cd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 22:04:52 2008 -0400
+
+    remove unneeded declarations in non-ltdl driver version
+
+commit d2debcfe637737f6a0e0af3cb89668429aaad836
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 21:47:21 2008 -0400
+
+    added test output from master
+
+commit c1d83ce4f297ab234212fd4d170f30d666d90fc9
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 21:37:00 2008 -0400
+
+    test of rabbit output using gobj branch
+    (cherry picked from commit 9402a439b19f84d3ec17987f5ee533fddc415952)
+
+commit 9402a439b19f84d3ec17987f5ee533fddc415952
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 21:37:00 2008 -0400
+
+    test of rabbit output using gobj branch
+
+commit 3cb207fa8d117b2f084a8097b1a8ce4188e68508
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 21:32:30 2008 -0400
+
+    whitespace beautification
+
+commit 384c981fa28e0b26bc02b353876380c5d58eb4f6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 21:31:52 2008 -0400
+
+    fixed regression where table lookups were failing to parse
+
+commit 890746ad67c4c542dd23ddac73e0d581fb3afc19
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 18:41:57 2008 -0400
+
+    move inf_diff to tests directory
+
+commit 9862e107bf3eb69da01e0a1592f0811bf18f9f54
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 13:49:21 2008 -0400
+
+    cleanups to fix compiler warnings
+
+commit ef11da418bb073875cd270eda6345e21c8eeb7f8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 00:22:43 2008 -0400
+
+    updated manifest
+
+commit a6fcc855270344ea15d99f45886fa93607a48951
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Sep 2 00:21:42 2008 -0400
+
+    remove unnecessary c++ libs from activity
+
+commit b98b30527f9bd979823b0a3892c323c4bdb27e6b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 12:36:21 2008 -0400
+
+    work on getting both var and sim in python bindings (UNFINISHED)
+
+commit 41e958e8f204ecea8d26b2523a91122998403447
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 11:59:00 2008 -0400
+
+    working, reduced functionality, python-based opensim driver
+
+commit 0a1b0aee6c9eb5f9b50a6e8d2ce87f8e6f45a72e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 09:37:38 2008 -0400
+
+    add code for the boilerplate
+
+commit 7369e377e19949381d38e88aca80d150d93b3a6f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 09:14:56 2008 -0400
+
+    updated c-namespace in python bindings
+
+commit 00924bf5e265cbac451cc57df1734c18fc58e0ac
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 09:08:38 2008 -0400
+
+    ioxml namespace change and updated libsim
+
+commit 9cdfffdcf39909189b048ac5fade451f026a6e1e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:59:40 2008 -0400
+
+    renamed ioxml's namespace to opensim
+
+commit f6280c249092a90e7648b6cb4ceb2e46a162a546
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:57:53 2008 -0400
+
+    updated c-namespaces in codegen modules
+
+commit 95d6184c694fe9937fdb48b12c1543f12e00d964
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:55:33 2008 -0400
+
+    propogated namespace changes to AST and simbuilder
+
+commit 2ec0e7fdba09e5c86bd2a9175000f4a441f49656
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:29:43 2008 -0400
+
+    renamed files and updated makefile
+
+commit bc7f6fbb3a74e9ba8f4cdd67acf25fb36669df67
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:20:27 2008 -0400
+
+    first batch of work renaming model namespace to opensim
+
+commit c90e1ba138de5c313d1115ba02c3d49a71786aef
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 08:05:58 2008 -0400
+
+    install engine in top level opensim-dir
+
+commit 662ba7f81c1ec9d3b4a22229a09580cf4f111d57
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 03:02:21 2008 -0400
+
+    lots of work on python engine wrapper
+
+commit 78edbfe98c1fc90189b238a2f537eb5bcff9e55b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 00:14:07 2008 -0400
+
+    make codegen executable
+
+commit 0c8cf11db9a998f295c7621777c4f9a2baa8918f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Aug 31 00:11:36 2008 -0400
+
+    added pygobject codegen from pygobject-2.15.2
+
+commit f404f662456d6fc4cf8ae2a4323c5b51c31fe6f3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Aug 30 09:39:02 2008 -0400
+
+    general cleanup done while tracking down ordering bug
+
+commit c8b3a2cb60b4a9efb3bf9558d605d667631a719d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Aug 30 09:38:18 2008 -0400
+
+    make sure we've parsed tokens before returning type
+    
+    we determine type from looking at the kind of tokens we've got, so if we haven't parsed
+    the tokens, we're going to return the wrong type.
+
+commit 82b259a3764a619ff690ff3278e1e723cd9c70f8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Aug 28 03:00:41 2008 -0400
+
+    Revert "keep track of time series of values, but poor implementation"
+    
+    This reverts commit 8985b4f4af2f81cfadcc93622a288703ccfc6f1a.
+    
+    Conflicts:
+    
+    	lib/CodeGen/InterpreterModule.cpp
+    	lib/CodeGen/SimBuilder.cpp
+    	lib/Simulator.cpp
+    	lib/Simulator.h
+    	lib/python/simulator.i
+    
+    Conflicts:
+    
+    	lib/CodeGen/InterpreterModule.cpp
+
+commit 8516d3d9aef1b8faac2f4cf0d4c80d3868ce3e7d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Aug 28 02:47:31 2008 -0400
+
+    more testing results, we're not updating stocks the first round or something...
+
+commit 70d6249dda2722c6bcbfb7c020166e1137a0066f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Aug 28 01:54:12 2008 -0400
+
+    fixed regression where we only simulated on the savestep, not timestep
+
+commit 8dc7e0c220df3be55037da5cf1cdf27f78d1a46a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 23:19:18 2008 -0400
+
+    infection model output from stable branch (might be wrong)
+
+commit 41685a4b0cda6adae948314c479cd6793a94426e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 23:19:18 2008 -0400
+
+    infection model output from stable branch (might be wrong)
+
+commit 5155ed55dec0ecc918e358f3bd60f311ec0a2a7c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 23:14:34 2008 -0400
+
+    added output from gobject interpreter (which is wrong)
+
+commit 73369e7e85eff1edc042ed4284b8e13185444d8f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 23:11:55 2008 -0400
+
+    with variable references, we add dependencies if CurVar is not a stock, NOT if the
+    requested var isn't a stock. (fixed regression)
+
+commit 6e67baf9c9925227c0afa8bd7687720f37552207
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 21:21:48 2008 -0400
+
+    Revert "keep track of time series of values, but poor implementation"
+    
+    This reverts commit 8985b4f4af2f81cfadcc93622a288703ccfc6f1a.
+    
+    Conflicts:
+    
+    	lib/CodeGen/InterpreterModule.cpp
+    	lib/CodeGen/SimBuilder.cpp
+    	lib/Simulator.cpp
+    	lib/Simulator.h
+    	lib/python/simulator.i
+
+commit 25c35d70233ee6e25bc656d3bd3922396d94a54a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 19:42:25 2008 -0400
+
+    fixed whitespace
+
+commit b7e5bd736bad5bf38a122749562af3675674cadf
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 27 09:51:33 2008 -0400
+
+    remove debugging printing and (re)connect output commands in libsim
+
+commit 1cda61c026dcd506aa0f543e188a7aed5d6b6c1b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 26 22:46:15 2008 -0400
+
+    interpreter runs, but incorrectly
+
+commit 88895c137f03d92cd9bbda42b1615990f74fc4dc
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 26 16:56:24 2008 -0400
+
+    switched order of tokens in array
+
+commit 467151fca10554a28e211ba0076be06945c3a967
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 26 12:22:14 2008 -0400
+
+    debugging output in interpreter, and clean up array access in simbuilder
+
+commit fe995af871d5dc4d27571b04e7f7bc2cf94eaedc
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 23:39:23 2008 -0400
+
+    have libsim be cpp again, hopefully will fix some f9 problems
+
+commit 797db828aafdd6935e38deef4e8f39ef58af54b1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 22:28:00 2008 -0400
+
+    runs interpreter code, but segfaults
+
+commit 59cf450cda34b047c571e6c8c5847888e08586f6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 22:08:10 2008 -0400
+
+    first draft of run command
+
+commit 4c71a7a04918c50f7de41d8a212b98b3dc8bf4df
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 21:40:18 2008 -0400
+
+    make globals.h c-safe, and converted libsim from cpp->c
+
+commit 9fe2c4a6a09c6cec71550606e625a20f26adbcd8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 21:27:33 2008 -0400
+
+    added stub for run method
+
+commit 73dee57de95553c98df3a6f49ef22172660aecd6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 21:11:45 2008 -0400
+
+    interpreter now uses gvar
+
+commit ac6c6bcdad566d254a47b685f2f5be6badd891cb
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Aug 25 20:30:12 2008 -0400
+
+    cleanup for compilation on mac.  gettext support seems dodgy here...
+
+commit ea990cdaf66b1744a2c958fddd65a804da0070df
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 06:15:42 2008 -0400
+
+    update python printing
+
+commit 26ce4e8afe2879989f8d90012044d09d3927d981
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 05:59:40 2008 -0400
+
+    SimBuilder compiles, but not tested
+
+commit 90524349bd85dfa29655aece6019ea9d8557ff02
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 04:51:11 2008 -0400
+
+    remove SWIG parts, and stop building Simulator and Variable C++ classes
+
+commit c68c9c42dc37aca52269315cc16c6dfeea82c7e1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 04:32:46 2008 -0400
+
+    free equ_tok.identifiers and don't create identifiers for numbers
+
+commit fc93f32f2e35c8f587ffd377e11f3bedd6f553d7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 04:00:00 2008 -0400
+
+    working tokenizer
+
+commit ea6adc01aae477c1d8443c50c8c4a3e19de6cc04
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 22 03:21:21 2008 -0400
+
+    almost working gvar tokenizer
+
+commit 108407696e7dbfe8b233a27acf982c252bc7278f
+Author: root <root@fina.(none)>
+Date:   Thu Aug 21 02:02:32 2008 -0400
+
+    propogate gvars into simbuilder
+
+commit 169da6b45616f4e3fab82bd930d33fb4f47f5ef8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 18:27:53 2008 -0400
+
+    check to make sure the model was read in successfully
+
+commit aeef8b9f1ea3586336583b673e44071a674c7513
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 18:03:05 2008 -0400
+
+    fix warning on free of variable array and export non-mangled function names
+
+commit 1a2094e8d5a77dd20efba23b71154c3b6efc6c92
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 17:14:23 2008 -0400
+
+    non-libtool c-based frontend for debugging purposes
+
+commit e5059d85c79465dc2d65f841a02212130fb1b791
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 17:01:05 2008 -0400
+
+    build static libraries as well
+
+commit 3f857982128f18fc0923e77a3ace188ec6e5b52f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 16:13:35 2008 -0400
+
+    indirection and in gsim and debug output function.  also gsim gets vars from gio
+
+commit 9ffae1f56dac776dd6ac361667f0ed8fb86402b8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 14:28:37 2008 -0400
+
+    proper indirection for gioxml
+
+commit 3f9027a0bc71f1f102869d3adbbc5882dc752139
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Aug 20 01:11:41 2008 -0400
+
+    implemented gvar's properties, and gioxml creates a garray of gvars. g.
+
+commit 81478f447c44de653bc268e9e3f5c81fab8d16bf
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 19 22:05:36 2008 -0400
+
+    somewhat working edge_point for clouds (works, except for initial draw.  aah!)
+
+commit 2155cf611aa464f4566f892832b958494b5a1f8f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 19 17:16:23 2008 -0400
+
+    working endpoints for flows
+
+commit 5f8ddc1402e8011a633cfbd784ac844f1b3f905b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 19 14:38:28 2008 -0400
+
+    working x axis line_edge
+
+commit ea5891d063d7c5d2f8ee7263d92aa08f8d658f6c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 19 13:42:18 2008 -0400
+
+    skeleton for gobject variable
+
+commit 5a899e548cfbd6e94e5db71e0e7ad78f000c1897
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Aug 19 13:34:35 2008 -0400
+
+    memory leak fix: free string
+
+commit 10b37937d1ed81f3732b190cb475a72ffb410d59
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 18 18:17:25 2008 -0400
+
+    work on line ends
+
+commit 3a4ebc9f26ef92fb2a07d3b67ab092ac9ad6c8a9
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 18 12:57:40 2008 -0400
+
+    raise flows while we develop arrows
+
+commit 5acca264704f7ed7e76dbca900223d33875edb29
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 18 02:37:40 2008 -0400
+
+    clean up debug output
+
+commit d00adfdf6cc7ea17cb2054eee6909918a66dd695
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 18 02:20:40 2008 -0400
+
+    working UTF-8 trim function
+
+commit 14d465556e7db13ec0af35c937f38e3c466b525e
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 18 01:06:57 2008 -0400
+
+    gobjectified ioxml - reads file, but doesn't create vars yet
+
+commit 5b128bb2ac8e89a0a8fcd7dd5e0068705d510d6c
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Sat Aug 16 03:35:36 2008 -0400
+
+    .desktop entry and small gtk fixes
+
+commit fdad2e7c05d72064cf24866a8a71ebc1fb788449
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Aug 15 12:26:21 2008 -0400
+
+    started on gobject ioxml
+
+commit d44212dfcd79a4d408c4b7d40d01a4401240bd38
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Thu Aug 14 13:53:17 2008 -0400
+
+    finished removing glibmm dependencies
+
+commit 2c6f3f283f74c61e975119d68a430149c0aba5c1
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 00:43:04 2008 -0400
+
+    remove glibmm references
+    (cherry picked from commit 41fbea726ec5609265f9f3366f52f3edc3fbd824)
+
+commit 229fedcae8a91db4ac479250d751281431c3cbb0
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Thu Aug 14 13:26:00 2008 -0400
+
+    rough model loading
+
+commit 71862cc5a975fef9a75e70f325e2c3d4f43439c9
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Wed Aug 13 23:33:59 2008 -0400
+
+    libsim only loads gsimulater there
+
+commit fe2bd006cd13278d91f6a5871369bbe75f1dd9a7
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Wed Aug 13 17:45:13 2008 -0400
+
+    added dispose, finalize and load commands
+
+commit 1d4b96244b1542f31cffeeb96e409d625c065d2c
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 21:47:48 2008 -0400
+
+    version bump
+
+commit 5766f854717fadeff25159a16dc8f57bbf3ba572
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 21:42:48 2008 -0400
+
+    full, working properties for gsimulator
+
+commit 52f62aaa55ad6eeaec88ce8974b5d6763bd207c8
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 16:12:47 2008 -0400
+
+    DLLMain formatting
+
+commit 4bf8d57c9f0a2c9cf62e369e3bc5f342769f06f6
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 15:55:18 2008 -0400
+
+    correct autotools config for gobject support
+
+commit eb31cf13b723b68c859aa7e8eba84b4fb23ee20d
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 04:29:22 2008 -0400
+
+    almost working (framework) simulator gobject
+
+commit 15e91ebfb53f445ffd3caf42bcd0ceca513db339
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 02:33:18 2008 -0400
+
+    partial model_simulator init implementation
+
+commit fce8e122ca2a2675ca0996b64598c4d6fd4492ef
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 01:38:29 2008 -0400
+
+    working gettext
+
+commit 41fbea726ec5609265f9f3366f52f3edc3fbd824
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 00:43:04 2008 -0400
+
+    remove glibmm references
+
+commit a0b7de5203fd730247ad459425ec27b956b7dcca
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 00:13:19 2008 -0400
+
+    remove m4 from git
+
+commit dfee291ae4b0150ef6c35ba94941b4f84a20e01d
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Tue Aug 12 00:12:34 2008 -0400
+
+    external intltool
+
+commit 3f974ed93b7ac1fdff3a06bc94fe5655b2fae07f
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 11 23:45:11 2008 -0400
+
+    added m4 directory
+
+commit bb6591f6967ac2128979696c86c4c477c403d51d
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 11 23:37:26 2008 -0400
+
+    gettext support
+
+commit 930e84c88cead7ec80fba980c7b77bfe8ed6af4e
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 11 18:55:32 2008 -0400
+
+    corrected header & emptied implementation of gobj simulator
+
+commit bc925cddd0ec8d27e244914c3a4c8573b750b127
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 11 16:54:09 2008 -0400
+
+    cleanup simulator gobject header
+
+commit 23fe9602f76c6b8f0dfadd4aff32ce911838f558
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Aug 7 15:56:59 2008 -0400
+
+    partial bolierplate for gobject-ization
+
+commit 6cbac274ad87d61703974ace6e04c87fe239cb59
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Mon Aug 4 01:43:23 2008 -0400
+
+    error checking, cured most segfaults
+
+commit 5de0c636512a4a3dea868bad33b79844bdfe5def
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Sun Aug 3 22:14:27 2008 -0400
+
+    Simulation now runs in own thread
+
+commit 27786e834a288af331e1549a7a5fcedb3cafe4c2
+Author: Bobby Powers <bobby@fina.(none)>
+Date:   Sun Aug 3 19:29:50 2008 -0400
+
+    compiled in support for glib threads
+
+commit 12e4605582ae04fc22807ecd19cd76acdfa23df0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 29 17:13:49 2008 -0400
+
+    visual updates to the gtk interface
+
+commit 7c0196171566e16e6f703a561647f2ce31ed5023
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 28 00:35:26 2008 +0300
+
+    debugging statements to help figure out right click issue
+
+commit d8e908dc6dcc8c5ae92230650e41806f3c476c19
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 28 00:34:42 2008 +0300
+
+    updated MANIFEST with new icons and link.py
+
+commit 4f711cc92cad4b87f36a8fb2518bf4f5bafc7823
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 23 01:24:44 2008 +0300
+
+    working goat model
+
+commit 17f8256ab2fc1d72938344884090d6bcc1e72676
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 23 01:10:10 2008 +0300
+
+    almost complete goat example
+
+commit 06a46e84c6281a2fa40621229ccab69d797f3ab4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 23 00:51:15 2008 +0300
+
+    white background for variable text & revert save changes
+
+commit cc2e3be48b5cb309582d7ace669fcf28776912ca
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 23 00:22:23 2008 +0300
+
+    updated save methods to use corrected abs_center()
+
+commit c24fc7e016c106013364949109fa4fae526c317d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 23 00:20:17 2008 +0300
+
+    corrected abs_center methods
+
+commit 3536e95f07b79c0610b13b942c3b5ae33b66ab6f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 23:46:40 2008 +0300
+
+    create OS_* variables when making new simulator
+
+commit b6ff85fefe06c0ec575ab022a44c6e14910b0430
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 11:35:34 2008 +0000
+
+    add label to equation popup
+
+commit 7a9ff88bcbb30d6d2c5b75f2e6c7dd0392dbc04a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 11:27:54 2008 +0000
+
+    working equation input
+
+commit e3aa11c0a102d417dc723980d5c5a476e5aff736
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 09:24:01 2008 +0000
+
+    load links from savefiles
+
+commit f6179bf85d07380177df4e3bff59e971377a4d51
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 09:24:55 2008 +0300
+
+    fully working lines
+
+commit 835bc48ef834bf8220f1f9eb380402ae0b668f36
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 07:18:56 2008 +0300
+
+    small fixes for links
+
+commit 6aaeefd0e432a8dbeef25b8599ebed3181fdb1b2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 06:24:14 2008 +0300
+
+    start of link drawing
+
+commit 53a5d641f20d07c223e520f4d1e3570dce6c6008
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 06:02:37 2008 +0300
+
+    basic logic for new link
+
+commit a3f35913feb79861a30bc190aaa8a1a1a147d91a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 05:47:16 2008 +0300
+
+    outline of Link widget
+
+commit 8c75379c8e7bc0f544a30976569a51bbbe3c1861
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 05:30:45 2008 +0300
+
+    rough cut at popup equation editor
+
+commit cc90efa237478eef87a34d988c902921b7059ebe
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 03:44:23 2008 +0300
+
+    working highlights for flows!
+
+commit e2ebaa203eaf3b25ad9435a917f42631136a3041
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 02:32:12 2008 +0300
+
+    added view toolbar & some SWEET new icons
+
+commit 995af0dbc1d9f08d57e787f3c97dd3d40f79f5c1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 00:44:08 2008 +0300
+
+    simulate toolbar
+
+commit 27600088f9927751c3d9163e16e856ab6725d4a8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 22 00:43:49 2008 +0300
+
+    correct loading of saved files
+    
+    * make sure we pass an ascii string with the path to the simulation engine
+    * check to make sure we're not trying to take make a string from a NULL model name
+
+commit 5fc5cb54cdffe5454c415a7999c553f6cb8a5e01
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 21 11:17:59 2008 +0300
+
+    visual interface saves, modifies and loads model equation part
+
+commit 7193f782d6e65f0957466ca3f0e614deb253f354
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 21:43:50 2008 +0300
+
+    most of the work for creating and renaming variables in model
+
+commit 2c24ca4419f8c510f6cfaeac947e5959285a45b5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 17:52:15 2008 +0300
+
+    spelling error in flow.py
+
+commit aa1a9833152df6e53dea27d20fcf92b208627734
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 16:58:54 2008 +0300
+
+    small fix
+
+commit f017a520313c3f6dd635d20e74d6569af94df26d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 16:50:24 2008 +0300
+
+    correctly grab and release focus in canvas
+
+commit 3d124e44ba20426239d3c5298f33722632289c37
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 02:15:22 2008 +0000
+
+    fully working loading and saving (again)
+
+commit 9329117094af5622d5bf23a262ab2643ce0075bc
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 01:59:08 2008 +0000
+
+    creates clouds for loaded flows
+
+commit 9940be8fb398028494b329ca8a62d1f96d8298f2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 20 01:27:59 2008 +0000
+
+    partial loading of rates from savefiles
+
+commit 4b81ee3a729fe7247f6bec12d18bcc2af249d7db
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 19 23:39:26 2008 +0000
+
+    base for adding and renaming variables in the simulator
+
+commit 85fafbe64fbc2c1071bcfaf35303a3d93f81e7b6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 19 23:21:22 2008 +0000
+
+    fix for rate deletion bug
+    
+    when a rate was being drawn but didn't have an endpoint, it was not properly
+    removed from the canvas
+
+commit 807fe3cda2432e2291b29eadd6ddb9c1f9a1e8fa
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 16:19:01 2008 -0400
+
+    fixes for compilation on mac and windows
+
+commit 060e211d1cb14b9d8d72d1d96265d9e123194001
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 15:11:44 2008 -0400
+
+    fix getValue
+
+commit fc9a361fff4c765c93a9bd0afdde5d772e09bd35
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 15:02:39 2008 -0400
+
+    set data["time"][j] if we've saved.
+
+commit 0a045bcfc8692789d0828515aed7b15fd4e0c156
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 14:39:28 2008 -0400
+
+    change paramater name in Continue, to avoid possible namespace confusion
+
+commit e78e3cd3dd0d9062ddcbf211e0a10698afb649af
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 14:10:42 2008 -0400
+
+    fix time issues in AS3
+
+commit 5922e172586496be9d12085ef4e79dcfc728237d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 13:11:46 2008 -0400
+
+    whoops, forgot to change a cur_time reference
+
+commit e8d4f8c96c663d6b96ae49300dabdb7ec61c5498
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 13:07:50 2008 -0400
+
+    fix where we update i for as3
+
+commit 7da5e9071965e2d4fadfa3f182b06f3e239faddd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 13:03:48 2008 -0400
+
+    added debug methods for as3_template
+
+commit b1e85c49e3e6ce685299db14db4de5639d7aad9d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 12:53:19 2008 -0400
+
+    update time in AS3 simulation...
+
+commit ac1a059dcc69c90a6c8d7cb469eab313dd81ce18
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 12:25:16 2008 -0400
+
+    formatting fix for AS3 output
+
+commit 489d6fd51159f52150e8a6b912d2c47e03f75828
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 02:44:50 2008 -0400
+
+    use of template to make syntatically correct as3 model
+
+commit c72505532b9f77d2e7c0f575bf48cf2fa6506c46
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 01:01:33 2008 -0400
+
+    initialize data array with empty values for aux vars
+
+commit 75121a9b700a6232370bf525358c5ef7136dd7a0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 00:17:22 2008 -0400
+
+    one round of simulation initially and increase i occasionally
+
+commit 727e5b92dbe0904fde0448cf8827f47d0bd32aa2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 16 00:00:16 2008 -0400
+
+    no splicing
+
+commit 5bb0c51d69edae788ff0bb4708de782d70902c4a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 23:52:54 2008 -0400
+
+    fix ordering of arrays in as3
+
+commit 6c4a829afb11f59ec829247a37b98d30bbb22d77
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 18:15:03 2008 -0400
+
+    find correct paths for as template
+
+commit 5e50f3d09ce889a125203607b92f35e2c9775f6c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 15:14:38 2008 -0400
+
+    add model packagename in SimData, always return a value in lookup
+
+commit 03fae10c02fd0e53e3fd78f2207f5de9685b465d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 15:09:46 2008 -0400
+
+    few more AS3 fixes, remove for each loop
+
+commit b64e1fdc1894596f298e911d934aa4b9d380b445
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 14:54:26 2008 -0400
+
+    more AS3 fixes, mostly declaring variables
+
+commit aebeb1c4493307707294138690644b207e596249
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:50:02 2008 -0400
+
+    change 'lookup' to args[0]
+
+commit 388252cdc72221e3d39018b3dfb8b16015a0cb40
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:48:34 2008 -0400
+
+    fix for AS3 not allowing overloaded constructors!
+
+commit 8ee7bd178ccf6dc9eaba1f31e697f1a5d907fa8c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:40:51 2008 -0400
+
+    explicit 'var' in for loop
+
+commit aafdfa3b6a9b62bc8cab7c677a33486d172c457a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:37:04 2008 -0400
+
+    elif -> else if for AS3 and explicit ints
+
+commit 32f95ad4d434aff47b28b10a9d794a608f81dde3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:30:08 2008 -0400
+
+    remove opensim from package line
+
+commit a95fc7a074ffaaa62954563593d7c22e21b35f48
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:29:27 2008 -0400
+
+    using 'int' type in AS3 again
+
+commit 7b748d175adf96d26b7db3aa858fef9f15053102
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:17:46 2008 -0400
+
+    fixed more compiler errors
+
+commit 004c18fbf50bdb5ad485e6b763608dbd29ca6a49
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 13:08:47 2008 -0400
+
+    fixed AS3 compiler errors
+
+commit c3ae6e0a0ea16d82425a7c87987a425d722e0741
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 12:56:25 2008 -0400
+
+    update as3 lookup function to use SimData objects
+
+commit 0e9bd63f0dec8a8ea189a9e1c2ba627f0563e672
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 03:34:08 2008 -0400
+
+    activity builds from 'make dist'
+
+commit f445798024b9ef9345f460af226ef2ab99a90834
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 03:04:41 2008 -0400
+
+    makefile changes, working towards correct 'make dist' behavior
+
+commit 1636af3638574fd5c184d678aea43c457b48df67
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 15 01:13:25 2008 -0400
+
+    some documentation
+
+commit ac84630b14b3d9a3f00ad3d14589a67ecae4848c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 21:01:11 2008 -0400
+
+    basics to get path for loading as3 template
+
+commit d9e4c19ec501b760a30c97b19435b6595f57f566
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 19:41:12 2008 -0400
+
+    small fixes to lookup syntax in as3
+
+commit 95850d2d6e6bb1cccd9cf5d7ffeebab86969ed55
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 19:38:17 2008 -0400
+
+    (fix) exit on invalid target
+
+commit a2f41d77ace691030549fbfc1adb27881661c935
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 15:44:50 2008 -0400
+
+    first (complete) draft of sim_spec
+
+commit 0f4663640f4d45c96810909edcbbff13995c97a2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 14:12:36 2008 -0400
+
+    mostly correct array syntax
+
+commit f39d336e2521be3da87227dea50b612ff761692d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 11:04:13 2008 -0400
+
+    start filling in spec
+
+commit b5a831d398b9035bc077967c98a5f30d3bb0c825
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 14 10:18:05 2008 -0400
+
+    small updates to AS3 layout
+
+commit 15334698e1bde10fdbd6a5d08228ede62c49058a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 12 13:26:06 2008 +0000
+
+     Release version 8.
+
+commit 8823185c0bdd06442cf45a4aca7821375b301729
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 23:10:48 2008 +0000
+
+    remove rate.py from MANIFEST
+
+commit f4f5e8150943b0a5820107a8cfe90b922e90ae27
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 11:46:50 2008 -0400
+
+    updated as3 spec, now with cliff notes!
+
+commit 1de301abb04ee127e2018b568610da4b721e7055
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 08:39:17 2008 -0400
+
+    updated as3 script and output file
+
+commit 90f6dffccf45f59caa07d495dc68eecd3023cfc1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 08:38:16 2008 -0400
+
+    incremental improvements to AS3
+
+commit 75e605c35f8207be4c49ab5854a64a977267a838
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 06:10:22 2008 -0400
+
+    update AS3print functions, work on AS3 reference implementation
+
+commit c2686b2c243551368d5cce3984be19245b35220d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 04:23:06 2008 -0400
+
+    change Inflow -> Link in GTK interface
+
+commit 85497ff0aa98be96e4a0a7be54ddf44dbe7e0f4d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 04:21:15 2008 -0400
+
+    change Infl -> Inflow in GTK interface
+
+commit e9bad5b4cf96b9c1d148c128e0284a303e6de048
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 04:20:14 2008 -0400
+
+    change Var -> Aux in GTK interface
+
+commit be27c7d0c46bac822553b9352cad58ed09926dd5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 04:11:48 2008 -0400
+
+    fix coordinates returned while creating rates
+
+commit 89db039d61887c484a2ccac2b37cfe63b4745a31
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 02:02:11 2008 -0400
+
+    fixed regression in text layout
+    
+    was incorrectly setting width, which is just the wrap width and should only change
+    when the user requests a different width
+
+commit e3391e78261e5151ee678ae1eef74792cfaf3d3f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 01:45:46 2008 -0400
+
+    mostly correctly drawing flows
+
+commit 5b9beb7ee6df1743470e03d6e1e244007acb3990
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 11 00:24:26 2008 -0400
+
+    save fixes for gtk version
+
+commit 337b1ed02a64c2fd4a80f2bba36b19ef764d560c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jul 10 21:01:37 2008 -0400
+
+    mostly working flow connections
+
+commit e389ca01cd17152899c0c7d415b574afc84f2837
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jul 10 18:35:09 2008 -0400
+
+    first draft flow creation
+
+commit 7f060d0245b629b2980453b2d83ac88c45fd9314
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jul 10 16:30:14 2008 -0400
+
+    cleanup line and cloud removal
+
+commit fce9c3c0e552a1bb4ef639506a89ec9fe53bd4f1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jul 10 15:04:55 2008 -0400
+
+    updated MANIFEST
+
+commit 97cc0619fbe71ebd1b8c4e9ef5c0e56f216dee40
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jul 10 14:14:12 2008 -0400
+
+    factor line_id into LineControl class
+    
+    it should be easier to keep track of all the line stuff if its all
+    together in a class
+
+commit c5a9758b90a66cd8999fa1df35b1eb0c3f76c3b2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 18:17:36 2008 -0400
+
+    fix issues with motion over items
+
+commit 7dff787b15dac06722d8f7b00bf0f7350fef8709
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 18:02:27 2008 -0400
+
+    revert consolidation of functions - broke text alignment
+
+commit 17986402907d69c0744d65450661be16be4a483a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 17:05:25 2008 -0400
+
+    look for end of rate
+
+commit c5e7dad8be288d32669596cac7321bc72a8db82c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 16:29:55 2008 -0400
+
+    fixed glitch where canvas held onto highlight but item didn't
+
+commit 40f7cb2c73ed9749ca47567877e183af60d145fe
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 16:03:00 2008 -0400
+
+    refactored methods common to flow and stock
+
+commit b6a011d1970dfad96eec6786a6a695367bea5181
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 14:56:58 2008 -0400
+
+    nicer svg code for icon
+
+commit 013e8858e042eb4c240c8f397e87fb0a5a161aa4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 14:55:19 2008 -0400
+
+    fixed stupid regressions
+
+commit e5511edb057e1d9e169320c876d1b2b3e69d244d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 14:39:40 2008 -0400
+
+    cleanup installs
+
+commit 4c6005d7e96e4f9d22d391a6d80deae2c7c52d53
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 10:48:08 2008 -0400
+
+    cleaned cloud class
+
+commit 66fa2d99f32c54d68fbb76884d106ddebcb04d6c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 10:40:14 2008 -0400
+
+    draws clouds!
+
+commit b1e9e0141f4644a6195d44c71a7ce6b7c469022b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 08:09:38 2008 -0400
+
+    icon tweeks
+
+commit 7b7137175230c6ce034d785f1f5e008199ea44af
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 07:00:52 2008 -0400
+
+    added cloud.py to project
+
+commit b4b02c7be39c7daef296954754e522d267d51e60
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 06:54:29 2008 -0400
+
+    added cloud item and icon Makefile
+
+commit eb605bc6338132a59e8aca7577ad9be07f964ebe
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 06:12:46 2008 -0400
+
+    center align stock text.
+
+commit 804dc16027069a8d8dc21e68e71bb11337e0bb99
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 06:07:49 2008 -0400
+
+    gtk app has slick icons now
+
+commit 0d8bdb18655256a4ed5c3f994f250ef3314b90c5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 05:46:50 2008 -0400
+
+    moved icons
+
+commit a792f8b32473827e7783285d6d589ec1ea695f16
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 04:30:05 2008 -0400
+
+    fix regressions in flow caused by move to pango
+
+commit 0e38ce781c9305c58762c6cff49d7dff41cd62f1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 04:22:32 2008 -0400
+
+    fixed pango bugs, mostly in variable.py
+
+commit d88eec831f572187d022c9c8224c405eec705531
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 04:03:42 2008 -0400
+
+    swap out cairo_toy font api for pango!
+
+commit 96fbb29bc1cb8dd0a1ea0cfa9781824c48d93d6a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 01:34:28 2008 -0400
+
+    fix motion propogation for vars
+
+commit c364e78d06129a2624ca07e286eac746afc24de8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 01:14:41 2008 -0400
+
+    icon beautification
+
+commit 854c82430b4f4e50c9907435cd3abca1dab32c44
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 9 00:55:05 2008 -0400
+
+    major work on flows, starts line and attaches it to cursor
+    
+    (doesn't let go yet...)
+
+commit 4452e2a87c7a9aae79afe2b182d6d1e04cedea2c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 8 16:54:38 2008 -0400
+
+    rename rate to flow (duh!)
+
+commit 3b88f25cf80cfd6eb6aece6d68b65a75063bec8b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 7 23:28:55 2008 -0400
+
+    Bundle release 7
+
+commit e251ae07f3680f7243ce27cafc7c855e18f5d395
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 7 22:18:28 2008 -0400
+
+    f7 glibmm libs
+
+commit 05df4ef1d6e3a5c61b1dee539f47ef95c7075833
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 7 22:01:10 2008 -0400
+
+    nicer stock heights
+
+commit 34b2808f65aa33a080d6322105beed0b5f734bfa
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 7 21:58:11 2008 -0400
+
+    more line infrastructure & fix for resizing bounds when typing names
+
+commit 525589e434370b744bba11861af301bca19bddd1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jul 7 18:09:42 2008 -0400
+
+    small bug fixes, capture background motion
+
+commit a3de1513d6cd3776cc28fa86a2b6f6290877dbb3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 6 16:34:35 2008 -0400
+
+    add the sim_spec to our folder in share
+
+commit c3a5a7b9f317d3f00f876b3dd2538b16ce215e61
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 6 15:11:14 2008 -0400
+
+    boot and tail strap for AS3
+
+commit 2c0d48e22c31ba65e7c0fcdc9baed55907d0e934
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 6 13:39:49 2008 -0400
+
+    added files to keep track of AS3 progress
+
+commit db420648a2a819bb0de46840d07796965a42cf02
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 22:13:29 2008 -0400
+
+     Release version 6.
+
+commit f8018fbdeb4c0197a09ab68989075abe95171e98
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 22:13:21 2008 -0400
+
+    forgot tools.py in MANIFEST
+
+commit a7e019808cc0109125fffd8961744a0c15be08d1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 22:00:22 2008 -0400
+
+     Release version 5.
+
+commit 9bbacf25c501c2558f4d1d19f44f63580303c7eb
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 21:59:40 2008 -0400
+
+    updated MANIFEST
+
+commit 35e3a54c79497b037de523644e67a8a865cb67c1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jul 6 01:51:12 2008 +0000
+
+    add glibmm and libsigc++ libraries
+
+commit 16fb7ad37f57c9658999bed3a508f7a60fe88cb0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 20:43:29 2008 -0400
+
+     Release version 4.
+
+commit aa4295f3025363d9d20e25a895bddee7431c1eef
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 20:39:10 2008 -0400
+
+    working saves.
+    
+     * had to save not self.x, but self.bounds_x1
+
+commit 1a58386610c3403bd16804dd859004396f0841ce
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 17:24:44 2008 -0400
+
+    working load, broken save
+
+commit 3833e055bb1b86dd7600fa5f19dee52d1619f32b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jul 5 14:57:31 2008 -0400
+
+    clear current canvas contents on load_model
+
+commit 044c55dd8277e30f57543fa80f1a43c59b6a193e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 4 22:27:20 2008 -0400
+
+    merged changes for unified codebase for Linux, Windows & Mac
+
+commit 0055dacb816f6b6aab2f278a8a65f96f336982d4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Jul 4 22:15:01 2008 -0400
+
+    loop through saved objects
+
+commit ca8500813b0f2e302c1fbea7af574287260267fd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 2 23:21:48 2008 -0400
+
+    beginning file loading
+
+commit 1b583c323fc0e6f8b9ff910ca9d9042d86a911e0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 2 17:56:44 2008 -0400
+
+    working saves
+
+commit 7848d67cd292b4f5dc5ea3175ac773ed602030fc
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jul 2 15:20:15 2008 -0400
+
+    added GPL notices to python files
+
+commit 37580406fae5e2d565c045403454645fa98de104
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 17:39:18 2008 -0400
+
+    keep track of file path in opensim-gtk
+
+commit dc8612e1fa8c2ee62154a056c9a78367e13951d6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 17:33:15 2008 -0400
+
+    save dialog & save and load hooked up to canvas
+
+commit 7d02010ff674221f59d3b05eecfcb9ec3b2796f5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 17:08:52 2008 -0400
+
+    open file dialog box & handlers
+
+commit 1a2bdee3e98525cbefd73050db0978e543af7b29
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 16:38:35 2008 -0400
+
+    check for case where no item is highlighted
+
+commit 756c537b6de49bb5af3d0a419ba9de2d60544186
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 16:24:49 2008 -0400
+
+    fixed regressions, working activity again
+
+commit 6282135f560408ac73eeabe86d40b9ecbd82dda5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 16:01:31 2008 -0400
+
+    workarounds to initialize C++ glib environment
+
+commit 080f1ed7b00b50cd142eae3025af2b7ed7d7cb48
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jul 1 02:05:05 2008 -0400
+
+    simulator now derives from gobject
+
+commit ade49be792888e316783eab73efc8c6f9ac556fa
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 30 22:54:48 2008 -0400
+
+    rename opensim-py to opensim
+
+commit f9ed7cc033e841a462c1bd98a4e051a5c0c83f34
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 30 17:08:43 2008 -0400
+
+    cleanup makefiles and examples
+
+commit ea2710c958ce0c4fa98d3dd38445cf0b6d67dcf7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 30 16:49:51 2008 -0400
+
+    refactoring so engine doesn't pull in gtk
+
+commit 313f5df776570c1687ee228a89713257b83dd46b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jun 29 08:55:16 2008 -0400
+
+     Release version 3.
+
+commit 87a673f1c87bdfcd6f1745fc77db20583680b3a0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jun 29 08:51:58 2008 -0400
+
+    cleaned up MANIFEST and saving
+
+commit 22a85daa640a3b4bc4235ec5837619f721b531e8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jun 29 07:51:38 2008 -0400
+
+     Release version 2.
+
+commit f5f21fbfc2155d79af9df9c9a2521d82245a04df
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 16:26:31 2008 -0400
+
+    XML headers and footers for journal entries
+
+commit 7a821d891e17db388e2916b2efe8487990fc644c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 15:42:03 2008 -0400
+
+    stubs for loading and saving to journal
+
+commit a6f4e319d4371cd4916dc2cb71ab1f28638943df
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 14:47:16 2008 -0400
+
+    remove highlight on tool deselect
+
+commit 159672bf55d76596607bb851dcf668db7cca2f2f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 13:17:06 2008 -0400
+
+    text input improvements from stock ported to variable
+
+commit 4fc456191643e66c2975379c8ba00be27b1e139b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 12:21:38 2008 -0400
+
+    small ui fixes for text input and focus
+
+commit 5a72e075baf9aea2618397bbe1c13f691c463db8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 05:50:14 2008 -0400
+
+    better horizontal positioning for text labels
+
+commit 118ac31f06f2b23a4092c64b860ac0f1a4e57469
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 05:43:41 2008 -0400
+
+    better bounds calcs
+
+commit 19813a9d0168c997b2e0ab077a735a6d4de59a3d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 05:41:07 2008 -0400
+
+    mostly working variables
+
+commit 1d7649ceea6eeb3d1f08b88f430869122eda57d9
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 05:08:05 2008 -0400
+
+    working highlight not based on text input focus
+
+commit bba1cb078e62793394f17ffd2940ad35f36f6a3e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 03:32:29 2008 -0400
+
+    Revert "new item implementation, segfaults 2"
+    
+    This reverts commit 477ae6a519e013c9960169a7d299f6ee59991775.
+
+commit f34e831cf553bbbdf7582f157cfed0915cc0e38a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 03:32:04 2008 -0400
+
+    Revert "new item implementation, segfaults 1"
+    
+    This reverts commit 322c754a0abfbb9405b21ee3c09e62c56473ecbf.
+
+commit 4796de178e9ca67395b1043bf7c9a1954605e3c6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 03:31:44 2008 -0400
+
+    Revert "some more fiddling with widgets, but not working"
+    
+    This reverts commit 9de8ccd2e20ec5a9375dbacd889bf6eaaaba64cf.
+
+commit 9de8ccd2e20ec5a9375dbacd889bf6eaaaba64cf
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 03:30:06 2008 -0400
+
+    some more fiddling with widgets, but not working
+
+commit 322c754a0abfbb9405b21ee3c09e62c56473ecbf
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 02:22:48 2008 -0400
+
+    new item implementation, segfaults
+
+commit 477ae6a519e013c9960169a7d299f6ee59991775
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Jun 26 02:20:29 2008 -0400
+
+    new item implementation, segfaults
+
+commit 187845aa03b17faf14d9eb8903557c7c2edcffa9
+Merge: c8910ff... 72cf670...
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jun 25 22:13:33 2008 +0000
+
+    Merge branch 'master' of git+ssh://bobbyp@dev.laptop.org/git/activities/model
+
+commit c8910ff274174f5decc40b7e3b527cc8b7127e10
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jun 25 22:12:56 2008 +0000
+
+    attribution for rabbit example
+
+commit 72cf670bff808e072dcb5faa3c75b1d3748e1888
+Author: Bobby Powers <bobby@nibbler.(none)>
+Date:   Wed Jun 25 21:23:25 2008 +0200
+
+    add cstdlib referenece for GCC 4.3
+
+commit 08804d7e9e0a1ed2260b45fb6b08ca315658d815
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jun 25 10:25:33 2008 -0400
+
+    simple delete in text entry
+
+commit f51c943598777f35f5d5202dae27ac9fc7739068
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Jun 25 04:57:44 2008 +0000
+
+    better text input support
+
+commit d2d5684072f19d80529fe19d0ba0c5f1a3aeebe0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 21:55:34 2008 -0400
+
+    refactored stock widget and cleaned up manifest
+    
+    * libraries use to be sym-linked, but through git became hard
+      copies; removed extras
+    
+    * updated the manifest to reflect slimmed library content
+    
+    * refactored generic methods out of StockItem into SimItem, so
+      they could be reused in variables
+    
+    extras
+
+commit 6cb32fdf8af24ecdddd27cc86372a2a9c7a773c4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 18:59:34 2008 -0400
+
+    basic support for capturing key presses
+
+commit 84c0daedd3e94c948cc8a6d910552d526cc9271d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 02:23:28 2008 -0400
+
+    working focus, refactor callbacks into stock
+
+commit 3094faf67227ad826643d842969feb92f0e55e4e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 00:26:50 2008 -0400
+
+    fixed double-large font size
+
+commit 1e4060a720fda1008584797bd482ba23af0570d1
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 00:23:18 2008 -0400
+
+    experimental support for dpi in FontInfo
+
+commit 24754048f2ad2bdf54a3270b99b7f7c56bbdfc52
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 23 23:34:46 2008 -0400
+
+    get screen resolution
+
+commit 366f02f11f710dd3462012bbe5fb6a3e4fb897ed
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 23 22:02:12 2008 -0400
+
+    center text in Stock box
+
+commit 1a7ad55832e4d9dc8681a13c9b03da42076a3146
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 23 21:23:47 2008 -0400
+
+    Static labels in stocks
+
+commit e7211eab8df9c4f17a062779b03221103fcfb2fe
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Jun 24 00:42:49 2008 +0000
+
+    cleaned up makefile and manifest to include Text class
+
+commit 7778aaaaed70d16b9547de1f67e563f42c5fdc2b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Jun 23 15:46:59 2008 -0400
+
+    starting to figure out text issues
+
+commit 10a737e4eefcf77affc280c3700991a73d95099d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jun 22 15:13:39 2008 +0000
+
+    added VariableItem class
+
+commit ded3ef1631c985aec09429345c48762a99501002
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Jun 22 01:29:03 2008 +0000
+
+    makefile changes to install library into activity
+
+commit 57f14b413d4a444d556a95d9507fd16364a68e8f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Jun 21 04:36:54 2008 +0000
+
+    added goocanvas libraries
+
+commit 7687933a7bb6c238019bfb789dd04f3d77b35969
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 20 17:41:51 2008 -0400
+
+    Seperated engine to its own namespace and cleaned up autotools junk
+
+commit 27579f231d0b74c1d2e9bd83cd3dacc6289d930f
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 20 15:58:43 2008 -0400
+
+    added files to git
+
+commit c55ef434fd218dc678b48fddaa4d8bbc6f022563
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 20 10:34:41 2008 -0400
+
+    updated icon
+
+commit 05155e951ae1c27c48886db19bce84fd6c7ee008
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 17:57:59 2008 -0400
+
+    Manifest, .info and size request changes
+
+commit 19f5aaac645fe5eeb0c27c5fe7656054bf007bec
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 16:19:08 2008 -0400
+
+    autotools fixes, installs all python files now
+
+commit 59c56ffd436ecc7c5db690676ab8aa3b02c5c668
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 15:53:22 2008 -0400
+
+    sugar parity with gtk version
+
+commit f5cb654ac8bbb4bb2e00a7ad091df26c97ef7ff6
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 13:52:45 2008 -0400
+
+    activity starts up, again
+
+commit 7e1df251f91d8eda60ba5b60f594d85df1ff00b0
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 13:27:14 2008 -0400
+
+    remove symlink
+
+commit 603e7f0733f968966bc4e43a271c3cbf5c9ff732
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 13:25:31 2008 -0400
+
+    more correct toolbox code
+
+commit e34df0c0271e6af2e4dd13548e533d3a8eca21b9
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 11:59:30 2008 -0400
+
+    symlink in the activity folder to the python sources
+
+commit a723e0138df498810dd1c61ef63246a88ec96b3b
+Merge: f5996b8... e585829...
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 11:51:52 2008 -0400
+
+    Merge branch 'master' into sugar
+
+commit e585829186c180f580803f8b01aab1b18bab57e2
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 11:50:01 2008 -0400
+
+    added toolbar, copy of edit one
+
+commit 46dd0a804be118402323f53ba965d40ebabfbcee
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 11:24:23 2008 -0400
+
+    added key files for activity bundle
+
+commit a1f6de0605ae6b60a76772c89aeccbc83d4dbbec
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Thu Jun 19 10:55:36 2008 -0400
+
+    made some icons
+
+commit 8985b4f4af2f81cfadcc93622a288703ccfc6f1a
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 18 18:57:15 2008 -0400
+
+    keep track of time series of values, but poor implementation
+
+commit f5996b8edba86057ccb7aba7f735a4f4c50d8a99
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 18 17:12:36 2008 -0400
+
+    adding gtk stuff
+
+commit e3ead4998fc2f10353f1a8b14f55613916357678
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 16 11:19:13 2008 -0400
+
+    imported work from stale svn branch
+
+commit 860aa598ed0e05db756b43d01b4e7c50b70c97b8
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 16 11:07:18 2008 -0400
+
+    check for gmcs not mcs
+
+commit b1ab86fa5a2c8d7c77b8ae801ceee1b2605b5204
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 13 11:58:51 2008 -0400
+
+    new have_csharp conditional in autoconf
+
+commit 55ee34589cfc34b2310568ca16cf04395cc7fcb6
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 6 20:17:57 2008 +0200
+
+    remove Variable.h from SWIG
+
+commit 80066bf6297fb69e8e67bfd94bf03f8ca92c0ab8
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Fri Jun 6 20:15:49 2008 +0200
+
+    improved Python support, allow equation changes
+
+commit f1bd9ead6288318876884e891eb3b6f1209aba19
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 18:07:59 2008 +0200
+
+    refactored Simulator to NotUseCamelCaps
+
+commit c9034577c77deed31c32f51343bffb483d98160e
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 16:46:18 2008 +0200
+
+    _basic_ example for Python simulator
+
+commit 0c66da4f95b306cba65a761d45dc69f309592cf5
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 16:37:34 2008 +0200
+
+    version bump to 0.2.4
+
+commit 2641721d2dc18d72bef07d16cc3d1971b9a6dff0
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 16:29:34 2008 +0200
+
+    correct conditional compilation for python SWIG
+
+commit 31b86ce1cd8896472942dbaef1dc633fdd30648c
+Merge: 341ef97... 4f2ac19...
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 02:04:55 2008 +0200
+
+    Merge branch 'master' into swig
+
+commit 4f2ac1913e0d9ec031350377e4b3bc830cc53a6e
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 01:56:47 2008 +0200
+
+    capitalization in README
+
+commit 341ef97cba814712c09df58623d5b6213d9f6aee
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Wed Jun 4 01:31:44 2008 +0200
+
+    working and installing Python wrappers
+
+commit bf45c8a5a9f6fa6f6fc00a58505e971afe97d93e
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 22:58:26 2008 +0200
+
+    updated documentation
+
+commit 69d63a0cb336e5f8b22647c00f037870090c0cb0
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 21:18:42 2008 +0200
+
+    working Python SWIG
+
+commit 798bc3ae2bbeb357efb0156477652608b6208537
+Merge: b19baa6... da21d6f...
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 18:02:56 2008 +0200
+
+    Merge branch 'master' into swig
+
+commit da21d6fc69005d991ea9af4ff40d11efc37398d4
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 18:02:00 2008 +0200
+
+    implemented savestep in Python output
+
+commit b19baa60690046fc69d6f78581f92b3e6006b954
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 17:28:42 2008 +0200
+
+    swig compiles, but doesn't find shared library
+
+commit 0a8dcf8a1639d7386dcd363109751a79804a94f3
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 16:29:14 2008 +0200
+
+    started swig bindings
+
+commit c54892afe4b4cc93d5798a9cc307fdd5ca6c6331
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Tue Jun 3 15:20:05 2008 +0200
+
+    implemented savestep for InterpreterModule
+
+commit bbad85d7b1772612e8193391fa0098b262cae6b1
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 21:20:14 2008 +0200
+
+    parity for PythonPrintModule
+
+commit fae92a5729f209c9d663870879383507d5855582
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 20:24:58 2008 +0200
+
+    whitespace
+
+commit 0bc715ac0863eda8194f030771bb7de1978cc449
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 19:17:49 2008 +0200
+
+    version bump to 0.2.3
+
+commit 34444e06df6d6bf169b576d23db32dee641eec42
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 19:12:41 2008 +0200
+
+    working max, table, and iniital levels.  interprets new_rabbit example
+
+commit 0343d392c9caacf9cdc2a45b6a79a655b3a940d6
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 18:42:33 2008 +0200
+
+    better ordering of initial values
+
+commit 6289eaa1a7f0e559f85c134e92dfff6e59d03fa9
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 16:51:50 2008 +0200
+
+    ParseIdentifierExpr returns FunctionRefASTs now
+
+commit 9d76448b72fbd0b1e71d523624bee8f63631a4cf
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 16:27:25 2008 +0200
+
+    refactored table parsing into own fn
+
+commit 7264eebb199d1e7fc7a412a5bd854bd0801f28fa
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 16:22:50 2008 +0200
+
+    removed xcode project from git, causing too much churn
+
+commit 46ea659110b7fce015a6d3b9c32228bb94bb4bb0
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 16:20:04 2008 +0200
+
+    scaffolding for supporting functions
+
+commit f67562614a28ed589b0dde940243df3f935aa320
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 04:49:49 2008 +0200
+
+    working table functions for interpreter
+
+commit b92cc1bd62dde515e93ba82933232141037ae2a3
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 03:34:27 2008 +0200
+
+    partial, but broken, lookup tables.
+
+commit 0cfa64352643de10888d66f7589d7eca2a55a13f
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 01:38:00 2008 +0200
+
+    correct parsing for lookup tables
+
+commit 1641588b014ad1547e61f8ff896dc15d050abfb9
+Author: Bobby Powers <bobbypowers@gmail.com>
+Date:   Mon Jun 2 01:36:03 2008 +0200
+
+    removed an unnecessary Xcode directory from git
+
+commit b32b5b7a7335fe601c3add2e8f825149d8bd1c1d
+Author: Bobby Powers <bobby@bpmacbookpro.local>
+Date:   Sun Jun 1 22:56:41 2008 +0200
+
+    removed leftover .svn directories
+
+commit 95c76ca34d70d793b1e3ec610d418d648ba29d60
+Author: Bobby Powers <bobby@bpmacbookpro.local>
+Date:   Sun Jun 1 22:55:09 2008 +0200
+
+    initial git commit
