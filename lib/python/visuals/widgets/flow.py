@@ -184,14 +184,15 @@ class FlowItem(SimItem):
     cr.curve_to(end_x, end_y, end_x, end_y,
                 self.x2 - math.cos(angle-20.0/180*pi) * self.arrow_size,
                 self.y2 - math.sin(angle-20.0/180*pi) * self.arrow_size)
-    cr.close_
-    #cr.set_line_join
+    cr.close_path()
+    cr.set_line_width(self.line_width/1.5)
+    cr.set_line_join(cairo.LINE_JOIN_ROUND)
     cr.stroke_preserve()
     cr.set_source_rgb(1, 1, 1)
     cr.fill()
     
     cr.move_to(self.x1, self.y1)
-    cr.line_to(end_x, end_y)
+    cr.line_to((self.x2 + end_x)/2, (self.y2 + end_y)/2)
     cr.set_line_width(self.line_width/3)
     cr.set_source_rgb(1, 1, 1)
     cr.stroke()
