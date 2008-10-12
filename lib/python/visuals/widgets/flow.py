@@ -118,6 +118,22 @@ class FlowItem(SimItem):
     return (x0 + center[0], y0 + center[1])
 
 
+  def edge_point(self, end_point):
+    center_x, center_y = self.abs_center()
+    
+    line_angle = math.atan2((end_point[1] - center_y), 
+                            (end_point[0] - center_x))
+    if line_angle < 0: line_angle = 2*math.pi + line_angle
+    
+    
+    radius = self.icon_size/2
+ 
+    center_x = center_x + radius * math.cos(line_angle)
+    center_y = center_y + radius * math.sin(line_angle)
+    
+    return (center_x, center_y)
+
+
   def do_simple_create_path(self, cr):
     self.ensure_size(cr)
 
@@ -169,11 +185,7 @@ class FlowItem(SimItem):
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
-                      self.active_color[2])     
-    # I think that this is a slight performance loss, so only do it
-    # when we can see the end (i.e. when we're drawing it)
-    if self._new:
-      cr.set_line_cap(cairo.LINE_CAP_ROUND)
+                      self.active_color[2])
     cr.stroke()
 
     # draw arrow

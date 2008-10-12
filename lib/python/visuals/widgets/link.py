@@ -27,6 +27,7 @@ import gobject
 import gtk
 import goocanvas
 import math
+from math import pi
 import cairo
 
 import logging
@@ -46,6 +47,7 @@ class LinkItem(SimItem):
     self.__needs_resize_calc = True
     self.dragging = dragging
     self.active_color = [0, 0, 0]
+    self.arrow_size = 20
 
     if flow_from:
       start_coord = flow_from.abs_center()  
@@ -125,16 +127,34 @@ class LinkItem(SimItem):
     cr.save()
     self.ensure_size(cr)
     cr.move_to(self.x1, self.y1)
-    cr.line_to(self.x2, self.y2)
+    
+    angle = math.atan2(self.y2-self.y1, self.x2-self.x1)
+    end_x = self.x2 - math.cos(angle) * self.arrow_size
+    end_y = self.y2 - math.sin(angle) * self.arrow_size
+    
+    cr.line_to(end_x, end_y)
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
-                      self.active_color[2])     
-    # I think that this is a slight performance loss, so only do it
-    # when we can see the end (i.e. when we're drawing it)
-    if self._new:
-      cr.set_line_cap  (cairo.LINE_CAP_ROUND)
+                      self.active_color[2])
     cr.stroke()
+
+    # draw arrow
+    cr.move_to(self.x2, self.y2)
+    # 10/pi is 20 degrees to either side of the line
+    cr.line_to(self.x2 - math.cos(angle+20.0/180*pi) * self.arrow_size,
+               self.y2 - math.sin(angle+20.0/180*pi) * self.arrow_size)
+    cr.curve_to(end_x, end_y, end_x, end_y,
+                self.x2 - math.cos(angle-20.0/180*pi) * self.arrow_size,
+                self.y2 - math.sin(angle-20.0/180*pi) * self.arrow_size)
+    cr.close_path()
+    cr.set_line_width(self.line_width/1.5)
+    cr.set_line_join(cairo.LINE_JOIN_ROUND)
+    cr.stroke_preserve()
+    cr.fill()
+
+
+    
     
     cr.restore()
 
@@ -178,9 +198,9 @@ class LinkItem(SimItem):
     if item is self.flow_from:
       #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
       self.x1, self.y1 = self.flow_from.abs_center()
-    else:
-      #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
-      self.x2, self.y2 = self.flow_to.abs_center()
+    
+    #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
+    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y1))
 
     self.__needs_resize_calc = True
     self.force_redraw()

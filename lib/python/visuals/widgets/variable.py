@@ -92,6 +92,22 @@ class VariableItem(SimItem):
     return (x0 + self.x + self.icon_size/2.0, y0 + center[1])
 
 
+  def edge_point(self, end_point):
+    center_x, center_y = self.abs_center()
+    
+    line_angle = math.atan2((end_point[1] - center_y), 
+                            (end_point[0] - center_x))
+    if line_angle < 0: line_angle = 2*math.pi + line_angle
+    
+    
+    radius = self.icon_size/2
+ 
+    center_x = center_x + radius * math.cos(line_angle)
+    center_y = center_y + radius * math.sin(line_angle)
+    
+    return (center_x, center_y)
+
+
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
       self._display_name.update_extents(cr)
