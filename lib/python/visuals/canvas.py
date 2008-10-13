@@ -92,7 +92,7 @@ class SimGoo(goocanvas.Canvas):
 
     if new or old_name == "":
       logging.debug("SimGooCanvas: awesome! new: '%s'" % item.name())
-      self.engine.new_variable(item.name(), "")
+      #self.engine.new_variable(item.name(), "")
     else:
       logging.debug("SimGooCanvas: renaming '%s' to '%s'" % 
                     (old_name, item.name()))
