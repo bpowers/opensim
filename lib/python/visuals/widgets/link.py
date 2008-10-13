@@ -112,10 +112,10 @@ class LinkItem(SimItem):
 
   def ensure_size(self, cr):
     if self.__needs_resize_calc:
-      self.bounds_x1 = float(min(self.x1, self.x2) - self.line_width)
-      self.bounds_y1 = float(min(self.y1, self.y2) - self.line_width)
-      self.bounds_x2 = float(max(self.x1, self.x2) + self.line_width)
-      self.bounds_y2 = float(max(self.y1, self.y2) + self.line_width)
+      self.bounds_x1 = float(min(self.x1, self.x2) - self.arrow_size)
+      self.bounds_y1 = float(min(self.y1, self.y2) - self.arrow_size)
+      self.bounds_x2 = float(max(self.x1, self.x2) + self.arrow_size)
+      self.bounds_y2 = float(max(self.y1, self.y2) + self.arrow_size)
 
       #self._display_name.update_extents(cr)
       self.__needs_resize_calc = False
