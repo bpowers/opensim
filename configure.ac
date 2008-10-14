@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([OpenSim], [0.4.3], [bugs@opensimproject.org])
+AC_INIT([OpenSim], [0.4.6], [bugs@opensimproject.org])
 AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
