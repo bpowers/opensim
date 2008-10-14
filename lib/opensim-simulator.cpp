@@ -713,7 +713,24 @@ static OpensimVariable *
 opensim_simulator_default_get_variable (OpensimSimulator *simulator, 
                                         gchar *var_name)
 {
-  return NULL;
+  std::map<std::string, OpensimVariable *> var_map;
+  var_map = simulator->priv->var_map;
+  
+  if (var_name == NULL || !g_strcmp0 (var_name, "")) 
+  {
+    fprintf (stderr, "Error: variable must have a name\n");
+    return NULL;
+  }
+  
+  std::map<std::string, OpensimVariable *>::iterator v = 
+                                                  var_map.find (var_name);
+  if (v == var_map.end())
+  {
+    fprintf (stderr, "Error: get_variable: var '%s' not found.\n", var_name);
+    return NULL;
+  }
+  
+  return v->second;
 }
 
 
