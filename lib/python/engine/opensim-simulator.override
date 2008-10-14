@@ -13,3 +13,40 @@ import gobject.GObject as PyGObject_Type
 ignore-glob
   *_get_type
 %%
+override opensim_simulator_get_variable kwargs
+static PyObject *
+_wrap_opensim_simulator_get_variable (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+  static char     *kwlist[] = { "var_name", NULL };
+  PyObject        *ret, *py_var;
+  gchar           *var_name;
+  OpensimVariable *g_var;
+    
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, "s:get_variable",
+                                    kwlist, &var_name))
+      return NULL;
+    
+  g_var = opensim_simulator_get_variable (OPENSIM_SIMULATOR (self->obj),
+                                          var_name);
+  
+  if (!g_var) 
+  {
+    Py_INCREF (Py_None);
+    return Py_None;
+  }
+  
+  gchar *eqn = NULL;
+  g_object_get (G_OBJECT (g_var), "eqn", &eqn, NULL);
+  
+  fprintf (stdout, "okay, we got the variable '%s' with eqn:'%s'\n",
+           var_name, eqn);
+  
+  g_free (eqn);
+  
+  Py_INCREF (Py_None);
+  return Py_None;
+  
+  //return ret;
+}
+
+%%

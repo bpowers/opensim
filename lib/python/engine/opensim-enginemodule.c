@@ -33,7 +33,7 @@ opensim_get_file (PyGObject *self, PyObject *args)
                     "get_file() arg 2 can only be a gobject.GPointer\n");
     return NULL;
   }
-    
+  
   gchar *f_name;
   OpensimSimulator *sim = OPENSIM_SIMULATOR (((PyGObject *) py_sim)->obj);
   g_object_get (G_OBJECT (sim), "file_name", &f_name, NULL);

@@ -26,17 +26,21 @@ def run ():
   sim.new_variable ('lookup', '[(0,2),(50,40),(80,56)]')
   sim.new_variable ('test', 'lookup[time]')
 
+  test = sim.get_variable ('test')
+  if test is not None:
+    print "test equation: %s" % test.props.equation
+
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
   sim.props.output_type =  engine.emit_Python
-  sim.run()
+  #sim.run()
   
   # connect our save_extra function to the 'saving' signal, set a 
   # file name for the model (which is different from an output file-name)
   # and save our model
   sim.connect ("saving", save_extra)
   sim.props.file_name = "test_sim.osm"
-  sim.save ()
+  #sim.save ()
 
 
 # run if we're the main module
