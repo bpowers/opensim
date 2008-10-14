@@ -4,7 +4,7 @@
 extern PyTypeObject G_GNUC_INTERNAL PyOpensimSimulator_Type;
 
 void engine_simulator_add_constants(PyObject *d, const char *strip);
-void engine_variable_register_classes(PyObject *d); 
+//void engine_variable_register_classes(PyObject *d); 
 
 
 // GROSS HACK to pass a file pointer from C to Python and wrap it as a 
@@ -71,7 +71,7 @@ initengine (void)
     d = PyModule_GetDict (m);
  
     engine_simulator_register_classes (d);
-    engine_variable_register_classes (d);
+    //engine_variable_register_classes (d);
     engine_simulator_add_constants (m, "sim_");
  
     if (PyErr_Occurred ()) 
