@@ -36,7 +36,7 @@ _wrap_opensim_simulator_get_variable (PyGObject *self, PyObject *args, PyObject 
   }
   
   gchar *eqn = NULL;
-  g_object_get (G_OBJECT (g_var), "eqn", &eqn, NULL);
+  g_object_get (G_OBJECT (g_var), "equation", &eqn, NULL);
   
   fprintf (stdout, "okay, we got the variable '%s' with eqn:'%s'\n",
            var_name, eqn);
