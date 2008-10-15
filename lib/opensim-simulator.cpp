@@ -118,13 +118,13 @@ enum
 
 enum
 {
-  M_SIG_SAVING,
+  OS_SIG_SAVING,
 
-  LAST_SIGNAL
+  SIM_LAST_SIGNAL
 };
 
 
-static guint simulator_signal[LAST_SIGNAL] = {0};
+static guint simulator_signal[SIM_LAST_SIGNAL] = {0};
 
 
 struct _OpensimSimulatorPrivate
@@ -324,7 +324,7 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
                                    opensim_param_spec);
   
   // time for signals!
-  simulator_signal[M_SIG_SAVING] = 
+  simulator_signal[OS_SIG_SAVING] = 
     g_signal_new ("saving",
                   G_TYPE_FROM_CLASS (gobject_class),
                   GSignalFlags (G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE \
