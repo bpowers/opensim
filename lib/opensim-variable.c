@@ -56,6 +56,17 @@ enum
 };
 
 
+enum
+{
+  OS_SIG_EQN_CHANGED,
+
+  VAR_LAST_SIGNAL
+};
+
+
+static guint variable_signal[VAR_LAST_SIGNAL] = {0};
+
+
 struct _OpensimVariablePrivate
 {
   gchar         *name;
@@ -117,8 +128,13 @@ opensim_variable_set_property(GObject      *object,
 
   case PROP_EQUATION:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
-    g_free(self->priv->equation);
+
+    // hold on to equation for now so that we can pass it out
+    // along with our signal
+    gchar *equation = self->priv->equation;
     self->priv->equation = g_value_dup_string(value);
+    g_signal_emit_by_name (object, "equation_changed", equation);
+    g_free(equation);
     break;
 
   case PROP_UNITS:
@@ -264,6 +280,18 @@ opensim_variable_class_init(OpensimVariableClass *klass)
                                   PROP_VALID,
                                   opensim_param_spec);
 
+  // time for signals!
+  variable_signal[OS_SIG_EQN_CHANGED] = 
+    g_signal_new ("equation_changed",
+                  G_TYPE_FROM_CLASS (gobject_class),
+                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                  NULL /* closure */,
+                  NULL /* accumulator */,
+                  NULL /* accumulator data */,
+                  g_cclosure_marshal_VOID__STRING,
+                  G_TYPE_NONE /* return_type */,
+                  1     /* n_params */,
+                  G_TYPE_STRING  /* param_types */);
 }
 
 

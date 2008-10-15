@@ -3,6 +3,12 @@
 from opensim import engine
 
 
+# callback for when an equation changes
+def equation_checker (var, old_equation):
+  print "\nthe equation for '%s' changed." % var.props.name
+  print "  old equation: '%s'" % old_equation
+  print "  new equation: '%s'\n" % var.props.equation
+
 # callback function that is executed when sim.save () is called
 def save_extra (sim, save_file_pointer):
   save_file = engine.get_file (sim, save_file_pointer)
@@ -28,7 +34,8 @@ def run ():
 
   test = sim.get_variable ('test')
   if test is not None:
-    print "test equation: %s" % test.props.equation
+    test.connect ("equation_changed", equation_checker)
+    test.props.equation = 'lookup[time] * weird'
 
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
