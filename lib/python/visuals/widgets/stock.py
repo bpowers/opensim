@@ -299,6 +299,8 @@ class StockItem(SimItem):
 
     if self.var is None: 
       self.var = self.get_canvas().new_variable(self.name())
+    else
+      self.var.props.name = self.name()
 
     self._new = False
 
