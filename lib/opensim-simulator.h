@@ -111,7 +111,7 @@ struct _OpensimSimulatorClass
   int               (* load)              (OpensimSimulator *simulator,
                                            gchar            *model_path);
   int               (* save)              (OpensimSimulator *simulator);
-  int               (* new_variable)      (OpensimSimulator *simulator,
+  OpensimVariable * (* new_variable)      (OpensimSimulator *simulator,
                                            gchar            *var_name,
                                            gchar            *var_eqn);
   OpensimVariable * (* get_variable)      (OpensimSimulator *simulator,
@@ -139,7 +139,7 @@ opensim_simulator_load              (OpensimSimulator *simulator,
 int 
 opensim_simulator_save              (OpensimSimulator *simulator);
 
-int
+OpensimVariable *
 opensim_simulator_new_variable      (OpensimSimulator *simulator, 
                                      gchar            *var_name, 
                                      gchar            *var_eqn);

@@ -61,7 +61,7 @@ static int opensim_simulator_default_load (OpensimSimulator *simulator,
                                            gchar *model_path);
 static int opensim_simulator_default_save (OpensimSimulator *simulator);
 
-static int opensim_simulator_default_new_variable
+static OpensimVariable *opensim_simulator_default_new_variable
                                           (OpensimSimulator *simulator, 
                                            gchar *var_name, 
                                            gchar *var_eqn);
@@ -640,7 +640,7 @@ opensim_simulator_default_save(OpensimSimulator *simulator)
 
 
 
-extern "C" int
+extern "C" OpensimVariable *
 opensim_simulator_new_variable(OpensimSimulator *simulator, 
                                gchar *var_name, 
                                gchar *var_eqn)
@@ -666,7 +666,7 @@ clean_string(gchar *str)
 
 
 
-static int
+static OpensimVariable *
 opensim_simulator_default_new_variable (OpensimSimulator *simulator, 
                                         gchar *var_name, 
                                         gchar *var_eqn)
@@ -694,7 +694,7 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   
   self->sim_builder->Update (self->var_map);
   
-  return NULL;
+  return new_var;
 }
 
 
