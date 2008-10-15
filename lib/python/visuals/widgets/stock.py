@@ -42,6 +42,8 @@ class StockItem(SimItem):
     super(StockItem, self).__init__(**kwargs)
 
     self._new = True
+    # this will be the variable created in the simulator
+    self.var = None
 
     self.x = int(x - width/2)
     self.y = int(y - height/2)
@@ -295,8 +297,8 @@ class StockItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self.__old_name, 
-                                  self, new=self._new)
+    if self.var is None: 
+      self.var = self.get_canvas().new_variable(self.name())
 
     self._new = False
 

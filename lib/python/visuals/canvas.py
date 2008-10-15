@@ -61,7 +61,8 @@ class SimGoo(goocanvas.Canvas):
     elif self.highlighted is not None:
       self.highlighted.emit("highlight_out_event", self)
     self.highlighted = widget
-    self.highlight_cb = widget.connect("highlight_out_event", self.highlight_out)
+    self.highlight_cb = widget.connect("highlight_out_event", 
+                                       self.highlight_out)
     widget.emit("highlight_in_event", self)
     self.grab_focus(self.highlighted)
     #logging.debug("done grab_highlight")
@@ -86,20 +87,6 @@ class SimGoo(goocanvas.Canvas):
     return False
 
 
-  def update_name(self, old_name, item, new=False):
-    if old_name == item.name():
-      return
-
-    if new or old_name == "":
-      logging.debug("SimGooCanvas: awesome! new: '%s'" % item.name())
-      #self.engine.new_variable(item.name(), "")
-    else:
-      logging.debug("SimGooCanvas: renaming '%s' to '%s'" % 
-                    (old_name, item.name()))
-      #self.engine.rename_variable(old_name, item.name())
-      logging.warning("SimGooCanvas: renaming variables is not implemented yet.")
-
-
   def remove_item(self, item):
     logging.debug("SimGooCanvas: removing '%s'." % item.name())
     self.sim.display_vars.remove(item)
@@ -112,9 +99,13 @@ class SimGoo(goocanvas.Canvas):
     self.line.cleanup(item)
 
 
+  def new_variable(self, var_name):
+    return self.engine.new_variable(var_name, '')
+
+
   def show_editor(self, item):
     logging.debug("showing equation editor for: %s" % item.name())
-    eqn = self.engine.get_variable_equation(item.name())
+    eqn = self.engine.get_variable(item.name()).props.equation
     editor = tools.EquationEditor(eqn)
     result = editor.run()
     editor.hide()
@@ -122,7 +113,8 @@ class SimGoo(goocanvas.Canvas):
     if result == gtk.RESPONSE_OK:
       logging.debug("okay, got an equation:")
       logging.debug("\t'%s'" % editor.equation.get_text())
-      self.engine.set_variable_equation(item.name(), editor.equation.get_text())
+      self.engine.get_variable(item.name()).props.equation = \
+                                              editor.equation.get_text()
     else:
       logging.debug('oh well, canceled editor or something.')
 
@@ -149,6 +141,8 @@ class Canvas (gtk.ScrolledWindow):
     self.goocanvas.sim = self
     self.display_vars = []
 
+    # allow us to add all our layout information to the 
+    # save file
     self.engine.connect("saving", self.save_visual_state)
 
     display = gtk.gdk.display_get_default()

@@ -75,6 +75,8 @@ class FlowItem(SimItem):
 
     self.flow_to = None
     self._new = True
+    # this will be the variable created in the simulator
+    self.var = None
     self.line_width = line_width
 
     if name is not None:
@@ -428,8 +430,8 @@ class FlowItem(SimItem):
         self.get_canvas().remove_item(self)
         return
 
-    self.get_canvas().update_name(self.__old_name, 
-                                  self, new=self._new)
+    if self.var is None: 
+      self.var = self.get_canvas().new_variable(self.name())
 
     self._new = False
     self.force_redraw()
