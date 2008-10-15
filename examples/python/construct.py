@@ -31,6 +31,7 @@ def run ():
   sim.new_variable ('weird', '3.14*time')
   sim.new_variable ('lookup', '[(0,2),(50,40),(80,56)]')
   sim.new_variable ('test', 'lookup[time]')
+  sim.new_variable ('blank', '')
 
   test = sim.get_variable ('test')
   if test is not None:

@@ -631,8 +631,8 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
   g_object_get(G_OBJECT(var), "type", &var_t, 
                               "name", &var_name, NULL);
   
-  if (toks->len == 0)
-  {
+  if (!toks || toks->len == 0)
+    {
     fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
             var_name);
     _errors++;
@@ -640,7 +640,7 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
     g_free(var_name);
     return false;
   }
-
+  
   // prime CurToken
   getNextToken();
   ExprAST *val = ParseExpression();
