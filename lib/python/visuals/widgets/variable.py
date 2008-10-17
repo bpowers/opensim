@@ -48,6 +48,7 @@ class VariableItem(SimItem):
     self.dragging = False
     self.active_color = [0, 0, 0]
     self.__old_name = ""
+    self.named = True
 
     self._new = True
     # this will be the variable created in the simulator
@@ -298,25 +299,6 @@ class VariableItem(SimItem):
     return False
 
 
-  def on_highlight_out(self, item, target):
-    self.active_color = [0, 0, 0]
-    self.force_redraw()
-
-    logging.debug("h_out: (%s)" % self.name())
-
-    if self._new:
-      if self._display_name.placeholder:
-        self.get_canvas().remove_item(self)
-        return
-
-    if self.var is None: 
-      self.var = self.get_canvas().new_variable(self.name())
-    else
-      self.var.props.name = self.name()
-
-    self._new = False
-
-    return False
 
 gobject.type_register(VariableItem)
 

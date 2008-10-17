@@ -49,6 +49,7 @@ class FlowItem(SimItem):
     self.active_color = [0, 0, 0]
     self.__old_name = ""
     self.arrow_size = 20
+    self.named = True
 
     if flow_from:
       start_coord = flow_from.abs_center()  
@@ -419,26 +420,6 @@ class FlowItem(SimItem):
 
     return False
 
-
-  def on_highlight_out(self, item, target):
-    self.active_color = [0, 0, 0]
-
-    #logging.debug("h_out: (%s)" % self.name())
-
-    if self._new:
-      if self._display_name.placeholder:
-        self.get_canvas().remove_item(self)
-        return
-
-    if self.var is None: 
-      self.var = self.get_canvas().new_variable(self.name())
-    else
-      self.var.props.name = self.name()
-
-    self._new = False
-    self.force_redraw()
-
-    return False
 
 
 gobject.type_register(FlowItem)

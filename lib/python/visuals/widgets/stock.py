@@ -51,9 +51,10 @@ class StockItem(SimItem):
     self.height = height
     self.dragging = False
 
-    self.text_color = [0, 0, 0]
+    self.active_color = [0, 0, 0]
     self.line_width = line_width
     self.__old_name = ""
+    self.named = True
 
     # keep track of inflows and outflows, for use in engine
     self.inflows = []
@@ -160,9 +161,9 @@ class StockItem(SimItem):
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
     cr.set_line_width(self.line_width)
-    cr.set_source_rgb(self.text_color[0], \
-                      self.text_color[1], \
-                      self.text_color[2])
+    cr.set_source_rgb(self.active_color[0], \
+                      self.active_color[1], \
+                      self.active_color[2])
     cr.stroke()
 
     # translate so that our coordinate system is in the widget
@@ -280,7 +281,7 @@ class StockItem(SimItem):
 
 
   def on_highlight_in(self, item, target):
-    self.text_color = [1, .6, .2]
+    self.active_color = [1, .6, .2]
     self.force_redraw()
 
     self.__old_name = self.name()
@@ -289,20 +290,21 @@ class StockItem(SimItem):
 
 
   def on_highlight_out(self, item, target):
-    self.text_color = [0, 0, 0]
-    self.force_redraw()
+    self.active_color = [0, 0, 0]
 
     if self._new:
       if self._display_name.placeholder:
         self.get_canvas().remove_item(self)
         return
 
-    if self.var is None: 
-      self.var = self.get_canvas().new_variable(self.name())
-    else
-      self.var.props.name = self.name()
+    if self.named is True:
+      if self.var is None: 
+        self.var = self.get_canvas().new_variable(self.name())
+      else:
+        self.var.props.name = self.name()
 
     self._new = False
+    self.force_redraw()
 
     return False
 

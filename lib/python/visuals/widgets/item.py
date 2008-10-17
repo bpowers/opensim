@@ -64,6 +64,8 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.y = int(y - height/2)
     self.width = width
     self.height = height
+    
+    self.named = False
 
     self.connect("focus_in_event", self.on_focus_in)
     self.connect("focus_out_event", self.on_focus_out)
@@ -142,7 +144,23 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
 
 
   def on_highlight_out(self, item, target):
-    raise NotImplementedError
+    self.active_color = [0, 0, 0]
+
+    if self._new:
+      if self._display_name.placeholder:
+        self.get_canvas().remove_item(self)
+        return
+
+    if self.named is True:
+      if self.var is None: 
+        self.var = self.get_canvas().new_variable(self.name())
+      else:
+        self.var.props.name = self.name()
+
+    self._new = False
+    self.force_redraw()
+
+    return False
 
 
 
