@@ -252,6 +252,7 @@ class StockItem(SimItem):
       canvas.drop_highlight()
     else:
       print "unsupported button: %d" % event.button
+
     return True
 
 

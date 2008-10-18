@@ -466,3 +466,4 @@ class Canvas (gtk.ScrolledWindow):
 
 
 gobject.type_register(Canvas)
+
