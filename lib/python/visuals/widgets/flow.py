@@ -32,6 +32,7 @@ import cairo
 
 import logging
 
+from opensim.visuals.tools import edit_equation
 from text import TextInfo
 from item import SimItem
 from stock import StockItem
@@ -376,11 +377,11 @@ class FlowItem(SimItem):
     canvas.grab_highlight(self)
     logging.debug("**after grab")
 
-    if event.button == 1:
+    if event.button is 1:
       pass
-    elif event.button == 3:
-      logging.debug("right click")
-      canvas.show_editor(self)
+    elif event.button is 3:
+      edit_equation(self.var)
+      canvas.drop_highlight()
     else:
       print "unsupported button: %d" % event.button
     return True
@@ -423,3 +424,4 @@ class FlowItem(SimItem):
 
 
 gobject.type_register(FlowItem)
+

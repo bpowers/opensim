@@ -31,6 +31,7 @@ import cairo
 
 import logging
 
+from opensim.visuals.tools import edit_equation
 from text import TextInfo
 from item import SimItem
 
@@ -235,7 +236,7 @@ class StockItem(SimItem):
     canvas.grab_highlight(self)
     logging.debug("**after grab")
 
-    if event.button == 1:
+    if event.button is 1:
       self.drag_x = event.x
       self.drag_y = event.y
 
@@ -246,18 +247,19 @@ class StockItem(SimItem):
                            | gtk.gdk.BUTTON_RELEASE_MASK,
                           fleur, event.time)
       self.dragging = True
-    elif event.button == 3:
-      logging.debug("right click")
-      canvas.show_editor(self)
+    elif event.button is 3:
+      edit_equation(self.var)
+      canvas.drop_highlight()
     else:
       print "unsupported button: %d" % event.button
     return True
 
 
   def on_button_release(self, item, target, event):
-    canvas = item.get_canvas()
-    canvas.pointer_ungrab(item, event.time)
-    self.dragging = False
+    if event.button is 1:
+      canvas = item.get_canvas()
+      canvas.pointer_ungrab(item, event.time)
+      self.dragging = False
 
 
   def on_motion_notify (self, item, target, event):
@@ -289,25 +291,6 @@ class StockItem(SimItem):
     return False
 
 
-  def on_highlight_out(self, item, target):
-    self.active_color = [0, 0, 0]
-
-    if self._new:
-      if self._display_name.placeholder:
-        self.get_canvas().remove_item(self)
-        return
-
-    if self.named is True:
-      if self.var is None: 
-        self.var = self.get_canvas().new_variable(self.name())
-      else:
-        self.var.props.name = self.name()
-
-    self._new = False
-    self.force_redraw()
-
-    return False
-
-
 
 gobject.type_register(StockItem)
+

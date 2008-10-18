@@ -103,24 +103,6 @@ class SimGoo(goocanvas.Canvas):
     return self.engine.new_variable(var_name, '')
 
 
-  def show_editor(self, item):
-    logging.debug("showing equation editor for: %s" % item.name())
-    eqn = self.engine.get_variable(item.name()).props.equation
-    editor = tools.EquationEditor(eqn)
-    result = editor.run()
-    editor.hide()
-
-    if result == gtk.RESPONSE_OK:
-      logging.debug("okay, got an equation:")
-      logging.debug("\t'%s'" % editor.equation.get_text())
-      self.engine.get_variable(item.name()).props.equation = \
-                                              editor.equation.get_text()
-    else:
-      logging.debug('oh well, canceled editor or something.')
-
-    self.drop_highlight()
-
-
 
 class Canvas (gtk.ScrolledWindow):
 

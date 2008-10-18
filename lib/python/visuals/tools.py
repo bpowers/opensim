@@ -324,3 +324,19 @@ class LineControl:
 
     self.cleanup(self.line)
 
+
+
+def edit_equation(var):
+  logging.debug("showing equation editor for: %s" % var.props.name)
+  eqn = var.props.equation
+  editor = EquationEditor(eqn)
+  result = editor.run()
+  editor.hide()
+
+  if result == gtk.RESPONSE_OK:
+    logging.debug("okay, got an equation:")
+    logging.debug("\t'%s'" % editor.equation.get_text())
+    var.props.equation = editor.equation.get_text()
+  else:
+    logging.debug('oh well, canceled editor or something.')
+

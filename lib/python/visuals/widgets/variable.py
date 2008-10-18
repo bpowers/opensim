@@ -32,6 +32,7 @@ import cairo, pango
 
 import logging
 
+from opensim.visuals.tools import edit_equation
 from text import TextInfo
 from item import SimItem
 
@@ -241,7 +242,7 @@ class VariableItem(SimItem):
     canvas.grab_highlight(self)
     logging.debug("**after grab")
 
-    if event.button == 1:
+    if event.button is 1:
       self.drag_x = event.x
       self.drag_y = event.y
 
@@ -252,10 +253,9 @@ class VariableItem(SimItem):
                            | gtk.gdk.BUTTON_RELEASE_MASK,
                           fleur, event.time)
       self.dragging = True
-    elif event.button == 3:
-      logging.debug("right click")
-      canvas.show_editor(self)
-      pass
+    elif event.button is 3:
+      edit_equation(self.var)
+      canvas.drop_highlight()
     else:
       print "unsupported button: %d" % event.button
 
@@ -263,9 +263,10 @@ class VariableItem(SimItem):
 
 
   def on_button_release(self, item, target, event):
-    canvas = item.get_canvas()
-    canvas.pointer_ungrab(item, event.time)
-    self.dragging = False
+    if event.button is 1:
+      canvas = item.get_canvas()
+      canvas.pointer_ungrab(item, event.time)
+      self.dragging = False
 
 
   def on_motion_notify (self, item, target, event):
@@ -292,7 +293,7 @@ class VariableItem(SimItem):
     self.active_color = [1, .6, .2]
     self.force_redraw()
 
-    logging.debug("h_in : (%s)" % self.name())
+    logging.debug("h_in : '%s'" % self.name())
 
     self.__old_name = self.name()
 
