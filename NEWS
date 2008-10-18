@@ -1,3 +1,142 @@
+0.4.6 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.6
+    
+    there has been a lot of visible work for 0.4.6, notably:
+     * can get variables you've created from the simulator
+     * arrowheads in diagrams!
+     * loading and saving somewhat works again from gtk interface
+
+
+0.4.5 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.5 'keywords schmeawords'
+    
+    This release sees the 'saving' signal actually WORK on Fedora.  The 
+    release name, 'keywords schmeawords' is an allusion to the fact that 
+    keywords were causing my woes.  Python on Fedora was giving NULL kwargs, 
+    which is different behavior for what it does on mac.
+    
+    Other small improvements include -
+    * AS3 template corrections (thanks to Billy)
+    * script to update activity libraries
+    * whitespace improvements :)
+    
+    In addition, I've started work replacing the interpreter with a bytecode/C
+    based one, but that will be a significant project.
+
+
+0.4.4 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.4
+    
+    Signals!  This release sees the 'saving' signal added to simulator, 
+    and the ability to add metadata to a save file (using this signal) from 
+    Python.
+
+
+0.4.3 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.3
+    
+    this release sees our wonderful gobject based simulator and variables 
+    merged back into master.  from the command line, its functonally the 
+    same as 0.3.1, but saving and model creation is broken in the visual 
+    tools.
+
+
+0.4.1 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.1
+    
+    working gobject-codegen based python bindings!
+
+
+0.4.0 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.0
+    
+    major changes:
+     * gobject based simulator and variable
+     * python bindings based on gobject-codegen
+     * no more swig
+     * c-namespace changed from model- to opensim-
+       - Model is the name of our graphical modeling program,
+         it makes sense to keep the namespace as opensim so that
+         we don't conflict with anything else in python
+
+
+0.3.1 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+model version 0.3.1
+    
+    this release has several new features:
+     * ability to draw links
+     * equation editing
+     * simulation runs in own thread
+
+
+0.3.0 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+model version 0.3.0
+    
+    this release has two key feaures:
+     * full load/save support
+     * complete actionscript 3 model output
+    
+    Once again, anything you can draw in Model you can save and load. Until 
+    now save files didn't support loading rates, and the save format for 
+    rates has changed. Also, with some debugging help from Billy, we now 
+    have complete and working AS3 model output. You can output your model 
+    in AS3 for use in Flash.  In fact, the AS3 simulator currently has more 
+    features than the C++ one, such as partial simulation and ability to 
+    change variables.
+
+
+0.2.9 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+OpenSim/Model 0.2.9 preview release
+    
+    With this release comes a major improvement in the AS3 backend.
+    We now produce syntatically correct AS3, composed of output
+    produced from parsing the AST being inserted into a template
+    containing much of the ActionScript functionality.
+
+
+0.2.8 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+release version 0.2.8
+    
+    major features:
+     * activity builds from release distribution
+     * draws stocks, flows and aux variables
+     * can rename stocks and aux vars
+     * can rearrange the scene
+     * can save the visual scene, load somewhat broken
+
+
+0.2.6 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+engine compiles on Windows, Linux and Mac
+
+
+0.2.4 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+initial Python support via SWIG
+    
+    major work was done on the python front:
+     * Python model output now respects the specified savestep
+     * Python wrappers for the simulator are generated and installed 
+       through SWIG
+     * simple example Python script added to src to show how to use the
+       simulator in Python
+
+0.2.3 (Bobby Powers <bobby@laptop.org>)
+===========================================================
+Can run Vensim's Rabbit/Fox model.  Basic support for lookup tables 
+and built-in functions
+
+
 Preview 1 (0.1.0) (2008-03-30 Bobby Powers <bobbypowers@gmail.com>)
 ===========================================================
 This is the first preview release of OpenSim.  The main feature that
