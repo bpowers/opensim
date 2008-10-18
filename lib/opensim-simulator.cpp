@@ -737,7 +737,6 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
                                                   var_map.find (var_name);
   if (v == var_map.end())
   {
-    fprintf (stderr, "Error: get_variable: var '%s' not found.\n", var_name);
     return NULL;
   }
   

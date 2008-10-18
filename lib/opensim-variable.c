@@ -82,7 +82,6 @@ struct _OpensimVariablePrivate
   gboolean  valid;
   
   gpointer  sim;
-  GList    *influences;
   GArray   *toks;
 };
 
@@ -331,8 +330,6 @@ opensim_variable_init(OpensimVariable *self)
   
   self->priv->valid = TRUE;
   
-  self->priv->influences = NULL;
-  
   // lazily initialize toks when needed
   self->priv->toks  = NULL;
 }
@@ -402,25 +399,24 @@ opensim_variable_get_influences (OpensimVariable *variable)
 }
 
 
-static void 
-opensim_variable_influenceize (OpensimVariable *variable)
+
+static GList *
+opensim_variable_default_get_influences (OpensimVariable *variable)
 {
   OpensimVariablePrivate *self = variable->priv;
   OpensimSimulator *sim = self->sim;
-  
+
   // if we don't have a simulator listed, we can't 
   // get references to other variables
   if (!sim) 
   {
-    fprintf (stderr, "Warning: Missing sim reference in influenceize\n");
+    fprintf (stderr, "Warning: Missing sim reference in get_influences\n");
     return;
   }
   
   const GArray *toks = opensim_variable_get_tokens (variable);
   
-  if (self->influences) g_list_free (self->influences);
-  
-  self->influences = NULL;
+  GList *influences = NULL;
   
   GArray *array = self->toks;
   OpensimVariable *in_var = NULL;
@@ -429,26 +425,18 @@ opensim_variable_influenceize (OpensimVariable *variable)
   {
     equ_token tok = g_array_index(array, equ_token, i);
     
-    if (tok.type = tok_identifier) 
+    if (tok.type == tok_identifier) 
     {
-      // FIXME: we need to increase the reference count I think
       in_var = opensim_simulator_get_variable (sim, tok.identifier);
-      if (in_var) 
-        self->influences = g_list_prepend (self->influences, in_var);
+      if (in_var)
+      {
+        g_object_ref (in_var);
+        influences = g_list_prepend (influences, in_var);
+      }
     }
-  }
-}
-
-
-
-static GList *
-opensim_variable_default_get_influences (OpensimVariable *variable)
-{
-  if (!variable->priv->toks) opensim_variable_tokenize (variable);
+  } 
   
-  if (!variable->priv->influences) opensim_variable_influenceize (variable);
-  
-  return g_list_copy (variable->priv->influences);
+  return influences;
 }
 
 
