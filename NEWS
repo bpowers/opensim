@@ -1,4 +1,4 @@
-0.4.6 (Bobby Powers <bobby@laptop.org>)
+0.4.6 (2008-10-13 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.6
     
@@ -8,7 +8,7 @@ preview version 0.4.6
      * loading and saving somewhat works again from gtk interface
 
 
-0.4.5 (Bobby Powers <bobby@laptop.org>)
+0.4.5 (2008-10-07 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.5 'keywords schmeawords'
     
@@ -26,7 +26,7 @@ preview version 0.4.5 'keywords schmeawords'
     based one, but that will be a significant project.
 
 
-0.4.4 (Bobby Powers <bobby@laptop.org>)
+0.4.4 (2008-09-21 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.4
     
@@ -35,7 +35,7 @@ preview version 0.4.4
     Python.
 
 
-0.4.3 (Bobby Powers <bobby@laptop.org>)
+0.4.3 (2008-09-13 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.3
     
@@ -45,14 +45,14 @@ preview version 0.4.3
     tools.
 
 
-0.4.1 (Bobby Powers <bobby@laptop.org>)
+0.4.1 (2008-08-31 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.1
     
     working gobject-codegen based python bindings!
 
 
-0.4.0 (Bobby Powers <bobby@laptop.org>)
+0.4.0 (2008-08-31 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.0
     
@@ -66,7 +66,7 @@ preview version 0.4.0
          we don't conflict with anything else in python
 
 
-0.3.1 (Bobby Powers <bobby@laptop.org>)
+0.3.1 (2008-08-13 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 model version 0.3.1
     
@@ -76,7 +76,7 @@ model version 0.3.1
      * simulation runs in own thread
 
 
-0.3.0 (Bobby Powers <bobby@laptop.org>)
+0.3.0 (2008-07-19 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 model version 0.3.0
     
@@ -93,7 +93,7 @@ model version 0.3.0
     change variables.
 
 
-0.2.9 (Bobby Powers <bobby@laptop.org>)
+0.2.9 (2008-07-16 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 OpenSim/Model 0.2.9 preview release
     
@@ -103,7 +103,7 @@ OpenSim/Model 0.2.9 preview release
     containing much of the ActionScript functionality.
 
 
-0.2.8 (Bobby Powers <bobby@laptop.org>)
+0.2.8 (2008-07-15 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 release version 0.2.8
     
@@ -115,12 +115,12 @@ release version 0.2.8
      * can save the visual scene, load somewhat broken
 
 
-0.2.6 (Bobby Powers <bobby@laptop.org>)
+0.2.6 (2008-07-04 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 engine compiles on Windows, Linux and Mac
 
 
-0.2.4 (Bobby Powers <bobby@laptop.org>)
+0.2.4 (2008-06-04 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 initial Python support via SWIG
     
@@ -131,7 +131,7 @@ initial Python support via SWIG
      * simple example Python script added to src to show how to use the
        simulator in Python
 
-0.2.3 (Bobby Powers <bobby@laptop.org>)
+0.2.3 (2008-06-02 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 Can run Vensim's Rabbit/Fox model.  Basic support for lookup tables 
 and built-in functions
