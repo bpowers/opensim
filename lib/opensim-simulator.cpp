@@ -662,15 +662,19 @@ opensim_simulator_new_variable(OpensimSimulator *simulator,
 
 
 // remove leading and trailign whitespace.
+// will need to be changed to support unicode
 extern "C" gchar *
 clean_string(gchar *str)
 {
-  gchar *cpy = g_strdup(str);
+  gchar *copy = g_strdup(str);
+
+  if (!copy) return NULL;
+
   size_t i;
-  for (i=0; i<strlen(cpy); ++i)
-    if (cpy[i] == ' ') cpy[i] = '_';
+  for (i=0; i<strlen(copy); ++i)
+    if (copy[i] == ' ') copy[i] = '_';
   
-  return cpy;
+  return copy;
 }
 
 

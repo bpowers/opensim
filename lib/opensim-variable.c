@@ -128,10 +128,9 @@ opensim_variable_set_property(GObject      *object,
   {
   case PROP_NAME:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
-    g_free(self->priv->name);
-    gchar *unclean_name = g_value_dup_string (value);
+    g_free (self->priv->name);
+    gchar *unclean_name = g_value_get_string (value);
     self->priv->name = clean_string (unclean_name);
-    g_free (unclean_name);
     break;
 
   case PROP_EQUATION:
