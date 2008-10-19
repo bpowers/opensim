@@ -29,7 +29,7 @@ from opensim import engine
 from opensim.engine import Simulator
 
 
-VERSION = "0.4.6"
+VERSION = "0.4.7"
 PACKAGE = "python opensim"
 PACKAGE_BUGREPORT = "bobby@laptop.org"
 PROGRAM_NAME = "opensim"

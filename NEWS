@@ -1,3 +1,31 @@
+0.4.7 (2008-10-18 Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.7
+
+    With 0.4.7 I've implemented several features I've been waiting on to 
+    refactor the Model UI.  Major work includes:
+     * can get variable objects (in both Python and C) from simulator
+     * variables emit 'equation_changed' on changes to equation
+     * refactored visual widgets to reuse more code (specifically 
+       highlight_out)
+     * refactored the code that pops up the equation editor
+     * opensim-variable implements get_influences, which returns a list
+       of variables referenced from the current equation
+     * fixed regressions that caused save models to loose their equations
+
+    0.4.7 also sees a new Model bundle released for Sugar with the 
+    following distinguishing features: 
+     * I've fixed most regressions from the switch to gobject 
+     * added neat UI features since the last bundle release:
+        * drawing links
+        * arrowheads to show direction of links and arrows
+        * edit equations
+     * included opensim libs are compiled with -O3 and without debugging 
+       symbols so they're smaller and faster (even though we can't 
+       simulate from the UI yet)
+     * dependencies have been reduced
+
+
 0.4.6 (2008-10-13 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.6
