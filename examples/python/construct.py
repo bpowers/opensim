@@ -37,6 +37,10 @@ def run ():
   if test is not None:
     test.connect ("equation_changed", equation_checker)
     test.props.equation = 'lookup[time] * weird'
+
+  print "%s's influences" % test.props.name
+  for v in test.get_influences ():
+    print "  %s" % v.props.name
   
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.

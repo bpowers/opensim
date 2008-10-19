@@ -111,7 +111,8 @@ struct _OpensimVariableClass
 {
   GObjectClass   parent_class;
   
-  const GArray * (* get_tokens) (OpensimVariable *variable);
+        GList  * (* get_influences) (OpensimVariable *variable);
+  const GArray * (* get_tokens)     (OpensimVariable *variable);
 };
 
 /* used by OPENSIM_TYPE_VARIABLE */
@@ -122,7 +123,8 @@ GType opensim_variable_get_type();
  */
 
 /* public */
-const GArray *opensim_variable_get_tokens(OpensimVariable *variable);
+GList        *opensim_variable_get_influences (OpensimVariable *variable);
+const GArray *opensim_variable_get_tokens     (OpensimVariable *variable);
 
 
 G_END_DECLS

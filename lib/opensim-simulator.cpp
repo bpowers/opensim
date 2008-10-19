@@ -413,6 +413,14 @@ opensim_simulator_finalize(GObject *gobject)
 
 
 
+static void 
+set_sim_for_variable (OpensimVariable *var, OpensimSimulator *sim)
+{
+  g_object_set (G_OBJECT (var), "sim", sim, NULL);
+}
+
+
+
 extern "C" int 
 opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
 {
@@ -442,19 +450,20 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
     fprintf(stderr, "Warning: variable array not available from IOxml.\n");
   
   simulator->priv->var_array = vars;
-
+  
   g_object_unref(gio);
   
   std::map<std::string, OpensimVariable *> _variables;
 
-  // turn our nice list into an ugly map.
+  // turn our nice list into an ugly map AND set simulator
   int i;
   for (i=0; i<vars->len; i++)
   {
     OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
     gchar *var_name = NULL;
 
-    g_object_get(G_OBJECT(var), "name", &var_name, NULL);
+    set_sim_for_variable (var, simulator);
+    g_object_get (G_OBJECT (var), "name", &var_name, NULL);
 
     _variables[var_name] = var;
     
@@ -685,6 +694,8 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   
   g_object_set (G_OBJECT (new_var), "name", clean_name, 
                                     "equation", var_eqn, NULL);
+  
+  set_sim_for_variable (new_var, simulator);
   
   g_array_append_val (self->var_array, new_var);
   

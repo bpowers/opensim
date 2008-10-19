@@ -29,6 +29,7 @@
 #include "string.h"
 #include "ctype.h"
 
+#include "opensim-simulator.h"
 #include "opensim-variable.h"
 
 #define PARAM_READWRITE (GParamFlags) (G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT)
@@ -39,6 +40,8 @@ static void          opensim_variable_init(OpensimVariable *self);
 static void          opensim_variable_class_init(OpensimVariableClass *klass);
 static void          opensim_variable_dispose(GObject *gobject);
 static void          opensim_variable_finalize(GObject *gobject);
+static GList        *opensim_variable_default_get_influences(OpensimVariable
+                                                             *variable);
 static const GArray *opensim_variable_default_get_tokens(OpensimVariable 
                                                          *variable);
 static int           opensim_variable_tokenize(OpensimVariable *variable);
@@ -52,6 +55,7 @@ enum
   PROP_UNITS,
   PROP_COMMENTS,
   PROP_TYPE,
+  PROP_SIM,
   PROP_VALID
 };
 
@@ -69,15 +73,17 @@ static guint variable_signal[VAR_LAST_SIGNAL] = {0};
 
 struct _OpensimVariablePrivate
 {
-  gchar         *name;
-  gchar         *equation;
-  gchar         *units;
-  gchar         *comments;
-  var_type       type;
+  gchar    *name;
+  gchar    *equation;
+  gchar    *units;
+  gchar    *comments;
+  var_type  type;
   
-  gboolean       valid;
+  gboolean  valid;
   
-  GArray        *toks;
+  gpointer  sim;
+  GList    *influences;
+  GArray   *toks;
 };
 
 
@@ -154,6 +160,14 @@ opensim_variable_set_property(GObject      *object,
     self->priv->type = g_value_get_int(value);
     break;
 
+  case PROP_SIM:
+    g_return_if_fail (G_VALUE_HOLDS_OBJECT (value));
+    /* we only want to set this once */
+    g_return_if_fail (self->priv->sim == NULL);
+
+    self->priv->sim = g_value_get_object (value);
+    break;
+
   default:
     /* We don't have any other property... */
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -198,6 +212,10 @@ opensim_variable_get_property (GObject    *object,
   case PROP_VALID:
     g_value_set_boolean(value, self->priv->valid);
     break;
+      
+  case PROP_SIM:
+    g_value_set_pointer (value, self->priv->sim);
+    break;
 
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -222,6 +240,7 @@ opensim_variable_class_init(OpensimVariableClass *klass)
   gobject_class->dispose      = opensim_variable_dispose;
   gobject_class->finalize     = opensim_variable_finalize;
 
+  klass->get_influences       = opensim_variable_default_get_influences;
   klass->get_tokens           = opensim_variable_default_get_tokens;
 
   opensim_param_spec = g_param_spec_string("name",
@@ -270,6 +289,15 @@ opensim_variable_class_init(OpensimVariableClass *klass)
   g_object_class_install_property(gobject_class,
                                   PROP_TYPE,
                                   opensim_param_spec);
+  
+  opensim_param_spec = g_param_spec_object("sim",
+                                           "parent simulation",
+                                           "Pointer to parent simulation",
+                                           OPENSIM_TYPE_SIMULATOR,
+                                           PARAM_READWRITE);
+  g_object_class_install_property(gobject_class,
+                                  PROP_SIM,
+                                  opensim_param_spec);
 
   opensim_param_spec = g_param_spec_boolean("valid",
                                             "is equation valid",
@@ -302,6 +330,8 @@ opensim_variable_init(OpensimVariable *self)
   self->priv = OPENSIM_VARIABLE_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
+  
+  self->priv->influences = NULL;
   
   // lazily initialize toks when needed
   self->priv->toks  = NULL;
@@ -365,10 +395,68 @@ opensim_variable_finalize(GObject *gobject)
 
 
 
+GList *
+opensim_variable_get_influences (OpensimVariable *variable)
+{
+  return OPENSIM_VARIABLE_GET_CLASS (variable)->get_influences (variable);
+}
+
+
+static void 
+opensim_variable_influenceize (OpensimVariable *variable)
+{
+  OpensimVariablePrivate *self = variable->priv;
+  OpensimSimulator *sim = self->sim;
+  
+  // if we don't have a simulator listed, we can't 
+  // get references to other variables
+  if (!sim) 
+  {
+    fprintf (stderr, "Warning: Missing sim reference in influenceize\n");
+    return;
+  }
+  
+  const GArray *toks = opensim_variable_get_tokens (variable);
+  
+  if (self->influences) g_list_free (self->influences);
+  
+  self->influences = NULL;
+  
+  GArray *array = self->toks;
+  OpensimVariable *in_var = NULL;
+  int i;
+  for (i=0; i<array->len; i++)
+  {
+    equ_token tok = g_array_index(array, equ_token, i);
+    
+    if (tok.type = tok_identifier) 
+    {
+      // FIXME: we need to increase the reference count I think
+      in_var = opensim_simulator_get_variable (sim, tok.identifier);
+      if (in_var) 
+        self->influences = g_list_prepend (self->influences, in_var);
+    }
+  }
+}
+
+
+
+static GList *
+opensim_variable_default_get_influences (OpensimVariable *variable)
+{
+  if (!variable->priv->toks) opensim_variable_tokenize (variable);
+  
+  if (!variable->priv->influences) opensim_variable_influenceize (variable);
+  
+  return g_list_copy (variable->priv->influences);
+}
+
+
+
 const GArray *
 opensim_variable_get_tokens(OpensimVariable *variable)
 {
-  return OPENSIM_VARIABLE_GET_CLASS(variable)->get_tokens(variable);
+  return OPENSIM_VARIABLE_GET_CLASS (variable)->get_tokens (variable);
 }
 
 
@@ -376,7 +464,7 @@ opensim_variable_get_tokens(OpensimVariable *variable)
 static const GArray *
 opensim_variable_default_get_tokens(OpensimVariable *variable)
 {
-  if (!variable->priv->toks) opensim_variable_tokenize(variable);
+  if (!variable->priv->toks) opensim_variable_tokenize (variable);
   
   return variable->priv->toks;
 }
