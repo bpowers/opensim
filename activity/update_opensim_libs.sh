@@ -1,7 +1,7 @@
 #! /usr/bin/env sh
 
-export USER="olpc"
-export GROUP=$USER
+export USER=`id -un`
+export GROUP=`id -gn`
 
 # update python libs
 sudo rm -rf site-packages/opensim
