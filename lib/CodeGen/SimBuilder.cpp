@@ -632,10 +632,13 @@ OpenSim::SimBuilder::ProcessVar(OpensimVariable *var)
                               "name", &var_name, NULL);
   
   if (!toks || toks->len == 0)
-    {
-    fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
-            var_name);
-    _errors++;
+  {
+    // The correct behavior should be to still simulate when 
+    // some variables have empty equation fields, UNLESS they
+    // are referenced by other variables
+    //fprintf(stderr, "Error: variable '%s' has empty equation field\n", 
+    //        var_name);
+    //_errors++;
     
     g_free(var_name);
     return false;

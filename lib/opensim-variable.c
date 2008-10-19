@@ -45,6 +45,7 @@ static GList        *opensim_variable_default_get_influences(OpensimVariable
 static const GArray *opensim_variable_default_get_tokens(OpensimVariable 
                                                          *variable);
 static int           opensim_variable_tokenize(OpensimVariable *variable);
+extern gchar        *clean_string (gchar *str);
 
 /* for object properties */
 enum
@@ -128,7 +129,9 @@ opensim_variable_set_property(GObject      *object,
   case PROP_NAME:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
     g_free(self->priv->name);
-    self->priv->name = g_value_dup_string(value);
+    gchar *unclean_name = g_value_dup_string (value);
+    self->priv->name = clean_string (unclean_name);
+    g_free (unclean_name);
     break;
 
   case PROP_EQUATION:

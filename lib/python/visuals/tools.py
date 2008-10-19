@@ -314,7 +314,7 @@ class LineControl:
     self.line = new_var
     self._canvas.display_vars.append(new_var)
 
-  
+
   def end_flow(self, flow_to):
     if not self.cb_id or not self._canvas:
       logging.error("LineControl: something is screwey finishing line.")
@@ -327,6 +327,8 @@ class LineControl:
 
 
 def edit_equation(var):
+  if var is None:
+    raise ValueError
   logging.debug("showing equation editor for: %s" % var.props.name)
   eqn = var.props.equation
   editor = EquationEditor(eqn)

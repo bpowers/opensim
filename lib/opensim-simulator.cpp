@@ -662,7 +662,7 @@ opensim_simulator_new_variable(OpensimSimulator *simulator,
 
 
 // remove leading and trailign whitespace.
-static gchar *
+extern "C" gchar *
 clean_string(gchar *str)
 {
   gchar *cpy = g_strdup(str);
@@ -732,9 +732,14 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
     fprintf (stderr, "Error: variable must have a name\n");
     return NULL;
   }
+
+  // replace spaces with underscores so that we can more easily match names
+  gchar *var_name_clean = clean_string (var_name);
   
   std::map<std::string, OpensimVariable *>::iterator v = 
-                                                  var_map.find (var_name);
+                                              var_map.find (var_name_clean);
+
+  g_free (var_name_clean);
   if (v == var_map.end())
   {
     return NULL;

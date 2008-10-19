@@ -347,11 +347,13 @@ class Canvas (gtk.ScrolledWindow):
           new_var = widgets.VariableItem(x, y, width, height, var_name,
                                          focus=False, parent=goo_root, 
                                          can_focus=True)
+          new_var.var = self.engine.get_variable(var_name)
           self.display_vars.append(new_var)
         if name == "stock":
           new_var = widgets.StockItem(x, y, width, height, var_name,
                                       focus=False, parent=goo_root, 
                                       can_focus=True)
+          new_var.var = self.engine.get_variable(var_name)
           self.display_vars.append(new_var)
 
       if name == "flow" or name == "link":
@@ -387,6 +389,7 @@ class Canvas (gtk.ScrolledWindow):
           new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
                                      focus=False, parent=goo_root,
                                      dragging=False, can_focus=True)
+          new_var.var = self.engine.get_variable(var_name)
         else:
           new_var = widgets.LinkItem(None, (x1, y1), (x2, y2),
                                      focus=False, parent=goo_root,
