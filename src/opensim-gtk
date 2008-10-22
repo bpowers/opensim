@@ -32,6 +32,12 @@ import os, sys, gtk, gtk.glade, gobject, goocanvas, math
 import logging
 import opensim.visuals as sim
 
+# mac-native gtk doesn't like svg icons
+ICON_NAME = 'model-icon'
+if sys.platform == 'darwin':
+  ICON_NAME += '.png'
+else:
+  ICON_NAME += '.svg'
 
 class OpenSimGTK (gobject.GObject):
 
@@ -101,7 +107,7 @@ class OpenSimGTK (gobject.GObject):
     #Get the Main Window, and connect the "destroy" event
     self.window = self.wTree.get_widget ("main_window")
     self.window.set_icon_from_file (os.path.join (self.data_path, 
-                                    "model-icon.svg"))
+                                    ICON_NAME))
     self.window.set_title ('new simulation | Model')
 
     dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
@@ -226,6 +232,10 @@ gobject.type_register (OpenSimGTK)
 
 if __name__ == "__main__":
   logging.basicConfig (level=logging.DEBUG)
+  theme = gtk.icon_theme_get_default ()
+  if sys.platform == 'darwin':
+    theme.append_search_path ('/usr/local/share/icons')
+    theme.append_search_path ('/usr/share/icons')
   gui = OpenSimGTK ()
   gui.main ()
 

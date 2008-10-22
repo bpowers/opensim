@@ -29,9 +29,17 @@ import pygtk
 pygtk.require("2.0")
 
 import gtk
-from sugar.graphics.toggletoolbutton import ToggleToolButton
-from sugar.graphics.toolcombobox import ToolComboBox
-from sugar.graphics.toolbutton import ToolButton
+
+# on the mac we don't have sugar so we compensate
+import sys
+if sys.platform == 'darwin':
+  from gtk import ToggleToolButton
+  from toolcombobox import ToolComboBox
+  from gtk import ToolButton
+else:
+  from sugar.graphics.toggletoolbutton import ToggleToolButton
+  from sugar.graphics.toolcombobox import ToolComboBox
+  from sugar.graphics.toolbutton import ToolButton
 import logging
 
 from constants import *
