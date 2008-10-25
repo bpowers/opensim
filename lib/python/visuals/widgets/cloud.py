@@ -1,4 +1,4 @@
-#===--- stock.py - OpenSim Stock widget -----------------===#
+#===--- cloud.py - OpenSim Cloud widget -----------------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -27,7 +27,7 @@ import gobject
 import gtk
 import goocanvas
 import math
-import cairo, pangocairo
+import cairo
 import rsvg
 import os
 
@@ -85,7 +85,7 @@ class CloudItem(SimItem):
 
 
   def center(self):
-    return (int(self.x + self.width/2), int(self.y))
+    return (int(self.x + self.width/2), int(self.y + self.height/2))
 
 
   def abs_center(self):
