@@ -82,28 +82,28 @@
   </var>
 
   <var>
-    <name>OS_start</name>
+    <name>time_start</name>
     <equation>
       0
     </equation>
   </var>
 
   <var>
-    <name>OS_end</name>
+    <name>time_end</name>
     <equation>
       20
     </equation>
   </var>
 
   <var>
-    <name>OS_timestep</name>
+    <name>time_step</name>
     <equation>
       .5
     </equation>
   </var>
 
   <var>
-    <name>OS_savestep</name>
+    <name>time_savestep</name>
     <equation>
       1
     </equation>

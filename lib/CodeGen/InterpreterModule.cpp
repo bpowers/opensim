@@ -129,10 +129,10 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
 double
 OpenSim::InterpreterModule::visit(OpenSim::EulerAST *node)
 {
-  double start = vars["OS_start"]->Codegen(this);
-  double end = vars["OS_end"]->Codegen(this);
-  double timestep = vars["OS_timestep"]->Codegen(this);
-  double savestep = vars["OS_savestep"]->Codegen(this);
+  double start = vars["time_start"]->Codegen(this);
+  double end = vars["time_end"]->Codegen(this);
+  double timestep = vars["time_step"]->Codegen(this);
+  double savestep = vars["time_savestep"]->Codegen(this);
   
   int save_count = 0;
   int save_iterations = savestep/timestep;

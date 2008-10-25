@@ -135,9 +135,9 @@ def sim_lookup(table, index):\n\
   }
   
   // calculations for savestep stuff
-  fprintf(simout, "OS_save_count = 0\n");
-  fprintf(simout, "OS_save_iterations = OS_savestep / OS_timestep\n");
-  fprintf(simout, "OS_do_save = True\n");
+  fprintf(simout, "save_count = 0\n");
+  fprintf(simout, "save_iterations = time_savestep / time_step\n");
+  fprintf(simout, "do_save = True\n");
   
   string headers = "\nprint('time";
   vector<VariableAST *> body = node->Integrator()->Body();
@@ -178,7 +178,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   string message = whitespace + "#using euler integration\n";
   fprintf(simout, message.c_str());
   
-  fprintf(simout, "for time in frange(OS_start, OS_end, OS_timestep):\n");
+  fprintf(simout, "for time in frange(time_start, time_end, time_step):\n");
   
   whitespace += "  ";
   string format_statement = "%f";
@@ -206,7 +206,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   
   string prints = "\n" + whitespace + "#generally put print statements here\n";
   fprintf(simout, prints.c_str());
-  string if_out = whitespace + "if OS_do_save:\n";
+  string if_out = whitespace + "if do_save:\n";
   fputs(if_out.c_str(), simout);
   string printout = whitespace + "  print('" + format_statement + "' % ("
                     + variable_list + "))\n";
@@ -226,16 +226,16 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
     if (type == var_stock) (*itr)->Codegen(this);
   }
   
-  // update OS_do_save
+  // update do_save
   string update_save = "\n" + whitespace + "# determining whether or not "
     + "to save results next iteration\n"
-    + whitespace + "OS_save_count = OS_save_count + 1\n"
-    + whitespace + "if OS_save_count >= OS_save_iterations or \\\n"
-    + whitespace + "   time + OS_timestep > OS_end:\n"
-    + whitespace + "  OS_do_save = True\n"
-    + whitespace + "  OS_save_count = 0\n"
+    + whitespace + "save_count += 1\n"
+    + whitespace + "if save_count >= save_iterations or \\\n"
+    + whitespace + "   time + time_step > time_end:\n"
+    + whitespace + "  do_save = True\n"
+    + whitespace + "  save_count = 0\n"
     + whitespace + "else:\n"
-    + whitespace + "  OS_do_save = False\n";
+    + whitespace + "  do_save = False\n";
   fprintf(simout, update_save.c_str());
   
   return 0;

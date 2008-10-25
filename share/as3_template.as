@@ -9,10 +9,10 @@ package model
 
     // 'built-in' variables:
     //  - time
-    //  - start_time (OS_start)
-    //  - end_time (OS_end)
-    //  - time_step (OS_timestep)
-    //  - save_step (OS_savestep) (must be multiple of time step)
+    //  - start_time (time_start)
+    //  - end_time (time_end)
+    //  - time_step (time_step)
+    //  - save_step (time_savestep) (must be multiple of time step)
 
     private var data:Object
     private var original_data:Object
@@ -33,7 +33,7 @@ package model
 
         // determining whether or not to save results next iteration
         save_count = save_count + 1
-        if (save_count >= save_iterations || time + timestep >= data["OS_end"][0])
+        if (save_count >= save_iterations || time + timestep >= data["time_end"][0])
         {        
           do_save = true
           save_count = 0
@@ -75,15 +75,15 @@ package model
     {
       data = original_data
 
-      timestep = data["OS_timestep"][0]
+      timestep = data["time_step"][0]
       do_save = true
       
       i = 0
       save_count = 0
-      save_iterations = data["OS_savestep"][0] / data["OS_timestep"][0]
+      save_iterations = data["time_savestep"][0] / data["time_step"][0]
 
       // do one round of simulation, so that we fill in data
-      simulate(data["OS_timestep"][0])
+      simulate(data["time_step"][0])
       return 0
     }
 
@@ -104,7 +104,7 @@ package model
     // sure there is no active simulation, for example
     public function Finish():Number
     {
-      simulate(data["OS_end"][0] - data["OS_start"][0])
+      simulate(data["time_end"][0] - data["time_start"][0])
       return 0
     }
 
@@ -157,7 +157,7 @@ package model
       var ret_val:SimData =  new SimData()
       ret_val.index = data["time"]
       ret_val.data = data[var_name]
-      var data_len:Number = (data["OS_end"][0] - data["OS_start"][0])/data["OS_savestep"][0]
+      var data_len:Number = (data["time_end"][0] - data["time_start"][0])/data["time_savestep"][0]
       for (var counter:Number = ret_val.data.length; counter < data_len; counter++)
       {
 		ret_val.data.push(0)

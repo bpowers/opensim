@@ -16,7 +16,7 @@
     <name>fox_consumption_of_rabbits</name>
     <equation>
       fox_population * fox_food_requirements 
-	* fox_rabbit_consumption_lookup[rabbit_crowding]
+	    * fox_rabbit_consumption_lookup[rabbit_crowding]
     </equation>
   </var>
 
@@ -143,35 +143,35 @@
     <name>rabbit_deaths</name>
     <equation>
      MAX(rabbit_population / average_rabbit_life * 
-	 effect_of_crowding_on_deaths_lookup[rabbit_crowding], 
-	 fox_consumption_of_rabbits)
+     effect_of_crowding_on_deaths_lookup[rabbit_crowding], 
+     fox_consumption_of_rabbits)
     </equation>
   </var>
 
 
   <var>
-    <name>OS_start</name>
+    <name>time_start</name>
     <equation>
       0
     </equation>
   </var>
 
   <var>
-    <name>OS_end</name>
+    <name>time_end</name>
     <equation>
       50
     </equation>
   </var>
 
   <var>
-    <name>OS_timestep</name>
+    <name>time_step</name>
     <equation>
       .015625
     </equation>
   </var>
 
   <var>
-    <name>OS_savestep</name>
+    <name>time_savestep</name>
     <equation>
       1
     </equation>

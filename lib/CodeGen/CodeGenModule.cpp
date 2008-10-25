@@ -176,7 +176,7 @@ OpenSim::CodeGenModule::visit(OpenSim::EulerAST *node)
   NamedValues["time"] = TimeAlloca;
   
   {
-    Value *StartVar = Builder.CreateLoad(NamedValues["OS_start"], "OS_start");
+    Value *StartVar = Builder.CreateLoad(NamedValues["time_start"], "time_start");
     Builder.CreateStore(StartVar, TimeAlloca);
   }
   
@@ -197,8 +197,8 @@ OpenSim::CodeGenModule::visit(OpenSim::EulerAST *node)
   
   {
     Value *TimeVar = Builder.CreateLoad(NamedValues["time"], "time");
-    //Value *TimestepVar = Builder.CreateLoad(NamedValues["OS_timestep"], "OS_timestep");
-    Value *EndVar = Builder.CreateLoad(NamedValues["OS_end"], "OS_end");
+    //Value *TimestepVar = Builder.CreateLoad(NamedValues["time_step"], "time_step");
+    Value *EndVar = Builder.CreateLoad(NamedValues["time_end"], "time_end");
     
     // Convert condition to a bool by comparing equal to 0.0.
     Value *EndCond = Builder.CreateFCmpOLT(TimeVar, EndVar, "forcond");
@@ -264,7 +264,7 @@ OpenSim::CodeGenModule::visit(OpenSim::EulerAST *node)
   
   {
     Value *TimeVar = Builder.CreateLoad(NamedValues["time"], "time");
-    Value *TimestepVar = Builder.CreateLoad(NamedValues["OS_timestep"], "OS_timestep");
+    Value *TimestepVar = Builder.CreateLoad(NamedValues["time_step"], "time_step");
     Value *NewTime = Builder.CreateAdd(TimeVar, TimestepVar, "new_time");
     
     Builder.CreateStore(NewTime, TimeAlloca);

@@ -23,10 +23,8 @@ def run ():
   sim = engine.Simulator ()
   
   # set control variables
-  sim.new_variable ('OS_start', '0')
-  sim.new_variable ('OS_end', '100')
-  sim.new_variable ('OS_timestep', '.25')
-  sim.new_variable ('OS_savestep', '4')
+  save_step = sim.get_variable ('time_savestep')
+  save_step.props.equation = '4'
   
   # set sim-specific variables  
   sim.new_variable ('weird', '3.14*time')
@@ -36,7 +34,7 @@ def run ():
   test = sim.new_variable ('blank', '')
   
   if test is not None:
-    test.connect ("equation_changed", equation_checker)
+    test.connect ('equation_changed', equation_checker)
     test.props.equation = 'lookup[time] * another_factor'
 
   print "%s's influences" % test.props.name

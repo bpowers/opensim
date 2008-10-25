@@ -219,7 +219,7 @@ OpenSim::AS3PrintModule::visit(OpenSim::SimAST *node)
     }
   }
 
-  fprintf(simout, "      data[\"time\"] = [data[\"OS_start\"][0]]\n");
+  fprintf(simout, "      data[\"time\"] = [data[\"time_start\"][0]]\n");
   
   Waiststrap();  
 
@@ -444,7 +444,7 @@ OpenSim::AS3PrintModule::Waiststrap()
       var time_span:Number = Math.max(0, time_span)\n\
 \n\
       var time:Number = data[\"time\"][i]\n\
-      var end_time:Number = Math.min(data[\"OS_end\"][0], time + time_span);\n\
+      var end_time:Number = Math.min(data[\"time_end\"][0], time + time_span);\n\
 \n\
       for (; time < end_time; time += timestep)\n\
       {\n\

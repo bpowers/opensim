@@ -686,7 +686,7 @@ OpenSim::SimBuilder::ParseIdentifierExpr()
     ExprAST *stock_call = new VarRefAST(name);
     g_free(name);
     
-    ExprAST *dt = new VarRefAST("OS_timestep");
+    ExprAST *dt = new VarRefAST("time_step");
     ExprAST *change = new BinaryExprAST('*', Args[0], dt);
     
     return new BinaryExprAST('+', stock_call, change);
