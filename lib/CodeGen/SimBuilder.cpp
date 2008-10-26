@@ -92,6 +92,9 @@ OpenSim::SimBuilder::Update()
   body = std::vector<OpenSim::VariableAST *>();
   initial = std::vector<OpenSim::VariableAST *>();
   
+  _valid_model = false;
+  _errors = 0;
+  
   InitializeModule();
 
   return 0;

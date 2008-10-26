@@ -76,6 +76,12 @@ static int opensim_simulator_default_remove_variable
 
 static int opensim_simulator_default_output_debug_info
                                           (OpensimSimulator *simulator);
+static void set_sim_for_variable          (OpensimVariable *var, 
+                                           OpensimSimulator *sim);
+static void opensim_simulator_var_equation_changed 
+                                          (OpensimVariable *variable, 
+                                           gchar *old_equation,
+                                           gpointer simulator);
 
 
 extern "C" GType
@@ -340,6 +346,34 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
 
 
 
+static int
+opensim_simulator_init_blank_model (OpensimSimulator *simulator)
+{
+  OpensimSimulatorPrivate *self = simulator->priv;
+  
+  // time variables we need
+  gchar *names[] = {"time_start", "time_end", "time_step", "time_savestep"};
+  gchar *eqns[] = {"0", "100", "1", "1"};
+
+  for (int i=0; i<4;++i)
+  {
+    OpensimVariable *new_var = 
+      OPENSIM_VARIABLE (g_object_new (OPENSIM_TYPE_VARIABLE, NULL));
+
+    g_object_set (G_OBJECT (new_var), "name", names[i], 
+                                    "equation", eqns[i], NULL);
+
+    set_sim_for_variable (new_var, simulator);
+
+    g_array_append_val (self->var_array, new_var);
+    self->var_map[names[i]] = new_var;
+  }  
+  
+  return 0;
+}
+
+
+
 static void
 opensim_simulator_init (OpensimSimulator *simulator)
 {
@@ -350,6 +384,7 @@ opensim_simulator_init (OpensimSimulator *simulator)
   self->valid_model = TRUE;
   self->var_array   = g_array_new (FALSE, FALSE, sizeof (OpensimVariable *));
   self->var_map     = map<string, OpensimVariable *> ();
+  opensim_simulator_init_blank_model (simulator);
   self->sim_builder = new SimBuilder (self->var_map);
 }
 
@@ -417,6 +452,9 @@ static void
 set_sim_for_variable (OpensimVariable *var, OpensimSimulator *sim)
 {
   g_object_set (G_OBJECT (var), "sim", sim, NULL);
+  g_signal_connect_object (var, "equation_changed", 
+                           G_CALLBACK (opensim_simulator_var_equation_changed),
+                           sim, GConnectFlags (G_CONNECT_AFTER));
 }
 
 
@@ -795,5 +833,19 @@ opensim_simulator_default_remove_variable(OpensimSimulator *simulator,
                                           gchar *var_name)
 {
   return -1;
+}
+
+
+
+static void 
+opensim_simulator_var_equation_changed (OpensimVariable *variable, 
+                                        gchar *old_equation,
+                                        gpointer sim)
+{
+  OpensimSimulator *simulator = OPENSIM_SIMULATOR (sim);
+  OpensimSimulatorPrivate *self = simulator->priv;
+  
+  // in the future, we will probably want to do more here
+  self->sim_builder->Update (self->var_map);
 }
 

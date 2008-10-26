@@ -36,16 +36,19 @@
 #define OPENSIM_VARIABLE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENSIM_TYPE_VARIABLE, OpensimVariablePrivate))
 
 static gpointer      opensim_variable_parent_class = NULL;
-static void          opensim_variable_init(OpensimVariable *self);
-static void          opensim_variable_class_init(OpensimVariableClass *klass);
-static void          opensim_variable_dispose(GObject *gobject);
-static void          opensim_variable_finalize(GObject *gobject);
-static GList        *opensim_variable_default_get_influences(OpensimVariable
-                                                             *variable);
-static const GArray *opensim_variable_default_get_tokens(OpensimVariable 
-                                                         *variable);
-static int           opensim_variable_tokenize(OpensimVariable *variable);
-extern gchar        *clean_string (gchar *str);
+static void          opensim_variable_init      (OpensimVariable *self);
+static void          opensim_variable_class_init
+                                                (OpensimVariableClass *klass);
+static void          opensim_variable_dispose   (GObject *gobject);
+static void          opensim_variable_finalize  (GObject *gobject);
+static GList        *opensim_variable_default_get_influences
+                                                (OpensimVariable *variable);
+static const GArray *opensim_variable_default_get_tokens
+                                                (OpensimVariable *variable);
+static int           opensim_variable_tokenize  (OpensimVariable *variable);
+extern gchar        *clean_string               (gchar *str);
+static void          opensim_variable_delete_tokens 
+                                                (OpensimVariable *variable);
 
 /* for object properties */
 enum
@@ -129,7 +132,7 @@ opensim_variable_set_property(GObject      *object,
   case PROP_NAME:
     g_return_if_fail(G_VALUE_HOLDS_STRING(value));
     g_free (self->priv->name);
-    gchar *unclean_name = g_value_get_string (value);
+    gchar *unclean_name = (gchar *)g_value_get_string (value);
     self->priv->name = clean_string (unclean_name);
     break;
 
@@ -140,6 +143,7 @@ opensim_variable_set_property(GObject      *object,
     // along with our signal
     gchar *equation = self->priv->equation;
     self->priv->equation = g_value_dup_string(value);
+    opensim_variable_delete_tokens (self);
     g_signal_emit_by_name (object, "equation_changed", equation);
     g_free(equation);
     break;
@@ -360,6 +364,29 @@ opensim_variable_dispose(GObject *gobject)
 
 
 
+static void 
+opensim_variable_delete_tokens (OpensimVariable *variable)
+{
+  if (variable->priv->toks)
+  {
+    GArray *array = variable->priv->toks;
+    
+    int i;
+    for (i=0; i<array->len; i++)
+    {
+      equ_token tok = g_array_index(array, equ_token, i);
+ 
+      if (tok.identifier) g_free(tok.identifier);
+    }
+  }
+  
+  if (variable->priv->toks) g_array_free(variable->priv->toks, TRUE);
+  
+  variable->priv->toks = NULL;
+}
+
+
+
 static void
 opensim_variable_finalize(GObject *gobject)
 {
@@ -372,21 +399,8 @@ opensim_variable_finalize(GObject *gobject)
   g_free(self->priv->equation);
   g_free(self->priv->units);
   g_free(self->priv->comments);
-  
-  if (self->priv->toks)
-  {
-    GArray *array = self->priv->toks;
-    
-    int i;
-    for (i=0; i<array->len; i++)
-    {
-      equ_token tok = g_array_index(array, equ_token, i);
- 
-      if (tok.identifier) g_free(tok.identifier);
-    }
-  }
-  
-  if (self->priv->toks) g_array_free(self->priv->toks, TRUE);
+
+  opensim_variable_delete_tokens (self);  
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(opensim_variable_parent_class)->finalize(gobject);
