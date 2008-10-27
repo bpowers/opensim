@@ -430,11 +430,14 @@ opensim_variable_default_get_influences (OpensimVariable *variable)
     return;
   }
   
-  const GArray *toks = opensim_variable_get_tokens (variable);
+  const GArray *array = opensim_variable_get_tokens (variable);
   
   GList *influences = NULL;
   
-  GArray *array = self->toks;
+  //GArray *array = self->toks;
+
+  if (!array) return NULL;
+
   OpensimVariable *in_var = NULL;
   int i;
   for (i=0; i<array->len; i++)
