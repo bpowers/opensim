@@ -48,3 +48,32 @@ _wrap_opensim_variable_get_influences (PyGObject *self)
   g_list_free (influences);
   return ret;
 }
+%%
+override-attr OpensimVariable.equation
+static int
+_wrap_opensim_variable__set_equation(PyGObject *self, PyObject *py_value, void *closure)
+{
+  if (!PyObject_IsInstance(py_value, (PyObject*) &PyString_Type)) {
+    PyErr_SetString(PyExc_TypeError, "value must be a string");
+    return -1;
+  }
+  OpensimVariable *var = OPENSIM_VARIABLE (pygobject_get (self));
+  g_object_set (var, "equation", PyString_AsString (py_value), NULL);
+
+  return 0;
+}
+static PyObject*
+_wrap_opensim_variable__get_equation(PyGObject *self, void *closure)
+{
+  OpensimVariable *var = OPENSIM_VARIABLE (pygobject_get (self));
+
+  gchar *eqn = NULL;
+
+  g_object_get (var, "equation", &eqn, NULL);
+
+  PyObject *py_eqn = PyString_FromString (eqn);
+
+  g_free (eqn);
+
+  return py_eqn;
+}
