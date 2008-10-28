@@ -41,6 +41,7 @@ using OpenSim::SimBuilder;
 
 #include "opensim-simulator.h"
 #include "opensim-variable.h"
+#include "CodeGen/opensim-generator.h"
 #include "IO/opensim-ioxml.h"
 
 
@@ -143,6 +144,8 @@ struct _OpensimSimulatorPrivate
   
   GArray           *var_array;
   
+  OpensimGenerator *generator;
+  GHashTable       *var_hash;
   OpenSim::SimBuilder *sim_builder;
   std::map<std::string, OpensimVariable *> var_map;
 };
@@ -353,17 +356,22 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   
+  if (!self->var_hash)
+  {
+    fprintf (stdout, "Error: you can't initialize a blank model w/o hash\n");
+  }
+  
   // time variables we need
   gchar *names[] = {"time_start", "time_end", "time_step", "time_savestep"};
   gchar *eqns[] = {"0", "100", "1", "1"};
 
-  for (guint i=0; i<4;++i)
+  for (guint i=0; i<4; ++i)
   {
     OpensimVariable *new_var = 
       OPENSIM_VARIABLE (g_object_new (OPENSIM_TYPE_VARIABLE, NULL));
 
     g_object_set (G_OBJECT (new_var), "name", names[i], 
-                                    "equation", eqns[i], NULL);
+                                      "equation", eqns[i], NULL);
 
     set_sim_for_variable (new_var, simulator);
 
