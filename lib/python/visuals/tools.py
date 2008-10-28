@@ -233,11 +233,9 @@ class ViewToolbar(gtk.Toolbar):
 class EquationEditor(gtk.Dialog):
   '''Provides a pop-up window for editing the equations of variables'''
 
-  def __init__(self, equation='', **kwargs):
+  def __init__(self, equation='', influences=None, **kwargs):
     gtk.Dialog.__init__(self, flags=gtk.DIALOG_MODAL|
                         gtk.DIALOG_DESTROY_WITH_PARENT, **kwargs)
-
-
 
     self.eqn_label = gtk.Label()
     self.eqn_label.set_text(_('Edit equation:'))
@@ -249,6 +247,18 @@ class EquationEditor(gtk.Dialog):
     self.equation.set_size_request(int(gtk.gdk.screen_width() / 4), -1)
     self.vbox.pack_start(self.equation, False, False)
     self.equation.show()
+
+    if influences:
+      infl_box = gtk.Frame()
+      infl_box.set_label('Influences')
+      infl_list = gtk.ListStore()
+      for var in influences:
+        pass
+      self.infl_tree = gtk.TreeView(infl_list)
+      infl_box.add (self.infl_tree)
+      self.infl_tree.show()
+      self.vbox.pack_start(infl_box)
+      infl_box.show()
 
     cancel = gtk.Button(stock=gtk.STOCK_CANCEL)
     self.add_action_widget(cancel, gtk.RESPONSE_CANCEL)
