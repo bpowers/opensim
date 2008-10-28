@@ -462,11 +462,14 @@ set_sim_for_variable (OpensimVariable *var, OpensimSimulator *sim)
 
 
 extern "C" int 
-opensim_simulator_load (OpensimSimulator *simulator, gchar *model_path)
+opensim_simulator_load (OpensimSimulator *simulator,
+                        gchar *model_path)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->load (simulator,
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->load (simulator, 
                                                         model_path);
 }
+
+
 
 static int 
 opensim_simulator_default_load (OpensimSimulator *simulator, 
@@ -512,9 +515,9 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
 
     set_sim_for_variable (var, simulator);
     g_object_get (G_OBJECT (var), "name", &var_name, NULL);
-
-    _variables[var_name] = var;
     
+    _variables[var_name] = var;
+
     g_free(var_name);
   }
 
@@ -528,7 +531,7 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
   {
     self->sim_builder = new SimBuilder(_variables);
   }
-  
+
   simulator->priv->var_map = _variables;
 }
 
@@ -634,11 +637,11 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     }
   }
   
-  ret = self->sim_builder->Parse(self->output_type, output_stream);
+  ret = self->sim_builder->Parse (self->output_type, output_stream);
   
   
   // if we opened it, close the output stream
-  if (output_stream != stdout) fclose(output_stream);
+  if (output_stream != stdout) fclose (output_stream);
   
   return ret;
 }
@@ -646,34 +649,34 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
 
 
 extern "C" int 
-opensim_simulator_save(OpensimSimulator *simulator)
+opensim_simulator_save (OpensimSimulator *simulator)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->save(simulator);
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->save (simulator);
 }
 
 
 
 static int 
-opensim_simulator_default_save(OpensimSimulator *simulator)
+opensim_simulator_default_save (OpensimSimulator *simulator)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   
   FILE *save_file = NULL;
   
   if (self->file_name)
-    save_file = fopen(self->file_name, "w");
+    save_file = fopen (self->file_name, "w");
   else 
     save_file = stdout;
   
   if (!save_file)
   {
-    fprintf(stderr, "Error: couldn't open file for writing: '%s'\n", 
-            self->file_name);
+    fprintf (stderr, "Error: couldn't open file for writing: '%s'\n", 
+             self->file_name);
     return -1;
   }
   
-  OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
-                                                 NULL));
+  OpensimIOxml *gio = OPENSIM_IOXML (g_object_new (OPENSIM_TYPE_IOXML, 
+                                                   NULL));
   
   int h_ret = opensim_ioxml_write_header (gio, simulator, save_file);
   int b_ret = opensim_ioxml_write_body (gio, simulator, save_file);
@@ -805,7 +808,7 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
 extern "C" GArray *
 opensim_simulator_get_variables (OpensimSimulator *simulator)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->get_variables (simulator);
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->get_variables (simulator);
 }
 
 
@@ -817,30 +820,30 @@ opensim_simulator_default_get_variables (OpensimSimulator *simulator)
   
   if (!self->var_array) return NULL;
   
-  GArray *ret = g_array_new (FALSE, FALSE, sizeof(OpensimSimulator *));
+  GArray *ret = g_array_new (FALSE, FALSE, sizeof (OpensimSimulator *));
   
   // copy the pointers from our array to the one we return, so changes
   // in the one we return don't mess us up
-  g_array_append_vals(ret, self->var_array->data, self->var_array->len);
+  g_array_append_vals (ret, self->var_array->data, self->var_array->len);
   
   return ret;
 }
 
 
-                                       
+
 extern "C" int 
-opensim_simulator_remove_variable(OpensimSimulator *simulator, 
-                                  gchar *var_name)
+opensim_simulator_remove_variable (OpensimSimulator *simulator, 
+                                   gchar *var_name)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->remove_variable(simulator, 
-                                                                 var_name);
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->remove_variable (simulator, 
+                                                                   var_name);
 }
 
 
                                        
 static int 
-opensim_simulator_default_remove_variable(OpensimSimulator *simulator, 
-                                          gchar *var_name)
+opensim_simulator_default_remove_variable (OpensimSimulator *simulator, 
+                                           gchar *var_name)
 {
   return -1;
 }
