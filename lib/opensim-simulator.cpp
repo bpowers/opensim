@@ -533,6 +533,7 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
   }
 
   simulator->priv->var_map = _variables;
+  return 0;
 }
 
 
@@ -555,7 +556,7 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
     GArray *array = simulator->priv->var_array;
 
     fprintf(stdout, "  found variable array of size %d (%d)\n", array->len,
-            simulator->priv->var_map.size());
+            (int)simulator->priv->var_map.size());
     
     guint i;
     for (i=0; i<array->len; i++)

@@ -318,7 +318,7 @@ opensim_variable_class_init(OpensimVariableClass *klass)
     g_signal_new ("equation_changed",
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-                  NULL /* closure */,
+                  0 /* closure */,
                   NULL /* accumulator */,
                   NULL /* accumulator data */,
                   g_cclosure_marshal_VOID__STRING,
@@ -427,7 +427,7 @@ opensim_variable_default_get_influences (OpensimVariable *variable)
   if (!sim) 
   {
     fprintf (stderr, "Warning: Missing sim reference in get_influences\n");
-    return;
+    return NULL;
   }
   
   const GArray *array = opensim_variable_get_tokens (variable);

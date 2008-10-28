@@ -112,8 +112,8 @@ opensim_generator_set_property(GObject      *object,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
-  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
-  OpensimGeneratorPrivate *self = generator->priv;
+  //OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  //OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -132,8 +132,8 @@ opensim_generator_get_property (GObject    *object,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
-  OpensimGeneratorPrivate *self = generator->priv;
+  //OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  //OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -153,7 +153,7 @@ opensim_generator_class_init(OpensimGeneratorClass *klass)
   g_type_class_add_private(klass, sizeof (OpensimGeneratorPrivate));
   
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  GParamSpec *opensim_param_spec;
+  //GParamSpec *opensim_param_spec;
   
   gobject_class->set_property = opensim_generator_set_property;
   gobject_class->get_property = opensim_generator_get_property;

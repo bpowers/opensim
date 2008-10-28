@@ -462,8 +462,8 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
     if (xmlStrEqual(cur->name, (const xmlChar *)"var"))
     {
       OpensimVariable *our_var = NULL;
-      gchar *var_name;
-      gchar *equation;
+      gchar *var_name = NULL;
+      gchar *equation = NULL;
           
       for (sub = cur->children; sub != NULL; sub = sub->next)
       {
