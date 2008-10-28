@@ -135,13 +135,13 @@ static guint simulator_signal[SIM_LAST_SIGNAL] = {0};
 
 struct _OpensimSimulatorPrivate
 {
-  gchar      *model_name;
-  gchar      *file_name;
-  int         output_type;
-  gchar      *output_file_name;
-  gboolean    valid_model;
+  gchar            *model_name;
+  gchar            *file_name;
+  int               output_type;
+  gchar            *output_file_name;
+  gboolean          valid_model;
   
-  GArray     *var_array;
+  GArray           *var_array;
   
   OpenSim::SimBuilder *sim_builder;
   std::map<std::string, OpensimVariable *> var_map;
@@ -275,10 +275,12 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
   gobject_class->dispose      = opensim_simulator_dispose;
   gobject_class->finalize     = opensim_simulator_finalize;
 
+  klass->load                 = opensim_simulator_default_load;
   klass->save                 = opensim_simulator_default_save;
   klass->new_variable         = opensim_simulator_default_new_variable;
   klass->get_variable         = opensim_simulator_default_get_variable;
   klass->get_variables        = opensim_simulator_default_get_variables;
+  klass->remove_variable      = opensim_simulator_default_remove_variable;
   klass->output_debug_info    = opensim_simulator_default_output_debug_info;
   klass->run                  = opensim_simulator_default_run;
 
@@ -355,7 +357,7 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
   gchar *names[] = {"time_start", "time_end", "time_step", "time_savestep"};
   gchar *eqns[] = {"0", "100", "1", "1"};
 
-  for (int i=0; i<4;++i)
+  for (guint i=0; i<4;++i)
   {
     OpensimVariable *new_var = 
       OPENSIM_VARIABLE (g_object_new (OPENSIM_TYPE_VARIABLE, NULL));
@@ -409,7 +411,7 @@ opensim_simulator_dispose(GObject *gobject)
   {
     GArray *array = self->priv->var_array;
     
-    int i;
+    guint i;
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
@@ -460,7 +462,15 @@ set_sim_for_variable (OpensimVariable *var, OpensimSimulator *sim)
 
 
 extern "C" int 
-opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
+opensim_simulator_load (OpensimSimulator *simulator, gchar *model_path)
+{
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->load (simulator,
+                                                        model_path);
+}
+
+static int 
+opensim_simulator_default_load (OpensimSimulator *simulator, 
+                                gchar *model_path)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
@@ -494,7 +504,7 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
   std::map<std::string, OpensimVariable *> _variables;
 
   // turn our nice list into an ugly map AND set simulator
-  int i;
+  guint i;
   for (i=0; i<vars->len; i++)
   {
     OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
@@ -544,7 +554,7 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
     fprintf(stdout, "  found variable array of size %d (%d)\n", array->len,
             simulator->priv->var_map.size());
     
-    int i;
+    guint i;
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
@@ -559,11 +569,11 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
       
       const GArray *toks = opensim_variable_get_tokens(var);
       
-      int i;
-      for (i=0; i<toks->len; i++)
+      guint j;
+      for (j=0; j<toks->len; j++)
       {
         //g_fprintf(stderr, "freeing some var\n");
-        equ_token tok = g_array_index(toks, equ_token, i);
+        equ_token tok = g_array_index(toks, equ_token, j);
         
         fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
                 tok.op, tok.type, 
