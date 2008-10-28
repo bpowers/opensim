@@ -362,8 +362,9 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
   }
   
   // time variables we need
-  gchar *names[] = {"time_start", "time_end", "time_step", "time_savestep"};
-  gchar *eqns[] = {"0", "100", "1", "1"};
+  const gchar *names[] = {"time_start", "time_end", 
+                          "time_step", "time_savestep"};
+  const gchar *eqns[] = {"0", "100", "1", "1"};
 
   for (guint i=0; i<4; ++i)
   {
