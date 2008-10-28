@@ -51,10 +51,10 @@ static void opensim_generator_finalize      (GObject *gobject);
                                              const GValue *value,
                                              GParamSpec   *pspec);
 
-static int opensim_generator_default_rebase (OpensimGenerator *simulator, 
+static int opensim_generator_default_rebase (OpensimGenerator *generator, 
                                              GHashTable *variables);
-static int opensim_generator_default_update (OpensimGenerator *simulator);
-static int opensim_generator_default_parse  (OpensimGenerator *simulator, 
+static int opensim_generator_default_update (OpensimGenerator *generator);
+static int opensim_generator_default_parse  (OpensimGenerator *generator, 
                                              int our_walk,
                                              FILE *output_file);
 
@@ -224,7 +224,7 @@ opensim_generator_finalize(GObject *gobject)
 
 
 int
-opensim_simulator_rebase (OpensimGenerator *generator,
+opensim_generator_rebase (OpensimGenerator *generator,
                           GHashTable       *variables)
 {
   return OPENSIM_GENERATOR_GET_CLASS (generator)->rebase (generator,
@@ -245,7 +245,7 @@ opensim_generator_default_rebase (OpensimGenerator *generator,
 
 
 int
-opensim_simulator_update (OpensimGenerator *generator)
+opensim_generator_update (OpensimGenerator *generator)
 {
   return OPENSIM_GENERATOR_GET_CLASS (generator)->update (generator);
 }
@@ -263,7 +263,7 @@ opensim_generator_default_update (OpensimGenerator *generator)
 
 
 int
-opensim_simulator_parse (OpensimGenerator *generator,
+opensim_generator_parse (OpensimGenerator *generator,
                          int               our_walk,
                          FILE             *output_file)
 {
@@ -279,6 +279,8 @@ opensim_generator_default_parse (OpensimGenerator *generator,
                                  int               our_walk,
                                  FILE             *output_file)
 {
+  fprintf (stderr, "OMG.\n");
+
   OpensimGeneratorPrivate *self = generator->priv;
   
   if (!self->valid_model)

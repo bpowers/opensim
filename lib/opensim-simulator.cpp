@@ -40,6 +40,7 @@ using std::vector;
 using OpenSim::SimBuilder;
 
 #include "opensim-simulator.h"
+#include "CodeGen/opensim-generator.h"
 #include "opensim-variable.h"
 #include "IO/opensim-ioxml.h"
 
@@ -135,14 +136,16 @@ static guint simulator_signal[SIM_LAST_SIGNAL] = {0};
 
 struct _OpensimSimulatorPrivate
 {
-  gchar      *model_name;
-  gchar      *file_name;
-  int         output_type;
-  gchar      *output_file_name;
-  gboolean    valid_model;
+  gchar            *model_name;
+  gchar            *file_name;
+  int               output_type;
+  gchar            *output_file_name;
+  gboolean          valid_model;
   
-  GArray     *var_array;
+  GArray           *var_array;
   
+  OpensimGenerator *generator;
+  GHashTable       *var_hash;
   OpenSim::SimBuilder *sim_builder;
   std::map<std::string, OpensimVariable *> var_map;
 };
@@ -275,10 +278,12 @@ opensim_simulator_class_init (OpensimSimulatorClass *klass)
   gobject_class->dispose      = opensim_simulator_dispose;
   gobject_class->finalize     = opensim_simulator_finalize;
 
+  klass->load                 = opensim_simulator_default_load;
   klass->save                 = opensim_simulator_default_save;
   klass->new_variable         = opensim_simulator_default_new_variable;
   klass->get_variable         = opensim_simulator_default_get_variable;
   klass->get_variables        = opensim_simulator_default_get_variables;
+  klass->remove_variable      = opensim_simulator_default_remove_variable;
   klass->output_debug_info    = opensim_simulator_default_output_debug_info;
   klass->run                  = opensim_simulator_default_run;
 
@@ -366,7 +371,7 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
     set_sim_for_variable (new_var, simulator);
 
     g_array_append_val (self->var_array, new_var);
-    self->var_map[names[i]] = new_var;
+    g_hash_table_insert (self->var_hash, names[i], new_var);
   }  
   
   return 0;
@@ -383,9 +388,11 @@ opensim_simulator_init (OpensimSimulator *simulator)
   
   self->valid_model = TRUE;
   self->var_array   = g_array_new (FALSE, FALSE, sizeof (OpensimVariable *));
-  self->var_map     = map<string, OpensimVariable *> ();
+  self->var_hash    = g_hash_table_new (g_str_hash, g_str_equal);
   opensim_simulator_init_blank_model (simulator);
-  self->sim_builder = new SimBuilder (self->var_map);
+  self->generator   = NULL;
+  //self->generator   = OPENSIM_GENERATOR (g_object_new 
+  //                            (OPENSIM_TYPE_GENERATOR, NULL));
 }
 
 
@@ -409,7 +416,7 @@ opensim_simulator_dispose(GObject *gobject)
   {
     GArray *array = self->priv->var_array;
     
-    int i;
+    guint i;
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
@@ -460,7 +467,18 @@ set_sim_for_variable (OpensimVariable *var, OpensimSimulator *sim)
 
 
 extern "C" int 
-opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
+opensim_simulator_load(OpensimSimulator *simulator,
+                       gchar *model_path)
+{
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->load (simulator, 
+                                                        model_path);
+}
+
+
+
+static int 
+opensim_simulator_default_load (OpensimSimulator *simulator, 
+                                gchar *model_path)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   OpensimIOxml *gio = OPENSIM_IOXML(g_object_new(OPENSIM_TYPE_IOXML, 
@@ -491,11 +509,25 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
   
   g_object_unref(gio);
   
-  std::map<std::string, OpensimVariable *> _variables;
+  // TODO: shouldn't have one of these yet, need to handle it better tho
+  if (self->var_hash)
+  {
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_hash_table_iter_init (&iter, self->var_hash);
+    while (g_hash_table_iter_next (&iter, &key, &value)) 
+    {
+      g_free (key);
+      g_object_unref (value);
+    }
+    g_hash_table_remove_all (self->var_hash);
+  }
+
+  self->var_hash = g_hash_table_new (g_str_hash, g_str_equal);
 
   // turn our nice list into an ugly map AND set simulator
-  int i;
-  for (i=0; i<vars->len; i++)
+  for (guint i=0; i<vars->len; i++)
   {
     OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
     gchar *var_name = NULL;
@@ -503,23 +535,26 @@ opensim_simulator_load(OpensimSimulator *simulator, gchar *model_path)
     set_sim_for_variable (var, simulator);
     g_object_get (G_OBJECT (var), "name", &var_name, NULL);
 
-    _variables[var_name] = var;
+    g_hash_table_insert (self->var_hash, var_name, var);
     
-    g_free(var_name);
+    // we don't free the var_name because we've inserted it as 
+    // the key in our hash table
+    //g_free(var_name);
   }
 
-  if (self->sim_builder)
+  if (self->generator)
   {
-    delete self->sim_builder;
-    self->sim_builder = NULL;
+    g_object_unref (self->generator);
+    self->generator = NULL;
   }
   
   if (valid_model)
   {
-    self->sim_builder = new SimBuilder(_variables);
+    self->generator = OPENSIM_GENERATOR (g_object_new 
+                              (OPENSIM_TYPE_GENERATOR, NULL));
   }
-  
-  simulator->priv->var_map = _variables;
+
+  return 0;
 }
 
 
@@ -544,7 +579,7 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
     fprintf(stdout, "  found variable array of size %d (%d)\n", array->len,
             simulator->priv->var_map.size());
     
-    int i;
+    guint i;
     for (i=0; i<array->len; i++)
     {
       //g_fprintf(stderr, "freeing some var\n");
@@ -559,10 +594,9 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
       
       const GArray *toks = opensim_variable_get_tokens(var);
       
-      int i;
+      guint i;
       for (i=0; i<toks->len; i++)
       {
-        //g_fprintf(stderr, "freeing some var\n");
         equ_token tok = g_array_index(toks, equ_token, i);
         
         fprintf(stdout, "      tok ('%c' '%d') '%s' (%f)\n", 
@@ -604,9 +638,9 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     return -1;
   }
   
-  if (!self->sim_builder)
+  if (!self->generator)
   {
-    fprintf(stderr, "Error: Simulator doesn't have sim_builder.\n");
+    fprintf(stderr, "Error: Simulator doesn't have generator.\n");
     return -1;
   }
   
@@ -624,11 +658,11 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     }
   }
   
-  ret = self->sim_builder->Parse(self->output_type, output_stream);
+  opensim_generator_parse (self->generator, self->output_type, output_stream);
   
   
   // if we opened it, close the output stream
-  if (output_stream != stdout) fclose(output_stream);
+  if (output_stream != stdout) fclose (output_stream);
   
   return ret;
 }
@@ -819,18 +853,18 @@ opensim_simulator_default_get_variables (OpensimSimulator *simulator)
 
                                        
 extern "C" int 
-opensim_simulator_remove_variable(OpensimSimulator *simulator, 
-                                  gchar *var_name)
+opensim_simulator_remove_variable (OpensimSimulator *simulator, 
+                                   gchar *var_name)
 {
-  return OPENSIM_SIMULATOR_GET_CLASS(simulator)->remove_variable(simulator, 
-                                                                 var_name);
+  return OPENSIM_SIMULATOR_GET_CLASS (simulator)->remove_variable (simulator, 
+                                                                   var_name);
 }
 
 
                                        
 static int 
-opensim_simulator_default_remove_variable(OpensimSimulator *simulator, 
-                                          gchar *var_name)
+opensim_simulator_default_remove_variable (OpensimSimulator *simulator, 
+                                           gchar *var_name)
 {
   return -1;
 }
@@ -846,6 +880,6 @@ opensim_simulator_var_equation_changed (OpensimVariable *variable,
   OpensimSimulatorPrivate *self = simulator->priv;
   
   // in the future, we will probably want to do more here
-  self->sim_builder->Update (self->var_map);
+  opensim_generator_update (self->generator);
 }
 
