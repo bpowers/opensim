@@ -3,8 +3,8 @@
 
 extern PyTypeObject G_GNUC_INTERNAL PyOpensimSimulator_Type;
 
-void engine_simulator_add_constants(PyObject *d, const char *strip);
-//void engine_variable_register_classes(PyObject *d); 
+void engine_simulator_add_constants (PyObject *d, const char *strip);
+void engine_simulator_register_classes (PyObject *d); 
 
 
 // GROSS HACK to pass a file pointer from C to Python and wrap it as a 
@@ -50,7 +50,7 @@ opensim_get_file (PyGObject *self, PyObject *args)
 }
 
 
-const PyMethodDef engine_module_functions[] = {
+static PyMethodDef engine_module_functions[] = {
   {"get_file", 
    (PyCFunction) opensim_get_file, 
    METH_VARARGS, 
