@@ -58,6 +58,8 @@ static int opensim_generator_default_parse  (OpensimGenerator *simulator,
                                              int our_walk,
                                              FILE *output_file);
 
+static gboolean process_var                 (OpensimGenerator *generator, 
+                                             OpensimVariable *var);
 static int build_bytecode ();
 static int get_tok_precedence (int op_char);
 
@@ -66,7 +68,7 @@ struct _OpensimGeneratorPrivate
   int              errors;
   gboolean         valid_model;
   
-  GArray          *top_level_vars;
+  GHashTable      *top_level_vars;
   
   GHashTable      *vars;
   GByteArray      *bytecode;
@@ -78,7 +80,7 @@ struct _OpensimGeneratorPrivate
 
 
 GType 
-opensim_generator_get_type()
+opensim_generator_get_type ()
 {
   static GType g_define_type_id = 0; 
   if (G_UNLIKELY(g_define_type_id == 0)) 
@@ -314,8 +316,41 @@ opensim_generator_default_parse (OpensimGenerator *generator,
 
 
 
-static int initialize_module ()
+static int initialize_module (OpensimGenerator *generator)
 {
+  OpensimGeneratorPrivate *self = generator->priv;
+
+  // these should be cleared by now, but lets just make sure
+  if (self->top_level_vars)
+  {
+    fprintf (stderr, "Error: top_level_vars exist before initialization\n");
+    return -1;
+  }
+
+  self->top_level_vars = g_hash_table_new (g_str_hash, g_str_equal);
+
+  GHashTableIter iter;
+  gpointer key, value;
+
+  // add all of the Variables to our top_level_vars hash
+  g_hash_table_iter_init (&iter, self->vars);
+  while (g_hash_table_iter_next (&iter, &key, &value)) 
+  {
+    g_hash_table_insert (self->top_level_vars, key, value);
+  }
+
+  // construct our bytecode for each variable
+  g_hash_table_iter_init (&iter, self->top_level_vars);
+  while (g_hash_table_iter_next (&iter, &key, &value))
+  {
+    OpensimVariable *var = OPENSIM_VARIABLE (value);
+
+    // slowly eat away at the table
+    g_hash_table_iter_remove (&iter);
+
+    process_var (generator, var);
+  }
+
   return -1;
 }
 /*
@@ -807,6 +842,7 @@ process_var (OpensimGenerator *generator, OpensimVariable *var)
     return FALSE;
   }
 
+  fprintf (stdout, "processing: %s\n", var_name);
   /*
   // prime CurToken
   get_next_token ();
