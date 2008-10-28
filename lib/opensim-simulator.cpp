@@ -371,7 +371,7 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
     set_sim_for_variable (new_var, simulator);
 
     g_array_append_val (self->var_array, new_var);
-    g_hash_table_insert (self->var_hash, names[i], new_var);
+    g_hash_table_insert (self->var_hash, g_strdup (names[i]), new_var);
   }  
   
   return 0;
@@ -552,6 +552,7 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
   {
     self->generator = OPENSIM_GENERATOR (g_object_new 
                               (OPENSIM_TYPE_GENERATOR, NULL));
+    opensim_generator_rebase (self->generator, self->var_hash);
   }
 
   return 0;
@@ -658,7 +659,7 @@ opensim_simulator_default_run(OpensimSimulator *simulator)
     }
   }
   
-  opensim_generator_parse (self->generator, self->output_type, output_stream);
+  //opensim_generator_parse (self->generator, self->output_type, output_stream);
   
   
   // if we opened it, close the output stream
