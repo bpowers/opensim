@@ -350,12 +350,12 @@ class LineControl:
 
 
 
-def edit_equation(var):
+def edit_equation(var, influences=None):
   if var is None:
     raise ValueError
   logging.debug("showing equation editor for: %s" % var.props.name)
   eqn = var.props.equation
-  editor = EquationEditor(eqn)
+  editor = EquationEditor(eqn, influences)
   result = editor.run()
   editor.hide()
 
@@ -365,4 +365,3 @@ def edit_equation(var):
     var.props.equation = editor.equation.get_text()
   else:
     logging.debug('oh well, canceled editor or something.')
-
