@@ -231,7 +231,9 @@ class ViewToolbar(gtk.Toolbar):
 
 
 class EquationEditor(gtk.Dialog):
-  '''Provides a pop-up window for editing the equations of variables'''
+  '''
+  Provides a pop-up window for editing the equations of variables
+  '''
 
   def __init__(self, equation='', influences=None, **kwargs):
     gtk.Dialog.__init__(self, flags=gtk.DIALOG_MODAL|
@@ -253,8 +255,15 @@ class EquationEditor(gtk.Dialog):
       infl_box.set_label('Influences')
       infl_list = gtk.ListStore()
       for var in influences:
-        pass
+        infl_list.append(var.props.name)
       self.infl_tree = gtk.TreeView(infl_list)
+      infl_col = gtk.TreeViewColumn()
+      self.infl_tree.append_column(infl_col)
+
+      cell = gtk.CellRenderText()
+      infl_col.pack_start(cell, True)
+      infl_col.add_attribute(cell, 'text', 0)
+
       infl_box.add (self.infl_tree)
       self.infl_tree.show()
       self.vbox.pack_start(infl_box)
