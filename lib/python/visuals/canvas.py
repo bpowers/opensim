@@ -132,8 +132,8 @@ class Canvas (gtk.ScrolledWindow):
     self.goocanvas.dpi = screen.get_resolution()
 
     # white background
-    color_white = gtk.gdk.Color(65535, 65535, 65535, 0)
-    self.goocanvas.modify_base(gtk.STATE_NORMAL, color_white)
+    #color_white = gtk.gdk.Color(65535, 65535, 65535)
+    #self.goocanvas.modify_base(gtk.STATE_NORMAL, color_white)
 
     self.goocanvas.set_flags(gtk.CAN_FOCUS)
     self.goocanvas.set_flags(gtk.CAN_DEFAULT)
