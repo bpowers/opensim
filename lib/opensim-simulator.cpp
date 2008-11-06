@@ -68,7 +68,7 @@ static OpensimVariable *opensim_simulator_default_new_variable
 static OpensimVariable *opensim_simulator_default_get_variable
                                           (OpensimSimulator *simulator, 
                                            gchar *var_name);
-static GArray *opensim_simulator_default_get_variables
+static GList *opensim_simulator_default_get_variables
                                           (OpensimSimulator *simulator);
 static int opensim_simulator_default_remove_variable
                                           (OpensimSimulator *simulator, 
@@ -792,7 +792,7 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
 
 
 
-extern "C" GArray *
+extern "C" GList *
 opensim_simulator_get_variables (OpensimSimulator *simulator)
 {
   return OPENSIM_SIMULATOR_GET_CLASS(simulator)->get_variables (simulator);
@@ -800,20 +800,22 @@ opensim_simulator_get_variables (OpensimSimulator *simulator)
 
 
 
-static GArray *
+static GList *
 opensim_simulator_default_get_variables (OpensimSimulator *simulator)
 {
   OpensimSimulatorPrivate *self = simulator->priv;
   
   if (!self->var_array) return NULL;
   
-  GArray *ret = g_array_new (FALSE, FALSE, sizeof(OpensimSimulator *));
+  //GArray *ret = g_array_new (FALSE, FALSE, sizeof(OpensimSimulator *));
   
   // copy the pointers from our array to the one we return, so changes
   // in the one we return don't mess us up
-  g_array_append_vals(ret, self->var_array->data, self->var_array->len);
+  //g_array_append_vals(ret, self->var_array->data, self->var_array->len);
   
-  return ret;
+  //return ret;
+  
+  return NULL;
 }
 
 

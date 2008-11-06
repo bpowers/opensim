@@ -116,7 +116,7 @@ struct _OpensimSimulatorClass
                                            gchar            *var_eqn);
   OpensimVariable * (* get_variable)      (OpensimSimulator *simulator,
                                            gchar            *var_name);
-  GArray *          (* get_variables)      (OpensimSimulator *simulator);
+  GList *           (* get_variables)     (OpensimSimulator *simulator);
   int               (* remove_variable)   (OpensimSimulator *simulator,
                                            gchar            *var_name);
 };
@@ -148,7 +148,7 @@ OpensimVariable *
 opensim_simulator_get_variable      (OpensimSimulator *simulator, 
                                      gchar            *var_name);
 
-GArray *
+GList *
 opensim_simulator_get_variables     (OpensimSimulator *simulator);
 
 int 

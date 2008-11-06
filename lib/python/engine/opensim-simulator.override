@@ -77,3 +77,24 @@ _wrap_opensim_variable__get_equation(PyGObject *self, void *closure)
 
   return py_eqn;
 }
+%%
+override opensim_simulator_get_variables noargs
+static PyObject *
+_wrap_opensim_simulator_get_variables (PyGObject *self)
+{
+  OpensimSimulator *sim = OPENSIM_SIMULATOR (self->obj);
+  PyObject *ret;
+  
+  GList *vars = opensim_simulator_get_variables (sim);
+  
+  
+  if (!vars)
+  {
+    Py_INCREF (Py_None);
+    return Py_None;
+  }
+    
+  ret = _glist_to_pylist_objs (influences);
+  g_list_free (influences);
+  return ret;
+}
