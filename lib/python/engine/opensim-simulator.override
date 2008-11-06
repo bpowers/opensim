@@ -98,3 +98,4 @@ _wrap_opensim_simulator_get_variables (PyGObject *self)
   g_list_free (vars);
   return ret;
 }
+
