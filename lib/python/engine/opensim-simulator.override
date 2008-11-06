@@ -94,7 +94,7 @@ _wrap_opensim_simulator_get_variables (PyGObject *self)
     return Py_None;
   }
     
-  ret = _glist_to_pylist_objs (influences);
-  g_list_free (influences);
+  ret = _glist_to_pylist_objs (vars);
+  g_list_free (vars);
   return ret;
 }
