@@ -2,14 +2,14 @@
 #
 # Copyright 2008 Bobby Powers
 #
-# This file is part of FortranLive
+# This file is part of OpenSim
 # 
-# FortranLive is free software: you can redistribute it and/or modify
+# OpenSim is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 # 
-# FortranLive is distributed in the hope that it will be useful,
+# OpenSim is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -39,14 +39,32 @@ class GraphViewer(gtk.DrawingArea):
     self.connect("expose_event", self.expose)
     self.y_axis = None
     self.data = None
+    self.all_data = None
+    self.series = None
+
     
   def _set_y_axis(self, series):
+    '''
+    Sets the y-axis _labels_ for our graph
+    '''
+
     self.y_axis = []
     for i in series:
       self.y_axis.append(str(int(i)))
+
   
   def set_data(self, data_dict):
+    self.all_data = data_dict
     self._set_y_axis(self)
+
+
+  def set_series(self, series_name):
+    self.series = series_name
+    if self.series and self.data.has_key(self.series_name):
+      self.data = self.data[self.series_name]
+
+    self.window.invalidate_rect(self.allocation, True)
+
 
   def expose(self, widget, event):
     self.context = widget.window.cairo_create()
@@ -59,7 +77,8 @@ class GraphViewer(gtk.DrawingArea):
     self.draw(self.context)
         
     return False
-    
+
+
   def draw(self, context):
     if not self.data: 
       return
@@ -69,7 +88,6 @@ class GraphViewer(gtk.DrawingArea):
     CairoPlot.dot_line_plot(surface, data_dic, size.width, size.height-10, h_labels = self.y_axis, axis = True, grid = True)
     context.set_source_surface(surface, 0, 0)
     context.paint()
-    #CairoPlot.dot_line_plot('dotline1_dots', data, 400, 300, h_labels = h_labels, v_labels = v_labels, axis = True, grid = True, dots = True)
 
 
 
