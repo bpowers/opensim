@@ -41,38 +41,6 @@ else:
 
 class OpenSimGTK (gobject.GObject):
 
-  def drawing_tool_toggled (self, widget):
-
-    # if a widget is being un-toggled, then we don't have
-    # to worry about it (otherwise breaks toggle effect)
-    if widget.get_active () is False:
-      # make sure we catch the case where no tool is active.
-      if widget.type == self.canvas.get_active_tool ():
-        self.canvas.set_active_tool (sim.NONE)
-      return
-
-    # switch between possible widgets.
-    if widget.type != sim.VARIABLE:
-      self.button_variable.set_active (False)    
-    if widget.type != sim.INFLUENCE:
-      self.button_influence.set_active (False)
-    if widget.type != sim.STOCK:
-      self.button_stock.set_active (False)
-    if widget.type != sim.FLOW:
-      self.button_flow.set_active (False)
-
-    # let the canvas know what tool is active
-    self.canvas.set_active_tool(widget.type)
-
-
-  def view_toggled (self, widget):
-
-    if widget is self.view_graphs:
-      self.view_var.show ()
-    else:
-      self.view_var.hide ()
-
-
   def __init__ (self, **kwargs):
     super (OpenSimGTK, self).__init__ (**kwargs)
 
@@ -146,6 +114,38 @@ class OpenSimGTK (gobject.GObject):
 
     self.canvas.show ()
     self.status_bar.show ()
+
+
+  def drawing_tool_toggled (self, widget):
+
+    # if a widget is being un-toggled, then we don't have
+    # to worry about it (otherwise breaks toggle effect)
+    if widget.get_active () is False:
+      # make sure we catch the case where no tool is active.
+      if widget.type == self.canvas.get_active_tool ():
+        self.canvas.set_active_tool (sim.NONE)
+      return
+
+    # switch between possible widgets.
+    if widget.type != sim.VARIABLE:
+      self.button_variable.set_active (False)    
+    if widget.type != sim.INFLUENCE:
+      self.button_influence.set_active (False)
+    if widget.type != sim.STOCK:
+      self.button_stock.set_active (False)
+    if widget.type != sim.FLOW:
+      self.button_flow.set_active (False)
+
+    # let the canvas know what tool is active
+    self.canvas.set_active_tool(widget.type)
+
+
+  def view_toggled (self, widget):
+
+    if widget is self.view_graphs:
+      self.view_var.show ()
+    else:
+      self.view_var.hide ()
 
 
   def create_dialog (self, requested_title, requested_action):
