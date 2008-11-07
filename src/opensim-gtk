@@ -103,17 +103,18 @@ class OpenSimGTK (gobject.GObject):
 
     #insert our goocanvas (since I don't want to deal with 
     #getting it working with glade just yet...)
-    main_vbox = self.wTree.get_widget ("main_vbox")
+    self.main_vbox = self.wTree.get_widget ("main_vbox")
     main_tool_bar = self.wTree.get_widget ("main_tool_bar")
 
     self.canvas = sim.Canvas ()
     self.status_bar = gtk.Statusbar ()
+    self.graphs = sim.GraphViewer()
 
-    main_vbox.pack_start (self.canvas, True, True, 0)
-    main_vbox.pack_start (self.status_bar, False, False, 0)
+    self.main_vbox.pack_start (self.canvas, True, True, 0)
+    #main_vbox.pack_start (self.status_bar, False, False, 0)
 
     self.canvas.show ()
-    self.status_bar.show ()
+    #self.status_bar.show ()
 
 
   def drawing_tool_toggled (self, widget):
@@ -140,12 +141,20 @@ class OpenSimGTK (gobject.GObject):
     self.canvas.set_active_tool(widget.type)
 
 
-  def view_toggled (self, widget):
+  def view_toggled(self, widget):
+    # fight infinite loops!
+    if widget.get_active() is False:
+      return
+
 
     if widget is self.view_graphs:
-      self.view_var.show ()
+      self.view_var.show()
+      self.main_vbox.remove (self.canvas)
+      self.main_vbox.pack_start (self.graphs, True, True, 0)
     else:
-      self.view_var.hide ()
+      self.view_var.hide()
+      self.main_vbox.remove (self.graphs)
+      self.main_vbox.pack_start (self.canvas, True, True, 0)
 
 
   def create_dialog (self, requested_title, requested_action):

@@ -25,6 +25,7 @@
 
 from constants import *
 from canvas import Canvas
+from graph import GraphViewer
 try:
   from tools import ModelToolbar
   from tools import SimulateToolbar
