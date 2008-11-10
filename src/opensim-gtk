@@ -35,8 +35,11 @@ import opensim.visuals as sim
 # mac-native gtk doesn't like svg icons
 ICON_NAME = 'model-icon'
 if sys.platform == 'darwin':
+  import igemacintegration as mac
+  on_mac = True
   ICON_NAME += '.png'
 else:
+  on_mac = False
   ICON_NAME += '.svg'
 
 class OpenSimGTK (gobject.GObject):
@@ -112,6 +115,15 @@ class OpenSimGTK (gobject.GObject):
 
     self.main_vbox.pack_start (self.canvas, True, True, 0)
     #main_vbox.pack_start (self.status_bar, False, False, 0)
+
+
+    self.main_menu = self.wTree.get_widget('main_menu_bar')
+    if on_mac:
+      self.mac_menu = mac.MacMenu()
+      self.mac_menu.set_menu_bar(self.main_menu)
+      main_vbox.remove(self.main_menu)
+      quit_item = self.wTree.get_widget('imagemenuitem5')
+      self.mac_menu.set_quit_menu_item(quit_item)
 
     self.canvas.show ()
     #self.status_bar.show ()
@@ -242,7 +254,7 @@ gobject.type_register (OpenSimGTK)
 if __name__ == "__main__":
   logging.basicConfig (level=logging.DEBUG)
   theme = gtk.icon_theme_get_default ()
-  if sys.platform == 'darwin':
+  if on_mac:
     theme.append_search_path ('/usr/local/share/icons')
     theme.append_search_path ('/usr/share/icons')
   gui = OpenSimGTK ()
