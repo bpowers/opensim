@@ -10,6 +10,6 @@ pkgdata_DATA            = opensim-main.glade
 
 bin_PROGRAMS            = opensim-d
 
-opensim_d_SOURCES       = main-nonltdl.c
+opensim_d_SOURCES       = main.c
 opensim_d_LDADD         = $(top_builddir)/lib/libsim.la
 
