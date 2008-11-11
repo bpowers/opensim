@@ -86,59 +86,6 @@ struct _OpensimIOxmlPrivate
 
 
 
-static gchar *
-trim(gchar *str)
-{
-  if (str == NULL) return NULL;
-  if (!g_utf8_validate(str, -1, NULL))
-  {
-    g_fprintf(stderr, "Error: a string to trim wasn't valid UTF-8.\n");
-    return NULL;
-  }
-
-  glong length = g_utf8_strlen(str, -1);
-
-  int start = 0;
-  gchar *startp = NULL;
-  int end = 0;
-  
-  gchar *tr;
-  for (tr = str; *tr != '\0'; tr = g_utf8_next_char(tr))
-  {
-    if (*tr != ' ' && *tr != '\t' && *tr != '\n' && *tr != '\r')
-      break;
-      
-    start++;
-  }
-  
-  startp = tr;
-  
-  // now point to last charactor in the string
-  // FIXME: this assumes the last character is not unicode.
-  tr = str + length - sizeof(gchar);
-  for (end = length; end != 0; --end)
-  {
-    if (*tr != ' ' && *tr != '\t' && *tr != '\n' && *tr != '\r')
-      break;
-    
-    tr = g_utf8_prev_char(tr);
-  }
-  
-  // end - start + 1 for the current char
-  gsize new_size = tr - startp + sizeof(gchar);
-  // +1 is for null termination
-  gchar *ret_val = (gchar *)g_malloc(new_size+1);
-  strncpy(ret_val, startp, new_size);
-  
-  ret_val[new_size] = '\0';
-  
-  g_free(str);
-  
-  return ret_val;
-}
-
-
-
 GType 
 opensim_ioxml_get_type()
 {
@@ -471,7 +418,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
         {
           txt = xmlNodeListGetString (doc, sub->children, 0);
           var_name = g_strdup ((gchar *)txt);
-          var_name = trim (var_name);
+          var_name = g_strdup (g_strstrip (var_name));
           xmlFree (txt);
 
           continue;
