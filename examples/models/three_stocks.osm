@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opensim markup="1.0">
+<model>
+  <name>water flow</name>
+
+  <var>
+    <name>q1</name>
+    <equation>
+      INTEG(-j1, 100)
+    </equation>
+  </var>
+  <var>
+    <name>q2</name>
+    <equation>
+      INTEG(j1-j2, 0)
+    </equation>
+  </var>
+  <var>
+    <name>q3</name>
+    <equation>
+      INTEG(j2-j3, 0)
+    </equation>
+  </var>
+
+  <var>
+    <name>j1</name>
+    <equation>
+      .2*q1
+    </equation>
+  </var>
+
+  <var>
+    <name>j2</name>
+    <equation>
+      .1*q2
+    </equation>
+  </var>
+
+  <var>
+    <name>j3</name>
+    <equation>
+      .05*q3
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_start</name>
+    <equation>
+      0
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_end</name>
+    <equation>
+      100
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_timestep</name>
+    <equation>
+      .5
+    </equation>
+  </var>
+
+  <var>
+    <name>OS_savestep</name>
+    <equation>
+      1
+    </equation>
+  </var>
+
+</model>
+</opensim>
