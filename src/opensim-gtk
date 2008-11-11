@@ -28,7 +28,7 @@
 import pygtk
 pygtk.require ("2.0")
 
-import os, sys, gtk, gtk.glade, gobject, goocanvas, math
+import os, os.path, sys, gtk, gtk.glade, gobject, goocanvas, math
 import logging
 import opensim.visuals as sim
 
@@ -68,8 +68,19 @@ class OpenSimGTK (gobject.GObject):
         break
 
     if self.data_path is None:
-      logging.error("no data directory found.")
-      raise Exception
+      if not on_mac:
+        logging.error("no data directory found.")
+        raise Exception
+      else:
+        # if we're on the mac and we get here, we're most likely in an
+        # application bundle.  We need to make sure we can get our 
+        # icons and glade files.
+        # we want to strip MacOS/Model...
+        self.data_path = os.path.dirname(os.path.dirname(sys.argv[0]))
+        self.data_path = os.path.join(self.data_path, 'Resources')
+        icon_path = os.path.join(self.data_path, 'icons')
+        gtk.icon_theme_get_default().append_search_path(icon_path)
+        logging.debug("current working directory: %s" % self.data_path)
 
     #Set and load the Glade file
     self.gladefile = os.path.join (self.data_path, "opensim-main.glade")
