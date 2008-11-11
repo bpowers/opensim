@@ -428,7 +428,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
         {
           txt = xmlNodeListGetString (doc, sub->children, 0);
           equation = g_strdup ((gchar *)txt);
-          equation = trim (equation);
+          equation = g_strdup (g_strstrip (equation));
           xmlFree (txt);
           
           continue;
