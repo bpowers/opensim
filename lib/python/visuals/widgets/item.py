@@ -64,6 +64,9 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.y = int(y - height/2)
     self.width = width
     self.height = height
+
+    self.influences = []
+    self.influenced = []
     
     self.named = False
 
@@ -75,6 +78,53 @@ class SimItem(goocanvas.ItemSimple, goocanvas.Item):
     self.connect("motion_notify_event", self.on_motion_notify)
     self.connect("highlight_in_event", self.on_highlight_in)
     self.connect("highlight_out_event", self.on_highlight_out)
+
+
+  def get_influences(self):
+    '''
+    Returns a list of the variables that influence this one. 
+
+    This list of influences is the _visual_ ones, the variables
+    that have flows or links ending in the current variable,
+    not necessarily the ones referenced in the equation.
+    '''
+
+    var_influences = []
+    for line in self.influences:
+      var_influences.append(line.flow_from)
+    return var_influences
+
+
+  def add_influence(self, line):
+    self.influences.append(line)
+
+
+  def remove_influence(self, line):
+    self.influences.remove(line)
+
+
+  def get_influenced(self):
+    '''
+    Returns a list of the variables this one influences. 
+
+    This list of influenced variables are the _visual_ ones, 
+    the variables that have flows or links starting in the 
+    current variable, not necessarily the ones referenced in 
+    the equation.
+    '''
+
+    var_influenced = []
+    for line in self.influenced:
+      var_influenced.append(line.flow_to)
+    return var_influenced
+
+
+  def add_influenced(self, line):
+    self.influenced.append(line)
+
+
+  def remove_influenced(self, line):
+    self.inflienced.remove(line)
 
 
   def do_simple_create_path(self, cr):

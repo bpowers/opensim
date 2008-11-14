@@ -162,9 +162,11 @@ class LinkItem(SimItem):
   def set_flow_from(self, flow_from):
 
     if self.flow_from:
+      self.flow_from.remove_influence(self)
       self.flow_from.disconnect(self.__start_cb)
 
     self.flow_from = flow_from
+    self.flow_from.add_influence(self)
     self.x1, self.y1 = self.flow_from.abs_center()
     self._new = False
 
@@ -179,9 +181,11 @@ class LinkItem(SimItem):
   def set_flow_to(self, flow_to):
 
     if self.flow_to:
+      self.flow_to.remove_influenced(self)
       self.flow_to.disconnect(self.__end_cb)
 
     self.flow_to = flow_to
+    self.flow_to.add_influenced(self)
     self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y2))
     self._new = False
 
