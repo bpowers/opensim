@@ -14,6 +14,18 @@ AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 AC_PROG_CXX
 AC_PROG_CC
 
+# Check if we're on the mac.
+AC_CANONICAL_HOST
+case $host_os in 
+*darwin*) on_mac=true;; 
+*)        on_mac=false;; 
+esac
+
+AM_CONDITIONAL([DARWIN], $on_mac) 
+if test x$on_mac == xtrue; then
+  AC_PROG_OBJC
+fi
+
 AC_DISABLE_FAST_INSTALL
 
 AC_LIBTOOL_WIN32_DLL
@@ -50,7 +62,6 @@ AC_C_CONST
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_LIB_LTDL
 AC_FUNC_STRTOD
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS([isascii])
@@ -66,7 +77,9 @@ AC_SUBST(GOBJ_LIBS)
 # llvm is disabled for now.
 #OPENSIM_LLVM_SETFLAGS
 OPENSIM_XML2_SETFLAGS
-AC_SUBST(LIBLTDL)
+
+
+AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
 
 
 AM_GNU_GETTEXT_VERSION([0.16])
@@ -75,7 +88,7 @@ AM_GNU_GETTEXT([external])
 
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
                  lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
-                 lib/python/visuals/Makefile icons/Makefile  \
+                 lib/python/visuals/Makefile icons/Makefile mac/Makefile \
                  lib/python/visuals/widgets/Makefile po/Makefile.in \
                  lib/python/engine/Makefile share/Makefile activity/Makefile \
                  activity/activity/Makefile activity/icons/Makefile \
