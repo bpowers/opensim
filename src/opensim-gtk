@@ -134,10 +134,11 @@ class OpenSimGTK (gobject.GObject):
       self.mac_menu.set_menu_bar(self.main_menu)
       self.main_vbox.remove(self.main_menu)
       quit_item = self.wTree.get_widget('imagemenuitem5')
-      self.mac_menu.set_quit_menu_item(quit_item)
+      #self.mac_menu.set_quit_menu_item(quit_item)
 
     self.canvas.show ()
     #self.status_bar.show ()
+    self.canvas.grab_focus()
 
 
   def drawing_tool_toggled (self, widget):

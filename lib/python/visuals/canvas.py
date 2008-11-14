@@ -63,6 +63,7 @@ class SimGoo(goocanvas.Canvas):
     self.highlighted = widget
     self.highlight_cb = widget.connect("highlight_out_event", 
                                        self.highlight_out)
+    self.highlighted.cb = self.highlight_cb
     widget.emit("highlight_in_event", self)
     self.grab_focus(self.highlighted)
     #logging.debug("done grab_highlight")
@@ -78,7 +79,9 @@ class SimGoo(goocanvas.Canvas):
     #logging.debug("SimGoo: highlight_out")
     if item is not self.highlighted:
       logging.error("receiving highlight events, but not from right object.")
-      return False
+      self.item.disconnect(self.item.cb)
+      self.item.cb = None
+      #return False
 
     self.highlighted.disconnect(self.highlight_cb)
     self.highlight_cb = None
@@ -152,6 +155,7 @@ class Canvas (gtk.ScrolledWindow):
     self.add(self.goocanvas)
 
     self.goocanvas.show()
+
 
 
   def set_active_tool(self, tool_type):
@@ -469,4 +473,3 @@ class Canvas (gtk.ScrolledWindow):
 
 
 gobject.type_register(Canvas)
-
