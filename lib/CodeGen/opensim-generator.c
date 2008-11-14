@@ -51,10 +51,10 @@ static void opensim_generator_finalize      (GObject *gobject);
                                              const GValue *value,
                                              GParamSpec   *pspec);
 
-static int opensim_generator_default_rebase (OpensimGenerator *simulator, 
+static int opensim_generator_default_rebase (OpensimGenerator *generator, 
                                              GHashTable *variables);
-static int opensim_generator_default_update (OpensimGenerator *simulator);
-static int opensim_generator_default_parse  (OpensimGenerator *simulator, 
+static int opensim_generator_default_update (OpensimGenerator *generator);
+static int opensim_generator_default_parse  (OpensimGenerator *generator, 
                                              int our_walk,
                                              FILE *output_file);
 
@@ -112,8 +112,8 @@ opensim_generator_set_property(GObject      *object,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
-  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
-  OpensimGeneratorPrivate *self = generator->priv;
+  //OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  //OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -132,8 +132,8 @@ opensim_generator_get_property (GObject    *object,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  OpensimGenerator *generator = OPENSIM_GENERATOR(object);
-  OpensimGeneratorPrivate *self = generator->priv;
+  //OpensimGenerator *generator = OPENSIM_GENERATOR(object);
+  //OpensimGeneratorPrivate *self = generator->priv;
   
   switch (property_id)
   {
@@ -153,7 +153,7 @@ opensim_generator_class_init(OpensimGeneratorClass *klass)
   g_type_class_add_private(klass, sizeof (OpensimGeneratorPrivate));
   
   GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-  GParamSpec *opensim_param_spec;
+  //GParamSpec *opensim_param_spec;
   
   gobject_class->set_property = opensim_generator_set_property;
   gobject_class->get_property = opensim_generator_get_property;
@@ -224,7 +224,7 @@ opensim_generator_finalize(GObject *gobject)
 
 
 int
-opensim_simulator_rebase (OpensimGenerator *generator,
+opensim_generator_rebase (OpensimGenerator *generator,
                           GHashTable       *variables)
 {
   return OPENSIM_GENERATOR_GET_CLASS (generator)->rebase (generator,
@@ -245,7 +245,7 @@ opensim_generator_default_rebase (OpensimGenerator *generator,
 
 
 int
-opensim_simulator_update (OpensimGenerator *generator)
+opensim_generator_update (OpensimGenerator *generator)
 {
   return OPENSIM_GENERATOR_GET_CLASS (generator)->update (generator);
 }
@@ -263,7 +263,7 @@ opensim_generator_default_update (OpensimGenerator *generator)
 
 
 int
-opensim_simulator_parse (OpensimGenerator *generator,
+opensim_generator_parse (OpensimGenerator *generator,
                          int               our_walk,
                          FILE             *output_file)
 {
@@ -279,6 +279,8 @@ opensim_generator_default_parse (OpensimGenerator *generator,
                                  int               our_walk,
                                  FILE             *output_file)
 {
+  fprintf (stderr, "OMG.\n");
+
   OpensimGeneratorPrivate *self = generator->priv;
   
   if (!self->valid_model)
