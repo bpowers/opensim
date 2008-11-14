@@ -182,7 +182,7 @@ class LinkItem(SimItem):
       self.flow_to.disconnect(self.__end_cb)
 
     self.flow_to = flow_to
-    self.x2, self.y2 = self.flow_to.abs_center()
+    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y2))
     self._new = False
 
     #now make sure we update our endpoints when the targets move
@@ -196,10 +196,8 @@ class LinkItem(SimItem):
 
   def update_point(self, item, target):
     if item is self.flow_from:
-      #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
       self.x1, self.y1 = self.flow_from.abs_center()
     
-    #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
     self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y1))
 
     self.__needs_resize_calc = True

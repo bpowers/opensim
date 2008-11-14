@@ -179,6 +179,9 @@ class FlowItem(SimItem):
 
     cr.save()
     self.ensure_size(cr)
+
+    cr.set_line_cap(cairo.LINE_CAP_ROUND)
+
     cr.move_to(self.x1, self.y1)
     
     angle = math.atan2(self.y2-self.y1, self.x2-self.x1)
@@ -273,7 +276,8 @@ class FlowItem(SimItem):
         self.get_canvas().remove_item(self.flow_to)
 
     self.flow_to = flow_to
-    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.x2))
+    self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y2))
+    self.x1, self.y1 = self.flow_from.edge_point((self.x2, self.y2))
     self._new = False
 
     #now make sure we update our endpoints when the targets move
@@ -286,12 +290,11 @@ class FlowItem(SimItem):
 
 
   def update_point(self, item, target):
-    if item is self.flow_from:
-      #logging.debug("up!!!: (%d, %d)" % (self.flow_from.center()))
-      self.x1, self.y1 = self.flow_from.abs_center()
+    self.x1, self.y1 = self.flow_from.abs_center()
     
-    #logging.debug("down!!! (%d, %d)" % (self.flow_to.center()))
     self.x2, self.y2 = self.flow_to.edge_point((self.x1, self.y1))
+
+    self.x1, self.y1 = self.flow_from.edge_point((self.x2, self.y2))
 
     self.__needs_resize_calc = True
     self.emit("item_moved_event", self)
