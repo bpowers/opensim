@@ -551,7 +551,7 @@ opensim_ioxml_default_write_body (OpensimIOxml *ioxml,
                                   OpensimSimulator *sim, 
                                   FILE *save_file)
 {
-  GArray *vars = opensim_simulator_get_variables(sim);
+  GList *vars = opensim_simulator_get_variables (sim);
   if (!vars)
   {
     fprintf(stderr, "Error: couldn't get any variables to save\n");
@@ -569,11 +569,10 @@ opensim_ioxml_default_write_body (OpensimIOxml *ioxml,
   
   
   // loop through vars here.
-  int i;
-  for (i=0; i < vars->len; i++)
+  GList *iter = vars;
+  while (iter)
   {
-    OpensimVariable *var = NULL;
-    var = g_array_index(vars, OpensimVariable *, i);
+    OpensimVariable *var = iter->data;
     
     gchar *name = NULL;
     gchar *equation = NULL;
@@ -591,12 +590,14 @@ opensim_ioxml_default_write_body (OpensimIOxml *ioxml,
     
     g_free(name);
     g_free(equation);
+    
+    iter = g_list_next (iter);
   }
   
   fprintf(save_file, "\
 </model>\n");
   
-  g_array_free(vars, TRUE);
+  g_list_free (vars);
   
   return 0;
 }
