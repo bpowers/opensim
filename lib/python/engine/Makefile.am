@@ -30,7 +30,8 @@ activity_PYTHON = $(opensim_PYTHON)
 
 engine_la_SOURCES = opensim-sim.c opensim-enginemodule.c
 engine_la_CFLAGS  = $(PYGOBJ_CFLAGS) $(PYTHON_INCLUDES) $(GOBJ_CFLAGS)
-engine_la_LDFLAGS = $(PYTHON_LDFLAGS) $(PYGOBJ_LIBS) -module
+engine_la_LDFLAGS = $(PYTHON_LDFLAGS) $(PYGOBJ_LIBS) -module \
+                    -headerpad_max_install_names
 engine_la_LIBADD  = $(top_builddir)/lib/libsim.la
 
 endif
