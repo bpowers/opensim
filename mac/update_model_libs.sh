@@ -2,7 +2,7 @@
 
 export CUR_USER=`id -un`
 export CUR_GROUP=`id -gn`
-export USER=root
+export USER=$CUR_USER
 export GROUP=admin
 export SRC_DIR=`pwd`/..
 
