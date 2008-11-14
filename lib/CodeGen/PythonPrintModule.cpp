@@ -124,7 +124,7 @@ def sim_lookup(table, index):\n\
     {
       string stock = name;
       stock += " = ";
-      fprintf(simout, stock.c_str());
+      fputs (stock.c_str(), simout);
       
       v_ast->Initial()->Codegen(this);
       
@@ -161,7 +161,7 @@ def sim_lookup(table, index):\n\
     g_free(name);
   }
   headers += "')\n\n";
-  fprintf(simout, headers.c_str());
+  fputs (headers.c_str(), simout);
   
   node->Integrator()->Codegen(this);
   
@@ -176,7 +176,7 @@ double
 OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
 {
   string message = whitespace + "#using euler integration\n";
-  fprintf(simout, message.c_str());
+  fputs (message.c_str(), simout);
   
   fprintf(simout, "for time in frange(time_start, time_end, time_step):\n");
   
@@ -205,7 +205,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   }
   
   string prints = "\n" + whitespace + "#generally put print statements here\n";
-  fprintf(simout, prints.c_str());
+  fputs (prints.c_str(), simout);
   string if_out = whitespace + "if do_save:\n";
   fputs(if_out.c_str(), simout);
   string printout = whitespace + "  print('" + format_statement + "' % ("
@@ -213,7 +213,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
   fputs(printout.c_str(), simout);
   
   string updateStocks = "\n" + whitespace + "#updating stocks\n";
-  fprintf(simout, updateStocks.c_str());
+  fputs (updateStocks.c_str(), simout);
   
   
   for (vector<VariableAST *>::iterator itr = body.begin();
@@ -236,7 +236,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::EulerAST *node)
     + whitespace + "  save_count = 0\n"
     + whitespace + "else:\n"
     + whitespace + "  do_save = False\n";
-  fprintf(simout, update_save.c_str());
+  fputs (update_save.c_str(), simout);
   
   return 0;
 }
@@ -254,7 +254,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::VariableAST *node)
   string message = whitespace;
   message += name;
   message += " = ";
-  fprintf(simout, message.c_str());
+  fputs (message.c_str(), simout);
   
   g_free(name);
   
@@ -270,7 +270,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::VariableAST *node)
 double
 OpenSim::PythonPrintModule::visit(OpenSim::VarRefAST *node)
 {
-  fprintf(simout, node->Name().c_str());
+  fputs (node->Name().c_str(), simout);
   return 0;
 }
 
@@ -355,7 +355,7 @@ OpenSim::PythonPrintModule::visit(OpenSim::FunctionRefAST *node)
     if (args.size() != 2)
     {
       fprintf(stderr, "Error: MAX function takes 2, not %d, arguments.\n", 
-              args.size());
+              (int) args.size());
       return 0;
     }
     

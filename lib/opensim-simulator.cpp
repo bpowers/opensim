@@ -358,7 +358,7 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
   
   if (!self->var_hash)
   {
-    fprintf (stdout, "Error: you can't initialize a blank model w/o hash\n");
+    //fprintf (stdout, "Error: you can't initialize a blank model w/o hash\n");
   }
   
   // time variables we need

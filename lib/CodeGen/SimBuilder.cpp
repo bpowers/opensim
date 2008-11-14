@@ -109,6 +109,8 @@ OpenSim::SimBuilder::Update(std::map<std::string,
   // save the variables we're passed.
   vars = variables;
   this->Update();
+  
+  return 0;
 }
 
 

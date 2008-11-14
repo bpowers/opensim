@@ -117,7 +117,7 @@ OpenSim::InterpreterModule::visit(OpenSim::SimAST *node)
   
   headers += "\n";
   
-  fprintf(simout, headers.c_str());
+  fprintf(simout, "%s", headers.c_str());
   
   node->Integrator()->Codegen(this);
   
@@ -345,7 +345,7 @@ OpenSim::InterpreterModule::visit(OpenSim::FunctionRefAST *node)
     if (args.size() != 2)
     {
       fprintf(stderr, "Error: MAX function takes 2, not %d, arguments.\n", 
-              args.size());
+              (int) args.size());
       return 0;
     }
     

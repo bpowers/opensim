@@ -39,9 +39,9 @@ namespace OpenSim
   class VariableAST : public ExprAST
   {
   protected:
+    OpensimVariable *var;
     OpenSim::ExprAST *node;
     OpenSim::ExprAST *initialNode;
-    OpensimVariable *var;
     
   public:
     VariableAST(OpensimVariable *varData, OpenSim::ExprAST *nodeData) 

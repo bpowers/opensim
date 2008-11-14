@@ -75,8 +75,8 @@ main (int argc, const char * argv[])
   struct timeval time_start;
   struct timeval time_end;
   const char *input_file;
-  const char *target;
-  const char *output;
+  const char *target = NULL;
+  const char *output = NULL;
   
   program_name = argv[0];
   
