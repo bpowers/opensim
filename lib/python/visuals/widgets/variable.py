@@ -254,7 +254,7 @@ class VariableItem(SimItem):
                           fleur, event.time)
       self.dragging = True
     elif event.button is 3:
-      edit_equation(self.var)
+      edit_equation(self.var, self.get_influences())
       canvas.drop_highlight()
     else:
       print "unsupported button: %d" % event.button

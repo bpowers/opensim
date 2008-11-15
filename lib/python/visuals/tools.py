@@ -28,7 +28,8 @@ from gettext import gettext as _
 import pygtk
 pygtk.require("2.0")
 
-import gtk
+import gtk, gobject
+import constants as sim
 
 # on the mac we don't have sugar so we compensate
 import sys
@@ -253,9 +254,9 @@ class EquationEditor(gtk.Dialog):
     if influences:
       infl_box = gtk.Frame()
       infl_box.set_label('Influences')
-      infl_list = gtk.ListStore()
+      infl_list = gtk.ListStore(gobject.TYPE_STRING)
       for var in influences:
-        infl_list.append(var.props.name)
+        infl_list.append(var.var.props.name)
       self.infl_tree = gtk.TreeView(infl_list)
       infl_col = gtk.TreeViewColumn()
       self.infl_tree.append_column(infl_col)
@@ -355,6 +356,8 @@ def edit_equation(var, influences=None):
     raise ValueError
   logging.debug("showing equation editor for: %s" % var.props.name)
   eqn = var.props.equation
+  if 0 and (eqn is None or eqn == ""):
+    eqn = 'INTEG(<derivative>, <initial value>)'
   editor = EquationEditor(eqn, influences)
   result = editor.run()
   editor.hide()
