@@ -256,12 +256,12 @@ class EquationEditor(gtk.Dialog):
       infl_box.set_label('Influences')
       infl_list = gtk.ListStore(gobject.TYPE_STRING)
       for var in influences:
-        infl_list.append(var.var.props.name)
+        infl_list.append([var.var.props.name])
       self.infl_tree = gtk.TreeView(infl_list)
       infl_col = gtk.TreeViewColumn()
       self.infl_tree.append_column(infl_col)
 
-      cell = gtk.CellRenderText()
+      cell = gtk.CellRendererText()
       infl_col.pack_start(cell, True)
       infl_col.add_attribute(cell, 'text', 0)
 
