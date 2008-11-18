@@ -142,7 +142,7 @@ struct _OpensimSimulatorPrivate
   gchar            *output_file_name;
   gboolean          valid_model;
   
-  GArray           *var_array;
+  GList            *var_list;
   
   OpensimGenerator *generator;
   GHashTable       *var_hash;
@@ -376,9 +376,9 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
 
     set_sim_for_variable (new_var, simulator);
 
-    g_array_append_val (self->var_array, new_var);
+    self->var_list = g_list_prepend (self->var_list, new_var);
     self->var_map[names[i]] = new_var;
-  }  
+  }
   
   return 0;
 }
@@ -393,7 +393,7 @@ opensim_simulator_init (OpensimSimulator *simulator)
   OpensimSimulatorPrivate *self = simulator->priv;
   
   self->valid_model = TRUE;
-  self->var_array   = g_array_new (FALSE, FALSE, sizeof (OpensimVariable *));
+  self->var_list    = NULL;
   self->var_map     = map<string, OpensimVariable *> ();
   opensim_simulator_init_blank_model (simulator);
   self->sim_builder = new SimBuilder (self->var_map);
@@ -416,22 +416,19 @@ opensim_simulator_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  if (self->priv->var_array)
+  GList *itr = OPENSIM_SIMULATOR_GET_PRIVATE (self)->var_list;
+  while (itr)
   {
-    GArray *array = self->priv->var_array;
-    
-    guint i;
-    for (i=0; i<array->len; i++)
+    //g_fprintf(stderr, "freeing some var\n");
+    OpensimVariable *var = NULL;
+    var = OPENSIM_VARIABLE (itr->data);
+    if (var)
     {
-      //g_fprintf(stderr, "freeing some var\n");
-      OpensimVariable *var = NULL;
-      var = g_array_index(array, OpensimVariable *, i);
-      if (var)
-      {
-        g_object_unref(var);
-        array->data[i*sizeof(OpensimVariable *)] = 0;
-      }
+      g_object_unref (var);
+      itr->data = NULL;
     }
+
+    itr = g_list_next (itr);
   }
 
   /* Chain up to the parent class */
@@ -450,8 +447,8 @@ opensim_simulator_finalize(GObject *gobject)
   g_free(self->priv->file_name);
   g_free(self->priv->output_file_name);
   
-  if (self->priv->var_array)
-    g_array_free(self->priv->var_array, TRUE);
+  if (self->priv->var_list)
+    g_list_free (self->priv->var_list);
 
   /* Chain up to the parent class */
   G_OBJECT_CLASS(opensim_simulator_parent_class)->finalize(gobject);
@@ -504,22 +501,22 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
   g_object_set(G_OBJECT(simulator), "model_name", prop, NULL);
   g_free(prop);
 
-  GArray *vars = opensim_ioxml_get_variables(gio);
+  GList *vars = opensim_ioxml_get_variables(gio);
   
   if (!vars) 
     fprintf(stderr, "Warning: variable array not available from IOxml.\n");
   
-  simulator->priv->var_array = vars;
+  simulator->priv->var_list = vars;
   
   g_object_unref(gio);
   
   std::map<std::string, OpensimVariable *> _variables;
 
   // turn our nice list into an ugly map AND set simulator
-  guint i;
-  for (i=0; i<vars->len; i++)
+  GList *itr = vars;
+  while (itr)
   {
-    OpensimVariable *var = g_array_index(vars, OpensimVariable *, i);
+    OpensimVariable *var = OPENSIM_VARIABLE (itr->data);
     gchar *var_name = NULL;
 
     set_sim_for_variable (var, simulator);
@@ -528,6 +525,8 @@ opensim_simulator_default_load (OpensimSimulator *simulator,
     _variables[var_name] = var;
 
     g_free(var_name);
+
+    itr = g_list_next (itr);
   }
 
   if (self->sim_builder)
@@ -559,7 +558,7 @@ int
 opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
 {
   fprintf(stdout, "Info: outputting debugging info\n");
-  
+  /*
   if (simulator->priv->var_array)
   { 
     GArray *array = simulator->priv->var_array;
@@ -601,6 +600,7 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
   {
     fprintf(stdout, "  no array of variables.\n");
   }
+  */
   
   return 0;
 }
@@ -745,7 +745,7 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
                                         gchar *var_name, 
                                         gchar *var_eqn)
 {
-  OpensimSimulatorPrivate *self = simulator->priv;
+  OpensimSimulatorPrivate *self = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
   gchar *clean_name = clean_string(var_name);
   
   if (var_name == NULL || !g_strcmp0 (var_name, "")) 
@@ -762,7 +762,7 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   
   set_sim_for_variable (new_var, simulator);
   
-  g_array_append_val (self->var_array, new_var);
+  self->var_list = g_list_prepend (self->var_list, new_var);
   
   self->var_map[clean_name] = new_var;
   
@@ -809,8 +809,11 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
   {
     return NULL;
   }
+
+  OpensimVariable *ret = v->second;
+  g_object_ref (ret);
   
-  return v->second;
+  return ret;
 }
 
 
@@ -826,16 +829,17 @@ opensim_simulator_get_variables (OpensimSimulator *simulator)
 static GList *
 opensim_simulator_default_get_variables (OpensimSimulator *simulator)
 {
-  OpensimSimulatorPrivate *self = simulator->priv;
+  OpensimSimulatorPrivate *self = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
   
-  if (!self->var_array) return NULL;
-  
-  GList *ret = NULL;
-  
-  GArray *vars = self->var_array;
-  for (unsigned int i=0; i<vars->len; i++)
+  GList *ret = g_list_copy (self->var_list);
+
+  // Increase the reference count of all of the variables
+  GList *itr = ret;
+  while (itr)
   {
-     ret = g_list_prepend (ret, g_array_index (vars, OpensimVariable *, i));
+    if (itr->data) g_object_ref (itr->data);
+    
+    itr = g_list_next (itr);
   }
   
   return ret;

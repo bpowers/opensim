@@ -61,7 +61,7 @@ static int opensim_ioxml_default_write_body        (OpensimIOxml *ioxml,
 static int opensim_ioxml_default_write_footer      (OpensimIOxml *ioxml,
                                                     OpensimSimulator *sim,
                                                     FILE *save_file);
-static GArray *opensim_ioxml_default_get_variables (OpensimIOxml *ioxml);
+static GList *opensim_ioxml_default_get_variables  (OpensimIOxml *ioxml);
 
 /* for object properties */
 enum
@@ -80,8 +80,7 @@ struct _OpensimIOxmlPrivate
   
   gboolean  valid;
   
-  GArray *var_array;
-  gboolean var_array_referenced;
+  GList *var_list;
 };
 
 
@@ -229,8 +228,7 @@ opensim_ioxml_init(OpensimIOxml *self)
   self->priv = OPENSIM_IOXML_GET_PRIVATE(self);
   
   self->priv->valid = TRUE;
-  self->priv->var_array = g_array_new(FALSE, FALSE, sizeof(OpensimVariable *));
-  self->priv->var_array_referenced = FALSE;
+  self->priv->var_list = NULL;
 }
 
 
@@ -238,7 +236,8 @@ opensim_ioxml_init(OpensimIOxml *self)
 static void
 opensim_ioxml_dispose(GObject *gobject)
 {
-  OpensimIOxml *self = OPENSIM_IOXML(gobject);
+  OpensimIOxml *ioxml = OPENSIM_IOXML (gobject);
+  OpensimIOxmlPrivate *self = OPENSIM_IOXML_GET_PRIVATE (ioxml);
 
   /* 
    * In dispose, you are supposed to free all typesecifier before 'IOVenText'
@@ -250,23 +249,19 @@ opensim_ioxml_dispose(GObject *gobject)
   /* dispose might be called multiple times, so we must guard against
    * calling g_object_unref() on an invalid GObject.
    */
-  
-  if (!self->priv->var_array_referenced)
+
+  GList *itr = self->var_list;
+  while (itr)
   {
-    GArray *array = self->priv->var_array;
-    
-    int i;
-    for (i=0; i<array->len; i++)
+    //g_fprintf(stderr, "freeing some var\n");
+    OpensimVariable *var = itr->data;
+    if (var)
     {
-      //g_fprintf(stderr, "freeing some var\n");
-      OpensimVariable *var = NULL;
-      var = g_array_index(array, OpensimVariable *, i);
-      if (var)
-      {
-        g_object_unref(var);
-        array->data[i*sizeof(OpensimVariable *)] = 0;
-      }
+      g_object_unref(var);
+      itr->data = NULL;
     }
+
+    itr = g_list_next (itr);
   }
 
   /* Chain up to the parent class */
@@ -278,18 +273,19 @@ opensim_ioxml_dispose(GObject *gobject)
 static void
 opensim_ioxml_finalize(GObject *gobject)
 {
-  OpensimIOxml *self = OPENSIM_IOXML(gobject);
+  OpensimIOxml *ioxml = OPENSIM_IOXML (gobject);
+  OpensimIOxmlPrivate *self = OPENSIM_IOXML_GET_PRIVATE (ioxml);
 
   // free g_values and such.
-  g_free(self->priv->file_name);
-  g_free(self->priv->model_name);
+  g_free (self->file_name);
+  g_free (self->model_name);
   
   // if someone else wanted to have the array, it is their 
   // responsibility to free the data
-  g_array_free(self->priv->var_array, !self->priv->var_array_referenced);
+  g_list_free (self->var_list);
 
   /* Chain up to the parent class */
-  G_OBJECT_CLASS(opensim_ioxml_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS (opensim_ioxml_parent_class)->finalize (gobject);
 }
 
 
@@ -305,6 +301,8 @@ opensim_ioxml_load(OpensimIOxml *ioxml, gchar *model_path)
 static int 
 opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
 {
+  OpensimIOxmlPrivate *self = OPENSIM_IOXML_GET_PRIVATE (ioxml);
+
   g_object_set(G_OBJECT(ioxml), "file_name", model_path, NULL);
   
   ioxml->priv->valid = FALSE;
@@ -446,8 +444,7 @@ opensim_ioxml_default_load(OpensimIOxml *ioxml, gchar *model_path)
         g_free(var_name);
         g_free(equation);
         
-        g_array_append_val(ioxml->priv->var_array, our_var);
-        //vars[var_name] = ourVar;
+        self->var_list = g_list_prepend (self->var_list, our_var);
       }
       else
       {
@@ -626,7 +623,7 @@ opensim_ioxml_default_write_footer (OpensimIOxml *ioxml,
 
 
 
-GArray *
+GList *
 opensim_ioxml_get_variables(OpensimIOxml *ioxml)
 {
   return OPENSIM_IOXML_GET_CLASS(ioxml)->get_variables(ioxml);
@@ -634,15 +631,26 @@ opensim_ioxml_get_variables(OpensimIOxml *ioxml)
 
 
 
-static GArray *
+static GList *
 opensim_ioxml_default_get_variables(OpensimIOxml *ioxml)
 {
-  ioxml->priv->var_array_referenced = TRUE;
+  OpensimIOxmlPrivate *self = OPENSIM_IOXML_GET_PRIVATE (ioxml);
   
-  GArray *ret = g_array_new(FALSE, FALSE, sizeof(OpensimVariable *));
-  ret->data = ioxml->priv->var_array->data;
-  ret->len  = ioxml->priv->var_array->len;
-  
+  GList *ret = g_list_copy (self->var_list);
+
+  // Increase the reference count of all of the variables
+  // we've just read in
+  GList *itr = ret;
+  while (itr)
+  {
+    if (itr->data) 
+      g_object_ref (itr->data);
+    else 
+      fprintf (stderr, "Warning: empty reference in variable list.\n");
+
+    itr = g_list_next (itr);
+  }
+
   return ret;
 }
 

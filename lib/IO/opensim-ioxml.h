@@ -67,7 +67,7 @@ struct _OpensimIOxmlClass
   int          (* load)          (OpensimIOxml *ioxml, gchar *path);
   int          (* save)          (OpensimIOxml *ioxml, 
                                   OpensimSimulator *sim);
-  GArray *     (* get_variables) (OpensimIOxml *ioxml);
+  GList *      (* get_variables) (OpensimIOxml *ioxml);
   int          (* write_header)  (OpensimIOxml *ioxml, 
                                   OpensimSimulator *sim,
                                   FILE *save_file);
@@ -105,7 +105,7 @@ int opensim_ioxml_write_footer (OpensimIOxml *ioxml,
                                 OpensimSimulator *sim,
                                 FILE *save_file);
 
-GArray *opensim_ioxml_get_variables(OpensimIOxml *ioxml);
+GList *opensim_ioxml_get_variables(OpensimIOxml *ioxml);
 
 
 G_END_DECLS
