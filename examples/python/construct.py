@@ -44,7 +44,8 @@ def run ():
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
   sim.props.output_type =  engine.emit_Python
-  sim.run()
+  #sim.run()
+  sim.output_debug_info()
   
   # connect our save_extra function to the 'saving' signal, set a 
   # file name for the model (which is different from an output file-name)

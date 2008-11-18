@@ -557,21 +557,20 @@ opensim_simulator_output_debug_info(OpensimSimulator *simulator)
 int 
 opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
 {
-  fprintf(stdout, "Info: outputting debugging info\n");
-  /*
-  if (simulator->priv->var_array)
-  { 
-    GArray *array = simulator->priv->var_array;
+  OpensimSimulatorPrivate *self = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
 
-    fprintf(stdout, "  found variable array of size %d (%d)\n", array->len,
-            (int)simulator->priv->var_map.size());
+  fprintf (stdout, "Info: outputting debugging info\n");
+
+  if (self->var_list)
+  {
+    guint len = g_list_length (self->var_list);
+    fprintf(stdout, "  found variable list of size %d (%d)\n", len,
+            (int)self->var_map.size());
     
-    guint i;
-    for (i=0; i<array->len; i++)
+    GList *itr = self->var_list;
+    while (itr)
     {
-      //g_fprintf(stderr, "freeing some var\n");
-      OpensimVariable *var = NULL;
-      var = g_array_index(array, OpensimVariable *, i);
+      OpensimVariable *var = OPENSIM_VARIABLE (itr->data);
       gchar *var_name = NULL;
       gchar *equation = NULL;
       
@@ -594,13 +593,14 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
       
       g_free(var_name);
       g_free(equation);
+
+      itr = g_list_next (itr);
     }
   }
   else
   {
     fprintf(stdout, "  no array of variables.\n");
   }
-  */
   
   return 0;
 }
@@ -763,7 +763,7 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   set_sim_for_variable (new_var, simulator);
   
   self->var_list = g_list_prepend (self->var_list, new_var);
-  
+
   self->var_map[clean_name] = new_var;
   
   g_free(clean_name);
