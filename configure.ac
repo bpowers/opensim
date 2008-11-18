@@ -23,7 +23,10 @@ esac
 
 AM_CONDITIONAL([DARWIN], $on_mac) 
 if test x$on_mac == xtrue; then
+  AM_CONDITIONAL([am__fastdepOBJC], true)
   AC_PROG_OBJC
+else
+  AM_CONDITIONAL([am__fastdepOBJC], false)
 fi
 
 AC_DISABLE_FAST_INSTALL
