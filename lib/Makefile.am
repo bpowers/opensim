@@ -12,7 +12,7 @@ pkginclude_HEADERS     = opensim.h opensim-simulator.h opensim-variable.h
 SUBDIRS                = AST CodeGen IO
 
 noinst_LTLIBRARIES     = libsimobjs.la
-libsimobjs_la_SOURCES  = opensim-simulator.cpp opensim-variable.c
+libsimobjs_la_SOURCES  = opensim-simulator.c opensim-variable.c
 libsimobjs_la_LIBADD   = AST/libAST.la CodeGen/libCodeGen.la \
                          IO/libIO.la
 
