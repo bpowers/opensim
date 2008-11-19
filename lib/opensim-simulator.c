@@ -346,7 +346,7 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
   
   if (!self->var_hash)
   {
-    //fprintf (stdout, "Error: you can't initialize a blank model w/o hash\n");
+    fprintf (stdout, "Error: you can't initialize a blank model w/o hash\n");
   }
   
   // time variables we need
@@ -367,7 +367,6 @@ opensim_simulator_init_blank_model (OpensimSimulator *simulator)
     self->var_list = g_list_prepend (self->var_list, new_var);
     gchar *name = g_strdup (names[i]);
     g_hash_table_insert (self->var_hash, name, new_var);
-    g_free (name);
   }
   
   return 0;
@@ -379,14 +378,17 @@ static void
 opensim_simulator_init (OpensimSimulator *simulator)
 {
   simulator->priv = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
-  
   OpensimSimulatorPrivate *self = simulator->priv;
   
+  fprintf (stderr, "Debug: initialized new simulator\n");
+
   self->valid_model = TRUE;
   self->var_list    = NULL;
   self->var_hash    = g_hash_table_new (g_str_hash, g_str_equal);
   opensim_simulator_init_blank_model (simulator);
-  // FIXME: initialize generator here
+  self->generator   = NULL;
+  //self->generator   = 
+  //        OPENSIM_GENERATOR (g_object_new (OPENSIM_TYPE_GENERATOR, NULL));
 }
 
 
@@ -589,6 +591,11 @@ opensim_simulator_default_output_debug_info(OpensimSimulator *simulator)
   {
     fprintf(stdout, "  no array of variables.\n");
   }
+
+  if (self->var_hash)
+  {
+    
+  }
   
   return 0;
 }
@@ -712,7 +719,7 @@ opensim_simulator_new_variable(OpensimSimulator *simulator,
 
 
 
-// remove leading and trailign whitespace.
+// converts spaces to underscores.
 // will need to be changed to support unicode
 gchar *
 clean_string(gchar *str)
@@ -735,8 +742,9 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
                                         gchar *var_name, 
                                         gchar *var_eqn)
 {
+  fprintf (stderr, "Debug: creating new var\n.");
   OpensimSimulatorPrivate *self = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
-  gchar *clean_name = clean_string(var_name);
+  gchar *clean_name = clean_string (var_name);
   
   if (var_name == NULL || !g_strcmp0 (var_name, "")) 
   {
@@ -753,12 +761,11 @@ opensim_simulator_default_new_variable (OpensimSimulator *simulator,
   set_sim_for_variable (new_var, simulator);
   
   self->var_list = g_list_prepend (self->var_list, new_var);
-
   g_hash_table_insert (self->var_hash, clean_name, new_var);
   
-  g_free(clean_name);
+  g_free (clean_name);
   
-  opensim_generator_rebase (self->generator, self->var_hash);
+  if (self->generator) opensim_generator_update (self->generator);
   
   return new_var;
 }
@@ -780,6 +787,7 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
                                         gchar *var_name)
 {
   OpensimSimulatorPrivate *self = OPENSIM_SIMULATOR_GET_PRIVATE (simulator);
+
   if (var_name == NULL || !g_strcmp0 (var_name, "")) 
   {
     fprintf (stderr, "Error: variable must have a name\n");
@@ -788,10 +796,13 @@ opensim_simulator_default_get_variable (OpensimSimulator *simulator,
 
   // replace spaces with underscores so that we can more easily match names
   gchar *var_name_clean = clean_string (var_name);
+  fprintf (stderr, "Debug: getting: '%s'\n", var_name_clean);
   
   gpointer var = g_hash_table_lookup (self->var_hash, var_name_clean);
 
   g_free (var_name_clean);
+
+  // avoid warning about var not being an opensim-variable
   if (!var)
   {
     return NULL;
@@ -862,6 +873,6 @@ opensim_simulator_var_equation_changed (OpensimVariable *variable,
   OpensimSimulatorPrivate *self = simulator->priv;
   
   // in the future, we will probably want to do more here
-  opensim_generator_rebase (self->generator, self->var_hash);
+  if (self->generator) opensim_generator_update (self->generator);
 }
 

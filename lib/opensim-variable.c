@@ -336,6 +336,7 @@ opensim_variable_init(OpensimVariable *self)
   
   self->priv->valid = TRUE;
   
+  fprintf (stderr, "Debug: initialized new variable\n");
   // lazily initialize toks when needed
   self->priv->toks  = NULL;
 }
