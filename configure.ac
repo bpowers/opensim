@@ -24,7 +24,7 @@ esac
 AM_CONDITIONAL([DARWIN], $on_mac) 
 if test x$on_mac == xtrue; then
   AM_CONDITIONAL([am__fastdepOBJC], true)
-  AC_PROG_OBJC
+  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
 else
   AM_CONDITIONAL([am__fastdepOBJC], false)
 fi
