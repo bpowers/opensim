@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <pygobject.h>
 #include "../../opensim-simulator.h"
 
@@ -39,12 +40,12 @@ opensim_get_file (PyGObject *self, PyObject *args)
   g_object_get (G_OBJECT (sim), "file_name", &f_name, NULL);
   
   if (!f_name)
-    f_name = "stdout";
+    f_name = g_strdup ("stdout");
   
   ret = PyFile_FromFile (((PyGPointer *) input_file_object)->pointer, f_name, 
                          "w", NULL);
   
-  if (f_name != "stdout") g_free (f_name);
+  g_free (f_name);
   
   return ret;
 }
@@ -60,9 +61,11 @@ static PyMethodDef engine_module_functions[] = {
 };
 
 
-DL_EXPORT (void)
+PyMODINIT_FUNC
 initengine (void)
 {
+    fprintf (stderr, "How does this happen?!?\n");
+    fflush (stderr);
     PyObject *m, *d;
  
     init_pygobject ();
@@ -71,7 +74,6 @@ initengine (void)
     d = PyModule_GetDict (m);
  
     engine_simulator_register_classes (d);
-    //engine_variable_register_classes (d);
     engine_simulator_add_constants (m, "sim_");
  
     if (PyErr_Occurred ()) 

@@ -385,7 +385,7 @@ opensim_simulator_init (OpensimSimulator *simulator)
   self->valid_model = TRUE;
   self->var_list    = NULL;
   self->var_hash    = g_hash_table_new (g_str_hash, g_str_equal);
-  opensim_simulator_init_blank_model (simulator);
+  //opensim_simulator_init_blank_model (simulator);
   self->generator   = NULL;
   //self->generator   = 
   //        OPENSIM_GENERATOR (g_object_new (OPENSIM_TYPE_GENERATOR, NULL));
