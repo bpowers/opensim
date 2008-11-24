@@ -1,4 +1,4 @@
-EXTRA_DIST		= bootstrap examples
+EXTRA_DIST		= bootstrap examples codegen
 
 SUBDIRS 		= po lib lib/python share src icons activity mac
 
