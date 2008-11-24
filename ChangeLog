@@ -1,3 +1,755 @@
+commit 86a88f190064b0be1e7fb770dd08687c9edf8968
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 24 16:34:51 2008 -0500
+
+    [autotools] build system fixes to make (mostly) correct dists
+    
+    can now 'make dist' (again) and produce archives with all the
+    files we need
+
+commit 5170c185de003a39fd760bc38fb132d6a3bed862
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 24 00:18:55 2008 -0500
+
+    version bump and news for 0.4.8
+
+commit d82c992443327a80a1f087ed07b7f4a0f073ae8a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Nov 19 09:53:45 2008 -0500
+
+    [examples] added get_variables and reformatted
+    
+    * now there is a get_variables() call to show how to get a list
+    of all of the model variables.
+    * changed the format from a GNU C style back to python
+
+commit 2933162c6018cfdf723e6e8b7c1570a931ff74db
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 19:01:02 2008 -0500
+
+    [examples] condensed goat model
+    
+    with smaller variable circles, the goat model can be
+    more compact
+
+commit d2806d9d7bea3cc91e847ec6fcca98677bb7cd2a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 18:53:52 2008 -0500
+
+    [py-visual] connect save signal after opening existing model
+    
+    When we load a new model we create a new engine object,
+    so we need to reconnect this save signal
+
+commit 12f40be2bfc25dedc8a26ab772c1d1766b35dbf5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 18:34:36 2008 -0500
+
+    [py-visual] connect save signal after opening existing model
+    
+    When we try to save without this, we miss the visual info
+
+commit cfd3bad3d2946cf631367e45ecb5071765a0cfd2
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 18:21:23 2008 -0500
+
+    [simulator] updated debug_info to work with lists
+    
+    it had been commented out, updated it so that it works
+
+commit 129da0e2ce243ef65d1f0ecfe2730d88b3179351
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 18:08:17 2008 -0500
+
+    [simulator, io] convert ioxml and sim to use list not array
+    
+    Should have done this from the beginning, its more useful
+    I think.
+
+commit 57ff24b409527e4c7ec40080bc346468d9868c19
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 18 12:59:36 2008 -0500
+
+    [configure] define am__fastdepOBJC
+    
+    without this, bootstrap failed on linux.
+
+commit 7e7f0432af6336583007c39a01876be084417b53
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Nov 15 17:05:51 2008 -0500
+
+    [py-visual] fixed equation_editor error
+    
+    append takes a tuple, even if its only one variable
+
+commit 9b0c74f6441cdd97a8974d76e20946cd6a5ed239
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Nov 15 16:55:24 2008 -0500
+
+    [py-visuals] change variable circle from 55 to 40 px
+    
+    only a little smaller, but makes everything much more compact,
+    might need to have it based on screen size, haven't checked on
+    an XO
+
+commit f176ced503aba3fc4b8266da83f85c0f8eb594a3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Nov 15 16:53:42 2008 -0500
+
+    [py-visual] work on influence lists in equation editor
+
+commit bfa724b7210c3886c35a41b776a470b1287a89e6
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 17:21:42 2008 -0500
+
+    [py-visual] keep track of visual influences
+    
+    this is much of the basework for listing the influences
+    in the equation editor
+
+commit 498dbc5771aebb410ed2ef7063b092c02b5a0882
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 17:04:56 2008 -0500
+
+    [simulator] implemented (GList *) get_variables
+    
+    I decided to switch get_variables to return a list, but
+    didn't implement it at the time.  In an effort to get
+    working save files, I am changing that.
+
+commit fbfc4ebaead77d582374ad76cf6eeee43c81f376
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 11:41:58 2008 -0500
+
+    [opensim] remove main-nonltdl, which crept back in merge
+
+commit ca5941e22e11da5698a20322deefc0e2f3a76fde
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 11:07:00 2008 -0500
+
+    fixed remaining warnings
+    
+    the only ones left are from the generator, about
+    unused functions
+
+commit 8bf7aca474a81a7707af716ed925c3e9492e790a
+Merge: eb59312... 6edda8d...
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 10:44:41 2008 -0500
+
+    Merge branch 'faster'
+    
+    Pulled compilation fixes and such
+    
+    Conflicts:
+    	lib/opensim-simulator.cpp
+    	src/main-nonltdl.c
+
+commit eb59312675baf3b7791f33901da2533c817825bf
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 14 00:23:53 2008 -0500
+
+    [mac] have current owner own app bundle, not root
+
+commit b59604652a68117b117b0539808f5a52ea56ef9a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 13 20:39:40 2008 -0500
+
+    [py-visual] fixed initial weirdness in flows and links
+
+commit dc103b7fc1efddae0f41427c81fc29ea19f68547
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 13 20:12:25 2008 -0500
+
+    [mac] working, automated app building on the mac
+
+commit bc3d2022ed23e9706ec2d337f3b346f12df96863
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 13 19:55:40 2008 -0500
+
+    small visual cleanups
+
+commit 663f29a9379aa7cce37a91b509191395ceeb24e7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 13 19:54:46 2008 -0500
+
+    major progress on automatic mac app builds
+
+commit ea4536951d25642a937c419e338854170a23f17c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 11 03:56:03 2008 -0500
+
+    [opensim-gtk] fixes to enable running from inside app bundle
+
+commit bd2284e134ea1e037e0e8f6da3dc2b5ad6db293b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 11 00:29:00 2008 -0500
+
+    [opensim-d] rename main-nonltdl.c -> main.c (part 2)
+
+commit c7860fd1a250ca2863d92b9e8becc95f92b503d8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 11 00:16:25 2008 -0500
+
+    [opensim-d] renamed main-nonltdl.c -> main.c
+
+commit b5d439589f9e629e9369a0e921d672bc9392fa2c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 11 00:08:56 2008 -0500
+
+    [build] use Dolt in place of libtool, remove ltdl
+    
+    * Dolt is suppose to speed up compilation (Cairo uses it) by
+      reducing the libtool overhead: http://dolt.freedesktop.org/
+    * never really used the ltdl driver, its pretty unnecessary
+      (except for learning purposes).  removed it.
+
+commit d6bd803b0bc151206512e6b0824c13a866e1d326
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Nov 11 00:06:00 2008 -0500
+
+    [ioxml] replaced other trim reference
+    
+    when getting rid of our trim() function, forgot to grep for
+    all uses of it...
+
+commit 5546a969ff57cb80b1f1a4c5e547e4e911bbe5f7
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 10 20:53:41 2008 -0500
+
+    [examples] added three stock model
+    
+    Did this for Systems Ecology class, simple chain of 3 stocks
+
+commit a5fc40280010b747c763d9f74b546b929ab49551
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 10 20:43:27 2008 -0500
+
+    [ioxml] replace home-cooked trim function with glib one
+    
+    I think this was giving me problems with empty equation
+    fields.  I've meant to just use the standard one, so why
+    not switch now?
+
+commit 0d0466dc213b718143a0c9bd669869f87dc507eb
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 10 16:25:36 2008 -0500
+
+    [opensim-gtk] fixed startup crash due to rebase
+
+commit 04e398c52b2f71732f549d261df0453eeacb23e3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Nov 10 16:20:19 2008 -0500
+
+    [opensim-gtk] mac menubar integration (slightly broken)
+    
+    I'm not sure why, but all menus after File are layered on
+    top of each other.
+
+commit d1c32be5f6050cfcaf504ce192d01c8e65ba1c73
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 7 10:40:56 2008 -0500
+
+    [opensim-gtk] view toggle now switches views!
+
+commit 6fa5ecf8cf2eafa857785d0ca237984925e4867e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 7 10:15:17 2008 -0500
+
+    [opensim-gtk] moved some callback functions to after __init__
+
+commit ef64050d16302198698aa4ffebf2c6a35bb40047
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Nov 7 10:12:30 2008 -0500
+
+    [py-visual] refactored graph to have better api
+
+commit a4eb1d9ab2dcea49c14168b2ebb2ee17ad430173
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 6 13:12:54 2008 -0500
+
+    [py-engine] added newline to end of simulator.override
+
+commit 125bc178cad7aa64a177a7b6673b2eaf0dae199d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 6 13:07:19 2008 -0500
+
+    [py-visual] added graph and CairoPlot from fortran_live
+
+commit 8a5a20c787192f0c2d68bedf5198f8d135ec914b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 6 11:30:13 2008 -0500
+
+    [py-engine] fixed errors in get_variables wrapper
+
+commit 5402016d4562c4ae77e9bc4354aa18010d926a25
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Thu Nov 6 11:05:55 2008 -0500
+
+    [simulator] get_variable should return list, not array
+
+commit c80035df620ca38cdc88f8e6afe80a156c3a85a4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Nov 5 02:59:17 2008 -0500
+
+    [py-visual] fixed yellow BG on F10
+    
+    for some reason setting the bg of our goocanvas to white
+    actually turns it yellow.  just commented it out for now.
+
+commit c1a63988bc366f584ba747ffbf6825af3328fab8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 29 00:52:15 2008 -0400
+
+    [py-visual] edit_equation gets new influences parameter
+    
+    * it has a default value of None, so it should be API
+      compatable with the older implementation
+
+commit 0199c6d8a94115334dac8c1beb0729a67f4dee48
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 29 00:10:58 2008 -0400
+
+    [py-visual] completed equation editor code influence list
+
+commit ed3f910b159addea6b955afa6ba1de7f8f4bc229
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 18:53:53 2008 -0400
+
+    [py-visual] beginning of influences-list in equation editor
+
+commit 6edda8d4257324d72ea6735afd739d6d614e32ab
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 14:10:17 2008 -0400
+
+    [simulator] string constants need to be const
+    
+    * remove a compiler warning from GCC 4.3
+
+commit 4b1e3e60ba5e13b7a04c52c6eaf195603ad2a626
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 18:02:33 2008 -0400
+
+    [simulator] basic stubs for generator support
+
+commit 2d41d1a587fd7d439c4efb1a047240aa0b02c949
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 17:59:59 2008 -0400
+
+    [py-engine] compiler warning and formatting cleanup
+    
+    * removed warnings about missing a forward declaration and
+      about the const engine_mod_functions
+    * some GNU standards cleanup
+
+commit 6362c0ee0992efed78b2e982543f4a291519a265
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 17:59:14 2008 -0400
+
+    [opensim-d] compiler warning cleanup
+
+commit 0a2baf83a8d1ca980cc3a37fdf169e1d7d6f3a5a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 17:43:14 2008 -0400
+
+    [libsim] whitespace changes
+    
+    * conform (more closely) with GNU coding standards
+
+commit e8a0f4c04731a20464c93c9d3f0e638efa00f2cb
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 13:27:28 2008 -0400
+
+    clean up compiler errors
+    
+    * got rid of a lot of compiler errors that popped up with -Wall
+
+commit 4f80f621d64badc812ccd0d7c87cd00b89b6b518
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 13:14:13 2008 -0400
+
+    whitespace changes in simulator
+    
+    * conform more closely to GNU coding standards
+
+commit ab9f662e4fa920fd19ba570eadfb84fa929cfecd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 12:54:48 2008 -0400
+
+    cleanup opensim-simulator
+    
+    * several methods were being called directly instead of the
+      recommended indirection through the class's function pointer
+    * changed many of the counters to guint from int to get rid
+      of compiler warnings
+
+commit 2940a4aeaead0ab04c5aa7166044007501ebde4a
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 28 12:41:23 2008 -0400
+
+    Revert changes to simulator
+    
+    We had some crazy stack corrpution bugs (I think), so I'm
+    reverting simulator and applying the changes in smaller
+    chunks
+
+commit db96267d3eb2ac0fdbea3d7145bccf740f93f837
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 27 23:17:48 2008 -0400
+
+    woah, awesome bug
+    
+    we've got some weird offset somewhere, and are ending up calling
+    output_debug_info.  neat!
+
+commit ebc0e73785bda7922e1cd7354473114160a9793b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 27 23:04:26 2008 -0400
+
+    partial (broken) reimplementation of simulator.load
+    
+    trying to integrate generator, but failing (so far!)
+
+commit a45a23ebae8818f361310c1ae7d20825e969fc7e
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 27 20:37:39 2008 -0400
+
+    implemented generator.initalize_module
+    
+    c-based implementation of initialize_module.  switched
+    top_level_vars to a hash table, since thats how we were
+    using it anyway
+
+commit 3a8d9b41acb5e99b72bd90db38fcbe4bacc8f2a4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 27 11:19:31 2008 -0400
+
+    start of Variable.equation override (not working for unknown reason)
+    
+    it would be nice to be abe to do var.equation = ... instead of
+    var.props.equation = ...
+
+commit bd3fb5fbc787a206013e78e8288a85d0d00ba532
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 27 11:08:45 2008 -0400
+
+    check for NULL token array in opensim-variable.get_influences
+    
+    we forgot that if the equation is blank, that the token array
+    will also be NULL
+
+commit 3b50b428aace2e1ab09fcec2324bdb3314e57374
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Oct 26 00:49:46 2008 -0400
+
+    update model when variable's equation changes
+    
+    until now we weren't rebuilding the model's AST when
+    variable's equations were updated.  Fixed that by
+    registering for the 'equation_changed' callback from
+    the simulator
+
+commit 435be001b276ce497d776741e6bf76e1f91925b8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 25 15:51:05 2008 -0400
+
+    rename OS_* variables related to time to time_
+    
+    its a little more visually appealing to have time_start
+    instead of OS_start
+
+commit 8882529c8e34854c6811b262afeb5360e7a53f45
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 25 13:46:04 2008 -0400
+
+    fixed wrong initial position of cloud widget, other small cleanups
+    
+    I'm still not sure whats going on with goocanvas coordinates,
+    will look at that this afternoon.
+
+commit 292a77bfcc7195e71e74922ed45165bbfda43095
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 22 12:28:08 2008 -0400
+
+    changes to get opensim-gtk running on the mac
+    
+    I've been able to pull together opensim-gtk on the mac.
+    After some of the challenges with compiling all the needed parts
+    of the pygtk toolchain, it required some conditional imports
+    of widgets originally from sugar, and the addition of some lines
+    to the search path for icons.  oh, and the use of png icons
+    instead of svg.  not sure why that is broken.
+
+commit 063ff88a72feda262c785b25ec42ae1046739725
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Tue Oct 21 21:12:40 2008 -0400
+
+    add pngs of most of our images
+
+commit f592e92b12c0caffb27745d848a70111766de9bd
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 22:05:14 2008 -0400
+
+    updated update_opensim_libs to correctly rename engine.so
+
+commit 94c7a27d4d121c596f7b9aac1cbda997fa0f5c5f
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 21:55:21 2008 -0400
+
+    get user and group for update_opensim_libs from shell
+    
+    use to hard code the user and group, but this way is better
+
+commit 78654c21baec53b6d5fd4a347725578a4391b027
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 21:39:30 2008 -0400
+
+    update version strings to 0.4.7 and add new release notes
+
+commit 30b85681a061b9b06457e367a6c0901fa247b4c5
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 21:31:31 2008 -0400
+
+    fix segfaults on run caused by variable name cleaning
+    
+    I improperly copied strings when first trying to make sure
+    that simulator variables didn't have underscores in their names
+
+commit 650a34137226f9c6936f7f327aaf191de4a4f777
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 20:02:39 2008 -0400
+
+    fix loading of models in Model and renaming of variables
+    
+    when renaming variables from Model and python, we need
+    to convert spaces to underscores.  also we weren't
+    correctly correlating UI widgets with their simulator
+    variables.
+
+commit 1e41126da4f49f3fd18617c562a6964c407da4b0
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 14:36:39 2008 -0400
+
+    cleaned up OpensimVariable.get_influences
+    
+    * got rid of seperate influenceize function
+    * fixed tok.type comparision
+    * add reference for variables in list
+    * remove error message about not finding variable
+
+commit c65deb66c5abc58c3f0965c7dfd0458fa0438ca4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Oct 19 18:10:40 2008 -0400
+
+    implemented get_influences for variables
+    
+    need to figure out a way to silence the errors when trying to
+    get variables from the simulator.
+
+commit 990928b5b250dcc9d06457f4a8d53d861186ddef
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 10:54:20 2008 -0400
+
+    added release dates to NEWS
+
+commit 4dc905f36e581521a1f7c50f9630b66f4e02a9b9
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 10:01:44 2008 -0400
+
+    update NEWS with release notes from git tags
+
+commit 413dafada78d86e7bacbb3218d9aab8030c47cea
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 07:47:36 2008 -0400
+
+    whitespace fixes
+
+commit c8d610549ad6e1e2d89a20b4d88683f5e1a17432
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sat Oct 18 07:40:55 2008 -0400
+
+    refactored edit_equation
+    
+     * moved it out of the canvas into a function in tools
+
+commit 8896ba4c21b4fcd194ed8a429563e4a63f2db3ed
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 17 08:48:49 2008 -0400
+
+    refactored to move highlight_out widget code into inherited Item
+
+commit 06cb4c14f60413a01fdb1f8cef9b2b69e2042dc3
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 11:44:13 2008 -0400
+
+    widgets update name properly
+    
+     * fix the case where widgets get renamed; now rename in engine
+       as well
+     * untested... might be broke
+
+commit d3419fc9518e663aafb9e64dbfd5c0e1f5b76322
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 11:41:44 2008 -0400
+
+    cleaned up and fixed variable creation from UI
+    
+     * has been broken since switch to gobject.
+     * each visual object which corresponds to a variable now keeps
+     * track of the gobject variable (should greatly simplify things)
+
+commit b1b0c6e9c31a33d1839cd8706cdee7a4468ed44b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 11:35:39 2008 -0400
+
+    update python example to reflect cleaner new_variable api
+
+commit d6e84000b7fc8d63e544f47793192c01a6e12099
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 11:32:32 2008 -0400
+
+    API change: simulator.new_variable returns reference to new variable
+    
+     * this makes the python a little cleaner and makes sense I think
+
+commit 1e66b3c66fbcfd8421616c3e816095ccea2cb130
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 17:36:45 2008 -0400
+
+    fixed whitespace in python example
+
+commit 6fa20fe0dadb72d1111d41d984f64880dc17d5f8
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 17:24:56 2008 -0400
+
+    check for null token array in SimBuilder
+    
+     * we were getting bus errors/seg faults because with an empty
+       string get_tokens returns NULL - check for that
+
+commit 2a0ed526a624fbb5109fa7dcdf147e821fb0a314
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 07:18:45 2008 -0400
+
+    implemented OpensimVariable's equation_changed signal
+    
+     * emitted when the equation is changed and provides the old
+       equation so that we can do things like check if any new
+       variables are referenced (important for reordering the
+       simulation)
+
+commit a735587932dbed3d86c61ce5c93eb7c5e66544ec
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Wed Oct 15 07:17:34 2008 -0400
+
+    renamed signal-related vars in opensim-simulator.cpp
+    
+     * wanted to make clear the namespace and scope of the vars
+
+commit 294b69cd116e27766e399bb8f690b5b9148aa71b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 13 22:15:23 2008 -0400
+
+    version bump to 0.4.6
+
+commit 49e812751d9fe95dcd20cb820b70e698d8a1dc20
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 13 22:12:32 2008 -0400
+
+    working simulator.get_variable (var_name)
+    
+     * no need to override the function, just write both defs to the
+       same scheme file.  voila!
+
+commit 09b4684cca4ccfcebc630bceccb718d8f0cd563d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 13 22:04:00 2008 -0400
+
+    'eqn' should be 'equation' in python get_variable override
+    
+     * mistyped the property name at first
+
+commit db6856b87b4157854f3ec56cd718d593b2e648da
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 13 21:31:01 2008 -0400
+
+    implemented opensim_simulator_get_variable
+    
+     * complete implementation with error checking.  will have to
+       change when we c-ify the simulator, but for now is good.
+
+commit c763ec6187c56a237cf56ba0aa1f48d4ffea78b4
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Mon Oct 13 20:50:07 2008 -0400
+
+    simulator.get_variable python wrapper stub & update python example
+    
+     * stubbed out get_variable, although the C get_variable function
+       isn't actually implemented yet
+     * updated python example to test get_variable
+
+commit 0d8b6e48a67aa446fb319b56c079e184e5675a43
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Oct 12 23:27:24 2008 -0400
+
+    disable creating new variable in engine for now
+    
+     * caused a segfault, probably because it was an empty string for
+       the equation
+
+commit 8089131c771a29ffc2efb71d353ee547a1d2237c
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Oct 12 21:49:17 2008 -0400
+
+    fixed artifacts while drawing link arrowheads
+    
+     * we had to expand the bounding box for links, since the arrowheads
+       are wider than the existing bounding box when the links are
+       close to vertical or horizontal
+
+commit ea5234e44a477c09529e394df41580a3473bae7b
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 10 17:27:24 2008 -0400
+
+    update canvas's addition of new variables to the model
+    
+     * the python api for interacting with the simulator changed with
+       the switch from swig -> gobject for generating the bindings,
+       I'm just now getting around to updating the UI
+
+commit ae83a603971aceffd367a552baa3d96ff30274d0
+Author: Bobby Powers <bobby@vyse.(none)>
+Date:   Sun Oct 12 19:11:13 2008 -0400
+
+    working arrowheads for links
+    
+     * this isn't the ideal solution; most code in link.py is copied from
+       flow.py, and link and variable both have code copied almost verbatum
+       from cloud.  Cleanliness could be gained from refactoring
+
+commit 8ed857a860eeeea36e0fea715b2fb7b4ff6a1c2f
+Author: Bobby Powers <bobby@vyse.(none)>
+Date:   Fri Oct 10 17:26:51 2008 -0400
+
+    Revert "raise flows while we develop arrows"
+    
+    This reverts commit 3a4ebc9f26ef92fb2a07d3b67ab092ac9ad6c8a9.
+
+commit ab778deeea5168e3b1bcb3b2babcb521f12f9995
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Sun Oct 12 16:48:04 2008 -0400
+
+    flows have nice, correct arrowheads
+    
+     * completed arrowhead implementation
+     * incomplete commit(?) left arrows only partly drawn, FIXED
+
+commit 1f7ebf86f92f0e4e84b20d50e364ba259aeb688d
+Author: Bobby Powers <bobby@laptop.org>
+Date:   Fri Oct 10 20:29:33 2008 +0000
+
+    export git log as ChangeLog
+
 commit 9273122790b6e8369799cab6973f2c795c1704a7
 Author: Bobby Powers <bobby@laptop.org>
 Date:   Fri Oct 10 19:33:03 2008 +0000
