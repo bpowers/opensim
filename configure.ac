@@ -11,7 +11,6 @@ AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC_C99
 
 # Check if we're on the mac.
