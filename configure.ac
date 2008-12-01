@@ -42,13 +42,17 @@ AM_PATH_PYTHON([2.5])
 if test -z "$PYTHON" ; then
   AC_MSG_WARN([Python not found])
 else
-  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+  AM_CHECK_PYTHON_HEADERS(have_py_headers=yes,have_py_headers=no)
 
-  PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
-  AC_SUBST(PYGOBJ_CFLAGS)
-  AC_SUBST(PYGOBJ_LIBS)
+  if test x$have_py_heaers = xyes; then
+    PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
+    AC_SUBST(PYGOBJ_CFLAGS)
+    AC_SUBST(PYGOBJ_LIBS)
 
-  have_python=yes
+    have_python=yes
+  else
+    AC_MSG_WARN(could not find Python headers)
+  fi
 fi
 
 
