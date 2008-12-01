@@ -29,21 +29,13 @@
 #define __OPENSIM_AST_H__
 
 #include <glib.h>
+#include "../opensim-simulator.h"
 
+G_BEGIN_DECLS
 
 // there is prolly a safer way to do this...
-#define cast_node(type, node) (type *) node
+#define CAST_NODE(type, node) ((type *) node)
 
-
-typedef struct _ast_context ast_context;
-struct _ast_context
-{
-  GHash *     var_hash;
-  GHash *     val_hash;
-  ast_scope  *ast;
-  
-  bool      (* codegen) (ast_context ctx);
-}
 
 
 typedef enum _opcode opcode;
@@ -64,8 +56,8 @@ enum _opcode
   op_ne,
   op_and,
   op_or,
-  op_assign
-}
+  op_assign,
+};
 
 
 typedef enum _node_type node_type;
@@ -80,13 +72,13 @@ enum _node_type
   node_loop,
   node_const,  // leaf node
   node_call,
-  node_iden    // leaf node
-}
+  node_iden,   // leaf node
+};
 
 
 // for use as flags, thats why we bitshift
-typedef enum _attribute attribute;
-enum _attribute
+typedef enum _attributes attributes;
+enum _attributes
 {
   attr_model   = 1 << 1,
   attr_sketch  = 1 << 2,
@@ -102,7 +94,7 @@ enum _attribute
   attr_rk4auto = 1 << 12,
   attr_do      = 1 << 13,
   attr_for     = 1 << 14
-}
+};
 
 
 // used to box return values of expressions
@@ -111,7 +103,7 @@ enum _var_kind
 {
   kind_real,
   kind_bool
-}
+};
 
 
 typedef struct _type type;
@@ -121,10 +113,10 @@ struct _type
   
   union
   {
-    gbool  boolean;
-    double real;
-  }
-}
+    gboolean boolean;
+    double   real;
+  };
+};
 
 
 
@@ -145,7 +137,7 @@ struct _ast_node
   attributes        attrs;
   
   gchar *           identifier;
-}
+};
 
 
 struct _ast_list
@@ -155,7 +147,7 @@ struct _ast_list
   
   gchar *           identifier;
   GList *           nodes;
-}
+};
 
 
 struct _ast_scope
@@ -170,8 +162,8 @@ struct _ast_scope
   {
     OpensimSimulator *sim;
     // in the future will put sketch here
-  }
-}
+  };
+};
 
 
 struct _ast_expr
@@ -184,7 +176,7 @@ struct _ast_expr
   opcode              op;
   ast_expr *          lvar;
   ast_expr *          rvar;
-}
+};
 
 
 struct _ast_leaf
@@ -197,10 +189,10 @@ struct _ast_leaf
   union 
   {
     double            val_real; // for normal real numbers
-    gbool             val_bool; // for boolean logic
+    gboolean          val_bool; // for boolean logic
     OpensimVariable * val_var;  // for var identifiers
-  }
-}
+  };
+};
 
 
 struct _ast_call
@@ -211,7 +203,7 @@ struct _ast_call
   gchar *             identifier;
   
   GList *             val_args; // for function calls
-}
+};
 
 
 struct _ast_if
@@ -224,7 +216,7 @@ struct _ast_if
   ast_expr *          cond_statement;
   ast_expr *          then_statement;
   ast_expr *          else_statement;
-}
+};
 
 
 struct _ast_unary
@@ -236,7 +228,7 @@ struct _ast_unary
   
   opcode              op;
   ast_node *          lvar;
-}
+};
 
 
 struct _ast_loop
@@ -248,8 +240,21 @@ struct _ast_loop
   
   GList *             loop_args;
   ast_list *          body;
-}
+};
 
 
+
+typedef struct _ast_context ast_context;
+struct _ast_context
+{
+  GHashTable *     var_hash;
+  GHashTable *     val_hash;
+  ast_scope  *     ast;
+  
+  gboolean      (* codegen) (ast_context ctx);
+};
+
+
+G_END_DECLS
 
 #endif /* __OPENSIM_AST_H__ */
