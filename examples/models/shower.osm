@@ -128,12 +128,12 @@
     </flow>
     <flow>
       <name>change in hose temperature</name>
-      <x1>294</x1>
-      <y1>283</y1>
-      <x2>469</x2>
-      <y2>284</y2>
-      <start>temperature in shower hose</start>
-      <end>cloud</end>
+      <x2>294</x2>
+      <y2>283</y2>
+      <x1>469</x1>
+      <y1>284</y1>
+      <end>temperature in shower hose</end>
+      <start>cloud</start>
     </flow>
     <var>
       <name>travel time</name>
