@@ -94,8 +94,8 @@ class Simulator(gobject.GObject):
 
   def __initialize_time(self):
     '''
-    If this model isn't being loaded from a file, we should 
-    initialize the time constants to sane defaults, as 
+    If this model isn't being loaded from a file, we should
+    initialize the time constants to sane defaults, as
     specified in the constants file.  We return true if it
     was a success, and false if there are already existing
     variables.

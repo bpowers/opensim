@@ -80,6 +80,8 @@ class Variable(gobject.GObject):
                           (gobject.TYPE_OBJECT,))
   }
 
+  __tokens = None
+
 
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
@@ -103,6 +105,20 @@ class Variable(gobject.GObject):
     log.debug('created new variable "%s"' % self.name)
 
 
+  def get_property(self, pname):
+    '''
+    Override of gobject's get_property so that we can do nifty stuff
+    like the lazy evaluation of the equation when we want the variable
+    type or tokens.
+    '''
+
+    if pname == 'type':
+      logging.debug('asking for type! (%s)' % self.name)
+      return STOCK
+    else:
+      return super(Variable, self).get_property(pname)
+
+
   def get_influences(self):
     log.debug('get_influences stub')
     return []
@@ -112,6 +128,30 @@ class Variable(gobject.GObject):
     log.debug('get_tokens stub')
 
 
-
 gobject.type_register(Variable)
+
+
+
+def name_for_type(var_type):
+  '''
+  A nice helper function to return the string of the
+  variable type (mostly for debugging purposes I assume)
+  '''
+
+  if var_type < 0 and var_type > 5:
+    log.error('variable is out of range!')
+    return ''
+
+  if var_type is STOCK:
+    return 'stock'
+  elif var_type is FLOW:
+    return 'flow'
+  elif var_type is AUX:
+    return 'auxilliary'
+  elif var_type is CONST:
+    return 'constant'
+  elif var_type is LOOKUP:
+    return 'lookup'
+  else:
+    return 'undefined'
 
