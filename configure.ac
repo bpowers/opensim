@@ -95,7 +95,8 @@ AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
                  lib/python/visuals/widgets/Makefile po/Makefile.in \
                  lib/python/engine/Makefile share/Makefile activity/Makefile \
                  activity/activity/Makefile activity/icons/Makefile \
-                 activity/lib/Makefile activity/site-packages/Makefile],
+                 activity/lib/Makefile activity/site-packages/Makefile \
+                 lib/python/ng/Makefile],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h.in])
 
 

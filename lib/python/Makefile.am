@@ -1,4 +1,4 @@
-SUBDIRS = visuals engine
+SUBDIRS = ng
 
 if HAVE_PYTHON
 pkgpython_PYTHON = __init__.py
