@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+import logging
 import opensim.ng as engine
+
+LOG_FORMAT = '%(levelname)s: %(message)s'
 
 
 # callback for when an equation changes
@@ -49,7 +52,7 @@ def run():
   
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
-  sim.output_type =  engine.emit_python
+  sim.output_type =  engine.EMIT_PYTHON
   #sim.run()
   #sim.output_debug_info()
   
@@ -63,5 +66,6 @@ def run():
 
 # run if we're the main module
 if __name__ == '__main__':
+  logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
   run()
 

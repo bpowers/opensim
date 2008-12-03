@@ -33,11 +33,11 @@ import logging as log
 
 
 # constants for the type of output we want
-emit_ir      = 1
-emit_python  = 2
-emit_fortran = 3
-emit_output  = 4
-emit_as3     = 5
+EMIT_IR      = 1
+EMIT_PYTHON  = 2
+EMIT_FORTRAN = 3
+EMIT_OUTPUT  = 4
+EMIT_AS3     = 5
 
 
 class Simulator(gobject.GObject):
