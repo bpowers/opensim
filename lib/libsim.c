@@ -74,14 +74,14 @@ my_fini (void)
 #endif
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_load_model (const char *file_name)
 {
   return opensim_simulator_load (gsim, (gchar *)file_name);
 }
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_save_model ()
 {
   return opensim_simulator_save (gsim);
@@ -89,7 +89,7 @@ opensim_save_model ()
 
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_set_output_type (int output_type)
 {
   if (!gsim) return -1;
@@ -101,7 +101,7 @@ opensim_set_output_type (int output_type)
 
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_set_output_file (const char *file_name)
 {
   if (!gsim) return -1;
@@ -113,10 +113,11 @@ opensim_set_output_file (const char *file_name)
 
 
 
-extern "C" int WIN_DLL
+int WIN_DLL
 opensim_simulate ()
 {
   if (gsim) return opensim_simulator_run (gsim);
   
   return -1;
 }
+

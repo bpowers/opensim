@@ -6,6 +6,7 @@ AC_INIT([OpenSim], [0.4.7], [bugs@opensimproject.org])
 AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 
