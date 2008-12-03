@@ -1,4 +1,4 @@
-#===--- Simulator.py - OpenSim simulation engine -------------------------===#
+#===--- simulator.py - OpenSim simulation engine -------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -33,15 +33,7 @@ import logging as log
 
 # opensim variables...
 from variable import Variable
-
-
-# constants for the type of output we want
-EMIT_IR      = 1
-EMIT_PYTHON  = 2
-EMIT_FORTRAN = 3
-EMIT_OUTPUT  = 4
-EMIT_AS3     = 5
-
+from constants import *
 
 class Simulator(gobject.GObject):
 

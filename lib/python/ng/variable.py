@@ -31,14 +31,7 @@ import gobject
 from gettext import gettext as _
 import logging as log
 
-
-# types the variable can be
-STOCK  = 1
-AUX    = 2
-LOOKUP = 3
-CONST  = 4
-UNDEF  = 0
-
+from constants import *
 
 class Variable(gobject.GObject):
 
