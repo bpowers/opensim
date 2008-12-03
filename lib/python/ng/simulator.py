@@ -78,20 +78,63 @@ class Simulator(gobject.GObject):
 
 
 
-  def __init__(self, model_name=None, **kwargs):
+  def __init__(self, model_name=None, file_name=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
 
     if model_name:
       self.model_name = model_name
 
+    if file_name:
+      self.load(file_name)
+    else:
+      self.__initialize_time()
+
     log.debug('created new simulator "%s"' % self.model_name)
+
+
+  def __initialize_time(self):
+    '''
+    If this model isn't being loaded from a file, we should 
+    initialize the time constants to sane defaults, as 
+    specified in the constants file.  We return true if it
+    was a success, and false if there are already existing
+    variables.
+    '''
+
+    if len(self.__vars_list) is not 0:
+      log.error('we can only initialize time on new models')
+      return False
+
+    self.new_variable('time_start', INITIAL_TIME_START)
+    self.new_variable('time_end', INITIAL_TIME_END)
+    self.new_variable('time_step', INITIAL_TIME_STEP)
+    self.new_variable('time_savestep', INITIAL_TIME_SAVESTEP)
+
+    return True
+
+
+  def __clean_model(self):
+    '''
+    When we load models, we want to be sure we clean the existing
+    variables and structure out, so that we're starting pristine.
+    '''
+
+    var_dict = self.__vars
+    var_list = self.__vars_list
+
+    self.__vars = {}
+    self.__vars_list = []
+
+    del var_dict
+    del var_list
 
 
   def run(self):
     log.debug('run stub')
 
 
-  def load(self, model_path):
+  def load(self, model_path=None):
+    self.file_name = file_name
     log.debug('load stub')
 
 
@@ -170,8 +213,10 @@ class Simulator(gobject.GObject):
 
     del self.__vars[var_name]
     self.__vars_list.remove(var)
-    var.parent = None
 
+    # delete it so we're sure its not holding on to a reference
+    # to the simulator.  i think it pays to be explicit here.
+    del var
 
 
 gobject.type_register(Simulator)

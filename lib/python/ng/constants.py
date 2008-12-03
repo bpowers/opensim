@@ -24,18 +24,26 @@
 #
 #===----------------------------------------------------------------------===#
 
+
 # constants for the type of output we want
-EMIT_IR      = 1
-EMIT_PYTHON  = 2
-EMIT_FORTRAN = 3
-EMIT_OUTPUT  = 4
-EMIT_AS3     = 5
+EMIT_IR               = 1
+EMIT_PYTHON           = 2
+EMIT_FORTRAN          = 3
+EMIT_OUTPUT           = 4
+EMIT_AS3              = 5
 
 
-# types the variable can be
-STOCK  = 1
-AUX    = 2
-LOOKUP = 3
-CONST  = 4
-UNDEF  = 0
+# fundamental variable types
+STOCK                 = 1
+AUX                   = 2
+LOOKUP                = 3
+CONST                 = 4
+UNDEF                 = 0
+
+
+# inital values for time variables
+INITIAL_TIME_START    = 1.0
+INITIAL_TIME_END      = 100.0
+INITIAL_TIME_STEP     = .125
+INITIAL_TIME_SAVESTEP = 1.0
 

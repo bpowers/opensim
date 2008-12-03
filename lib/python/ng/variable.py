@@ -94,10 +94,11 @@ class Variable(gobject.GObject):
 
     self.parent = parent
     self.name = name
-    # it should simplify things if we guaruntee a non-None equation
+
+    # it should simplify things if we guaruntee a non-None, str equation
     if not equation:
       equation = ''
-    self.equation = equation
+    self.equation = str(equation)
 
     log.debug('created new variable "%s"' % self.name)
 
