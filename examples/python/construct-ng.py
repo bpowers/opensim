@@ -34,13 +34,13 @@ def run():
   sim.new_variable('lookup', '[(0,2),(50,40),(80,56)]')
   sim.new_variable('test', 'lookup[time]')
   sim.new_variable('another factor', 'weird*2')
-  test = sim.new_variable(None)
+  test = sim.new_variable('other test')
   
   if test is not None:
     test.connect('equation_changed', equation_checker)
     test.equation = 'lookup[time] * another_factor'
 
-    print "%s's influences" % test.name
+    print "%s's influences:" % test.name
     for v in test.get_influences():
       print "  %s" % v.name
 

@@ -46,7 +46,7 @@ class Variable(gobject.GObject):
     'name' :       (gobject.TYPE_STRING,             # object type
                           _('variable name'),        # nickname
                           _('name of the variable'), # description
-                          None,        # default
+                          None,                      # default
                           gobject.PARAM_READWRITE),  # flags
     'equation' :        (gobject.TYPE_STRING,
                           _('equation'),
@@ -86,6 +86,7 @@ class Variable(gobject.GObject):
                           gobject.TYPE_NONE,
                           (gobject.TYPE_OBJECT,))
   }
+
 
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)

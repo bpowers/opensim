@@ -82,6 +82,7 @@ class Simulator(gobject.GObject):
   }
 
   __vars = {}
+  __vars_list = []
 
 
 
@@ -119,18 +120,19 @@ class Simulator(gobject.GObject):
       raise ValueError
 
     # make sure it is actually new
-    if self__vars.has_key(var_name):
+    if self.__vars.has_key(var_name):
       log.error('new variable already exists')
-      return
+      return None
 
     new_var = Variable(self, var_name, var_eqn)
 
     if not new_var:
       log.error('couldn\'t create new variable')
-      return
+      return None
 
     # keep track of the new variable
     self.__vars[var_name] = new_var
+    self.__vars_list.append(new_var)
 
     log.debug('added new variable "%s" (%s) to simulation' %
               (new_var.name, new_var.equation))
@@ -139,15 +141,44 @@ class Simulator(gobject.GObject):
 
 
   def get_variable(self, var_name):
-    log.debug('get_variable stub')
+    '''
+    Get a reference to a variable from the current model.
+    '''
+
+    if not self.__vars.has_key(var_name):
+      log.error('tried to get non-existant variable "%s"' % var_name)
+      return None
+
+    return self.__vars[var_name]
 
 
   def get_variables(self):
-    log.debug('get_variables stub')
+    '''
+    Get a list of all of the variables in the model.
+    '''
+
+    # return a copy, so they can mutate it or do whatever
+    return list(self.__vars_list)
 
 
   def remove_variable(self, var_name):
-    log.debug('remove_variable')
+    '''
+    Remove a variable from the model, returning True if successful,
+    false if not.
+    '''
+
+    if not self.__vars.contains_key(var_name):
+      log.error('tried to get non-existant variable "%s"' % var_name)
+      return False
+
+    # keep track of the variable so that after we remove it from
+    # the dictionary we can remove it from the list and clear its
+    # reference to the simulator
+    var = self.__vars[var_name]
+
+    del self.__vars[var_name]
+    self.__vars_list.remove(var)
+    var.parent = None
 
 
 
