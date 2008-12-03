@@ -7,9 +7,3 @@ EXTRA_DIST              = opensim opensim-gtk opensim-main.glade
 
 bin_SCRIPTS             = opensim opensim-gtk
 pkgdata_DATA            = opensim-main.glade
-
-bin_PROGRAMS            = opensim-d
-
-opensim_d_SOURCES       = main.c
-opensim_d_LDADD         = $(top_builddir)/lib/libsim.la
-

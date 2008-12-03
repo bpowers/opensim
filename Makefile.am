@@ -1,6 +1,6 @@
 EXTRA_DIST		= bootstrap examples
 
-SUBDIRS 		= po lib lib/python share src icons activity mac
+SUBDIRS 		= lib/python src
 
 MAINTAINERCLEANFILES 	= Makefile.in aclocal.m4 configure \
 			  config-h.in stamp-h.in stamp-h1

@@ -85,8 +85,8 @@ OPENSIM_XML2_SETFLAGS
 AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
 
 
-AM_GNU_GETTEXT_VERSION([0.16])
-AM_GNU_GETTEXT([external])
+# AM_GNU_GETTEXT_VERSION([0.16])
+# AM_GNU_GETTEXT([external])
 
 
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
