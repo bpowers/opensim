@@ -22,3 +22,6 @@
 # This file contains some initialization needed for the Python modules
 #
 #===-----------------------------------------------------------------------===#
+
+from simulator import *
+

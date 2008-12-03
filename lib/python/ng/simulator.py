@@ -24,8 +24,11 @@
 #
 #===----------------------------------------------------------------------===#
 
+import pygtk
+pygtk.require("2.0")
+
 import gobject
-import gettext as _
+from gettext import gettext as _
 import logging as log
 
 
@@ -40,45 +43,42 @@ emit_as3     = 5
 class Simulator(gobject.GObject):
 
   __gproperties__ = {
-    'model_name' :       (gobject.TYPE_STRING,                  # object type
-                          _('model name'),                      # nickname
-                          _('the common name of the simulator') # description
-                          None,                                 # minimum
-                          None,                                 # maximum
-                          _('unnamed model'),                   # default
-                          gobject.PARAM_READWRITE)              # flags
+    'model_name' :       (gobject.TYPE_STRING,                   # object type
+                          _('model name'),                       # nickname
+                          _('the common name of the simulator'), # description
+                          _('unnamed model'),                    # default
+                          gobject.PARAM_READWRITE),              # flags
     'file_name' :        (gobject.TYPE_STRING,
                           _('file name'),
-                          _('the path to the model file')
+                          _('the path to the model file'),
                           None,
-                          None,
-                          None,
-                          gobject.PARAM_READWRITE)
+                          gobject.PARAM_READWRITE),
     'output_type' :      (gobject.TYPE_INT,
                           _('output type'),
-                          _('type of output we\'re interested in')
+                          _('type of output we\'re interested in'),
                           1,
                           5,
                           4,
-                          gobject.PARAM_READWRITE)
+                          gobject.PARAM_READWRITE),
     'output_file_name' : (gobject.TYPE_STRING,
                           _('output file name'),
-                          _('the path to the output file')
+                          _('the path to the output file'),
                           None,
-                          None,
-                          None,
-                          gobject.PARAM_READWRITE)
+                          gobject.PARAM_READWRITE),
     'valid_model' :      (gobject.TYPE_BOOLEAN,
                           _('valid model'),
-                          _('True if model can be simulated as is')
-                          None,
-                          None,
+                          _('True if model can be simulated as is'),
                           False,
                           gobject.PARAM_READWRITE)
   }
 
+  __gsignals__ = {
+    'saving' :           (gobject.SIGNAL_RUN_FIRST,
+                          gobject.TYPE_NONE,
+                          (gobject.TYPE_OBJECT,))
+  }
 
-  __init__(self, **kwargs):
+  def __init__(self, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
     log.debug('created new simulator')
 
