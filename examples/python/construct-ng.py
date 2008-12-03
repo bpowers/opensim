@@ -34,7 +34,7 @@ def run():
   sim.new_variable('lookup', '[(0,2),(50,40),(80,56)]')
   sim.new_variable('test', 'lookup[time]')
   sim.new_variable('another factor', 'weird*2')
-  test = sim.new_variable('blank', '')
+  test = sim.new_variable(None)
   
   if test is not None:
     test.connect('equation_changed', equation_checker)

@@ -90,12 +90,19 @@ class Variable(gobject.GObject):
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
 
-    if not parent or not name:
-      logging.Error('missing required arguments')
+    if not parent:
+      logging.error('missing parent simulator')
+      raise ValueError
+
+    if not name or name == '':
+      logging.error('missing name for variable')
       raise ValueError
 
     self.parent = parent
     self.name = name
+    # it should simplify things if we guaruntee a non-None equation
+    if not equation:
+      equation = ''
     self.equation = equation
 
     log.debug('created new variable "%s"' % self.name)

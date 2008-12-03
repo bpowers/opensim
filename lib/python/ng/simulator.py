@@ -108,18 +108,32 @@ class Simulator(gobject.GObject):
 
   def new_variable(self, var_name, var_eqn=None):
     '''
-    Creates a new variable as part of the current model.
+    Creates a new variable as part of the current model. This is the
+    only safe way to create a new variable; they should not be created
+    on their own and 'added' to the model somehow.
     '''
-    log.debug('new_variable stub')
 
-    if not var_name:
-      log.Error('variables need a name at least')
+    # validate input; it doesn't make sense to have an unnamed variable
+    if not var_name or var_name == '':
+      log.error('variables need a name at least')
       raise ValueError
 
+    # make sure it is actually new
+    if self__vars.has_key(var_name):
+      log.error('new variable already exists')
+      return
+
     new_var = Variable(self, var_name, var_eqn)
+
+    if not new_var:
+      log.error('couldn\'t create new variable')
+      return
+
+    # keep track of the new variable
     self.__vars[var_name] = new_var
 
-    log.debug('added new variable "%s"' % new_var.name)
+    log.debug('added new variable "%s" (%s) to simulation' %
+              (new_var.name, new_var.equation))
 
     return new_var
 
