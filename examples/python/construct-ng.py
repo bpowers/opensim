@@ -17,12 +17,12 @@ def equation_checker(var, old_equation):
 def save_extra(sim, save_file):
 
   save_file.write("\n<more_info>\n")
-  save_file.write("  oh so sweet metadata for %s\n" % sim.props.model_name)
+  save_file.write("  oh so sweet metadata for %s\n" % sim.model_name)
   save_file.write("</more_info>\n")
 
 
 def run():
-  sim = engine.Simulator()
+  sim = engine.Simulator('sweet example')
   
   # set control variables
   save_step = sim.get_variable('time_savestep')
@@ -38,17 +38,17 @@ def run():
   
   if test is not None:
     test.connect('equation_changed', equation_checker)
-    test.props.equation = 'lookup[time] * another_factor'
+    test.equation = 'lookup[time] * another_factor'
 
-    print "%s's influences" % test.props.name
+    print "%s's influences" % test.name
     for v in test.get_influences():
-      print "  %s" % v.props.name
+      print "  %s" % v.name
 
   variables = sim.get_variables()
   if variables:
     print "\nmodel's variables:"
     for v in sim.get_variables():
-      print "  %s" % v.props.name
+      print "  %s" % v.name
   
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.

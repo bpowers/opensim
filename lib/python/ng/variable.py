@@ -87,9 +87,18 @@ class Variable(gobject.GObject):
                           (gobject.TYPE_OBJECT,))
   }
 
-  def __init__(self, parent, **kwargs):
+  def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
-    log.debug('created new variable')
+
+    if not parent or not name:
+      logging.Error('missing required arguments')
+      raise ValueError
+
+    self.parent = parent
+    self.name = name
+    self.equation = equation
+
+    log.debug('created new variable "%s"' % self.name)
 
 
   def get_influences(self):

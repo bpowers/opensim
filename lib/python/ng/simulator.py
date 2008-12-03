@@ -31,6 +31,9 @@ import gobject
 from gettext import gettext as _
 import logging as log
 
+# opensim variables...
+from variable import Variable
+
 
 # constants for the type of output we want
 EMIT_IR      = 1
@@ -78,9 +81,17 @@ class Simulator(gobject.GObject):
                           (gobject.TYPE_OBJECT,))
   }
 
-  def __init__(self, **kwargs):
+  __vars = {}
+
+
+
+  def __init__(self, model_name=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
-    log.debug('created new simulator')
+
+    if model_name:
+      self.model_name = model_name
+
+    log.debug('created new simulator "%s"' % self.model_name)
 
 
   def run(self):
@@ -96,7 +107,21 @@ class Simulator(gobject.GObject):
 
 
   def new_variable(self, var_name, var_eqn=None):
+    '''
+    Creates a new variable as part of the current model.
+    '''
     log.debug('new_variable stub')
+
+    if not var_name:
+      log.Error('variables need a name at least')
+      raise ValueError
+
+    new_var = Variable(self, var_name, var_eqn)
+    self.__vars[var_name] = new_var
+
+    log.debug('added new variable "%s"' % new_var.name)
+
+    return new_var
 
 
   def get_variable(self, var_name):
