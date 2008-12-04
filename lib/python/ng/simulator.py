@@ -161,13 +161,28 @@ class Simulator(gobject.GObject):
       value = ''
 
     if prop.name == 'model-name':
+      if type(value) is not str:
+        raise AttributeError('model name is a string, not %s' % type(value))
       self.__model_name = value
+
     elif prop.name == 'file-name':
+      if type(value) is not str:
+        raise AttributeError('file name is a string, not %s' % type(value))
       self.__file_name = value
+
     elif prop.name == 'output-type':
+      if type(value) is not int:
+        raise AttributeError('output type is an int, not %s' % type(value))
+      elif value < EMIT_RANGE_MIN or value > EMIT_RANGE_MAX:
+        raise AttributeError('output type out of range with %d' % value)
       self.__output_type = value
+
     elif prop.name == 'output-file-name':
+      if type(value) is not str:
+        raise AttributeError('output file name is a string, not %s' % 
+                             type(value))
       self.__output_file_name = value
+
     else:
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 

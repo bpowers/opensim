@@ -143,15 +143,39 @@ class Variable(gobject.GObject):
       value = ''
 
     if prop.name == 'name':
+      if type(value) is not str:
+        raise AttributeError('names must be string, not %s' % type(value))
+      value = value.strip()
+      if value is '':
+        raise AttributeError('variable names can\'t be blank')
       self.__name = value
+
     elif prop.name == 'equation':
+      # accept ints or floats for the value as well, but cast them to 
+      # strings, so that we can always count on having string values
+      if type(value) is int or type(value) is float:
+        value = str(value)
+      elif type(value) is not str:
+        raise AttributeError('equations must be strings or numbers, not %s' %
+                             type(value))
       old_equation = self.__equation
-      self.__equation = value
-      self.emit('equation_changed', old_equation)
+
+      if old_equation != value:
+        self.__equation = value
+        self.__tokens = None
+        self.emit('equation_changed', old_equation)
+
     elif prop.name == 'units':
+      if type(value) is not str:
+        raise AttributeError('units must be string, not %s' % type(value))
+      value = value.strip()
       self.__units = value
+
     elif prop.name == 'comments':
+      if type(value) is not str:
+        raise AttributeError('comments must be string, not %s' % type(value))
       self.__comments = value
+
     else:
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 

@@ -32,14 +32,20 @@ EMIT_FORTRAN          = 3
 EMIT_OUTPUT           = 4
 EMIT_AS3              = 5
 
+EMIT_RANGE_MIN        = EMIT_IR
+EMIT_RANGE_MAX        = EMIT_AS3
+
 
 # fundamental variable types
+UNDEF                 = 0
 STOCK                 = 1
 AUX                   = 2
 LOOKUP                = 3
 CONST                 = 4
 FLOW                  = 5
-UNDEF                 = 0
+
+TYPE_MIN              = UNDEF
+TYPE_MAX              = FLOW
 
 
 # inital values for time variables
