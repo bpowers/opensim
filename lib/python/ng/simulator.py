@@ -76,6 +76,12 @@ class Simulator(gobject.GObject):
   __vars = {}
   __vars_list = []
 
+  __model_name = ''
+  __file_name = ''
+  __output_type = 4
+  __output_file_name = ''
+  __valid_model = False
+
 
 
   def __init__(self, model_name=None, file_name=None, **kwargs):
@@ -88,8 +94,6 @@ class Simulator(gobject.GObject):
       self.load(file_name)
     else:
       self.__initialize_time()
-
-    log.debug('created new simulator "%s"' % self.props.model_name)
 
 
   def __initialize_time(self):
@@ -127,6 +131,45 @@ class Simulator(gobject.GObject):
 
     del var_dict
     del var_list
+
+
+  def do_get_property(self, prop):
+    '''
+    standart gobject getter.
+    '''
+
+    if prop.name == 'model-name':
+      return self.__model_name
+    elif prop.name == 'file-name':
+      return self.__file_name
+    elif prop.name == 'output-type':
+      return self.__output_type
+    elif prop.name == 'output-file-name':
+      return self.__output_file_name
+    elif prop.name == 'valid':
+      return self.__valid
+    else:
+      raise AttributeError('unknown prop: "%s"' % prop.name)
+
+
+  def do_set_property(self, prop,value):
+    '''
+    standart gobject setter.
+    '''
+
+    if not value:
+      value = ''
+
+    if prop.name == 'model-name':
+      self.__model_name = value
+    elif prop.name == 'file-name':
+      self.__file_name = value
+    elif prop.name == 'output-type':
+      self.__output_type = value
+    elif prop.name == 'output-file-name':
+      self.__output_file_name = value
+    else:
+      raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 
 
   def run(self):
@@ -168,9 +211,6 @@ class Simulator(gobject.GObject):
     # keep track of the new variable
     self.__vars[var_name] = new_var
     self.__vars_list.append(new_var)
-
-    log.debug('added new variable "%s" (%s) to simulation' %
-              (new_var.props.name, new_var.props.equation))
 
     return new_var
 

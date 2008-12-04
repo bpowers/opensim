@@ -110,8 +110,6 @@ class Variable(gobject.GObject):
       equation = ''
     self.props.equation = str(equation)
 
-    log.debug('created new variable "%s"' % self.props.name)
-
 
   def do_get_property(self, prop):
     '''
