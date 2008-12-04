@@ -187,30 +187,29 @@ class Variable(gobject.GObject):
 
 
   def __update_tokens(self):
-    log.debug('updating tokens for "%s"' % self.props.name)
 
-    self.__toks = tokens.tokenize(self.__equation)
+    self.__tokens = tokens.tokenize(self.__equation)
 
     # if we have no tokens, we are certainly not valid
-    if len(self.__toks) is 0:
+    if len(self.__tokens) is 0:
       self.__type = UNDEF
       self.__valid = False
       return
 
-    if self.__toks[0][0] is tokens.IDENTIFIER and \
-       self.__toks[0][1] == tokens.IDEN_INTEGRAL:
+    if self.__tokens[0][0] is tokens.IDENTIFIER and \
+       self.__tokens[0][1] == tokens.IDEN_INTEGRAL:
       self.__type = STOCK
 
-    if self.__toks[0][0] is tokens.IDENTIFIER and \
-       self.__toks[0][1] == '[':
+    if self.__tokens[0][0] is tokens.IDENTIFIER and \
+       self.__tokens[0][1] == '[':
       self.__type = LOOKUP
 
-    if len(self.__toks) is 1 and self.__toks[0][0] is tokens.NUMBER:
+    if len(self.__tokens) is 1 and self.__tokens[0][0] is tokens.NUMBER:
       self.__type = CONSTANT
 
-    log.debug('%s\'s tokens:' % self.__name)
-    for tok, dat in self.__toks:
-      log.debug('  %s:\t%s' % (tokens.name_for_token_type(tok), dat))
+    #log.debug('%s\'s tokens:' % self.__name)
+    #for tok, dat in self.__tokens:
+    #  log.debug('  %s:\t%s' % (tokens.name_for_token_type(tok), dat))
 
 
   def get_influences(self):
@@ -222,7 +221,19 @@ class Variable(gobject.GObject):
     if not self.__tokens:
       self.__update_tokens()
 
-    return []
+    identifiers = []
+    for tok in self.__tokens:
+      if tok[0] is tokens.IDENTIFIER:
+        identifiers.append(tok[1])
+
+    # this will stop us from referencing function names and INTEG
+    identifiers = tokens.strip_reserved(identifiers)
+
+    influences = []
+    for iden in identifiers:
+      influences.append(self.__parent.get_variable(iden))
+
+    return influences
 
 
   def get_tokens(self):
@@ -233,7 +244,7 @@ class Variable(gobject.GObject):
     if not self.__tokens:
       self.__update_tokens()
 
-    return self.__toks
+    return self.__tokens
 
 
 gobject.type_register(Variable)

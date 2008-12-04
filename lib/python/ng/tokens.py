@@ -39,7 +39,7 @@ TOK_RANGE_MAX = OPERATOR
 
 IDEN_INTEGRAL = 'integ'
 
-IDEN_RESERVED = [iDEN_INTEGRAL, 'min', 'max']
+IDEN_RESERVED = [IDEN_INTEGRAL, 'min', 'max']
 
 def tokenize(eqn):
   '''
