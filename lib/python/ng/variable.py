@@ -60,7 +60,7 @@ class Variable(gobject.GObject):
                           _('variable type'),
                           _('The basic type of the variable'),
                           0,
-                          4,
+                          5,
                           0,
                           gobject.PARAM_READABLE),
     'parent' :           (gobject.TYPE_OBJECT,
@@ -77,46 +77,85 @@ class Variable(gobject.GObject):
   __gsignals__ = {
     'equation_changed' : (gobject.SIGNAL_RUN_FIRST,
                           gobject.TYPE_NONE,
-                          (gobject.TYPE_OBJECT,))
+                          (gobject.TYPE_STRING,))
   }
 
   __tokens = None
+
+  # private vars
+  __name = ''
+  __equation = ''
+  __units = ''
+  __comments = ''
+  __type = 0
+  __parent = None
+  __valid = False
 
 
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
 
     if not parent:
-      logging.error('missing parent simulator')
+      log.error('missing parent simulator')
       raise ValueError
 
     if not name or name == '':
-      logging.error('missing name for variable')
+      log.error('missing name for variable')
       raise ValueError
 
-    self.parent = parent
-    self.name = name
+    self.props.name = name
 
     # it should simplify things if we guaruntee a non-None, str equation
     if not equation:
       equation = ''
-    self.equation = str(equation)
+    self.props.equation = str(equation)
 
-    log.debug('created new variable "%s"' % self.name)
+    log.debug('created new variable "%s"' % self.props.name)
 
 
-  def get_property(self, pname):
+  def do_get_property(self, prop):
     '''
-    Override of gobject's get_property so that we can do nifty stuff
-    like the lazy evaluation of the equation when we want the variable
-    type or tokens.
+    standart gobject getter.
     '''
 
-    if pname == 'type':
-      logging.debug('asking for type! (%s)' % self.name)
-      return STOCK
+    if prop.name == 'name':
+      return self.__name
+    elif prop.name == 'equation':
+      return self.__equation
+    elif prop.name == 'units':
+      return self.__units
+    elif prop.name == 'comments':
+      return self.__comments
+    elif prop.name == 'type':
+      raise NotImplementedError
+    elif prop.name == 'parent':
+      return self.__parent
+    elif prop.name == 'valid':
+      raise NotImplementedError
     else:
-      return super(Variable, self).get_property(pname)
+      raise AttributeError('unknown prop: "%s"' % prop.name)
+
+
+  def do_set_property(self, prop,value):
+    '''
+    standart gobject setter.
+    '''
+
+    if not value:
+      value = ''
+
+    if prop.name == 'name':
+      self.__name = value
+    elif prop.name == 'equation':
+      old_equation = self.__equation
+      self.__equation = value
+      self.emit('equation_changed', old_equation)
+    elif prop.name == 'units':
+      self.__units = value
+    elif prop.name == 'comments':
+      self.__comments = value
+    else:
+      raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 
 
   def get_influences(self):

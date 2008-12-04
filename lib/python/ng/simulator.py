@@ -82,14 +82,14 @@ class Simulator(gobject.GObject):
     gobject.GObject.__init__(self, **kwargs)
 
     if model_name:
-      self.model_name = model_name
+      self.props.model_name = model_name
 
     if file_name:
       self.load(file_name)
     else:
       self.__initialize_time()
 
-    log.debug('created new simulator "%s"' % self.model_name)
+    log.debug('created new simulator "%s"' % self.props.model_name)
 
 
   def __initialize_time(self):
@@ -134,7 +134,7 @@ class Simulator(gobject.GObject):
 
 
   def load(self, model_path=None):
-    self.file_name = file_name
+    self.props.file_name = file_name
     log.debug('load stub')
 
 
@@ -170,7 +170,7 @@ class Simulator(gobject.GObject):
     self.__vars_list.append(new_var)
 
     log.debug('added new variable "%s" (%s) to simulation' %
-              (new_var.name, new_var.equation))
+              (new_var.props.name, new_var.props.equation))
 
     return new_var
 
