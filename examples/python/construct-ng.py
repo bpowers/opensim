@@ -50,10 +50,13 @@ def run():
     for v in sim.get_variables():
       print "  %s" % v.props.name
 
+
+  # skip a line
+  print
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
-  sim.props.output_type =  engine.EMIT_PYTHON
-  #sim.run()
+  #sim.props.output_type =  engine.EMIT_PYTHON
+  sim.run()
   #sim.output_debug_info()
 
   # connect our save_extra function to the 'saving' signal, set a 

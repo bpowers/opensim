@@ -87,7 +87,6 @@ def tokenize(eqn):
   return toks
 
 
-
 def name_for_token_type(tok_type):
   '''
   A nice helper function to return the string of the

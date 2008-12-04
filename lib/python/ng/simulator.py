@@ -75,6 +75,8 @@ class Simulator(gobject.GObject):
 
   __vars = {}
   __vars_list = []
+  __model = None
+  __generator = None
 
   __model_name = ''
   __file_name = ''
@@ -109,10 +111,10 @@ class Simulator(gobject.GObject):
       log.error('we can only initialize time on new models')
       return False
 
-    self.new_variable('time_start', INITIAL_TIME_START)
-    self.new_variable('time_end', INITIAL_TIME_END)
-    self.new_variable('time_step', INITIAL_TIME_STEP)
-    self.new_variable('time_savestep', INITIAL_TIME_SAVESTEP)
+    self.new_variable('time start', INITIAL_TIME_START)
+    self.new_variable('time end', INITIAL_TIME_END)
+    self.new_variable('time step', INITIAL_TIME_STEP)
+    self.new_variable('time savestep', INITIAL_TIME_SAVESTEP)
     self.new_variable('time')
 
     return True
@@ -147,8 +149,10 @@ class Simulator(gobject.GObject):
       return self.__output_type
     elif prop.name == 'output-file-name':
       return self.__output_file_name
-    elif prop.name == 'valid':
-      return self.__valid
+    elif prop.name == 'valid-model':
+      if not self.__model:
+        self.__update_model()
+      return self.__valid_model
     else:
       raise AttributeError('unknown prop: "%s"' % prop.name)
 
@@ -188,8 +192,28 @@ class Simulator(gobject.GObject):
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 
 
+  def __update_model(self, var=None):
+
+    log.debug('update module stub')
+
+
   def run(self):
-    log.debug('run stub')
+    '''
+    Run a model to give the desired type of output.
+
+    With an output type of EMIT_OUTPUT, this will simulate the model.
+    This will also transform the model into python or some such with
+    the right output type (and corresponding backend).
+    '''
+
+    if not self.props.valid_model:
+      log.error('cannot run an invalid model')
+
+    if self.__output_type is EMIT_OUTPUT:
+      pass
+    else:
+      raise NotImplementedError('The output type (%d) is not supported.' %
+                                self.__output_type)
 
 
   def load(self, model_path=None):
@@ -203,15 +227,15 @@ class Simulator(gobject.GObject):
 
   def new_variable(self, var_name, var_eqn=None):
     '''
-    Creates a new variable as part of the current model. This is the
-    only safe way to create a new variable; they should not be created
-    on their own and 'added' to the model somehow.
+    Creates a new variable as part of the current model. 
+    
+    This is the only safe way to create a new variable; they should not
+    be created on their own and 'added' to the model somehow.
     '''
 
     # validate input; it doesn't make sense to have an unnamed variable
     if not var_name or var_name == '':
-      log.error('variables need a name at least')
-      raise ValueError
+      raise AttributeError('variables need a name at least')
 
     # make sure it is actually new
     if self.__vars.has_key(var_name):
@@ -227,6 +251,8 @@ class Simulator(gobject.GObject):
     # keep track of the new variable
     self.__vars[var_name] = new_var
     self.__vars_list.append(new_var)
+
+    new_var.connect('equation_changed', self.variable_changed)
 
     return new_var
 
@@ -275,6 +301,19 @@ class Simulator(gobject.GObject):
     # delete it so we're sure its not holding on to a reference
     # to the simulator.  i think it pays to be explicit here.
     del var
+
+
+  def variable_changed(self, var, old_equation):
+    '''
+    Callback function so that we know to update the model AST.
+    '''
+
+    # if we delete variables, I suppose it is possible this could happen
+    if not self.__vars.has_key(var.props.name):
+      log.error('crud!  getting callbacks from "nonexistant" vars (%s)' %
+                var.props.name)
+
+    self.__update_model(var)
 
 
 gobject.type_register(Simulator)
