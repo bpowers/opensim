@@ -32,6 +32,8 @@ from gettext import gettext as _
 import logging as log
 
 from constants import *
+import simulator
+import tokens
 
 class Variable(gobject.GObject):
 
@@ -95,14 +97,14 @@ class Variable(gobject.GObject):
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
 
-    if not parent:
-      log.error('missing parent simulator')
-      raise ValueError
-
     if not name or name == '':
-      log.error('missing name for variable')
-      raise ValueError
+      raise AttributeError('missing name for variable')
 
+    if not parent or type(parent) is not simulator.Simulator:
+      AttributeError('variable\'s parent must be a simulator, not %s' %
+                     type(parent))
+
+    self.__parent = parent
     self.props.name = name
 
     # it should simplify things if we guaruntee a non-None, str equation
@@ -125,11 +127,15 @@ class Variable(gobject.GObject):
     elif prop.name == 'comments':
       return self.__comments
     elif prop.name == 'type':
-      raise NotImplementedError
+      if not __tokens:
+        self.__update_tokens()
+        return self.__type
     elif prop.name == 'parent':
       return self.__parent
     elif prop.name == 'valid':
-      raise NotImplementedError
+      if not __tokens:
+        self.__update_tokens()
+        return self.__valid
     else:
       raise AttributeError('unknown prop: "%s"' % prop.name)
 
@@ -180,13 +186,54 @@ class Variable(gobject.GObject):
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 
 
+  def __update_tokens(self):
+    log.debug('updating tokens for "%s"' % self.props.name)
+
+    self.__toks = tokens.tokenize(self.__equation)
+
+    # if we have no tokens, we are certainly not valid
+    if len(self.__toks) is 0:
+      self.__type = UNDEF
+      self.__valid = False
+      return
+
+    if self.__toks[0][0] is tokens.IDENTIFIER and \
+       self.__toks[0][1] == tokens.IDEN_INTEGRAL:
+      self.__type = STOCK
+
+    if self.__toks[0][0] is tokens.IDENTIFIER and \
+       self.__toks[0][1] == '[':
+      self.__type = LOOKUP
+
+    if len(self.__toks) is 1 and self.__toks[0][0] is tokens.NUMBER:
+      self.__type = CONSTANT
+
+    log.debug('%s\'s tokens:' % self.__name)
+    for tok, dat in self.__toks:
+      log.debug('  %s:\t%s' % (tokens.name_for_token_type(tok), dat))
+
+
   def get_influences(self):
-    log.debug('get_influences stub')
+    '''
+    Return a list of references (not names) of the variables that
+    influence this variable
+    '''
+
+    if not self.__tokens:
+      self.__update_tokens()
+
     return []
 
 
   def get_tokens(self):
-    log.debug('get_tokens stub')
+    '''
+    Return a list of the tokens in the current equation.
+    '''
+
+    if not self.__tokens:
+      self.__update_tokens()
+
+    return self.__toks
 
 
 gobject.type_register(Variable)
