@@ -52,16 +52,17 @@ class OpenSimGTK (gobject.GObject):
     self.data_path = None
 
     # http://standards.freedesktop.org/basedir-spec/basedir-spec-0.6.html
-    share_paths = ('/usr/local/share/', '/usr/share/')
+    share_paths = ['/usr/local/share/', '/usr/share/']
     all_paths = share_paths
 
     # check this environmental variable, but if nothing is there fall 
     # back to the ones in share_paths
     if os.environ.has_key('XDG_DATA_DIRS'):
-      xdg_string = environ['XDG_DATA_DIRS']
-      all_paths = xdg_string.split (':').append (share_paths)
+      xdg_string = os.environ['XDG_DATA_DIRS']
+      all_paths = xdg_string.split(':')
+      all_paths.extend(share_paths)
 
-    for i, path in enumerate(all_paths):
+    for path in all_paths:
       path = os.path.join(path, "opensim")
       if os.path.exists(path):
         self.data_path = path
