@@ -36,26 +36,25 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
 
-have_python=no
-AM_PATH_PYTHON([2.5])
 
-if test -z "$PYTHON" ; then
-  AC_MSG_WARN([Python not found])
-else
-  AM_CHECK_PYTHON_HEADERS(have_py_headers=yes,have_py_headers=no)
+AC_ARG_ENABLE([python],
+              AC_HELP_STRING([--enable-python],
+                             [python bindings and frontend]),,
+              [enable_python=yes])
 
-  if test x$have_py_heaers = xyes; then
-    PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
-    AC_SUBST(PYGOBJ_CFLAGS)
-    AC_SUBST(PYGOBJ_LIBS)
 
-    have_python=yes
-  else
-    AC_MSG_WARN(could not find Python headers)
-  fi
+
+if test "x$enable_python" = "xyes"; then
+  AM_PATH_PYTHON([2.5])
+
+  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find python headers)])
+
+  PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
+  AC_SUBST(PYGOBJ_CFLAGS)
+  AC_SUBST(PYGOBJ_LIBS)
+
+  have_python=yes
 fi
-
-
 
 AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
 
