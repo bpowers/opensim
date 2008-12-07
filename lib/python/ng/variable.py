@@ -33,7 +33,7 @@ import logging as log
 
 from constants import *
 import simulator
-import tokens
+import scanner
 
 class Variable(gobject.GObject):
 
@@ -188,7 +188,7 @@ class Variable(gobject.GObject):
 
   def __update_tokens(self):
 
-    self.__tokens = tokens.tokenize(self.__equation)
+    self.__tokens = scanner.tokenize(self.__equation)
 
     # if we have no tokens, we are certainly not valid
     if len(self.__tokens) is 0:
@@ -196,20 +196,20 @@ class Variable(gobject.GObject):
       self.__valid = False
       return
 
-    if self.__tokens[0][0] is tokens.IDENTIFIER and \
-       self.__tokens[0][1] == tokens.IDEN_INTEGRAL:
+    if self.__tokens[0][0] is scanner.IDENTIFIER and \
+       self.__tokens[0][1] == scanner.IDEN_INTEGRAL:
       self.__type = STOCK
 
-    if self.__tokens[0][0] is tokens.IDENTIFIER and \
+    if self.__tokens[0][0] is scanner.IDENTIFIER and \
        self.__tokens[0][1] == '[':
       self.__type = LOOKUP
 
-    if len(self.__tokens) is 1 and self.__tokens[0][0] is tokens.NUMBER:
+    if len(self.__tokens) is 1 and self.__tokens[0][0] is scanner.NUMBER:
       self.__type = CONSTANT
 
     #log.debug('%s\'s tokens:' % self.__name)
     #for tok, dat in self.__tokens:
-    #  log.debug('  %s:\t%s' % (tokens.name_for_token_type(tok), dat))
+    #  log.debug('  %s:\t%s' % (scanner.name_for_token_type(tok), dat))
 
 
   def get_influences(self):
@@ -223,11 +223,11 @@ class Variable(gobject.GObject):
 
     identifiers = []
     for tok in self.__tokens:
-      if tok[0] is tokens.IDENTIFIER:
+      if tok[0] is scanner.IDENTIFIER:
         identifiers.append(tok[1])
 
     # this will stop us from referencing function names and INTEG
-    identifiers = tokens.strip_reserved(identifiers)
+    identifiers = scanner.strip_reserved(identifiers)
 
     influences = []
     for iden in identifiers:
