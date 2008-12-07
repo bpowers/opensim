@@ -8,9 +8,9 @@ LOG_FORMAT = '%(levelname)s: %(message)s'
 
 # callback for when an equation changes
 def equation_checker(var, old_equation):
-  print "\nthe equation for '%s' changed." % var.props.name
-  print "  old equation: '%s'" % old_equation
-  print "  new equation: '%s'\n" % var.props.equation
+  print("\nthe equation for '%s' changed." % var.props.name)
+  print("  old equation: '%s'" % old_equation)
+  print("  new equation: '%s'\n" % var.props.equation)
 
 
 # callback function that is executed when sim.save () is called
@@ -35,24 +35,29 @@ def run():
   sim.new_variable('test', 'lookup[time]')
   sim.new_variable('another factor', 'weird*2')
   test = sim.new_variable('other test')
-  
+  # testing both case insensitivity and lack of spaces
+  sim.new_variable('q', 'inTEg(test,3)')
+
   if test is not None:
+
     test.connect('equation_changed', equation_checker)
     test.props.equation = 'lookup[time] * another_factor'
 
-    print "%s's influences:" % test.props.name
+    print("%s's influences:" % test.props.name)
     for v in test.get_influences():
-      print "  %s" % v.props.name
+      print('  %s' % v.props.name)
 
   variables = sim.get_variables()
   if variables:
-    print "\nmodel's variables:"
+    print("\nmodel's variables:")
+
+    print('')
     for v in sim.get_variables():
-      print "  %s" % v.props.name
+      print("  %s (%s)" % (v.props.name, engine.name_for_type(v.props.type)))
 
 
   # skip a line
-  print
+  print('')
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
   #sim.props.output_type =  engine.EMIT_PYTHON

@@ -1,4 +1,4 @@
-#===--- tokens.py - Token manipulatiopn functions ------------------------===#
+#===--- scanner.py - Token manipulatiopn functions -----------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -32,6 +32,8 @@ from constants import *
 IDENTIFIER = 1
 NUMBER     = 2
 OPERATOR   = 3
+IF         = 4
+INTEGRAL   = 5
 
 TOK_RANGE_MIN = IDENTIFIER
 TOK_RANGE_MAX = OPERATOR
@@ -40,6 +42,18 @@ TOK_RANGE_MAX = OPERATOR
 IDEN_INTEGRAL = 'integ'
 
 IDEN_RESERVED = [IDEN_INTEGRAL, 'min', 'max']
+
+
+_token_names  = [(IDENTIFIER, 'identifier'),
+                 (NUMBER, 'number'),
+                 (OPERATOR, 'operator'),
+                 (INTEGRAL, 'integral'),
+                 (IF, 'if statement'),
+                ]
+
+_reserved     = [(IDEN_INTEGRAL, INTEGRAL),
+                 ('if_then_else', IF),
+                ]
 
 def tokenize(eqn):
   '''
@@ -56,7 +70,7 @@ def tokenize(eqn):
     return []
 
   # we're case insensitive in system dynamics...
-  eqn.lower()
+  eqn = eqn.lower()
 
   toks = []
 
@@ -68,7 +82,13 @@ def tokenize(eqn):
 
     if eqn[0].isalpha():
       m = re_iden.search(eqn)
-      toks.append((IDENTIFIER, m.group()))
+
+      tok = (IDENTIFIER, m.group())
+      # if this identifier is a language construct we
+      # update the token type.
+      tok = _promote_identifier(tok)
+
+      toks.append(tok)
 
       eqn = eqn[m.end():]
 
@@ -85,6 +105,24 @@ def tokenize(eqn):
     eqn = eqn.lstrip()    
 
   return toks
+
+
+def _promote_identifier(token):
+  '''
+  Promote reserved identifiers to their individual token type.
+
+  Some identifiers (like if, integ, else, etc.) represent language
+  constructs, so we promote them from identifiers to their respective
+  token types.
+  '''
+
+  iden = token[1]
+
+  for ref in _reserved:
+    if iden == ref[0]:
+      return (ref[1], token[1])
+
+  return token
 
 
 def name_for_token_type(tok_type):

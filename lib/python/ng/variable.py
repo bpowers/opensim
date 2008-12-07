@@ -89,7 +89,7 @@ class Variable(gobject.GObject):
   __equation = ''
   __units = ''
   __comments = ''
-  __type = 0
+  __type = UNDEF
   __parent = None
   __valid = False
 
@@ -127,17 +127,17 @@ class Variable(gobject.GObject):
     elif prop.name == 'comments':
       return self.__comments
     elif prop.name == 'type':
-      if not __tokens:
+      if not self.__tokens:
         self.__update_tokens()
-        return self.__type
+      return self.__type
     elif prop.name == 'parent':
       return self.__parent
     elif prop.name == 'valid':
-      if not __tokens:
+      if not self.__tokens:
         self.__update_tokens()
         return self.__valid
-    else:
-      raise AttributeError('unknown prop: "%s"' % prop.name)
+
+    raise AttributeError('unknown prop: "%s"' % prop.name)
 
 
   def do_set_property(self, prop,value):
@@ -169,6 +169,7 @@ class Variable(gobject.GObject):
       if old_equation != value:
         self.__equation = value
         self.__tokens = None
+        self.__type = UNDEF
         self.emit('equation_changed', old_equation)
 
     elif prop.name == 'units':
@@ -190,22 +191,21 @@ class Variable(gobject.GObject):
 
     self.__tokens = scanner.tokenize(self.__equation)
 
-    # if we have no tokens, we are certainly not valid
     if len(self.__tokens) is 0:
       self.__type = UNDEF
-      self.__valid = False
-      return
 
-    if self.__tokens[0][0] is scanner.IDENTIFIER and \
-       self.__tokens[0][1] == scanner.IDEN_INTEGRAL:
+    elif self.__tokens[0][0] is scanner.INTEGRAL:
       self.__type = STOCK
 
-    if self.__tokens[0][0] is scanner.IDENTIFIER and \
+    elif self.__tokens[0][0] is scanner.OPERATOR and \
        self.__tokens[0][1] == '[':
       self.__type = LOOKUP
 
-    if len(self.__tokens) is 1 and self.__tokens[0][0] is scanner.NUMBER:
-      self.__type = CONSTANT
+    elif len(self.__tokens) is 1 and self.__tokens[0][0] is scanner.NUMBER:
+      self.__type = CONST
+
+    else:
+      self.__type = AUX
 
     #log.debug('%s\'s tokens:' % self.__name)
     #for tok, dat in self.__tokens:
@@ -236,7 +236,7 @@ class Variable(gobject.GObject):
     return influences
 
 
-  def get_tokens(self):
+  def _get_tokens(self):
     '''
     Return a list of the tokens in the current equation.
     '''
@@ -261,16 +261,17 @@ def name_for_type(var_type):
     log.error('variable is out of range!')
     return ''
 
+  # determining flows require context; save that for later
   if var_type is STOCK:
     return 'stock'
   elif var_type is FLOW:
-    return 'flow'
+    return 'var'
   elif var_type is AUX:
-    return 'auxilliary'
+    return 'var'
   elif var_type is CONST:
     return 'constant'
   elif var_type is LOOKUP:
     return 'lookup'
-  else:
-    return 'undefined'
+
+  return 'undefined'
 
