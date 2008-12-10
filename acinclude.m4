@@ -48,43 +48,6 @@ CPPFLAGS="$save_CPPFLAGS"
 ])
 
 
-# AC_LIBLTDL_INSTALLABLE([DIRECTORY])
-# -----------------------------------
-# sets LIBLTDL to the link flags for the libltdl installable library and
-# LTDLINCL to the include flags for the libltdl header and adds
-# --enable-ltdl-install to the configure arguments.  Note that
-# AC_CONFIG_SUBDIRS is not called here.  If DIRECTORY is not provided,
-# and an installed libltdl is not found, it is assumed to be `libltdl'.
-# LIBLTDL will be prefixed with '${top_builddir}/'# and LTDLINCL with
-# '${top_srcdir}/' (note the single quotes!).  If your package is not
-# flat and you're not using automake, define top_builddir and top_srcdir
-# appropriately in the Makefiles.
-# In the future, this macro may have to be called after AC_PROG_LIBTOOL.
-AC_DEFUN([AC_LIBLTDL_INSTALLABLE],
-[AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-  AC_CHECK_LIB(ltdl, lt_dlinit,
-  [test x"$enable_ltdl_install" != xyes && enable_ltdl_install=no],
-  [if test x"$enable_ltdl_install" = xno; then
-     AC_MSG_WARN([libltdl not installed, but installation disabled])
-   else
-     enable_ltdl_install=yes
-   fi
-  ])
-  if test x"$enable_ltdl_install" = x"yes"; then
-    ac_configure_args="$ac_configure_args --enable-ltdl-install"
-    LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdl.la
-    LTDLINCL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
-  else
-    ac_configure_args="$ac_configure_args --enable-ltdl-install=no"
-    LIBLTDL="-lltdl"
-    LTDLINCL=
-  fi
-  # For backwards non-gettext consistent compatibility...
-  INCLTDL="$LTDLINCL"
-])# AC_LIBLTDL_INSTALLABLE
-
-
-
 AC_DEFUN([AC_PYTHON_DEVEL],[
         #
         # Allow the use of a (user set) custom python version
@@ -277,89 +240,6 @@ $ac_distutils_result])
         #
         # all done!
         #
-])
-
-
-AC_DEFUN([AC_PROG_SWIG],[
-        AC_PATH_PROG([SWIG],[swig])
-        if test -z "$SWIG" ; then
-                AC_MSG_WARN([cannot find 'swig' program. You should look at http://www.swig.org])
-                SWIG='echo "Error: SWIG is not installed. You should look at http://www.swig.org" ; false'
-        elif test -n "$1" ; then
-                AC_MSG_CHECKING([for SWIG version])
-                [swig_version=`$SWIG -version 2>&1 | grep 'SWIG Version' | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/g'`]
-                AC_MSG_RESULT([$swig_version])
-                if test -n "$swig_version" ; then
-                        # Calculate the required version number components
-                        [required=$1]
-                        [required_major=`echo $required | sed 's/[^0-9].*//'`]
-                        if test -z "$required_major" ; then
-                                [required_major=0]
-                        fi
-                        [required=`echo $required | sed 's/[0-9]*[^0-9]//'`]
-                        [required_minor=`echo $required | sed 's/[^0-9].*//'`]
-                        if test -z "$required_minor" ; then
-                                [required_minor=0]
-                        fi
-                        [required=`echo $required | sed 's/[0-9]*[^0-9]//'`]
-                        [required_patch=`echo $required | sed 's/[^0-9].*//'`]
-                        if test -z "$required_patch" ; then
-                                [required_patch=0]
-                        fi
-                        # Calculate the available version number components
-                        [available=$swig_version]
-                        [available_major=`echo $available | sed 's/[^0-9].*//'`]
-                        if test -z "$available_major" ; then
-                                [available_major=0]
-                        fi
-                        [available=`echo $available | sed 's/[0-9]*[^0-9]//'`]
-                        [available_minor=`echo $available | sed 's/[^0-9].*//'`]
-                        if test -z "$available_minor" ; then
-                                [available_minor=0]
-                        fi
-                        [available=`echo $available | sed 's/[0-9]*[^0-9]//'`]
-                        [available_patch=`echo $available | sed 's/[^0-9].*//'`]
-                        if test -z "$available_patch" ; then
-                                [available_patch=0]
-                        fi
-                        if test $available_major -ne $required_major \
-                                -o $available_minor -ne $required_minor \
-                                -o $available_patch -lt $required_patch ; then
-                                AC_MSG_WARN([SWIG version >= $1 is required.  You have $swig_version.  You should look at http://www.swig.org])
-                                SWIG='echo "Error: SWIG version >= $1 is required.  You have '"$swig_version"'.  You should look at http://www.swig.org" ; false'
-                        else
-                                AC_MSG_NOTICE([SWIG executable is '$SWIG'])
-                                SWIG_LIB=`$SWIG -swiglib`
-                                AC_MSG_NOTICE([SWIG library directory is '$SWIG_LIB'])
-                        fi
-                else
-                        AC_MSG_WARN([cannot determine SWIG version])
-                        SWIG='echo "Error: Cannot determine SWIG version.  You should look at http://www.swig.org" ; false'
-                fi
-        fi
-        AC_SUBST([SWIG_LIB])
-])
-
-
-AC_DEFUN([SWIG_MULTI_MODULE_SUPPORT],[
-        AC_REQUIRE([AC_PROG_SWIG])
-        SWIG="$SWIG -noruntime"
-])
-
-
-AC_DEFUN([SWIG_PYTHON],[
-        AC_REQUIRE([AC_PROG_SWIG])
-        AC_REQUIRE([AC_PYTHON_DEVEL])
-        test "x$1" != "xno" || swig_shadow=" -noproxy"
-        AC_SUBST([SWIG_PYTHON_OPT],[-python$swig_shadow])
-        AC_SUBST([SWIG_PYTHON_CPPFLAGS],[$PYTHON_CPPFLAGS])
-])
-
-
-AC_DEFUN([SWIG_ENABLE_CXX],[
-        AC_REQUIRE([AC_PROG_SWIG])
-        AC_REQUIRE([AC_PROG_CXX])
-        SWIG="$SWIG -c++"
 ])
 
 

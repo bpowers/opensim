@@ -44,9 +44,9 @@ if test -z "$PYTHON" ; then
 else
   AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
 
-  PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
-  AC_SUBST(PYGOBJ_CFLAGS)
-  AC_SUBST(PYGOBJ_LIBS)
+  #PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
+  #AC_SUBST(PYGOBJ_CFLAGS)
+  #AC_SUBST(PYGOBJ_LIBS)
 
   have_python=yes
 fi
@@ -68,18 +68,6 @@ AC_TYPE_SIZE_T
 AC_FUNC_STRTOD
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS([isascii])
-
-
-PKG_PROG_PKG_CONFIG()
-
-pkg_modules="glib-2.0 >= 2.10.0 gobject-2.0 >= 2.12.0"
-PKG_CHECK_MODULES(GOBJ, [$pkg_modules])
-AC_SUBST(GOBJ_CFLAGS)
-AC_SUBST(GOBJ_LIBS)
-
-# llvm is disabled for now.
-#OPENSIM_LLVM_SETFLAGS
-OPENSIM_XML2_SETFLAGS
 
 
 AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
