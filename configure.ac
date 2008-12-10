@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([OpenSim], [0.4.7], [bugs@opensimproject.org])
+AC_INIT([OpenSim], [0.5], [bugs@opensimproject.org])
 AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
@@ -89,15 +89,18 @@ AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
 # AM_GNU_GETTEXT([external])
 
 
-AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile lib/IO/Makefile \
-                 lib/CodeGen/Makefile lib/AST/Makefile lib/python/Makefile \
-                 lib/python/visuals/Makefile icons/Makefile mac/Makefile \
-                 lib/python/visuals/widgets/Makefile po/Makefile.in \
-                 lib/python/engine/Makefile share/Makefile activity/Makefile \
-                 activity/activity/Makefile activity/icons/Makefile \
-                 activity/lib/Makefile activity/site-packages/Makefile \
-                 lib/python/ng/Makefile],
-	[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h.in])
+AC_CONFIG_FILES([
+po/Makefile.in
+opensim/ng/Makefile
+opensim/visuals/widgets/Makefile
+opensim/visuals/Makefile
+opensim/Makefile
+icons/Makefile
+share/Makefile
+src/Makefile
+packaging/mac/Makefile
+Makefile
+])
 
 
 AC_OUTPUT

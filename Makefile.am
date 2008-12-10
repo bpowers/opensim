@@ -1,6 +1,6 @@
-EXTRA_DIST		= bootstrap examples
+EXTRA_DIST		= bootstrap examples packaging/activity
 
-SUBDIRS 		= lib/python
+SUBDIRS 		= opensim
 
 MAINTAINERCLEANFILES 	= Makefile.in aclocal.m4 configure \
 			  config-h.in stamp-h.in stamp-h1
