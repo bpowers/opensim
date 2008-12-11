@@ -26,3 +26,87 @@
 
 
 
+class ASTNode:
+  parent = None
+  attrs = []
+
+
+class ASTList(ASTNode):
+  statements = []
+
+  def __init__(self, parent):
+    self.parent = parent
+
+
+class ASTScope(ASTNode):
+  name = ''
+  vars = {}
+  child = None
+
+  def __init__(self, parent, name):
+    self.parent = parent
+    self.name = name
+
+
+class ASTBinExpr(ASTNode):
+  op = ''
+  lvalue = None
+  rvalue = None
+
+  def __init__(self, parent, op, lvalue, rvalue):
+    self.parent = parent
+    self.op = op
+    self.lvalue = lvalue
+    self.rvalue = rvalue
+
+
+class ASTUnaryExpr(ASTNode):
+  op = ''
+  lvalue = None
+
+  def __init__(self, parent, op, lvalue):
+    self.parent = parent
+    self.op = op
+    self.lvalue = lvalue
+
+
+class ASTIdentifier(ASTNode):
+  name = ''
+  var = None
+
+  def __init__(self, parent, name, var=None):
+    self.parent = parent
+    self.name = name
+    # var is optional, but probably a slight optimization from
+    # recursively searching through scopes.  What are the downsides?
+    self.var = var
+
+
+class ASTValue(ASTNode):
+  type = None
+  val = 0
+  
+  def __init__(self, val, type=float):
+    self.parent = parent
+    self.val = val
+    self.type = type
+
+
+class ASTEuler(ASTNode):
+  body = None
+  stocks = None
+
+  def __init__(self, parent, body, stocks):
+    self.parent = parent
+    self.body = body
+    self.stocks = stocks
+
+
+class ASTCall(ASTNode):
+  name = ''
+  args = []
+
+  def __init__(self, parent, name, args = []):
+    self.parent = parent
+    self.name = name
+    self.args = args

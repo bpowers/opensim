@@ -34,6 +34,7 @@ import logging as log
 from constants import *
 import simulator
 import scanner
+import parser
 
 class Variable(gobject.GObject):
 
@@ -192,7 +193,7 @@ class Variable(gobject.GObject):
     self.__tokens = scanner.tokenize(self.__equation)
 
     if len(self.__tokens) is 0:
-      self.__type = UNDEF
+      self.__type = NONE
 
     elif self.__tokens[0][0] is scanner.INTEGRAL:
       self.__type = STOCK
@@ -207,9 +208,27 @@ class Variable(gobject.GObject):
     else:
       self.__type = AUX
 
+    self.__validate_equation()
+
     #log.debug('%s\'s tokens:' % self.__name)
     #for tok, dat in self.__tokens:
     #  log.debug('  %s:\t%s' % (scanner.name_for_token_type(tok), dat))
+
+
+  def __validate_equation(self):
+    if self.__type is NONE:
+      # a variable with no equation should simply be considered valid
+      self.__valid = True
+    elif self.__type is STOCK:
+      self.__valid = parser.validate_stock(self.__tokens, self.__parent)
+    elif self.__type is LOOKUP:
+      self.__valid = parser.validate_lookup(self.__tokens)
+    elif self.__type is CONST:
+      self.__valid = parser.validate_const(self.__tokens)
+    elif self.__type is AUX:
+      self.__valid = parser.validate_aux(self.__tokens)
+    else:
+      self.__valid = False
 
 
   def get_influences(self):

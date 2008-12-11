@@ -25,4 +25,33 @@
 #===----------------------------------------------------------------------===#
 
 
+def validate_stock(tokens, simulator):
+  '''
+  Validate the equation for a stock.
+  '''
 
+  return True
+
+
+def validate_lookup(tokens):
+  '''
+  Validate the equation for a lookup table.
+  '''
+
+  return True
+
+
+def validate_const(tokens):
+  '''
+  Validate the equation for a constant variable.
+  '''
+
+  return True
+
+
+def validate_aux(tokens):
+  '''
+  Validate the equation for an auxilliary variable.
+  '''
+
+  return True

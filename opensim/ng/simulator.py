@@ -33,6 +33,7 @@ import logging as log
 
 # opensim variables...
 from variable import Variable
+from generator import Generator
 from constants import *
 
 class Simulator(gobject.GObject):
@@ -75,6 +76,7 @@ class Simulator(gobject.GObject):
 
   __vars = {}
   __vars_list = []
+  __vars_invalid = []
   __model = None
   __generator = None
 
@@ -82,7 +84,6 @@ class Simulator(gobject.GObject):
   __file_name = ''
   __output_type = 4
   __output_file_name = ''
-  __valid_model = False
 
 
 
@@ -152,7 +153,10 @@ class Simulator(gobject.GObject):
     elif prop.name == 'valid-model':
       if not self.__model:
         self.__update_model()
-      return self.__valid_model
+      if len(self.__vars_invalid) is 0:
+        return True
+      else:
+        return False
     else:
       raise AttributeError('unknown prop: "%s"' % prop.name)
 
@@ -208,6 +212,7 @@ class Simulator(gobject.GObject):
 
     if not self.props.valid_model:
       log.error('cannot run an invalid model')
+      return -1
 
     if self.__output_type is EMIT_OUTPUT:
       pass
@@ -254,6 +259,11 @@ class Simulator(gobject.GObject):
 
     new_var.connect('equation_changed', self.variable_changed)
 
+    if not new_var.props.valid:
+      self.__vars_invalid.append(new_var)
+
+    self.__update_model(new_var)
+
     return new_var
 
 
@@ -297,6 +307,9 @@ class Simulator(gobject.GObject):
 
     del self.__vars[var_name]
     self.__vars_list.remove(var)
+    
+    if self.__vars_invalid.count(var):
+      self.__vars_invalid.remove(var)
 
     # delete it so we're sure its not holding on to a reference
     # to the simulator.  i think it pays to be explicit here.
@@ -312,6 +325,14 @@ class Simulator(gobject.GObject):
     if not self.__vars.has_key(var.props.name):
       log.error('crud!  getting callbacks from "nonexistant" vars (%s)' %
                 var.props.name)
+
+    was_invalid = self.__vars_invalid.count(var)
+    if was_invalid:
+      if var.props.valid:
+        self.__vars_invalid.remove(var)
+    else:
+      if not var.props.valid:
+        self.__vars_invalid.append(var)
 
     self.__update_model(var)
 

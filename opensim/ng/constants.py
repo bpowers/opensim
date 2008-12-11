@@ -43,6 +43,7 @@ AUX                   = 2
 LOOKUP                = 3
 CONST                 = 4
 FLOW                  = 5
+NONE                  = 6
 
 TYPE_MIN              = UNDEF
 TYPE_MAX              = FLOW
