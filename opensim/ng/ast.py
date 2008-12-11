@@ -96,7 +96,7 @@ class ASTEuler(ASTNode):
   body = None
   stocks = None
 
-  def __init__(self, parent, body, stocks):
+  def __init__(self, parent, body=None, stocks=None):
     self.parent = parent
     self.body = body
     self.stocks = stocks
@@ -106,7 +106,7 @@ class ASTCall(ASTNode):
   name = ''
   args = []
 
-  def __init__(self, parent, name, args = []):
+  def __init__(self, parent, name, args=[]):
     self.parent = parent
     self.name = name
     self.args = args

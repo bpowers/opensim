@@ -44,19 +44,26 @@ class Generator:
     log.debug('initializing AST')
 
     self._top_level_vars = list(self.__var_list)
-    self.__ast_initial = ast.ASTList()
-    self.__ast_loop = ast.ASTEuler()
-    self.__ast = ast.ASTScope()
+    self.__ast = ast.ASTScope(None, 'root')
     self.__ast.vars = self.__vars
-    self.__ast.child = ast.ASTList()
+    self.__ast.child = ast.ASTList(self.__ast)
+    self.__ast_initial = ast.ASTList(self.__ast.child)
+    self.__ast_loop = ast.ASTEuler(self.__ast.child)
     self.__ast.child.statements = [self.__ast_initial, self.__ast_loop]
 
     while len(self._top_level_vars) > 0:
       var = self._top_level_vars.pop()
-      self._process_var(self, var)
+      self._process_var(var)
 
     if len(self.__errors) > 0:
-      logging.error('the model has %d errors' % len(self.__errors))
+      log.error('the model has %d errors' % len(self.__errors))
+
+
+  def _process_var(self, var):
+    toks = var._get_tokens()
+
+    if len(toks) is 0:
+      return
 
 
   def update(self, var):

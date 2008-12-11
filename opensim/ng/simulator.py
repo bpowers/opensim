@@ -98,6 +98,8 @@ class Simulator(gobject.GObject):
     else:
       self.__initialize_time()
 
+    self.__generator = Generator(self.__vars, self.__vars_list)
+
 
   def __initialize_time(self):
     '''
@@ -197,6 +199,11 @@ class Simulator(gobject.GObject):
 
 
   def __update_model(self, var=None):
+
+    # we won't have a generator when we're initializing a new
+    # simulator object
+    if self.__generator:
+      self.__generator.update(var)
 
     log.debug('update module stub')
 
