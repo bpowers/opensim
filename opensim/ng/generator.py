@@ -26,6 +26,19 @@
 
 import logging as log
 import ast
+import scanner
+
+
+_precedence = {'=': 2,
+               '<': 10,
+               '>': 10,
+               '+': 20,
+               '-': 20,
+               '*': 40,
+               '/': 40,
+               '^': 60,
+              }
+
 
 class Generator:
 
@@ -59,11 +72,52 @@ class Generator:
       log.error('the model has %d errors' % len(self.__errors))
 
 
+  def _get_tok_precedence(self):
+    if not self.__cur_tok[0] is scanner.OPERATOR:
+      return -1
+
+    return _precedence[cur_tok[1]]
+
+
+  def _get_next_tok(self):
+    toks = self.__cur_var._get_tokens()
+
+    if len(toks) >= self.__toks_index:
+      return False
+
+    self.__cur_tok = toks[self.__toks_index]
+    self.__toks_index += 1
+    return True
+
+
+  def _push_tokens(self):
+    self.__index_stack.append(self.__toks_index-1)
+    self.__var_stack.append(self.__cur_var)
+
+
+  def _pop_tokens(self):
+    self.__toks_index = self.__index_stack.pop()
+    self.__cur_var = self.__var_stack.pop()
+
+    self._get_next_tok()
+
+
   def _process_var(self, var):
+    self.__toks_index = 0
+    self.__cur_var = var
     toks = var._get_tokens()
 
     if len(toks) is 0:
       return
+
+    # prime cur_tok
+    self._get_next_tok()
+
+    val = self._parse_expression()
+
+
+  def _parse_expression(self):
+    log.debug('parsing expression')
 
 
   def update(self, var):

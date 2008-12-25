@@ -120,7 +120,7 @@ def _promote_identifier(token):
 
   for ref in _reserved:
     if iden == ref[0]:
-      return (ref[1], token[1])
+      return (ref[1], iden)
 
   return token
 

@@ -48,6 +48,15 @@ class ASTScope(ASTNode):
     self.name = name
 
 
+class ASTAssignExpr(ASTNode):
+  var_name = None
+  value = None
+
+  def __init(self, parent, var_name, value):
+    self.var_name = var_name
+    self.value = value
+
+
 class ASTBinExpr(ASTNode):
   op = ''
   lvalue = None
