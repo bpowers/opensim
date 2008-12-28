@@ -27,7 +27,7 @@
 import logging as log
 import ast
 import scanner
-
+from constants import *
 
 _precedence = {'=': 2,
                '<': 10,
@@ -56,6 +56,7 @@ class Generator:
 
     log.debug('initializing AST')
 
+    self.__cur_tok = None
     self._top_level_vars = list(self.__var_list)
     self.__ast = ast.ASTScope(None, 'root')
     self.__ast.vars = self.__vars
@@ -80,12 +81,13 @@ class Generator:
 
 
   def _get_next_tok(self):
-    toks = self.__cur_var._get_tokens()
-
-    if len(toks) >= self.__toks_index:
+    if len(self.__cur_toks) <= self.__toks_index:
+      self.__cur_tok = None
+      log.debug('end of tok stream (%d/%d)' %
+                (len(self.__cur_toks), self.__toks_index))
       return False
 
-    self.__cur_tok = toks[self.__toks_index]
+    self.__cur_tok = self.__cur_toks[self.__toks_index]
     self.__toks_index += 1
     return True
 
@@ -105,20 +107,48 @@ class Generator:
   def _process_var(self, var):
     self.__toks_index = 0
     self.__cur_var = var
-    toks = var._get_tokens()
+    self.__cur_toks = var._get_tokens()
 
-    if len(toks) is 0:
+    if len(self.__cur_toks) is 0:
       return
 
     # prime cur_tok
     self._get_next_tok()
 
-    val = self._parse_expression()
+    trees = self._parse_equation()
+
+
+  def _parse_equation(self):
+    if self.__cur_var.props.type is STOCK:
+      return self._parse_stock()
+    elif self.__cur_var.props.type is CONST:
+      return (('initial', self._parse_expression()))
+    else:
+      return (('flows', self._parse_expression()))
 
 
   def _parse_expression(self):
     log.debug('parsing expression')
 
+
+  def _parse_stock(self):
+    # we know the first token is an INTEG, so eat it.
+    self._get_next_tok()
+    initial, change = self._get_args(2)
+    log.debug('parsing stock')
+
+
+  def _get_args(self, num_args=-1):
+    if self.__cur_tok[1] != '(':
+      raise AttributeError
+
+    # eat '('
+    self._get_next_tok()
+
+    # now we need to split at the ',' token and parse the
+    # two arguments, as they are not necessarily simple constants
+
+    return (None,None)
 
   def update(self, var):
     '''
