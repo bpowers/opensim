@@ -1,9 +1,7 @@
-EXTRA_DIST		= bootstrap examples packaging/activity
+EXTRA_DIST            = bootstrap examples packaging/activity
+SUBDIRS 	            = opensim
 
-SUBDIRS 		= opensim
+MAINTAINERCLEANFILES  = Makefile.in aclocal.m4 configure \
+                        config-h.in stamp-h.in stamp-h1
 
-MAINTAINERCLEANFILES 	= Makefile.in aclocal.m4 configure \
-			  config-h.in stamp-h.in stamp-h1
-
-
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS       = -I m4

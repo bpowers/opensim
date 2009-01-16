@@ -1,3 +1,19 @@
+0.4.8 (2008-11-23 Bobby Powers <bobby@laptop.org>)
+===========================================================
+preview version 0.4.8
+
+The release of Model version 0.4.8 sees the natively running and packaged
+version for Mac (OS version 10.5, Intel-based machines only).  This was
+very time intensive, as no one has packaged PyGTK for the mac before.  
+In addition to this there has been some work since 0.4.7, especially 
+with respect to predictability and stability, and the legwork for several
+important features:
+ * backend there for viewing model results (not hooked up yet)
+ * cleaned up several drawing glitches
+ * API there for getting variable influences, could be used to do 
+   interesting things like causal tracing trees
+
+
 0.4.7 (2008-10-18 Bobby Powers <bobby@laptop.org>)
 ===========================================================
 preview version 0.4.7

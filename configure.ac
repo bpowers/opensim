@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([OpenSim], [0.5], [bugs@opensimproject.org])
+AC_INIT([OpenSim], [0.5], [bobby@laptop.org])
 AC_CONFIG_SRCDIR([src/opensim])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([config])
@@ -32,17 +32,22 @@ fi
 AC_DISABLE_FAST_INSTALL
 
 AC_LIBTOOL_WIN32_DLL
-#AC_DISABLE_STATIC
+AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
 
-have_python=no
-AM_PATH_PYTHON([2.5])
 
-if test -z "$PYTHON" ; then
-  AC_MSG_WARN([Python not found])
-else
-  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+AC_ARG_ENABLE([python],
+              AC_HELP_STRING([--enable-python],
+                             [python bindings and frontend]),,
+              [enable_python=yes])
+
+
+
+if test "x$enable_python" = "xyes"; then
+  AM_PATH_PYTHON([2.5])
+
+  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find python headers)])
 
   #PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
   #AC_SUBST(PYGOBJ_CFLAGS)
@@ -50,8 +55,6 @@ else
 
   have_python=yes
 fi
-
-
 
 AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
 
