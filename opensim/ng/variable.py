@@ -212,7 +212,7 @@ class Variable(gobject.GObject):
 
     #log.debug('%s\'s tokens:' % self.__name)
     #for tok, dat in self.__tokens:
-    #  log.debug('  %s:\t%s' % (scanner.name_for_token_type(tok), dat))
+    #  log.debug('  %s:\t%s' % (scanner.name_for_tok_type(tok), dat))
 
 
   def __validate_equation(self):

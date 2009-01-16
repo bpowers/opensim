@@ -1,4 +1,4 @@
-#===--- scanner.py - Token manipulatiopn functions -----------------------===#
+#===--- scanner.py - Token manipulation functions ------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -32,58 +32,80 @@ from constants import *
 IDENTIFIER = 1
 NUMBER     = 2
 OPERATOR   = 3
-IF         = 4
-INTEGRAL   = 5
+INTEGRAL   = 4
+IF         = 5
 
 TOK_RANGE_MIN = IDENTIFIER
 TOK_RANGE_MAX = OPERATOR
 
-
+# identifier that represents integrals
 IDEN_INTEGRAL = 'integ'
 
-IDEN_RESERVED = [IDEN_INTEGRAL, 'min', 'max']
+__token_names  = ['',
+                  'identifier',
+                  'number',
+                  'operator',
+                  'integral',
+                  'if statement',
+                 ]
+
+__reserved = {IDEN_INTEGRAL: INTEGRAL,
+             }
+
+# compile some regular expressions for use tokenizing
+__RE_IDEN = re.compile('^[a-z](\w|\s)*')
+__RE_NUM = re.compile('^[0-9]*\.?[0-9]*(e?[-+]?[0-9]+)?')
 
 
-_token_names  = [(IDENTIFIER, 'identifier'),
-                 (NUMBER, 'number'),
-                 (OPERATOR, 'operator'),
-                 (INTEGRAL, 'integral'),
-                 (IF, 'if statement'),
-                ]
-
-_reserved     = [(IDEN_INTEGRAL, INTEGRAL),
-                 ('if_then_else', IF),
-                ]
-
-def tokenize(eqn):
+class Token:
   '''
+  Represents a distinct token in an equation.
+  '''
+
+  def __init__(self, position, length, kind, iden=None, val=None):
+
+    # taking a page from clang, lets keep info on where are tok is
+    # so that we can provide meaningful diagnostics later.
+    self.position = position
+    self.length = length
+
+    self.kind = kind
+    self.iden = iden
+    self.val = val
+
+
+
+def tokenize(eqn, var=None):
+  '''
+  Return a list of 'Token's for a given equation
+
   Takes a string representing an equation and returns a list of
   tuples, where the first value is the token type, followed by
   the token data
   '''
 
+  # this is python but we really want to do strict type
+  # checking here, as anything other than a real string
+  # will cause us to throw an error
   if not eqn or type(eqn) is not str:
+    raise NameError, 'can only tokenize strings'
+
+  if eqn.strip() == '':
     return []
 
   eqn = eqn.strip()
-  if eqn == '':
-    return []
 
   # we're case insensitive in system dynamics...
   eqn = eqn.lower()
 
   toks = []
 
-  # compile some regular expressions
-  re_iden = re.compile('^[a-z](\w|\s)*')
-  re_num = re.compile('^[0-9]*\.?[0-9]*(e?[-+]?[0-9]+)?')
-
   while eqn is not '':
 
     if eqn[0].isalpha():
-      m = re_iden.search(eqn)
+      m = __RE_IDEN.search(eqn)
 
-      tok = (IDENTIFIER, m.group())
+      tok = (IDENTIFIER, m.group().strip())
       # if this identifier is a language construct we
       # update the token type.
       tok = _promote_identifier(tok)
@@ -93,7 +115,7 @@ def tokenize(eqn):
       eqn = eqn[m.end():]
 
     elif eqn[0].isdigit() or eqn[0] is '.':
-      m = re_num.search(eqn)
+      m = __RE_NUM.search(eqn)
       toks.append((NUMBER, m.group()))
 
       eqn = eqn[m.end():]
@@ -118,31 +140,26 @@ def _promote_identifier(token):
 
   iden = token[1]
 
-  for ref in _reserved:
-    if iden == ref[0]:
-      return (ref[1], iden)
+  if __reserved.has_key(iden):
+    return (__reserved[iden], iden)
 
   return token
 
 
-def name_for_token_type(tok_type):
+def name_for_tok_type(tok_type):
   '''
   A nice helper function to return the string of the
   token type (mostly for debugging purposes I assume)
   '''
+  if not isinstance(tok_type, int):
+    raise TypeError, 'tok_type must be an int, \'%s\' is %s' \
+                     % (tok_type, type(tok_type))
 
   if tok_type < TOK_RANGE_MIN and tok_type > TOK_RANGE_MAX:
     log.error('variable is out of range!')
     return ''
 
-  if tok_type is IDENTIFIER:
-    return 'identifier'
-  elif tok_type is NUMBER:
-    return 'number'
-  elif tok_type is OPERATOR:
-    return 'operator'
-  else:
-    return 'undefined'
+  return __token_names[tok_type]
 
 
 def strip_reserved(identifiers):
@@ -154,7 +171,7 @@ def strip_reserved(identifiers):
   copy = list(identifiers)
 
   for iden in identifiers:
-    if iden in IDEN_RESERVED:
+    if iden in BUILTIN_FUNCS:
       copy.remove(iden)
 
   return copy

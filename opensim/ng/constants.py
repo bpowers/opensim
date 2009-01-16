@@ -55,3 +55,10 @@ INITIAL_TIME_END      = 100.0
 INITIAL_TIME_STEP     = .125
 INITIAL_TIME_SAVESTEP = 1.0
 
+
+# builtin functions
+BUILTIN_FUNCS = {"min":          1000,
+                 "max":          1001,
+                 "if_then_else": 1002,
+                }
+
