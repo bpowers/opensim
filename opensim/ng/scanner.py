@@ -87,8 +87,11 @@ def tokenize(eqn, var=None):
   # this is python but we really want to do strict type
   # checking here, as anything other than a real string
   # will cause us to throw an error
-  if not eqn or type(eqn) is not str:
-    raise NameError, 'can only tokenize strings'
+  if eqn is None:
+    raise TypeError, 'need something, not None, to tokenize'
+
+  if type(eqn) is not str:
+    raise TypeError, 'can only tokenize strings, not \'%s\'' % type(eqn)
 
   if eqn.strip() == '':
     return []

@@ -29,7 +29,67 @@ import opensim.ng.scanner as scanner
 import unittest
 
 
-class TestIntegralTokens(unittest.TestCase):
+class TestTokenizerCase(unittest.TestCase):
+
+  def setUp(self):
+    self.eqn_empty = ''
+    self.eqn_none = None
+    self.eqn_num = 3.14
+    self.eqn_ok = "20+time"
+    self.eqn_space = "  20  +  time  "
+
+
+  def test_empty_eqn(self):
+    '''
+    test to make sure we handle empty equations
+    '''
+    toks = scanner.tokenize(self.eqn_empty)
+
+    # should return an empty list and not throw an error
+    self.assert_(isinstance(toks, list))
+    self.assert_(len(toks) is 0)
+
+
+  def test_none_eqn(self):
+    '''
+    test to make sure we handle None equations
+    '''
+    # should raise a type error for None equations
+    self.assertRaises(TypeError, scanner.tokenize, self.eqn_none)
+
+
+  def test_num_eqn(self):
+    '''
+    test to make sure we handle number equations
+    '''
+    # should raise a type error for an equation that is not a str
+    self.assertRaises(TypeError, scanner.tokenize, self.eqn_num)
+
+
+  def test_ok_eqn(self):
+    '''
+    test to make sure we handle good equations
+    '''
+    toks = scanner.tokenize(self.eqn_ok)
+
+    # should return a list of 3 toks
+    self.assert_(isinstance(toks, list))
+    self.assert_(len(toks) is 3)
+
+
+  def test_spaced_eqn(self):
+    '''
+    test to make sure we handle good equations with spaces
+    '''
+    toks = scanner.tokenize(self.eqn_ok)
+
+    # should return a list of 3 toks
+    self.assert_(isinstance(toks, list))
+    self.assert_(len(toks) is 3)
+
+
+
+class TestIntegralTokenizerCase(unittest.TestCase):
 
   def setUp(self):
     self.eqn1 = "INTEG(0,0)"
@@ -106,7 +166,7 @@ class TestIntegralTokens(unittest.TestCase):
 
   def test_leading_and_trailing_spaces(self):
     '''
-    Test to make sure we handle integral equations with leading spaces.
+    Test to make sure we handle integral equations with l and r spaces.
     '''
     toks = scanner.tokenize(self.eqn5)
     num_toks = len(toks)
@@ -121,9 +181,18 @@ class TestIntegralTokens(unittest.TestCase):
 
 
 
+def suite():
+  '''
+  Get a unittest.TestSuite containing all the tests in this module.
+  '''
+  tok_suite = unittest.TestLoader().loadTestsFromTestCase(TestTokenizerCase)
+  integral_suite = unittest.TestLoader()\
+                     .loadTestsFromTestCase(TestIntegralTokenizerCase)
+
+  return unittest.TestSuite([tok_suite, integral_suite])
+
+
 if __name__ == '__main__':
   # give us more verbose output than the standard unittest.main()
-  suite = unittest.TestLoader().loadTestsFromTestCase(TestIntegralTokens)
-
-  unittest.TextTestRunner(verbosity=2).run(suite)
+  unittest.TextTestRunner(verbosity=2).run(suite())
 
