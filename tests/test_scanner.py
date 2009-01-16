@@ -38,6 +38,8 @@ class TestTokenizerCase(unittest.TestCase):
     self.eqn_ok = "20+time"
     self.eqn_space = "  20  +  time  "
     self.tok_vals = ['20', '+', 'time']
+    self.eqn_dec = ".2"
+    self.eqn_bad_dec = ".2.2.2"
 
 
   def test_empty_eqn(self):
@@ -102,6 +104,35 @@ class TestTokenizerCase(unittest.TestCase):
                    '%s (%s) should be %s (%s)' % (toks[i][1],
                      type(toks[i][1]), self.tok_vals[i],
                      type(self.tok_vals[i])))
+
+
+  def test_leading_decimal(self):
+    '''
+    test to make sure we handle numbers with leading decimal points
+    '''
+    toks = scanner.tokenize(self.eqn_dec)
+
+    self.assert_(len(toks) is 1, 'toks: %s' % toks)
+    self.assert_(toks[0][0] is scanner.NUMBER)
+
+
+  def test_number_value(self):
+    '''
+    test to make sure we handle numbers with leading decimal points
+    '''
+    toks = scanner.tokenize(self.eqn_dec)
+
+    self.assert_(len(toks) is 1, 'toks: %s' % toks)
+    self.assert_(toks[0][1] == self.eqn_dec, 
+                 '%s should equal %s' % (toks[0][1], self.eqn_dec))
+
+
+  def test_extra_decimal(self):
+    '''
+    test to make sure we handle numbers with leading decimal points
+    '''
+
+    self.assertRaises(ValueError, scanner.tokenize, self.eqn_bad_dec)
 
 
 

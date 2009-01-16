@@ -50,10 +50,7 @@ IDEN_INTEGRAL = 'integ'
 __reserved = {IDEN_INTEGRAL: INTEGRAL,
              }
 
-# compile some regular expressions for use tokenizing
-__RE_IDEN = re.compile('^[a-z](\w|\s)*')
-__RE_NUM = re.compile('^[0-9]*\.?[0-9]*(e?[-+]?[0-9]+)?')
-
+OPERATORS = '+-*/^,()[]'
 
 class Token:
   '''
@@ -94,38 +91,66 @@ def tokenize(eqn, var=None):
   if eqn.strip() == '':
     return []
 
-  eqn = eqn.strip()
-
   # we're case insensitive in system dynamics...
   eqn = eqn.lower()
 
   toks = []
+  pos = 0
+  length = len(eqn)
+  while pos < length:
 
-  while eqn is not '':
+    # skip whitespace
+    if eqn[pos].isspace():
+      pos += 1
+      continue
 
-    if eqn[0].isalpha():
-      m = __RE_IDEN.search(eqn)
+    # check for identifiers
+    if eqn[pos].isalpha():
+      start = pos
 
-      tok = (IDENTIFIER, m.group().strip())
+      while pos < length:
+        if eqn[pos].isalpha() or eqn[pos].isdigit() or eqn[pos] == '_':
+          pos += 1
+        else:
+          break
+
+      iden = eqn[start:pos]
+
+      tok = (IDENTIFIER, iden)
       # if this identifier is a language construct we
       # update the token type.
       tok = _promote_identifier(tok)
 
       toks.append(tok)
 
-      eqn = eqn[m.end():]
+    # next check for numbers
+    elif eqn[pos].isdigit() or eqn[pos] == '.':
 
-    elif eqn[0].isdigit() or eqn[0] is '.':
-      m = __RE_NUM.search(eqn)
-      toks.append((NUMBER, m.group()))
+      # keep track of how many decimals we have, SHOULD only be 1
+      num_decimals = 0
 
-      eqn = eqn[m.end():]
+      start = pos
+      while pos < length:
+        if  eqn[pos].isdigit() or eqn[pos] == '.':
+          if eqn[pos] == '.':
+            num_decimals += 1
+          pos += 1
+        else:
+          break
+
+      if num_decimals > 1:
+        raise ValueError, 'more than one decimal in number'
+
+      num = eqn[start:pos]
+      toks.append((NUMBER, num))
 
     else:
-      toks.append((OPERATOR, eqn[0]))
-      eqn = eqn[1:]
+      if OPERATORS.find(eqn[pos]) is -1:
+        raise ValueError, '\'%s\' (%d) is not a valid operator' % (eqn[pos],
+                                                                   pos)
+      toks.append((OPERATOR, eqn[pos]))
 
-    eqn = eqn.lstrip()    
+      pos += 1
 
   return toks
 
