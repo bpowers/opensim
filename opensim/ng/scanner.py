@@ -33,21 +33,19 @@ IDENTIFIER = 1
 NUMBER     = 2
 OPERATOR   = 3
 INTEGRAL   = 4
-IF         = 5
-
-TOK_RANGE_MIN = IDENTIFIER
-TOK_RANGE_MAX = OPERATOR
-
-# identifier that represents integrals
-IDEN_INTEGRAL = 'integ'
 
 __token_names  = ['',
                   'identifier',
                   'number',
                   'operator',
                   'integral',
-                  'if statement',
                  ]
+
+TOK_RANGE_MIN = IDENTIFIER
+TOK_RANGE_MAX = len(__token_names)
+
+# identifier that represents integrals
+IDEN_INTEGRAL = 'integ'
 
 __reserved = {IDEN_INTEGRAL: INTEGRAL,
              }

@@ -37,6 +37,7 @@ class TestTokenizerCase(unittest.TestCase):
     self.eqn_num = 3.14
     self.eqn_ok = "20+time"
     self.eqn_space = "  20  +  time  "
+    self.tok_vals = ['20', '+', 'time']
 
 
   def test_empty_eqn(self):
@@ -86,6 +87,21 @@ class TestTokenizerCase(unittest.TestCase):
     # should return a list of 3 toks
     self.assert_(isinstance(toks, list))
     self.assert_(len(toks) is 3)
+
+
+  def test_tok_contents(self):
+    '''
+    test to make sure we pass along the contents of the tokens correctly
+    '''
+    toks = scanner.tokenize(self.eqn_ok)
+
+    self.assert_(len(toks) is len(self.tok_vals))
+    # the tokens should have these, and only these values
+    for i in range(len(toks)):
+      self.assert_(toks[i][1] == self.tok_vals[i],
+                   '%s (%s) should be %s (%s)' % (toks[i][1],
+                     type(toks[i][1]), self.tok_vals[i],
+                     type(self.tok_vals[i])))
 
 
 
