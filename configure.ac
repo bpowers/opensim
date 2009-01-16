@@ -9,10 +9,9 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
+AM_MAINTAINER_MODE
 
-
-# Checks for programs.
-AC_PROG_CC_C99
+# we really only need gcc if we're on the mac
 
 # Check if we're on the mac.
 AC_CANONICAL_HOST
@@ -22,66 +21,35 @@ case $host_os in
 esac
 
 AM_CONDITIONAL([DARWIN], $on_mac) 
-if test x$on_mac == xtrue; then
-  AM_CONDITIONAL([am__fastdepOBJC], true)
-  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
-else
-  AM_CONDITIONAL([am__fastdepOBJC], false)
-fi
+AM_CONDITIONAL([am__fastdepOBJC], false)
+mac_make
 
-AC_DISABLE_FAST_INSTALL
+#if test x$on_mac == xtrue; then
+#  mac_make=packaging/mac/Makefile
+#  AM_CONDITIONAL([am__fastdepOBJC], true)
 
-AC_LIBTOOL_WIN32_DLL
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
-DOLT
-
-
-AC_ARG_ENABLE([python],
-              AC_HELP_STRING([--enable-python],
-                             [python bindings and frontend]),,
-              [enable_python=yes])
+#  AC_PROG_CC_C99
+#  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
+#  AC_DISABLE_FAST_INSTALL
+#  AC_DISABLE_STATIC
+#  AC_PROG_LIBTOOL
+#  DOLT
+#fi
 
 
 
-if test "x$enable_python" = "xyes"; then
-  AM_PATH_PYTHON([2.5])
 
-  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find python headers)])
+# Checks for programs.
+AC_PROG_INSTALL
 
-  #PKG_CHECK_MODULES(PYGOBJ, [pygobject-2.0])
-  #AC_SUBST(PYGOBJ_CFLAGS)
-  #AC_SUBST(PYGOBJ_LIBS)
-
-  have_python=yes
-fi
-
-AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes) 
-
-# Checks for libraries.
-
-# Checks for header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
-AC_TYPE_SIZE_T
-
-# Checks for library functions.
-AC_FUNC_STRTOD
-AC_FUNC_ALLOCA
-AC_CHECK_FUNCS([isascii])
+# automake macros
+AM_PATH_PYTHON
 
 
 AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
 
 
-# AM_GNU_GETTEXT_VERSION([0.16])
-# AM_GNU_GETTEXT([external])
-
-
 AC_CONFIG_FILES([
-po/Makefile.in
 opensim/ng/Makefile
 opensim/visuals/widgets/Makefile
 opensim/visuals/Makefile
@@ -89,7 +57,7 @@ opensim/Makefile
 icons/Makefile
 share/Makefile
 src/Makefile
-packaging/mac/Makefile
+$mac_make
 Makefile
 ])
 
