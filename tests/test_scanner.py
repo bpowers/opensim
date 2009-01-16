@@ -37,7 +37,7 @@ class TestTokenizerCase(unittest.TestCase):
     self.eqn_num = 3.14
     self.eqn_ok = "20+time"
     self.eqn_space = "  20  +  time  "
-    self.tok_vals = ['20', '+', 'time']
+    self.tok_idens = ['20', '+', 'time']
     self.eqn_dec = ".2"
     self.eqn_bad_dec = ".2.2.2"
 
@@ -97,13 +97,13 @@ class TestTokenizerCase(unittest.TestCase):
     '''
     toks = scanner.tokenize(self.eqn_ok)
 
-    self.assert_(len(toks) is len(self.tok_vals))
+    self.assert_(len(toks) is len(self.tok_idens))
     # the tokens should have these, and only these values
     for i in range(len(toks)):
-      self.assert_(toks[i][1] == self.tok_vals[i],
-                   '%s (%s) should be %s (%s)' % (toks[i][1],
-                     type(toks[i][1]), self.tok_vals[i],
-                     type(self.tok_vals[i])))
+      self.assert_(toks[i].iden == self.tok_idens[i],
+                   '%s (%s) should be %s (%s)' % (toks[i].iden,
+                     type(toks[i].iden), self.tok_idens[i],
+                     type(self.tok_idens[i])))
 
 
   def test_leading_decimal(self):
@@ -113,7 +113,7 @@ class TestTokenizerCase(unittest.TestCase):
     toks = scanner.tokenize(self.eqn_dec)
 
     self.assert_(len(toks) is 1, 'toks: %s' % toks)
-    self.assert_(toks[0][0] is scanner.NUMBER)
+    self.assert_(toks[0].kind is scanner.NUMBER)
 
 
   def test_number_value(self):
@@ -123,16 +123,22 @@ class TestTokenizerCase(unittest.TestCase):
     toks = scanner.tokenize(self.eqn_dec)
 
     self.assert_(len(toks) is 1, 'toks: %s' % toks)
-    self.assert_(toks[0][1] == self.eqn_dec, 
-                 '%s should equal %s' % (toks[0][1], self.eqn_dec))
+    self.assert_(toks[0].iden == self.eqn_dec, 
+                 '%s should equal %s' % (toks[0].iden, self.eqn_dec))
 
 
   def test_extra_decimal(self):
     '''
     test to make sure we handle numbers with leading decimal points
-    '''
 
-    self.assertRaises(ValueError, scanner.tokenize, self.eqn_bad_dec)
+    we should handle them by putting a string in the error field
+    of the token
+    '''
+    toks = scanner.tokenize(self.eqn_bad_dec)
+
+    self.assert_(len(toks) is 1)
+    self.assert_(toks[0].error is not None)
+    self.assert_(isinstance(toks[0].error, str))
 
 
 
@@ -158,9 +164,9 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(num_toks is self.num_toks,
                  'expected %d toks, got %d : %s' %
                  (self.num_toks, num_toks, toks))
-    self.assert_(first_tok[0] is scanner.INTEGRAL,
+    self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok[1], scanner.name_for_tok_type(first_tok[0])))
+                 (first_tok.kind, scanner.name_for_tok_type(first_tok.kind)))
 
 
   def test_spaces(self):
@@ -174,9 +180,9 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(num_toks is self.num_toks,
                  'expected %d toks, got %d : %s' %
                  (self.num_toks, num_toks, toks))
-    self.assert_(first_tok[0] is scanner.INTEGRAL,
+    self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok[1], scanner.name_for_tok_type(first_tok[0])))
+                 (first_tok.iden, scanner.name_for_tok_type(first_tok.kind)))
 
 
   def test_leading_spaces(self):
@@ -190,9 +196,9 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(num_toks is self.num_toks,
                  'expected %d toks, got %d : %s' %
                  (self.num_toks, num_toks, toks))
-    self.assert_(first_tok[0] is scanner.INTEGRAL,
+    self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok[1], scanner.name_for_tok_type(first_tok[0])))
+                 (first_tok.iden, scanner.name_for_tok_type(first_tok.kind)))
 
 
   def test_trailing_spaces(self):
@@ -206,9 +212,9 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(num_toks is self.num_toks,
                  'expected %d toks, got %d : %s' %
                  (self.num_toks, num_toks, toks))
-    self.assert_(first_tok[0] is scanner.INTEGRAL,
+    self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok[1], scanner.name_for_tok_type(first_tok[0])))
+                 (first_tok.iden, scanner.name_for_tok_type(first_tok.kind)))
 
 
   def test_leading_and_trailing_spaces(self):
@@ -222,9 +228,9 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(num_toks is self.num_toks,
                  'expected %d toks, got %d : %s' %
                  (self.num_toks, num_toks, toks))
-    self.assert_(first_tok[0] is scanner.INTEGRAL,
+    self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok[1], scanner.name_for_tok_type(first_tok[0])))
+                 (first_tok.iden, scanner.name_for_tok_type(first_tok.kind)))
 
 
 

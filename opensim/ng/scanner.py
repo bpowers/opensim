@@ -52,6 +52,7 @@ __reserved = {IDEN_INTEGRAL: INTEGRAL,
 
 OPERATORS = '+-*/^,()[]'
 
+
 class Token:
   '''
   Represents a distinct token in an equation.
@@ -67,6 +68,8 @@ class Token:
     self.kind = kind
     self.iden = iden
     self.val = val
+
+    self.error = None
 
 
 
@@ -116,10 +119,10 @@ def tokenize(eqn, var=None):
 
       iden = eqn[start:pos]
 
-      tok = (IDENTIFIER, iden)
+      tok = Token(start, pos-start, IDENTIFIER, iden)
       # if this identifier is a language construct we
       # update the token type.
-      tok = _promote_identifier(tok)
+      __promote_identifier(tok)
 
       toks.append(tok)
 
@@ -138,24 +141,30 @@ def tokenize(eqn, var=None):
         else:
           break
 
-      if num_decimals > 1:
-        raise ValueError, 'more than one decimal in number'
-
       num = eqn[start:pos]
-      toks.append((NUMBER, num))
+      tok = Token(start, pos-start, NUMBER, num)
+
+      if num_decimals > 1:
+        tok.error = 'more than one decimal in number'
+
+      if not tok.error:
+        tok.val = float(num)
+
+      toks.append(tok)
 
     else:
       if OPERATORS.find(eqn[pos]) is -1:
         raise ValueError, '\'%s\' (%d) is not a valid operator' % (eqn[pos],
                                                                    pos)
-      toks.append((OPERATOR, eqn[pos]))
+      tok = Token(pos, 1, OPERATOR, eqn[pos])
+      toks.append(tok)
 
       pos += 1
 
   return toks
 
 
-def _promote_identifier(token):
+def __promote_identifier(token):
   '''
   Promote reserved identifiers to their individual token type.
 
@@ -164,12 +173,8 @@ def _promote_identifier(token):
   token types.
   '''
 
-  iden = token[1]
-
-  if __reserved.has_key(iden):
-    return (__reserved[iden], iden)
-
-  return token
+  if __reserved.has_key(token.iden):
+    token.kind = __reserved[token.iden]
 
 
 def name_for_tok_type(tok_type):
