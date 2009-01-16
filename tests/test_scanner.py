@@ -80,6 +80,16 @@ class TestTokenizerCase(unittest.TestCase):
     self.assert_(len(toks) is 3)
 
 
+  def test_only_tokens_2(self):
+    '''
+    test to make sure we only create tokens
+    '''
+    toks = scanner.tokenize(self.eqn_ok)
+
+    for tok in toks:
+      self.assert_(isinstance(tok, scanner.Token))
+
+
   def test_spaced_eqn(self):
     '''
     test to make sure we handle good equations with spaces
@@ -231,6 +241,16 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     self.assert_(first_tok.kind is scanner.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
                  (first_tok.iden, scanner.name_for_tok_type(first_tok.kind)))
+
+
+  def test_only_tokens_1(self):
+    '''
+    Test to make sure we only return Tokens.
+    '''
+    toks = scanner.tokenize(self.eqn5)
+
+    for tok in toks:
+      self.assert_(isinstance(tok, scanner.Token))
 
 
 
