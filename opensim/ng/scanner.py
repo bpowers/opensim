@@ -58,11 +58,11 @@ class Token:
   Represents a distinct token in an equation.
   '''
 
-  def __init__(self, position, length, kind, iden=None, val=None):
+  def __init__(self, start, length, kind, iden=None, val=None):
 
     # taking a page from clang, lets keep info on where are tok is
     # so that we can provide meaningful diagnostics later.
-    self.position = position
+    self.start = start
     self.length = length
 
     self.kind = kind

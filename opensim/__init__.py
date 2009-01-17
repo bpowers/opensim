@@ -22,3 +22,8 @@
 # This file contains some initialization needed for the Python modules
 #
 #===-----------------------------------------------------------------------===#
+
+import opensim.ng.errors as errors
+
+# initialize opensim's logging of errors
+errors.config_logging()

@@ -24,7 +24,8 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import sys, gobject, getopt
+import sys, logging, getopt
+import gobject
 from opensim import engine
 from opensim.engine import Simulator
 
