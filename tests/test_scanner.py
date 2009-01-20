@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-#===--- test_scanner.py - Token manipulation function testss -------------===#
+#===--- test_scanner.py - Token manipulation function tests --------------===#
 #
 # Copyright 2008 Bobby Powers
 #
