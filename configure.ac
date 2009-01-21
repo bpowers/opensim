@@ -20,21 +20,20 @@ case $host_os in
 *)        on_mac=false;; 
 esac
 
-AM_CONDITIONAL([DARWIN], $on_mac) 
-AM_CONDITIONAL([am__fastdepOBJC], false)
-mac_make
+AM_CONDITIONAL([DARWIN], $on_mac)
 
-#if test x$on_mac == xtrue; then
-#  mac_make=packaging/mac/Makefile
-#  AM_CONDITIONAL([am__fastdepOBJC], true)
+if test x$on_mac == xtrue; then
+  AM_CONDITIONAL([am__fastdepOBJC], true)
 
-#  AC_PROG_CC_C99
-#  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
-#  AC_DISABLE_FAST_INSTALL
-#  AC_DISABLE_STATIC
-#  AC_PROG_LIBTOOL
-#  DOLT
-#fi
+  AC_PROG_CC_C99
+  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
+  AC_DISABLE_FAST_INSTALL
+  AC_DISABLE_STATIC
+  AC_PROG_LIBTOOL
+  DOLT
+else
+  AM_CONDITIONAL([am__fastdepOBJC], false)
+fi
 
 
 
@@ -57,7 +56,8 @@ opensim/Makefile
 icons/Makefile
 share/Makefile
 src/Makefile
-$mac_make
+tests/Makefile
+packaging/mac/Makefile
 Makefile
 ])
 

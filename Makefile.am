@@ -1,5 +1,6 @@
-EXTRA_DIST            = bootstrap examples packaging/activity
-SUBDIRS 	            = opensim
+EXTRA_DIST            = bootstrap examples packaging \
+                        tests doc icons share
+SUBDIRS               = opensim tests
 
 MAINTAINERCLEANFILES  = Makefile.in aclocal.m4 configure \
                         config-h.in stamp-h.in stamp-h1
