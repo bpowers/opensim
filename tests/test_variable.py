@@ -36,9 +36,6 @@ class TestVariableCase(unittest.TestCase):
     self.sim = engine.Simulator()
     self.var = self.sim.new_variable(self.name, self.eqn)
 
-  def tearDown(self):
-    del self.sim
-
 
   def test_var_created(self):
     '''
@@ -53,7 +50,7 @@ class TestVariableCase(unittest.TestCase):
 
   def test_name_set(self):
     '''
-    test to make sure we handle empty equations
+    test to make sure we set the name correctly
     '''
     self.assert_(self.var.props.name == self.name)
 

@@ -83,20 +83,20 @@ class Variable(gobject.GObject):
                           (gobject.TYPE_STRING,))
   }
 
-  __tokens = None
-
-  # private vars
-  __name = ''
-  __equation = ''
-  __units = ''
-  __comments = ''
-  __type = UNDEF
-  __parent = None
-  __valid = False
-
 
   def __init__(self, parent, name, equation=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
+
+
+    self.__tokens = None
+
+    self.__name = ''
+    self.__equation = ''
+    self.__units = ''
+    self.__comments = ''
+    self.__type = UNDEF
+    self.__parent = None
+    self.__valid = False
 
     if not name or name == '':
       raise AttributeError('missing name for variable')
