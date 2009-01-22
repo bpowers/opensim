@@ -45,4 +45,4 @@ full_suite = unittest.TestSuite(__tests)
 
 if __name__ == '__main__':
   # give us more verbose output than the standard unittest.main()
-  unittest.TextTestRunner(verbosity=2).run(suite())
+  unittest.TextTestRunner(verbosity=2).run(full_suite)
