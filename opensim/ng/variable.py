@@ -195,14 +195,14 @@ class Variable(gobject.GObject):
     if len(self.__tokens) is 0:
       self.__type = NONE
 
-    elif self.__tokens[0][0] is scanner.INTEGRAL:
+    elif self.__tokens[0].kind is scanner.INTEGRAL:
       self.__type = STOCK
 
-    elif self.__tokens[0][0] is scanner.OPERATOR and \
-       self.__tokens[0][1] == '[':
+    elif self.__tokens[0].kind is scanner.OPERATOR and \
+       self.__tokens[0].iden == '[':
       self.__type = LOOKUP
 
-    elif len(self.__tokens) is 1 and self.__tokens[0][0] is scanner.NUMBER:
+    elif len(self.__tokens) is 1 and self.__tokens[0].kind is scanner.NUMBER:
       self.__type = CONST
 
     else:

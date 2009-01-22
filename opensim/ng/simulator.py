@@ -74,21 +74,20 @@ class Simulator(gobject.GObject):
                           (gobject.TYPE_OBJECT,))
   }
 
-  __vars = {}
-  __vars_list = []
-  __vars_invalid = []
-  __model = None
-  __generator = None
-
-  __model_name = ''
-  __file_name = ''
-  __output_type = 4
-  __output_file_name = ''
-
-
 
   def __init__(self, model_name=None, file_name=None, **kwargs):
     gobject.GObject.__init__(self, **kwargs)
+
+    self.__vars = {}
+    self.__vars_list = []
+    self.__vars_invalid = []
+    self.__model = None
+    self.__generator = None
+
+    self.__model_name = ''
+    self.__file_name = ''
+    self.__output_type = 4
+    self.__output_file_name = ''
 
     if model_name:
       self.props.model_name = model_name
@@ -111,7 +110,7 @@ class Simulator(gobject.GObject):
     '''
 
     if len(self.__vars_list) is not 0:
-      log.error('we can only initialize time on new models')
+      raise StandardError, 'we can only initialize time on new models'
       return False
 
     self.new_variable('time start', INITIAL_TIME_START)
@@ -251,7 +250,7 @@ class Simulator(gobject.GObject):
 
     # make sure it is actually new
     if self.__vars.has_key(var_name):
-      log.error('new variable already exists')
+      log.error('variable \'%s\' already exists' % var_name)
       return None
 
     new_var = Variable(self, var_name, var_eqn)
