@@ -242,8 +242,8 @@ class Variable(gobject.GObject):
 
     identifiers = []
     for tok in self.__tokens:
-      if tok[0] is scanner.IDENTIFIER:
-        identifiers.append(tok[1])
+      if tok.kind is scanner.IDENTIFIER:
+        identifiers.append(tok.iden)
 
     # this will stop us from referencing function names and INTEG
     identifiers = scanner.strip_reserved(identifiers)
