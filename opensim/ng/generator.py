@@ -139,7 +139,7 @@ class Generator:
 
 
   def _get_args(self, num_args=-1):
-    if self.__cur_tok[1] != '(':
+    if self.__cur_tok.iden != '(':
       raise AttributeError
 
     # eat '('
