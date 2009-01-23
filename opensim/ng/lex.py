@@ -47,7 +47,7 @@ TOK_RANGE_MAX = len(__token_names)
 # identifier that represents integrals
 IDEN_INTEGRAL = 'integ'
 
-__reserved = {IDEN_INTEGRAL: INTEGRAL,
+_reserved = {IDEN_INTEGRAL: INTEGRAL,
              }
 
 OPERATORS = '+-*/^,()[]'
@@ -70,6 +70,105 @@ class Token:
     self.val = val
 
     self.error = None
+
+
+
+class Scanner:
+  '''
+  Produces tokens from an input equation
+  '''
+  
+  def __init__(self, var=None, eqn=None):
+    '''
+    Initialize a scanner for a given variable
+    '''
+    if var:
+      self.__var = var
+      self.__eqn = var.props.equation
+    else:
+      self.__eqn = eqn
+    # a little shorter than calling len each time we need it
+    self.__len = len(self.__eqn)
+    self.__pos = 0
+
+
+  def get_tok(self):
+    '''
+    Gets the next token from the scanner, or None if at end of equation
+    '''
+    eqn = self.__eqn
+    while self.__pos < self.__len:
+
+      # skip whitespace
+      if eqn[self.__pos].isspace():
+        self.__pos += 1
+        continue
+
+      # check for identifiers
+      if eqn[self.__pos].isalpha():
+        start = self.__pos
+
+        while self.__pos < self.__len:
+          if eqn[self.__pos].isalpha() or eqn[self.__pos].isdigit() or \
+             eqn[self.__pos] == '_':
+            self.__pos += 1
+          else:
+            break
+
+        iden = eqn[start:self.__pos]
+
+        tok = Token(start, self.__pos-start, IDENTIFIER, iden)
+        # if this identifier is a language construct we
+        # update the token type.
+        self.__promote_identifier(tok)
+
+        return tok
+
+      # next check for numbers
+      elif eqn[self.__pos].isdigit() or eqn[self.__pos] == '.':
+
+        # keep track of how many decimals we have, SHOULD only be 1
+        num_decimals = 0
+
+        start = self.__pos
+        while self.__pos < self.__len:
+          if  eqn[self.__pos].isdigit() or eqn[self.__pos] == '.':
+            if eqn[self.__pos] == '.':
+              num_decimals += 1
+            self.__pos += 1
+          else:
+            break
+
+        num = eqn[start:self.__pos]
+        tok = Token(start, self.__pos-start, NUMBER, num)
+
+        if num_decimals > 1:
+          tok.error = 'more than one decimal in number'
+
+        if not tok.error:
+          tok.val = float(num)
+
+        return tok
+
+      else:
+        if OPERATORS.find(eqn[self.__pos]) is -1:
+          raise ValueError, '\'%s\' (%d) is not a valid operator' % \
+                            (eqn[self.__pos], self.__pos)
+        tok = Token(self.__pos, 1, OPERATOR, eqn[self.__pos])
+        self.__pos += 1
+        return tok
+
+
+  def __promote_identifier(self, token):
+    '''
+    Promote reserved identifiers to their individual token type.
+
+    Some identifiers (like if, integ, else, etc.) represent language
+    constructs, so we promote them from identifiers to their respective
+    token types.
+    '''
+    if _reserved.has_key(token.iden):
+      token.kind = _reserved[token.iden]
 
 
 
@@ -98,83 +197,14 @@ def tokenize(eqn, var=None):
   eqn = eqn.lower()
 
   toks = []
-  pos = 0
-  length = len(eqn)
-  while pos < length:
-
-    # skip whitespace
-    if eqn[pos].isspace():
-      pos += 1
-      continue
-
-    # check for identifiers
-    if eqn[pos].isalpha():
-      start = pos
-
-      while pos < length:
-        if eqn[pos].isalpha() or eqn[pos].isdigit() or eqn[pos] == '_':
-          pos += 1
-        else:
-          break
-
-      iden = eqn[start:pos]
-
-      tok = Token(start, pos-start, IDENTIFIER, iden)
-      # if this identifier is a language construct we
-      # update the token type.
-      __promote_identifier(tok)
-
-      toks.append(tok)
-
-    # next check for numbers
-    elif eqn[pos].isdigit() or eqn[pos] == '.':
-
-      # keep track of how many decimals we have, SHOULD only be 1
-      num_decimals = 0
-
-      start = pos
-      while pos < length:
-        if  eqn[pos].isdigit() or eqn[pos] == '.':
-          if eqn[pos] == '.':
-            num_decimals += 1
-          pos += 1
-        else:
-          break
-
-      num = eqn[start:pos]
-      tok = Token(start, pos-start, NUMBER, num)
-
-      if num_decimals > 1:
-        tok.error = 'more than one decimal in number'
-
-      if not tok.error:
-        tok.val = float(num)
-
-      toks.append(tok)
-
-    else:
-      if OPERATORS.find(eqn[pos]) is -1:
-        raise ValueError, '\'%s\' (%d) is not a valid operator' % (eqn[pos],
-                                                                   pos)
-      tok = Token(pos, 1, OPERATOR, eqn[pos])
-      toks.append(tok)
-
-      pos += 1
+  
+  scanner = Scanner(var, eqn)
+  tok = scanner.get_tok()
+  while tok:
+    toks.append(tok)
+    tok = scanner.get_tok()
 
   return toks
-
-
-def __promote_identifier(token):
-  '''
-  Promote reserved identifiers to their individual token type.
-
-  Some identifiers (like if, integ, else, etc.) represent language
-  constructs, so we promote them from identifiers to their respective
-  token types.
-  '''
-
-  if __reserved.has_key(token.iden):
-    token.kind = __reserved[token.iden]
 
 
 def name_for_tok_type(tok_type):
