@@ -24,10 +24,12 @@
 #===----------------------------------------------------------------------===#
 
 
-import logging as log
+import logging
 import ast
 import lex
-from constants import *
+import constants as sim
+
+log = logging.getLogger('opensim.parse')
 
 _precedence = {'=': 2,
                '<': 10,
@@ -56,8 +58,7 @@ class Generator:
 
     log.debug('initializing AST')
 
-    self.__cur_tok = None
-    self._top_level_vars = list(self.__var_list)
+    self.__top_level_vars = list(self.__var_list)
     self.__ast = ast.ASTScope(None, 'root')
     self.__ast.vars = self.__vars
     self.__ast.child = ast.ASTList(self.__ast)
@@ -65,65 +66,13 @@ class Generator:
     self.__ast_loop = ast.ASTEuler(self.__ast.child)
     self.__ast.child.statements = [self.__ast_initial, self.__ast_loop]
 
-    while len(self._top_level_vars) > 0:
-      var = self._top_level_vars.pop()
+    while len(self.__top_level_vars) > 0:
+      var = self.__top_level_vars.pop()
       #self._process_var(var)
 
     if len(self.__errors) > 0:
       log.error('the model has %d errors' % len(self.__errors))
 
-
-  def _get_tok_precedence(self):
-    if not self.__cur_tok[0] is lex.OPERATOR:
-      return -1
-
-    return _precedence[cur_tok[1]]
-
-
-  def _process_var(self, var):
-    self.__toks_index = 0
-    self.__cur_var = var
-
-    if len(self.__cur_toks) is 0:
-      return
-
-    # prime cur_tok
-    self._get_next_tok()
-
-    trees = self._parse_equation()
-
-
-  def _parse_equation(self):
-    if self.__cur_var.props.type is STOCK:
-      return self._parse_stock()
-    elif self.__cur_var.props.type is CONST:
-      return (('initial', self._parse_expression()))
-    else:
-      return (('flows', self._parse_expression()))
-
-
-  def _parse_expression(self):
-    log.debug('parsing expression')
-
-
-  def _parse_stock(self):
-    # we know the first token is an INTEG, so eat it.
-    self._get_next_tok()
-    initial, change = self._get_args(2)
-    log.debug('parsing stock')
-
-
-  def _get_args(self, num_args=-1):
-    if self.__cur_tok.iden != '(':
-      raise AttributeError
-
-    # eat '('
-    self._get_next_tok()
-
-    # now we need to split at the ',' token and parse the
-    # two arguments, as they are not necessarily simple constants
-
-    return (None,None)
 
   def update(self, var):
     '''
@@ -134,12 +83,73 @@ class Generator:
     self.__initialize()
 
 
-  def rebase(self, vars, var_list):
+  def rebase(self, variables, var_list):
     '''
     Replace the current AST with one based on a new set of variables.
     '''
 
-    self.__vars = vars
+    self.__vars = variables
     self.__var_list = var_list
 
     self.__initialize()
+
+
+
+class Parser:
+  '''
+  Class to parse variable expressions and create well formed ASTs.
+  '''
+
+  def __init__(self, var):
+    '''
+    Initialize a parser for a specific variable and it's equation.
+    '''
+    self.__var = var
+    self.__scanner = lex.Scanner(var)
+    self.__cur_tok = None
+    self.__ast = None
+
+    self.kind = sim.UNDEF
+
+    self._get_next_tok()
+    self._parse_primary()
+
+
+  def _get_next_tok(self):
+    self.__cur_tok = self.__scanner.get_tok()
+
+
+  def _get_tok_precedence(self):
+    if self.__cur_tok.kind is not lex.OPERATOR:
+      return -1
+
+    return _precedence[tok.iden]
+
+
+  def _parse_primary(self):
+    if self.__cur_tok is None:
+      return
+
+    if self.__cur_tok.kind is lex.INTEG:
+      self._parse_integ()
+    elif self.__cur_tok.iden == '[':
+      self._parse_lookup()
+
+
+  def _parse_lookup(self):
+    '''
+    Handle the equation as a lookup table.
+
+    We're going to do this through python's built in 'eval' function,
+    since our syntax for declaring lookup tables is equivolent to the
+    Python for declaring lists of two-tuples.
+    '''
+    try:
+      self.table = eval(self.__var.props.equation)
+      assert isinstance(self.table, list)
+    except:
+      log.error('lookup table was incorrectly formatted:\n%s' %
+                self.__var.props.equation)
+    else:
+      self.kind = sim.LOOKUP
+
