@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+import opensim
 import opensim.ng as engine
 
 LOG_FORMAT = '%(levelname)s: %(message)s'
@@ -43,9 +44,11 @@ def run():
     test.connect('equation_changed', equation_checker)
     test.props.equation = 'lookup[time] * another_factor'
 
-    print("%s's influences:" % test.props.name)
-    for v in test.get_influences():
-      print('  %s' % v.props.name)
+    influences = test.get_influences()
+    if influences is not None:
+      print("%s's influences:" % test.props.name)
+      for influence in influences:
+        print('  %s' % influence.props.name)
 
   variables = sim.get_vars()
   if variables:
@@ -74,6 +77,6 @@ def run():
 
 # run if we're the main module
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+  opensim.enable_logging()
   run()
 

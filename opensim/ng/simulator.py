@@ -29,12 +29,16 @@ pygtk.require("2.0")
 
 import gobject
 from gettext import gettext as _
-import logging as log
+import logging
 
 # opensim variables...
 from variable import Variable
 from parse import Generator
 from constants import *
+
+log = logging.getLogger('opensim.sim')
+
+
 
 class Simulator(gobject.GObject):
 
@@ -162,9 +166,9 @@ class Simulator(gobject.GObject):
       raise AttributeError('unknown prop: "%s"' % prop.name)
 
 
-  def do_set_property(self, prop,value):
+  def do_set_property(self, prop, value):
     '''
-    standart gobject setter.
+    standard gobject setter.
     '''
 
     if not value:

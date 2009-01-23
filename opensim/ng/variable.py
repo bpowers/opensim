@@ -24,16 +24,17 @@
 #
 #===----------------------------------------------------------------------===#
 
-import pygtk
-pygtk.require("2.0")
+import logging
 
 import gobject
 from gettext import gettext as _
-import logging as log
 
 from constants import *
 import simulator
-import lex
+
+log = logging.getLogger('opensim.var')
+
+
 
 class Variable(gobject.GObject):
 

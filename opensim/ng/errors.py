@@ -27,7 +27,18 @@ import sys, logging, logging.handlers
 
 logger = None
 
-def config_logging(level=logging.DEBUG, file=None, stream=sys.stderr):
+
+
+class NullHandler(logging.Handler):
+  '''
+  Dummy logging handler
+  '''
+  def emit(self, record):
+    pass
+
+
+def config_logging(level=logging.DEBUG, ofile=None,
+                   ostream=sys.stderr, handler=None):
   '''
   Initialize logging for opensim modules
   '''
@@ -35,18 +46,20 @@ def config_logging(level=logging.DEBUG, file=None, stream=sys.stderr):
   logger.setLevel(level)
 
   # I like this format.
-  format = logging.Formatter('%(levelname)s: %(message)s')
+  format = logging.Formatter('%(name)s:\t%(levelname)s: %(message)s')
 
-  if file:
-    file_log = logging.handlers.FileHandler(file)
+  if ofile:
+    file_log = logging.handlers.FileHandler(ofile)
     file_log.setLevel(logging.DEBUG)
     file_log.setFormatter(format)
     logger.addHandler(file_log)
-  if stream:
-    stream_log = logging.StreamHandler(stream)
+  if ostream:
+    stream_log = logging.StreamHandler(ostream)
     stream_log.setLevel(logging.DEBUG)
     stream_log.setFormatter(format)
     logger.addHandler(stream_log)
+  if handler:
+    logger.addHandler(handler)
 
 
 def report_eqn_error(error, var, tok, other_toks=None, log=logger):
