@@ -23,7 +23,7 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import opensim.ng.errors as errors
+import engine.errors as errors
 
 # initialize opensim's logging of errors
 errors.config_logging(ostream=None, handler=errors.NullHandler())

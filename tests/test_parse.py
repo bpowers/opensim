@@ -23,8 +23,8 @@
 #
 #===----------------------------------------------------------------------===#
 
-import opensim.ng as engine
-import opensim.ng.parse as parse
+import opensim.engine as engine
+import opensim.engine.parse as parse
 import unittest
 
 

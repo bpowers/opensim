@@ -24,8 +24,8 @@
 #
 #===----------------------------------------------------------------------===#
 
-import opensim.ng as engine
-import opensim.ng.lex as lex
+import opensim.engine as engine
+import opensim.engine.lex as lex
 import unittest
 
 

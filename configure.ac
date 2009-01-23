@@ -49,7 +49,7 @@ AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
 
 
 AC_CONFIG_FILES([
-opensim/ng/Makefile
+opensim/engine/Makefile
 opensim/visuals/widgets/Makefile
 opensim/visuals/Makefile
 opensim/Makefile

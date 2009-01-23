@@ -24,8 +24,8 @@
 #
 #===----------------------------------------------------------------------===#
 
-import opensim.ng as engine
-import opensim.ng.variable as variable
+import opensim.engine as engine
+import opensim.engine.variable as variable
 import unittest
 
 

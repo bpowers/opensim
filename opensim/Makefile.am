@@ -1,4 +1,4 @@
-SUBDIRS = ng
+SUBDIRS = engine
 
 pkgpython_PYTHON = __init__.py
 #activitydir = $(top_srcdir)/activity/site-packages/opensim
