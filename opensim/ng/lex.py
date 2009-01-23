@@ -225,7 +225,7 @@ def name_for_tok_type(tok_type):
 
 def strip_reserved(identifiers):
   '''
-  Removed reserved identifiers from a lost of identifiers.  Initially
+  Removed reserved identifiers from a list of identifiers.  Initially
   (if not only) for getting a list of influences from variables.
   '''
 

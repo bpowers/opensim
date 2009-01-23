@@ -25,18 +25,18 @@ def run():
   sim = engine.Simulator('sweet example')
   
   # set control variables
-  save_step = sim.get_variable('time_savestep')
+  save_step = sim.get_var('time_savestep')
   if save_step:
     save_step.props.equation = '4'
   
   # set sim-specific variables
-  sim.new_variable('weird', '3.14*time')
-  sim.new_variable('lookup', '[(0,2),(50,40),(80,56)]')
-  sim.new_variable('test', 'lookup[time]')
-  sim.new_variable('another factor', 'weird*2')
-  test = sim.new_variable('other test')
+  sim.new_var('weird', '3.14*time')
+  sim.new_var('lookup', '[(0,2),(50,40),(80,56)]')
+  sim.new_var('test', 'lookup[time]')
+  sim.new_var('another factor', 'weird*2')
+  test = sim.new_var('other test')
   # testing both case insensitivity and lack of spaces
-  sim.new_variable('q', 'inTEg(test,3)')
+  sim.new_var('q', 'inTEg(test,3)')
 
   if test is not None:
 
@@ -47,12 +47,12 @@ def run():
     for v in test.get_influences():
       print('  %s' % v.props.name)
 
-  variables = sim.get_variables()
+  variables = sim.get_vars()
   if variables:
     print("\nmodel's variables:")
 
     print('')
-    for v in sim.get_variables():
+    for v in variables:
       print("  %s (%s)" % (v.props.name, engine.name_for_type(v.props.type)))
 
 

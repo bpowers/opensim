@@ -84,11 +84,17 @@ class Variable(gobject.GObject):
 
 
   def __init__(self, parent, name, equation=None, **kwargs):
+    '''
+    Initialize a new variable object, should ONLY be done from Simulator
+
+    The way I've designed this, variables should only be created as
+    part of a simulation, never on their own.  That's why they have
+    a non-optional 'parent' argument, as we need some functions from
+    the parent simulation to provide some of our method's functionality.
+    '''
     gobject.GObject.__init__(self, **kwargs)
 
-
     self.__tokens = None
-
     self.__name = ''
     self.__equation = ''
     self.__units = ''
@@ -97,19 +103,12 @@ class Variable(gobject.GObject):
     self.__parent = None
     self.__valid = False
 
-    if not name or name == '':
-      raise AttributeError('missing name for variable')
-
     if not parent or not isinstance(parent, simulator.Simulator):
-      AttributeError('variable\'s parent must be a simulator, not %s' %
-                     type(parent))
+      raise AttributeError, 'variable\'s parent must be a simulator, not %s' \
+                            % type(parent)
 
     self.__parent = parent
     self.props.name = name
-
-    # it should simplify things if we guaruntee a non-None, str equation
-    if not equation:
-      equation = ''
     self.props.equation = equation
 
 
@@ -149,7 +148,7 @@ class Variable(gobject.GObject):
       value = ''
 
     if prop.name == 'name':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('names must be string, not %s' % type(value))
       value = value.strip()
       if value is '':
@@ -159,13 +158,14 @@ class Variable(gobject.GObject):
     elif prop.name == 'equation':
       # accept ints or floats for the value as well, but cast them to 
       # strings, so that we can always count on having string values
-      if type(value) is int or type(value) is float:
+      if isinstance(value, int) or isinstance(value, float):
         value = str(value)
-      elif type(value) is not str:
+      elif not isinstance(value, str):
         raise AttributeError('equations must be strings or numbers, not %s' %
                              type(value))
       old_equation = self.__equation
 
+      # if you assign the same equation, we don't change anything
       if old_equation != value:
         self.__equation = value
         self.__tokens = None
@@ -173,13 +173,13 @@ class Variable(gobject.GObject):
         self.emit('equation_changed', old_equation)
 
     elif prop.name == 'units':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('units must be string, not %s' % type(value))
       value = value.strip()
       self.__units = value
 
     elif prop.name == 'comments':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('comments must be string, not %s' % type(value))
       self.__comments = value
 
@@ -220,7 +220,7 @@ class Variable(gobject.GObject):
       self.__valid = True
     else:
       # for now, assume all is valid till we complete the parser
-      self.__valid = False
+      self.__valid = True
 
 
   def get_influences(self):
@@ -242,7 +242,7 @@ class Variable(gobject.GObject):
 
     influences = []
     for iden in identifiers:
-      influences.append(self.__parent.get_variable(iden))
+      influences.append(self.__parent.get_var(iden))
 
     return influences
 

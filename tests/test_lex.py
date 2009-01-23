@@ -32,6 +32,9 @@ import unittest
 class TestTokenizerCase(unittest.TestCase):
 
   def setUp(self):
+    self.sim = engine.Simulator()
+    self.var = self.sim.new_var('test')
+    self.var_empty = self.sim.new_var('empty', '')
     self.eqn_empty = ''
     self.eqn_none = None
     self.eqn_num = 3.14
@@ -46,19 +49,25 @@ class TestTokenizerCase(unittest.TestCase):
     '''
     test to make sure we handle empty equations
     '''
-    toks = lex.tokenize(self.eqn_empty)
+    scanner_1 = lex.Scanner(self.var)
+    scanner_2 = lex.Scanner(self.var_empty)
 
     # should return an empty list and not throw an error
-    self.assert_(isinstance(toks, list))
-    self.assert_(len(toks) is 0)
+    self.assert_(scanner_1.get_tok() is None)
+    self.assert_(scanner_2.get_tok() is None)
 
 
-  def test_none_eqn(self):
+  def test_extra_get_tok_1(self):
     '''
-    test to make sure we handle None equations
+    test to make sure we handle extra calls to get_tok gracefully
     '''
-    # should raise a type error for None equations
-    self.assertRaises(TypeError, lex.tokenize, self.eqn_none)
+    scanner_1 = lex.Scanner(self.var)
+    scanner_2 = lex.Scanner(self.var_empty)
+
+    for i in range(0,10):
+      # should return an empty list and not throw an error
+      self.assert_(scanner_1.get_tok() is None)
+      self.assert_(scanner_2.get_tok() is None)
 
 
   def test_num_eqn(self):

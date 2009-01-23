@@ -25,6 +25,7 @@
 #===----------------------------------------------------------------------===#
 
 import opensim.ng as engine
+import opensim.ng.variable as variable
 import unittest
 
 
@@ -34,14 +35,14 @@ class TestVariableCase(unittest.TestCase):
     self.name = 'testing'
     self.eqn = '3*time'
     self.sim = engine.Simulator()
-    self.var = self.sim.new_variable(self.name, self.eqn)
+    self.var = self.sim.new_var(self.name, self.eqn)
 
 
   def test_var_created(self):
     '''
     test to make sure we create variables correctly
     '''
-    var = self.sim.get_variable(self.name)
+    var = self.sim.get_var(self.name)
 
     self.assert_(var is not None)
     self.assert_(self.var is var)
@@ -53,6 +54,13 @@ class TestVariableCase(unittest.TestCase):
     test to make sure we set the name correctly
     '''
     self.assert_(self.var.props.name == self.name)
+
+
+  def test_bad_parent(self):
+    '''
+    test to make sure we raise an error on passing a bad parent
+    '''
+    self.assertRaises(AttributeError, variable.Variable, None, 'test_bad')
 
 
 

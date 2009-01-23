@@ -113,11 +113,11 @@ class Simulator(gobject.GObject):
       raise StandardError, 'we can only initialize time on new models'
       return False
 
-    self.new_variable('time start', INITIAL_TIME_START)
-    self.new_variable('time end', INITIAL_TIME_END)
-    self.new_variable('time step', INITIAL_TIME_STEP)
-    self.new_variable('time savestep', INITIAL_TIME_SAVESTEP)
-    self.new_variable('time')
+    self.new_var('time start', INITIAL_TIME_START)
+    self.new_var('time end', INITIAL_TIME_END)
+    self.new_var('time step', INITIAL_TIME_STEP)
+    self.new_var('time savestep', INITIAL_TIME_SAVESTEP)
+    self.new_var('time')
 
     return True
 
@@ -236,34 +236,26 @@ class Simulator(gobject.GObject):
     log.debug('save stub')
 
 
-  def new_variable(self, var_name, var_eqn=None):
+  def new_var(self, var_name, var_eqn=None):
     '''
     Creates a new variable as part of the current model. 
     
     This is the only safe way to create a new variable; they should not
     be created on their own and 'added' to the model somehow.
     '''
-
-    # validate input; it doesn't make sense to have an unnamed variable
-    if not var_name or var_name == '':
-      raise AttributeError('variables need a name at least')
+    # create the variable first, because we do name and equation
+    # validation in the constructor
+    new_var = Variable(self, var_name, var_eqn)
 
     # make sure it is actually new
     if self.__vars.has_key(var_name):
-      log.error('variable \'%s\' already exists' % var_name)
-      return None
-
-    new_var = Variable(self, var_name, var_eqn)
-
-    if not new_var:
-      log.error('couldn\'t create new variable')
-      return None
+      raise ValueError, 'variable \'%s\' already exists' % var_name
 
     # keep track of the new variable
     self.__vars[var_name] = new_var
     self.__vars_list.append(new_var)
 
-    new_var.connect('equation_changed', self.variable_changed)
+    new_var.connect('equation_changed', self.var_changed)
 
     if not new_var.props.valid:
       self.__vars_invalid.append(new_var)
@@ -273,7 +265,7 @@ class Simulator(gobject.GObject):
     return new_var
 
 
-  def get_variable(self, var_name):
+  def get_var(self, var_name):
     '''
     Get a reference to a variable from the current model.
     '''
@@ -287,7 +279,7 @@ class Simulator(gobject.GObject):
     return self.__vars[var_name]
 
 
-  def get_variables(self):
+  def get_vars(self):
     '''
     Get a list of all of the variables in the model.
     '''
@@ -296,7 +288,7 @@ class Simulator(gobject.GObject):
     return list(self.__vars_list)
 
 
-  def remove_variable(self, var_name):
+  def remove_var(self, var_name):
     '''
     Remove a variable from the model, returning True if successful,
     false if not.
@@ -322,7 +314,7 @@ class Simulator(gobject.GObject):
     del var
 
 
-  def variable_changed(self, var, old_equation):
+  def var_changed(self, var, old_equation):
     '''
     Callback function so that we know to update the model AST.
     '''
