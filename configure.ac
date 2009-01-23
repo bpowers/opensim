@@ -25,12 +25,12 @@ AM_CONDITIONAL([DARWIN], $on_mac)
 if test x$on_mac == xtrue; then
   AM_CONDITIONAL([am__fastdepOBJC], true)
 
-  AC_PROG_CC_C99
-  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
-  AC_DISABLE_FAST_INSTALL
-  AC_DISABLE_STATIC
-  AC_PROG_LIBTOOL
-  DOLT
+#  AC_PROG_CC_C99
+#  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
+#  AC_DISABLE_FAST_INSTALL
+#  AC_DISABLE_STATIC
+#  AC_PROG_LIBTOOL
+#  DOLT
 else
   AM_CONDITIONAL([am__fastdepOBJC], false)
 fi
@@ -57,7 +57,6 @@ icons/Makefile
 share/Makefile
 src/Makefile
 tests/Makefile
-packaging/mac/Makefile
 Makefile
 ])
 
