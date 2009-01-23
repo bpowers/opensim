@@ -1,4 +1,4 @@
-#===--- generator.py - Control for AST manipulation ----------------------===#
+#===--- parse.py - Parser for SD equations -------------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -19,14 +19,14 @@
 #
 #===----------------------------------------------------------------------===#
 #
-# This file contains the generator class, which manages all AST operations.
+# This file contains functions for parsing equations and creating ASTs.
 #
 #===----------------------------------------------------------------------===#
 
 
 import logging as log
 import ast
-import scanner
+import lex
 from constants import *
 
 _precedence = {'=': 2,
@@ -74,7 +74,7 @@ class Generator:
 
 
   def _get_tok_precedence(self):
-    if not self.__cur_tok[0] is scanner.OPERATOR:
+    if not self.__cur_tok[0] is lex.OPERATOR:
       return -1
 
     return _precedence[cur_tok[1]]

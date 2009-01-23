@@ -33,8 +33,7 @@ import logging as log
 
 from constants import *
 import simulator
-import scanner
-import parser
+import lex
 
 class Variable(gobject.GObject):
 
@@ -101,7 +100,7 @@ class Variable(gobject.GObject):
     if not name or name == '':
       raise AttributeError('missing name for variable')
 
-    if not parent or type(parent) is not simulator.Simulator:
+    if not parent or not isinstance(parent, simulator.Simulator):
       AttributeError('variable\'s parent must be a simulator, not %s' %
                      type(parent))
 
@@ -111,7 +110,7 @@ class Variable(gobject.GObject):
     # it should simplify things if we guaruntee a non-None, str equation
     if not equation:
       equation = ''
-    self.props.equation = str(equation)
+    self.props.equation = equation
 
 
   def do_get_property(self, prop):
@@ -190,19 +189,19 @@ class Variable(gobject.GObject):
 
   def __update_tokens(self):
 
-    self.__tokens = scanner.tokenize(self.__equation)
+    self.__tokens = lex.tokenize(self.__equation)
 
     if len(self.__tokens) is 0:
       self.__type = NONE
 
-    elif self.__tokens[0].kind is scanner.INTEGRAL:
+    elif self.__tokens[0].kind is lex.INTEGRAL:
       self.__type = STOCK
 
-    elif self.__tokens[0].kind is scanner.OPERATOR and \
+    elif self.__tokens[0].kind is lex.OPERATOR and \
        self.__tokens[0].iden == '[':
       self.__type = LOOKUP
 
-    elif len(self.__tokens) is 1 and self.__tokens[0].kind is scanner.NUMBER:
+    elif len(self.__tokens) is 1 and self.__tokens[0].kind is lex.NUMBER:
       self.__type = CONST
 
     else:
@@ -212,22 +211,15 @@ class Variable(gobject.GObject):
 
     #log.debug('%s\'s tokens:' % self.__name)
     #for tok, dat in self.__tokens:
-    #  log.debug('  %s:\t%s' % (scanner.name_for_tok_type(tok), dat))
+    #  log.debug('  %s:\t%s' % (lex.name_for_tok_type(tok), dat))
 
 
   def __validate_equation(self):
     if self.__type is NONE:
       # a variable with no equation should simply be considered valid
       self.__valid = True
-    elif self.__type is STOCK:
-      self.__valid = parser.validate_stock(self.__tokens, self.__parent)
-    elif self.__type is LOOKUP:
-      self.__valid = parser.validate_lookup(self.__tokens)
-    elif self.__type is CONST:
-      self.__valid = parser.validate_const(self.__tokens)
-    elif self.__type is AUX:
-      self.__valid = parser.validate_aux(self.__tokens)
     else:
+      # for now, assume all is valid till we complete the parser
       self.__valid = False
 
 
@@ -242,11 +234,11 @@ class Variable(gobject.GObject):
 
     identifiers = []
     for tok in self.__tokens:
-      if tok.kind is scanner.IDENTIFIER:
+      if tok.kind is lex.IDENTIFIER:
         identifiers.append(tok.iden)
 
     # this will stop us from referencing function names and INTEG
-    identifiers = scanner.strip_reserved(identifiers)
+    identifiers = lex.strip_reserved(identifiers)
 
     influences = []
     for iden in identifiers:

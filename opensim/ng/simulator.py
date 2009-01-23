@@ -33,7 +33,7 @@ import logging as log
 
 # opensim variables...
 from variable import Variable
-from generator import Generator
+from parse import Generator
 from constants import *
 
 class Simulator(gobject.GObject):

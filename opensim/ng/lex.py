@@ -1,4 +1,4 @@
-#===--- scanner.py - Token manipulation functions ------------------------===#
+#===--- lex.py - Token manipulation functions ----------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -19,8 +19,8 @@
 #
 #===----------------------------------------------------------------------===#
 #
-# This file contains data structures and functions for manipulating 
-# equation tokens
+# This file contains data structures and functions for scanning equations
+# and creating tokens from the input
 #
 #===----------------------------------------------------------------------===#
 

@@ -24,7 +24,6 @@
 #===----------------------------------------------------------------------===#
 
 import sys, logging, logging.handlers
-import opensim.ng.scanner
 
 logger = None
 
