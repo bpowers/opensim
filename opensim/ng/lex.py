@@ -78,15 +78,15 @@ class Scanner:
   Produces tokens from an input equation
   '''
   
-  def __init__(self, var=None, eqn=None):
+  def __init__(self, var):
     '''
     Initialize a scanner for a given variable
     '''
-    if var:
-      self.__var = var
-      self.__eqn = var.props.equation
-    else:
-      self.__eqn = eqn
+    if var is None:
+      raise TypeError, 'cannot initialize a scanner without a variable'
+
+    self.__var = var
+    self.__eqn = var.props.equation.lower()
     # a little shorter than calling len each time we need it
     self.__len = len(self.__eqn)
     self.__pos = 0
@@ -170,41 +170,6 @@ class Scanner:
     if _reserved.has_key(token.iden):
       token.kind = _reserved[token.iden]
 
-
-
-def tokenize(eqn, var=None):
-  '''
-  Return a list of 'Token's for a given equation
-
-  Takes a string representing an equation and returns a list of
-  tuples, where the first value is the token type, followed by
-  the token data
-  '''
-
-  # this is python but we really want to do strict type
-  # checking here, as anything other than a real string
-  # will cause us to throw an error
-  if eqn is None:
-    raise TypeError, 'need something, not None, to tokenize'
-
-  if type(eqn) is not str:
-    raise TypeError, 'can only tokenize strings, not \'%s\'' % type(eqn)
-
-  if eqn.strip() == '':
-    return []
-
-  # we're case insensitive in system dynamics...
-  eqn = eqn.lower()
-
-  toks = []
-  
-  scanner = Scanner(var, eqn)
-  tok = scanner.get_tok()
-  while tok:
-    toks.append(tok)
-    tok = scanner.get_tok()
-
-  return toks
 
 
 def name_for_tok_type(tok_type):

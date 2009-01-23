@@ -126,15 +126,11 @@ class Variable(gobject.GObject):
     elif prop.name == 'comments':
       return self.__comments
     elif prop.name == 'type':
-      if not self.__tokens:
-        self.__update_tokens()
       return self.__type
     elif prop.name == 'parent':
       return self.__parent
     elif prop.name == 'valid':
-      if not self.__tokens:
-        self.__update_tokens()
-        return self.__valid
+      return self.__valid
 
     raise AttributeError('unknown prop: "%s"' % prop.name)
 
@@ -187,79 +183,17 @@ class Variable(gobject.GObject):
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
 
 
-  def __update_tokens(self):
-
-    self.__tokens = lex.tokenize(self.__equation)
-
-    if len(self.__tokens) is 0:
-      self.__type = NONE
-
-    elif self.__tokens[0].kind is lex.INTEGRAL:
-      self.__type = STOCK
-
-    elif self.__tokens[0].kind is lex.OPERATOR and \
-       self.__tokens[0].iden == '[':
-      self.__type = LOOKUP
-
-    elif len(self.__tokens) is 1 and self.__tokens[0].kind is lex.NUMBER:
-      self.__type = CONST
-
-    else:
-      self.__type = AUX
-
-    self.__validate_equation()
-
-    #log.debug('%s\'s tokens:' % self.__name)
-    #for tok, dat in self.__tokens:
-    #  log.debug('  %s:\t%s' % (lex.name_for_tok_type(tok), dat))
-
-
-  def __validate_equation(self):
-    if self.__type is NONE:
-      # a variable with no equation should simply be considered valid
-      self.__valid = True
-    else:
-      # for now, assume all is valid till we complete the parser
-      self.__valid = True
-
-
   def get_influences(self):
     '''
     Return a list of references (not names) of the variables that
     influence this variable
     '''
 
-    if not self.__tokens:
-      self.__update_tokens()
+    return None
 
-    identifiers = []
-    for tok in self.__tokens:
-      if tok.kind is lex.IDENTIFIER:
-        identifiers.append(tok.iden)
-
-    # this will stop us from referencing function names and INTEG
-    identifiers = lex.strip_reserved(identifiers)
-
-    influences = []
-    for iden in identifiers:
-      influences.append(self.__parent.get_var(iden))
-
-    return influences
-
-
-  def _get_tokens(self):
-    '''
-    Return a list of the tokens in the current equation.
-    '''
-
-    if not self.__tokens:
-      self.__update_tokens()
-
-    return self.__tokens
 
 
 gobject.type_register(Variable)
-
 
 
 def name_for_type(var_type):

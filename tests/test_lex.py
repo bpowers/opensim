@@ -29,12 +29,10 @@ import opensim.ng.lex as lex
 import unittest
 
 
-class TestTokenizerCase(unittest.TestCase):
+class TestScannerCase(unittest.TestCase):
 
   def setUp(self):
     self.sim = engine.Simulator()
-    self.var = self.sim.new_var('test')
-    self.var_empty = self.sim.new_var('empty', '')
     self.eqn_empty = ''
     self.eqn_none = None
     self.eqn_num = 3.14
@@ -49,101 +47,111 @@ class TestTokenizerCase(unittest.TestCase):
     '''
     test to make sure we handle empty equations
     '''
-    scanner_1 = lex.Scanner(self.var)
-    scanner_2 = lex.Scanner(self.var_empty)
+    scanner_1 = lex.Scanner(self.sim.new_var('test_1'))
+    scanner_2 = lex.Scanner(self.sim.new_var('test_2', ''))
+    scanner_3 = lex.Scanner(self.sim.new_var('test_3', None))
+    scanner_4 = lex.Scanner(self.sim.new_var('test_4', '       '))
 
-    # should return an empty list and not throw an error
+    # should return none, since we have only whitespace
     self.assert_(scanner_1.get_tok() is None)
     self.assert_(scanner_2.get_tok() is None)
+    self.assert_(scanner_3.get_tok() is None)
+    self.assert_(scanner_4.get_tok() is None)
 
 
   def test_extra_get_tok_1(self):
     '''
     test to make sure we handle extra calls to get_tok gracefully
     '''
-    scanner_1 = lex.Scanner(self.var)
-    scanner_2 = lex.Scanner(self.var_empty)
+    scanner_1 = lex.Scanner(self.sim.new_var('test_1'))
+    scanner_2 = lex.Scanner(self.sim.new_var('test_2', ''))
+    scanner_3 = lex.Scanner(self.sim.new_var('test_3', None))
 
     for i in range(0,10):
       # should return an empty list and not throw an error
       self.assert_(scanner_1.get_tok() is None)
       self.assert_(scanner_2.get_tok() is None)
-
-
-  def test_num_eqn(self):
-    '''
-    test to make sure we handle number equations
-    '''
-    # should raise a type error for an equation that is not a str
-    self.assertRaises(TypeError, lex.tokenize, self.eqn_num)
+      self.assert_(scanner_3.get_tok() is None)
 
 
   def test_ok_eqn(self):
     '''
     test to make sure we handle good equations
     '''
-    toks = lex.tokenize(self.eqn_ok)
-
-    # should return a list of 3 toks
-    self.assert_(isinstance(toks, list))
-    self.assert_(len(toks) is 3)
-
-
-  def test_only_tokens_2(self):
-    '''
-    test to make sure we only create tokens
-    '''
-    toks = lex.tokenize(self.eqn_ok)
-
-    for tok in toks:
+    var = self.sim.new_var('test', self.eqn_ok)
+    scanner = lex.Scanner(var)
+    num_toks = 0
+    tok = scanner.get_tok()
+    while tok is not None:
       self.assert_(isinstance(tok, lex.Token))
+      num_toks += 1
+      tok = scanner.get_tok()
+
+    self.assert_(num_toks == 3)
 
 
   def test_spaced_eqn(self):
     '''
     test to make sure we handle good equations with spaces
     '''
-    toks = lex.tokenize(self.eqn_ok)
+    var = self.sim.new_var('test', self.eqn_space)
+    scanner = lex.Scanner(var)
+    num_toks = 0
+    tok = scanner.get_tok()
+    while tok is not None:
+      self.assert_(isinstance(tok, lex.Token))
+      num_toks += 1
+      tok = scanner.get_tok()
 
-    # should return a list of 3 toks
-    self.assert_(isinstance(toks, list))
-    self.assert_(len(toks) is 3)
+    self.assert_(num_toks == 3)
 
 
   def test_tok_contents(self):
     '''
     test to make sure we pass along the contents of the tokens correctly
     '''
-    toks = lex.tokenize(self.eqn_ok)
-
-    self.assert_(len(toks) is len(self.tok_idens))
-    # the tokens should have these, and only these values
-    for i in range(len(toks)):
-      self.assert_(toks[i].iden == self.tok_idens[i],
-                   '%s (%s) should be %s (%s)' % (toks[i].iden,
-                     type(toks[i].iden), self.tok_idens[i],
+    var = self.sim.new_var('test', self.eqn_space)
+    scanner = lex.Scanner(var)
+    i = 0
+    tok = scanner.get_tok()
+    while tok is not None:
+      self.assert_(tok.iden == self.tok_idens[i],
+                   '%s (%s) should be %s (%s)' % (tok.iden,
+                     type(tok.iden), self.tok_idens[i],
                      type(self.tok_idens[i])))
+      i += 1
+      tok = scanner.get_tok()
 
 
   def test_leading_decimal(self):
     '''
     test to make sure we handle numbers with leading decimal points
     '''
-    toks = lex.tokenize(self.eqn_dec)
+    var = self.sim.new_var('test', self.eqn_dec)
+    scanner = lex.Scanner(var)
+    num_toks = 0
+    tok = scanner.get_tok()
+    while tok is not None:
+      self.assert_(tok.kind is lex.NUMBER)
+      num_toks += 1
+      tok = scanner.get_tok()
 
-    self.assert_(len(toks) is 1, 'toks: %s' % toks)
-    self.assert_(toks[0].kind is lex.NUMBER)
+    self.assert_(num_toks == 1)
 
 
   def test_number_value(self):
     '''
     test to make sure we handle numbers with leading decimal points
     '''
-    toks = lex.tokenize(self.eqn_dec)
-
-    self.assert_(len(toks) is 1, 'toks: %s' % toks)
-    self.assert_(toks[0].iden == self.eqn_dec, 
-                 '%s should equal %s' % (toks[0].iden, self.eqn_dec))
+    var = self.sim.new_var('test', self.eqn_dec)
+    scanner = lex.Scanner(var)
+    num_toks = 0
+    tok = scanner.get_tok()
+    while tok is not None:
+      self.assert_(tok.iden == self.eqn_dec, 
+                   '%s should equal %s' % (tok.iden, self.eqn_dec))
+      num_toks += 1
+      tok = scanner.get_tok()
 
 
   def test_extra_decimal(self):
@@ -153,7 +161,13 @@ class TestTokenizerCase(unittest.TestCase):
     we should handle them by putting a string in the error field
     of the token
     '''
-    toks = lex.tokenize(self.eqn_bad_dec)
+    var = self.sim.new_var('test', self.eqn_bad_dec)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
 
     self.assert_(len(toks) is 1)
     self.assert_(toks[0].error is not None)
@@ -161,9 +175,10 @@ class TestTokenizerCase(unittest.TestCase):
 
 
 
-class TestIntegralTokenizerCase(unittest.TestCase):
+class TestIntegralScannerCase(unittest.TestCase):
 
   def setUp(self):
+    self.sim = engine.Simulator()
     self.eqn1 = "INTEG(0,0)"
     self.eqn2 = "INTEG ( 0, 0 )"
     self.eqn3 = " INTEG ( 0, 0 )"
@@ -176,7 +191,13 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     '''
     Test to make sure we handle integral equations with no spaces.
     '''
-    toks = lex.tokenize(self.eqn1)
+    var = self.sim.new_var('test', self.eqn1)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
     num_toks = len(toks)
     first_tok = toks[0]
 
@@ -185,14 +206,20 @@ class TestIntegralTokenizerCase(unittest.TestCase):
                  (self.num_toks, num_toks, toks))
     self.assert_(first_tok.kind is lex.INTEGRAL,
                  'integral not promoted: \'%s\' is %s' %
-                 (first_tok.kind, lex.name_for_tok_type(first_tok.kind)))
+                 (first_tok.iden, lex.name_for_tok_type(first_tok.kind)))
 
 
   def test_spaces(self):
     '''
     Test to make sure we handle integral equations with spaces.
     '''
-    toks = lex.tokenize(self.eqn2)
+    var = self.sim.new_var('test', self.eqn2)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
     num_toks = len(toks)
     first_tok = toks[0]
 
@@ -208,7 +235,13 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     '''
     Test to make sure we handle integral equations with leading spaces.
     '''
-    toks = lex.tokenize(self.eqn3)
+    var = self.sim.new_var('test', self.eqn3)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
     num_toks = len(toks)
     first_tok = toks[0]
 
@@ -224,7 +257,13 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     '''
     Test to make sure we handle integral equations with leading spaces.
     '''
-    toks = lex.tokenize(self.eqn4)
+    var = self.sim.new_var('test', self.eqn4)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
     num_toks = len(toks)
     first_tok = toks[0]
 
@@ -240,7 +279,13 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     '''
     Test to make sure we handle integral equations with l and r spaces.
     '''
-    toks = lex.tokenize(self.eqn5)
+    var = self.sim.new_var('test', self.eqn5)
+    scanner = lex.Scanner(var)
+    toks = []
+    tok = scanner.get_tok()
+    while tok is not None:
+      toks.append(tok)
+      tok = scanner.get_tok()
     num_toks = len(toks)
     first_tok = toks[0]
 
@@ -256,10 +301,12 @@ class TestIntegralTokenizerCase(unittest.TestCase):
     '''
     Test to make sure we only return Tokens.
     '''
-    toks = lex.tokenize(self.eqn5)
-
-    for tok in toks:
+    var = self.sim.new_var('test', self.eqn5)
+    scanner = lex.Scanner(var)
+    tok = scanner.get_tok()
+    while tok is not None:
       self.assert_(isinstance(tok, lex.Token))
+      tok = scanner.get_tok()
 
 
 
@@ -267,11 +314,11 @@ def suite():
   '''
   Get a unittest.TestSuite containing all the tests in this module.
   '''
-  tok_suite = unittest.TestLoader().loadTestsFromTestCase(TestTokenizerCase)
+  scanner_suite = unittest.TestLoader().loadTestsFromTestCase(TestScannerCase)
   integral_suite = unittest.TestLoader()\
-                     .loadTestsFromTestCase(TestIntegralTokenizerCase)
+                     .loadTestsFromTestCase(TestIntegralScannerCase)
 
-  return unittest.TestSuite([tok_suite, integral_suite])
+  return unittest.TestSuite([scanner_suite, integral_suite])
 
 
 if __name__ == '__main__':

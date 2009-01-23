@@ -42,12 +42,12 @@ _precedence = {'=': 2,
 
 class Generator:
 
-  __ast = None
-  __vars = None
-  __var_list = None
-  __errors = []
-
   def __init__(self, vars, var_list):
+
+    self.__ast = None
+    self.__vars = None
+    self.__var_list = None
+    self.__errors = []
     self.__vars = vars
     self.__var_list = var_list
 
@@ -67,7 +67,7 @@ class Generator:
 
     while len(self._top_level_vars) > 0:
       var = self._top_level_vars.pop()
-      self._process_var(var)
+      #self._process_var(var)
 
     if len(self.__errors) > 0:
       log.error('the model has %d errors' % len(self.__errors))
@@ -80,34 +80,9 @@ class Generator:
     return _precedence[cur_tok[1]]
 
 
-  def _get_next_tok(self):
-    if len(self.__cur_toks) <= self.__toks_index:
-      self.__cur_tok = None
-      log.debug('end of tok stream (%d/%d)' %
-                (len(self.__cur_toks), self.__toks_index))
-      return False
-
-    self.__cur_tok = self.__cur_toks[self.__toks_index]
-    self.__toks_index += 1
-    return True
-
-
-  def _push_tokens(self):
-    self.__index_stack.append(self.__toks_index-1)
-    self.__var_stack.append(self.__cur_var)
-
-
-  def _pop_tokens(self):
-    self.__toks_index = self.__index_stack.pop()
-    self.__cur_var = self.__var_stack.pop()
-
-    self._get_next_tok()
-
-
   def _process_var(self, var):
     self.__toks_index = 0
     self.__cur_var = var
-    self.__cur_toks = var._get_tokens()
 
     if len(self.__cur_toks) is 0:
       return

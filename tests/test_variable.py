@@ -35,17 +35,17 @@ class TestVariableCase(unittest.TestCase):
     self.name = 'testing'
     self.eqn = '3*time'
     self.sim = engine.Simulator()
-    self.var = self.sim.new_var(self.name, self.eqn)
 
 
   def test_var_created(self):
     '''
     test to make sure we create variables correctly
     '''
-    var = self.sim.get_var(self.name)
+    var = self.sim.new_var(self.name, self.eqn)
+    var2 = self.sim.get_var(self.name)
 
     self.assert_(var is not None)
-    self.assert_(self.var is var)
+    self.assert_(var is var2)
     self.assert_(isinstance(var, engine.Variable))
 
 
@@ -53,14 +53,34 @@ class TestVariableCase(unittest.TestCase):
     '''
     test to make sure we set the name correctly
     '''
-    self.assert_(self.var.props.name == self.name)
+    var = self.sim.new_var(self.name, self.eqn)
+    self.assert_(var.props.name == self.name)
 
 
-  def test_bad_parent(self):
+  def test_bad_parent_None(self):
     '''
     test to make sure we raise an error on passing a bad parent
     '''
     self.assertRaises(AttributeError, variable.Variable, None, 'test_bad')
+
+
+  def test_bad_parent_typed(self):
+    '''
+    test to make sure we raise an error on passing a bad parent
+    '''
+    self.assertRaises(AttributeError, variable.Variable, 2.5, 'test_bad')
+
+
+  def test_num_eqn(self):
+    '''
+    test to make sure we handle number equations gracefully
+
+    should implicitly convert them to a string
+    '''
+    num = 2.5
+    var = self.sim.new_var(self.name, num)
+    self.assert_(isinstance(var.props.equation, str))
+    self.assert_(var.props.equation == str(num))
 
 
 
