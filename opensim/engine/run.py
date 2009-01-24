@@ -24,7 +24,8 @@
 #
 #===----------------------------------------------------------------------===#
 
-import logging
+import math, logging
+
 import ast
 import lex
 import parse
@@ -67,6 +68,8 @@ class Manager:
 
       if parser.valid:
         var._set_type(parser.kind)
+        if parser.kind is sim.LOOKUP:
+          var.table = parser.table
 
     if len(self.__errors) > 0:
       log.error('the model has %d errors' % len(self.__errors))
@@ -90,4 +93,33 @@ class Manager:
     self.__var_list = var_list
 
     self.__initialize()
+
+
+
+# standard python range function doesn't allow floating point
+# increments in ranges, so we define our own
+def frange(lim_start, lim_end, increment = 1.):
+  lim_start = float(lim_start)
+  count = int(math.ceil(lim_end - lim_start)/increment + 1)
+  return (lim_start + n*increment for n in range(count))
+
+
+# simple lookup table implementation
+def lookup(table, index):
+
+  if len(table) is 0: return 0
+
+  # if the request is outside the min or max, then we return
+  # the nearest element of the array
+  if   index < table[0][0]:  return table[0][1]
+  elif index > table[-1][0]: return table[-1][1]
+
+  for i in range(0, len(table)):
+    x, y = table[i]
+
+    if index == x: return y
+    if index < x:
+      # slope = deltaY/deltaX
+      slope = (y - table[i-1][1])/(x - table[i-1][0])
+      return (index-table[i-1][0])*slope + table[i-1][1]
 
