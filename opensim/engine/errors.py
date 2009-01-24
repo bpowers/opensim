@@ -25,10 +25,6 @@
 
 import sys, logging, logging.handlers
 
-logger = None
-
-
-
 class NullHandler(logging.Handler):
   '''
   Dummy logging handler
@@ -44,6 +40,9 @@ def config_logging(level=logging.DEBUG, ofile=None,
   '''
   logger = logging.getLogger('opensim')
   logger.setLevel(level)
+
+  for h in logger.handlers:
+    logger.removeHandler(h)
 
   # I like this format.
   format = logging.Formatter('%(name)s:\t%(levelname)s: %(message)s')
@@ -62,7 +61,7 @@ def config_logging(level=logging.DEBUG, ofile=None,
     logger.addHandler(handler)
 
 
-def report_eqn_error(error, var, tok, other_toks=None, log=logger):
+def report_eqn_error(error, var, tok, other_toks=None, log=None):
   '''
   Report an error that occured when scanning or parsing an equation.
 
@@ -75,9 +74,11 @@ def report_eqn_error(error, var, tok, other_toks=None, log=logger):
 
   color would be cool too eventually for the command line
   '''
+  if log is None:
+    log = logging.getLogger('opensim.eqn')
 
   # first line of message
-  desc = '%s.equation: %s' % (var.props.name, error)
+  desc = '%s: %s' % (var.props.name, error)
 
   # equation, second line
   eqn = '%s = %s' % (var.props.name, var.props.equation)
@@ -85,7 +86,8 @@ def report_eqn_error(error, var, tok, other_toks=None, log=logger):
   uline = ' ' * len(var.props.equation)
   uline = uline[0:tok.start] + '^' + '~'*(tok.length-1) + \
           uline[tok.start+tok.length-1:]
-  uline = uline.rjust(len(eqn))
+  uline = uline.rjust(len(eqn)+1)
 
   err = '%s\n%s\n%s' % (desc, eqn, uline)
+  log.error(err)
 
