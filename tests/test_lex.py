@@ -24,14 +24,33 @@
 #
 #===----------------------------------------------------------------------===#
 
+import unittest, logging
+import opensim
 import opensim.engine as engine
 import opensim.engine.lex as lex
-import unittest
+
+
+class DebugStream:
+  '''
+    A sweet stream look-alike to check for error messages.
+  '''
+  def __init__(self):
+    self.errors = 0
+    self.buf = ''
+
+  def write(self, msg):
+    self.errors += 1
+    self.buf = self.buf + msg + '\n\n~~~~~\n\n'
+
+  def flush(self):
+    pass
 
 
 class TestScannerCase(unittest.TestCase):
 
   def setUp(self):
+    self.stream = DebugStream()
+    opensim.config_logging(logging.ERROR, ostream=self.stream)
     self.sim = engine.Simulator()
     self.eqn_empty = ''
     self.eqn_none = None
@@ -161,17 +180,10 @@ class TestScannerCase(unittest.TestCase):
     we should handle them by putting a string in the error field
     of the token
     '''
+    # it scans the equation when we add the variable to the model
     var = self.sim.new_var('test', self.eqn_bad_dec)
-    scanner = lex.Scanner(var)
-    toks = []
-    tok = scanner.get_tok()
-    while tok is not None:
-      toks.append(tok)
-      tok = scanner.get_tok()
-
-    self.assert_(len(toks) is 1)
-    self.assert_(toks[0].error is not None)
-    self.assert_(isinstance(toks[0].error, str))
+    self.assert_(self.stream.errors == 1, 'Should have 1 error, not %d:\n%s' %
+                 (self.stream.errors, self.stream.buf))
 
 
 

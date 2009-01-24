@@ -26,6 +26,7 @@
 
 
 import re
+from errors import report_eqn_error
 from constants import *
 
 # define the tokens we're likely to run into
@@ -143,7 +144,9 @@ class Scanner:
         tok = Token(start, self.__pos-start, NUMBER, num)
 
         if num_decimals > 1:
-          tok.error = 'more than one decimal in number'
+          err = 'more than one decimal in number'
+          report_eqn_error(err, self.__var, tok)
+          return
 
         if not tok.error:
           tok.val = float(num)
@@ -152,8 +155,9 @@ class Scanner:
 
       else:
         if OPERATORS.find(eqn[self.__pos]) is -1:
-          raise ValueError, '\'%s\' (%d) is not a valid operator' % \
-                            (eqn[self.__pos], self.__pos)
+          err = '\'%s\' (%d) is not a valid operator' % \
+                (eqn[self.__pos], self.__pos)
+          report_eqn_error(err, self.__var, tok)
         tok = Token(self.__pos, 1, OPERATOR, eqn[self.__pos])
         self.__pos += 1
         return tok
