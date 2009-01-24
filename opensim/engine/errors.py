@@ -91,3 +91,5 @@ def report_eqn_error(error, var, tok, other_toks=None, log=None):
   err = '%s\n%s\n%s' % (desc, eqn, uline)
   log.error(err)
 
+  return None
+

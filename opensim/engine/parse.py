@@ -28,6 +28,7 @@ import logging
 import ast
 import lex
 import constants as sim
+from errors import report_eqn_error
 
 log = logging.getLogger('opensim.parse')
 
@@ -71,7 +72,7 @@ class Parser:
     * the lookup table, if applicable
     '''
     self._get_next_tok()
-    self._parse_primary()
+    self._parse()
 
 
   def _get_next_tok(self):
@@ -85,7 +86,7 @@ class Parser:
     return _precedence[tok.iden]
 
 
-  def _parse_primary(self):
+  def _parse(self):
     if self.__cur_tok is None:
       return
 
@@ -138,5 +139,107 @@ class Parser:
     '''
     Handles expressions and returns a corresponding AST.
     '''
-    pass
+    return None
+
+
+  def _parse_primary(self):
+    '''
+    Handle identifiers, function calls and constants
+    '''
+    if self.__cur_tok.kind is lex.NUMBER:
+      return self._parse_number()
+    elif self.__cur_tok.kind is lex.IDENTIFIER:
+      return self._parse_iden()
+    else:
+      err = 'expected identifier or number, not \'%s\'' % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+
+
+  def _parse_number(self):
+    '''
+    Handles numeric constants and returns an AST leaf node.
+    '''
+    node = ast.ASTValue(self.__cur_tok.val)
+    # eat the number token
+    self._get_next_tok()
+    return node
+
+
+  def _parse_iden(self):
+    '''
+    Handle identifier and function calls.
+    '''
+    iden = self.__cur_tok.iden
+    # eat identifier expression
+    self._get_next_tok()
+
+    if self.__cur_tok.iden != '(':
+      return ASTVarRef(iden)
+
+    # eat '('
+    self._get_next_tok()
+
+    args = []
+    if self.__cur_tok.iden != ')':
+      while True:
+        arg = self._parse_expr()
+        if not arg:
+          return None
+        args.append(arg)
+
+        if self.__cur_tok.iden == ')':
+          break
+
+        if self.__cur_tok.iden != ',':
+          err = 'Expected \',\' not \'%s\'' % self.__cur_tok.iden
+          return report_eqn_error(err, self.__var, self.__cur_tok)
+        self._get_next_tok()
+
+    # eat the ')'
+    self._get_next_tok()
+
+    return ASTCallExpr(iden, args)
+
+
+  def _parse_unary_expr(self):
+    '''
+    Handle unary operations.
+    '''
+    if self.__cur_tok.kind is not lex.OPERATOR:
+      return self._parse_primary()
+    elif self.__cur_tok.iden == '(':
+      return self._parse_paren()
+
+    # our only allowed binary operators are + and -
+    if self.__cur_tok.iden != '+' or self.__cur_tok.iden != '-':
+      err = 'unexpected or unknown unary operator: %s' % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+
+    # get our operator then eat the token
+    op = self.__cur_tok.iden
+    self._get_next_tok()
+    lval =  self._parse_unary_expr()
+    if lval:
+      return ASTUnaryExpr(op, lval)
+
+
+  def _parse_paren(self):
+    '''
+    Handle parenthesis.
+    '''
+    # eat '('
+    self._get_next_tok(self)
+    expr = self._parse_expr()
+
+    if not expr:
+      return None
+
+    if self.__cur_tok.iden != ')':
+      err = 'expected \')\', not \'%s\'' % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+
+    # eat ')'
+    self._get_next_tok()
+
+    return expr
 

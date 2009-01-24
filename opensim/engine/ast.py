@@ -63,7 +63,8 @@ class ASTAssignExpr(ASTNode):
   AST Node representing an assignment expression
   '''
 
-  def __init(self, parent, var_name, value):
+  def __init(self, var_name, value):
+    self.parent = None
     self.var_name = var_name
     self.value = value
 
@@ -73,8 +74,8 @@ class ASTBinExpr(ASTNode):
   AST Node represnting a binary equation
   '''
 
-  def __init__(self, parent, op, lvalue, rvalue):
-    self.parent = parent
+  def __init__(self, op, lvalue, rvalue):
+    self.parent = None
     self.op = op
     self.lvalue = lvalue
     self.rvalue = rvalue
@@ -85,19 +86,19 @@ class ASTUnaryExpr(ASTNode):
   AST Node representing a unary operation
   '''
 
-  def __init__(self, parent, op, lvalue):
-    self.parent = parent
+  def __init__(self, op, lvalue):
+    self.parent = None
     self.op = op
     self.lvalue = lvalue
 
 
-class ASTIdentifier(ASTNode):
+class ASTVarRef(ASTNode):
   '''
   AST Node representing a variable reference
   '''
 
-  def __init__(self, parent, name, var=None):
-    self.parent = parent
+  def __init__(self, name, var=None):
+    self.parent = None
     self.name = name
     # var is optional, but probably a slight optimization from
     # recursively searching through scopes.  What are the downsides?
@@ -109,10 +110,10 @@ class ASTValue(ASTNode):
   AST Node representing a numeric constant
   '''
   
-  def __init__(self, val, type=float):
-    self.parent = parent
+  def __init__(self, val, kind=float):
+    self.parent = None
     self.val = val
-    self.type = type
+    self.type = kind
 
 
 class ASTLookup(ASTNode):
@@ -121,7 +122,7 @@ class ASTLookup(ASTNode):
   '''
 
   def __init__(self, table):
-    self.parent = parent
+    self.parent = None
     self.table = table
 
 
@@ -141,8 +142,8 @@ class ASTCall(ASTNode):
   AST Node representing a function call
   '''
 
-  def __init__(self, parent, name, args=[]):
-    self.parent = parent
+  def __init__(self, name, args=[]):
+    self.parent = None
     self.name = name
     self.args = args
 

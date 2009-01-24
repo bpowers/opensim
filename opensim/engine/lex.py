@@ -52,6 +52,7 @@ _reserved = {IDEN_INTEGRAL: INTEGRAL,
              }
 
 OPERATORS = '+-*/^,()[]'
+BIN_OPERATORS = '+-*/^'
 
 
 class Token:
@@ -145,8 +146,7 @@ class Scanner:
 
         if num_decimals > 1:
           err = 'more than one decimal in number'
-          report_eqn_error(err, self.__var, tok)
-          return
+          return report_eqn_error(err, self.__var, tok)
 
         if not tok.error:
           tok.val = float(num)
@@ -157,7 +157,7 @@ class Scanner:
         if OPERATORS.find(eqn[self.__pos]) is -1:
           err = '\'%s\' (%d) is not a valid operator' % \
                 (eqn[self.__pos], self.__pos)
-          report_eqn_error(err, self.__var, tok)
+          return report_eqn_error(err, self.__var, tok)
         tok = Token(self.__pos, 1, OPERATOR, eqn[self.__pos])
         self.__pos += 1
         return tok
