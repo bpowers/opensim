@@ -85,8 +85,8 @@ def report_eqn_error(error, var, tok, other_toks=None, log=None):
 
   uline = ' ' * len(var.props.equation)
   uline = uline[0:tok.start] + '^' + '~'*(tok.length-1) + \
-          uline[tok.start+tok.length-1:]
-  uline = uline.rjust(len(eqn)+1)
+          uline[tok.start+tok.length-1:-1]
+  uline = uline.rjust(len(eqn))
 
   err = '%s\n%s\n%s' % (desc, eqn, uline)
   log.error(err)

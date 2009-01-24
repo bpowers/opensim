@@ -78,6 +78,7 @@ def run():
       print("  %s (%s)" % (v.props.name, engine.name_for_type(v.props.type)))
 
 
+  sim.new_var('bad_decimals', '     .2.3.4.5  ')
   # skip a line
   print('')
   # set our output to be python, and call run.  since we haven't specified
