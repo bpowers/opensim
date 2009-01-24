@@ -93,6 +93,8 @@ class Parser:
       self._parse_integ()
     elif self.__cur_tok.kind is lex.OPERATOR and self.__cur_tok.iden == '[':
       self._parse_lookup()
+    else:
+      self._parse_eqn()
 
 
   def _parse_integ(self):
@@ -120,4 +122,21 @@ class Parser:
     else:
       self.kind = sim.LOOKUP
       self.valid = True
+
+
+  def _parse_eqn(self):
+    '''
+    Handle equations for auxiliary variables and flows.
+
+    These will just be exprs, but we need to make sure we get a valid
+    AST and set our kind accordingly.
+    '''
+    ast = self._parse_expr()
+
+
+  def _parse_expr(self):
+    '''
+    Handles expressions and returns a corresponding AST.
+    '''
+    pass
 
