@@ -21,7 +21,7 @@
 
 import logging
 import opensim
-import opensim.ng as engine
+import opensim.engine as engine
 
 LOG_FORMAT = '%(levelname)s: %(message)s'
 
