@@ -27,30 +27,41 @@
 
 
 class ASTNode:
-  parent = None
-  attrs = []
+  '''
+  Base AST Node
+  '''
+
+  def __init__(self):
+    parent = None
+    attrs = []
 
 
 class ASTList(ASTNode):
-  statements = []
+  '''
+  AST Node representing a list of expressions
+  '''
 
   def __init__(self, parent):
     self.parent = parent
+    self.statements = []
 
 
 class ASTScope(ASTNode):
-  name = ''
-  vars = {}
-  child = None
+  '''
+  AST Node representing scope
+  '''
 
   def __init__(self, parent, name):
     self.parent = parent
     self.name = name
+    self.vars = {}
+    self.child = None
 
 
 class ASTAssignExpr(ASTNode):
-  var_name = None
-  value = None
+  '''
+  AST Node representing an assignment expression
+  '''
 
   def __init(self, parent, var_name, value):
     self.var_name = var_name
@@ -58,9 +69,9 @@ class ASTAssignExpr(ASTNode):
 
 
 class ASTBinExpr(ASTNode):
-  op = ''
-  lvalue = None
-  rvalue = None
+  '''
+  AST Node represnting a binary equation
+  '''
 
   def __init__(self, parent, op, lvalue, rvalue):
     self.parent = parent
@@ -70,8 +81,9 @@ class ASTBinExpr(ASTNode):
 
 
 class ASTUnaryExpr(ASTNode):
-  op = ''
-  lvalue = None
+  '''
+  AST Node representing a unary operation
+  '''
 
   def __init__(self, parent, op, lvalue):
     self.parent = parent
@@ -80,8 +92,9 @@ class ASTUnaryExpr(ASTNode):
 
 
 class ASTIdentifier(ASTNode):
-  name = ''
-  var = None
+  '''
+  AST Node representing a variable reference
+  '''
 
   def __init__(self, parent, name, var=None):
     self.parent = parent
@@ -92,8 +105,9 @@ class ASTIdentifier(ASTNode):
 
 
 class ASTValue(ASTNode):
-  type = None
-  val = 0
+  '''
+  AST Node representing a numeric constant
+  '''
   
   def __init__(self, val, type=float):
     self.parent = parent
@@ -101,9 +115,20 @@ class ASTValue(ASTNode):
     self.type = type
 
 
+class ASTLookup(ASTNode):
+  '''
+  AST Node representing a lookup table
+  '''
+
+  def __init__(self, table):
+    self.parent = parent
+    self.table = table
+
+
 class ASTEuler(ASTNode):
-  body = None
-  stocks = None
+  '''
+  AST Node representing a Euler intergration loop
+  '''
 
   def __init__(self, parent, body=None, stocks=None):
     self.parent = parent
@@ -112,8 +137,9 @@ class ASTEuler(ASTNode):
 
 
 class ASTCall(ASTNode):
-  name = ''
-  args = []
+  '''
+  AST Node representing a function call
+  '''
 
   def __init__(self, parent, name, args=[]):
     self.parent = parent
