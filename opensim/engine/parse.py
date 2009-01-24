@@ -42,58 +42,6 @@ _precedence = {'=': 2,
               }
 
 
-class Generator:
-
-  def __init__(self, vars, var_list):
-
-    self.__ast = None
-    self.__vars = None
-    self.__var_list = None
-    self.__errors = []
-    self.__vars = vars
-    self.__var_list = var_list
-
-
-  def __initialize(self):
-
-    log.debug('initializing AST')
-
-    self.__top_level_vars = list(self.__var_list)
-    self.__ast = ast.ASTScope(None, 'root')
-    self.__ast.vars = self.__vars
-    self.__ast.child = ast.ASTList(self.__ast)
-    self.__ast_initial = ast.ASTList(self.__ast.child)
-    self.__ast_loop = ast.ASTEuler(self.__ast.child)
-    self.__ast.child.statements = [self.__ast_initial, self.__ast_loop]
-
-    while len(self.__top_level_vars) > 0:
-      var = self.__top_level_vars.pop()
-      #self._process_var(var)
-
-    if len(self.__errors) > 0:
-      log.error('the model has %d errors' % len(self.__errors))
-
-
-  def update(self, var):
-    '''
-    Update the AST, as an equation changed or variable was added.
-    '''
-
-    # this can totally be optimized in the future
-    self.__initialize()
-
-
-  def rebase(self, variables, var_list):
-    '''
-    Replace the current AST with one based on a new set of variables.
-    '''
-
-    self.__vars = variables
-    self.__var_list = var_list
-
-    self.__initialize()
-
-
 
 class Parser:
   '''
@@ -110,7 +58,18 @@ class Parser:
     self.__ast = None
 
     self.kind = sim.UNDEF
+    self.valid = False
 
+
+  def parse(self):
+    '''
+    Parse our variables equation, making available pertinent information.
+
+    Information includes:
+    * a well-formed AST, if the equation is valid
+    * any errors or warnings that were encountered
+    * the lookup table, if applicable
+    '''
     self._get_next_tok()
     self._parse_primary()
 
@@ -130,10 +89,17 @@ class Parser:
     if self.__cur_tok is None:
       return
 
-    if self.__cur_tok.kind is lex.INTEG:
+    if self.__cur_tok.kind is lex.INTEGRAL:
       self._parse_integ()
-    elif self.__cur_tok.iden == '[':
+    elif self.__cur_tok.kind is lex.OPERATOR and self.__cur_tok.iden == '[':
       self._parse_lookup()
+
+
+  def _parse_integ(self):
+    '''
+    Handle integral equations.
+    '''
+    pass
 
 
   def _parse_lookup(self):
@@ -148,8 +114,10 @@ class Parser:
       self.table = eval(self.__var.props.equation)
       assert isinstance(self.table, list)
     except:
+      # TODO: we should be more expressive here
       log.error('lookup table was incorrectly formatted:\n%s' %
                 self.__var.props.equation)
     else:
       self.kind = sim.LOOKUP
+      self.valid = True
 

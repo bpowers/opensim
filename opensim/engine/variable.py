@@ -113,6 +113,13 @@ class Variable(gobject.GObject):
     self.props.equation = equation
 
 
+  def _set_type(self, kind):
+    '''
+    A PRIVATE method for the parser to set the type of variable we have.
+    '''
+    self.__type = kind
+
+
   def do_get_property(self, prop):
     '''
     standart gobject getter.

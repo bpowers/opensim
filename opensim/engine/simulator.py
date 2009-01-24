@@ -33,7 +33,7 @@ import logging
 
 # opensim variables...
 from variable import Variable
-from parse import Generator
+import run
 from constants import *
 
 log = logging.getLogger('opensim.sim')
@@ -86,7 +86,7 @@ class Simulator(gobject.GObject):
     self.__vars_list = []
     self.__vars_invalid = []
     self.__model = None
-    self.__generator = None
+    self.__manager = None
 
     self.__model_name = ''
     self.__file_name = ''
@@ -101,7 +101,7 @@ class Simulator(gobject.GObject):
     else:
       self.__initialize_time()
 
-    self.__generator = Generator(self.__vars, self.__vars_list)
+    self.__manager = run.Manager(self.__vars, self.__vars_list)
 
 
   def __initialize_time(self):
@@ -205,8 +205,8 @@ class Simulator(gobject.GObject):
 
     # we won't have a generator when we're initializing a new
     # simulator object
-    if self.__generator:
-      self.__generator.update(var)
+    if self.__manager:
+      self.__manager.update(var)
 
     log.debug('update module stub')
 
