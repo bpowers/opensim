@@ -25,8 +25,8 @@
 
 
 import logging
-import ast
 import lex
+from ast import *
 import constants as sim
 from errors import report_eqn_error
 
@@ -80,10 +80,17 @@ class Parser:
 
 
   def _get_tok_precedence(self):
+
+    if self.__cur_tok is None:
+      return -1
+
     if self.__cur_tok.kind is not lex.OPERATOR:
       return -1
 
-    return _precedence[tok.iden]
+    if self.__cur_tok.iden in _precedence:
+      return _precedence[self.__cur_tok.iden]
+    else:
+      return -1
 
 
   def _parse(self):
@@ -134,12 +141,50 @@ class Parser:
     '''
     ast = self._parse_expr()
 
+    if ast:
+      self.ast = ast
+      self.valid = True
+      if isinstance(ast, ASTValue):
+        self.kind = sim.CONST
+      else:
+        self.kind = sim.AUX
+
 
   def _parse_expr(self):
     '''
     Handles expressions and returns a corresponding AST.
     '''
-    return None
+    lhs = self._parse_unary()
+    if not lhs:
+      return None
+
+    return self._parse_binop_rhs(0, lhs)
+
+
+  def _parse_binop_rhs(self, expr_prec, lhs):
+    '''
+    Handle recursively binary operators using operator precedence.
+    '''
+    while True:
+      tok_prec = self._get_tok_precedence()
+      if tok_prec < expr_prec:
+        return lhs
+
+      # remember the current operator and eat it's token
+      op = self.__cur_tok.iden
+      self._get_next_tok()
+
+      rhs = self._parse_unary()
+      if not rhs:
+        return None
+
+      next_prec = self._get_tok_precedence()
+      if tok_prec < next_prec:
+        rhs = self._parse_binop_rhs(tok_prec+1, rhs)
+        if not rhs:
+          return None
+
+      lhs = ASTBinExpr(op, lhs, rhs)
 
 
   def _parse_primary(self):
@@ -159,7 +204,7 @@ class Parser:
     '''
     Handles numeric constants and returns an AST leaf node.
     '''
-    node = ast.ASTValue(self.__cur_tok.val)
+    node = ASTValue(self.__cur_tok.val)
     # eat the number token
     self._get_next_tok()
     return node
@@ -173,7 +218,7 @@ class Parser:
     # eat identifier expression
     self._get_next_tok()
 
-    if self.__cur_tok.iden != '(':
+    if not self.__cur_tok or self.__cur_tok.iden != '(':
       return ASTVarRef(iden)
 
     # eat '('
@@ -201,7 +246,7 @@ class Parser:
     return ASTCallExpr(iden, args)
 
 
-  def _parse_unary_expr(self):
+  def _parse_unary(self):
     '''
     Handle unary operations.
     '''
@@ -218,7 +263,7 @@ class Parser:
     # get our operator then eat the token
     op = self.__cur_tok.iden
     self._get_next_tok()
-    lval =  self._parse_unary_expr()
+    lval =  self._parse_unary()
     if lval:
       return ASTUnaryExpr(op, lval)
 
