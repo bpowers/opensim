@@ -208,8 +208,6 @@ class Simulator(gobject.GObject):
     if self.__manager:
       self.__manager.update(var)
 
-    log.debug('update module stub')
-
 
   def run(self):
     '''

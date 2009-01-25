@@ -108,8 +108,45 @@ class Parser:
   def _parse_integ(self):
     '''
     Handle integral equations.
+
+    Integrals look like this:
+
+      integ ( expr, expr )
+    net flow---^     ^---initial value
     '''
-    pass
+    # eat 'integ'
+    self._get_next_tok()
+
+    if not self.__cur_tok or self.__cur_tok.iden != '(':
+      err = "expected '(', not '%s' in integral" % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+    # eat '('
+    self._get_next_tok()
+
+    net_flow = self._parse_expr()
+    if not net_flow:
+      return None
+
+    if not self.__cur_tok or self.__cur_tok.iden != ',':
+      err = "expected ',', not '%s' in integral" % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+    # eat ','
+    self._get_next_tok()
+
+    initial_val = self._parse_expr()
+    if not initial_val:
+      return None
+
+    if not self.__cur_tok or self.__cur_tok.iden != ')':
+      err = "expected ')', not '%s' in integral" % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
+    # eat ')'
+    self._get_next_tok()
+
+    # TODO: need to sort out assignment and intial
+    self.valid = True
+    self.kind = sim.STOCK
+
 
 
   def _parse_lookup(self):
