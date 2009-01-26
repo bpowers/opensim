@@ -1,0 +1,48 @@
+Since there aren't many other SD engines out there, I thought I would
+document some of my thoughs on how this one works and was designed
+along with observations about other programs.
+
+I use 'model' and 'simulation' rather interchangably here.  If I were
+more precise, a model is a simplified representation of reality, of
+some system that exists (probably) in the Real World.  A simulation
+
+Oddities compared to a 'regular' programming language:
+  - Other SD programs don't assume equations and variables are ordered
+    in their save-files.  This means that its not possible to read in
+    a model and run it in a single pass.
+  - Function calls do nasty and evil things, like creating a large
+    amount of model structure that is visible only to them but needs
+    to exist in the global model context.  This can't be fixed (for
+    compatability reasons) or cleaned up until I implement some kid of
+    object-orientation.
+  - Probably others, but those are some of the big ones.
+
+
+Very basic structure of a SD model (leaving out memory allocation):
+
+* initialize model
+  |- declare constants
+  L- set stock initial values
+
+* simulation loop (representing e.g. Euler or RK integration)
+  |- calculate flows
+  |- output/save results
+  L- update stocks
+
+
+Possible solutions:
+  - Always write _our_ model files with the equations in order. Then
+    just point the engine at a file and have it build an AST and
+    produce some output whenever we want to run the simulation.
+    If we we want to run other program's save files, then we can
+    process them with a conversion utility to order the equations and
+    save them in our format.
+      Pros:
+        Very simple, easiest to implement.  Quite UNIX-y.
+      Cons:
+        Possibly very slow, especially for large models.  Doesn't
+        integrate well into our visual designer, where incremental
+        compilation would have major benefits.
+  - Create variable objects from definitions in save files and add them
+    to an unordered list.  ...
+
