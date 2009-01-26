@@ -93,6 +93,10 @@ class Simulator(gobject.GObject):
     self.__output_type = 4
     self.__output_file_name = ''
 
+    # keep track of whether we should be incrementally updating
+    # the model's AST representation upon changes.
+    self.__incremental = True
+
     if model_name:
       self.props.model_name = model_name
 
@@ -102,6 +106,21 @@ class Simulator(gobject.GObject):
       self.__initialize_time()
 
     self.__manager = run.Manager(self.__vars, self.__vars_list)
+
+
+  def _disable_incremental(self):
+    '''
+    Disable incremental model compilation.
+    '''
+    self.__incremental = False
+
+
+  def _enable_incremental(self):
+    '''
+    Enable incremental model compilation.
+    '''
+    self.__incremental = True
+    self.__update_model()
 
 
   def __initialize_time(self):
@@ -124,6 +143,14 @@ class Simulator(gobject.GObject):
     self.new_var('time')
 
     return True
+
+
+  def __update_model(self, var=None):
+
+    # we won't have a generator when we're initializing a new
+    # simulator object
+    if self.__manager and self.__incremental:
+      self.__manager.update(var)
 
 
   def __clean_model(self):
@@ -199,14 +226,6 @@ class Simulator(gobject.GObject):
 
     else:
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
-
-
-  def __update_model(self, var=None):
-
-    # we won't have a generator when we're initializing a new
-    # simulator object
-    if self.__manager:
-      self.__manager.update(var)
 
 
   def run(self):
