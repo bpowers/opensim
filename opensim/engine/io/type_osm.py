@@ -24,6 +24,7 @@
 #===-----------------------------------------------------------------------===#
 
 import logging
+import libxml2
 
 log = logging.getLogger('opensim.io')
 
@@ -54,7 +55,43 @@ def read_model(sim, model_path):
   '''
   Reads a model from a file and loads it into the simulator.
   '''
-  pass
+  doc = libxml2.parseFile(model_path)
+
+  root = doc.children
+  if root.name != "opensim":
+    log.error("not an opensim XML file")
+    return
+
+  model_root = root.children
+  # skip through model and text children (XML treats 
+  # whitespace as text elements)
+  while model_root is not None and model_root.name != "model":
+    model_root = model_root.next
+
+  if model_root is None:
+    log.error("no node named 'model'")
+    return
+
+  var = model_root.children
+  # now for the meat and potatoes.
+  while var is not None:
+
+    if var.name == 'var':
+      var_item = var.children
+      var_name = "undefined"
+      eqn = None
+      while var_item is not None:
+        if var_item.name == 'name':
+          var_name = var_item.content.strip()
+        elif var_item.name == "equation":
+          eqn = var_item.content
+        var_item = var_item.next
+
+      sim.new_var(var_name, eqn)
+
+    var = var.next
+
+  doc.freeDoc()
 
 
 def write_file(sim, model_path):

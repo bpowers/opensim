@@ -294,8 +294,9 @@ class Parser:
 
     # our only allowed binary operators are + and -
     if self.__cur_tok.iden != '+' or self.__cur_tok.iden != '-':
-      err = 'unexpected or unknown unary operator: %s' % self.__cur_tok.iden
-      return report_eqn_error(err, self.__var, self.__cur_tok)
+      #err = 'unexpected or unknown unary operator: %s' % self.__cur_tok.iden
+      #return report_eqn_error(err, self.__var, self.__cur_tok)
+      return None
 
     # get our operator then eat the token
     op = self.__cur_tok.iden

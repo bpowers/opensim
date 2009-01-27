@@ -28,8 +28,6 @@ import unittest
 import opensim
 import opensim.engine as engine
 
-opensim.enable_logging()
-
 
 class TestSimInfectionCase(unittest.TestCase):
 

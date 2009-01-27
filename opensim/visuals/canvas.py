@@ -283,7 +283,7 @@ class Canvas (gtk.ScrolledWindow):
     logging.debug("Loading model part of file.")
     # the engine requires file paths to be in ASCII (OLD SCHOOL REPRESENT)
     self.goocanvas.engine = Simulator()
-    self.goocanvas.engine.load(file_path.encode('ascii'))
+    self.goocanvas.engine.load(file_path)
     self.engine = self.goocanvas.engine
     # allow us to add all our layout information to the 
     # save file, need to 're'-connect this since its a new engine
