@@ -33,7 +33,7 @@
   </var>
 
   <var>
-    <name>iinfection_rate</name>
+    <name>infection_rate</name>
     <equation>
       prob_of_infection * susceptibles_contacted_daily
     </equation>
@@ -42,7 +42,7 @@
   <var>
     <name>prob_of_infection</name>
     <equation>
-      .5
+      0.5
     </equation>
   </var>
 

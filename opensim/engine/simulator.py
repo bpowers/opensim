@@ -100,6 +100,8 @@ class Simulator(gobject.GObject):
     if model_name:
       self.props.model_name = model_name
 
+    # we either want to load a model from disk, or make sure we
+    # initialize time for a blank model.
     if file_name:
       self.load(file_name)
     else:
@@ -249,7 +251,8 @@ class Simulator(gobject.GObject):
 
 
   def load(self, model_path=None):
-    self.props.file_name = file_name
+    if model_path:
+      self.props.file_name = model_path
     log.debug('load stub')
 
 

@@ -96,3 +96,4 @@ def suite():
 if __name__ == '__main__':
   # give us more verbose output than the standard unittest.main()
   unittest.TextTestRunner(verbosity=2).run(suite())
+

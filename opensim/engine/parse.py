@@ -26,6 +26,7 @@
 
 import logging
 import lex
+import io
 from ast import *
 import constants as sim
 from errors import report_eqn_error

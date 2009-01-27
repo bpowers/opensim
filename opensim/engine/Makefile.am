@@ -1,3 +1,5 @@
+SUBDIRS = io
+
 ngdir = $(pkgpythondir)/engine
 
 ng_PYTHON = __init__.py simulator.py variable.py ast.py \

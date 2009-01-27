@@ -27,7 +27,7 @@ import sys, logging, logging.handlers
 
 class NullHandler(logging.Handler):
   '''
-  Dummy logging handler
+  Dummy logging handler, so that logging is effectively off unless enabled.
   '''
   def emit(self, record):
     pass
