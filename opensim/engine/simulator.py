@@ -31,10 +31,10 @@ import gobject
 from gettext import gettext as _
 import logging
 
-# opensim variables...
+from constants import *
 from variable import Variable
 import run
-from constants import *
+import io
 
 log = logging.getLogger('opensim.sim')
 
@@ -161,14 +161,9 @@ class Simulator(gobject.GObject):
     variables and structure out, so that we're starting pristine.
     '''
 
-    var_dict = self.__vars
-    var_list = self.__vars_list
-
     self.__vars = {}
     self.__vars_list = []
-
-    del var_dict
-    del var_list
+    self.__manager = run.Manager(self.__vars, self.__vars_list)
 
 
   def do_get_property(self, prop):
@@ -253,7 +248,17 @@ class Simulator(gobject.GObject):
   def load(self, model_path=None):
     if model_path:
       self.props.file_name = model_path
-    log.debug('load stub')
+    path = self.props.file_name
+    handler = io.get_handler(path)
+    if not handler:
+      raise TypeError, "unable to load file, unknown type: '%s'" % path
+
+    # get rid of any existing variables and structure
+    self.__clean_model()
+
+    self._disable_incremental()
+    handler.read_model(self, path)
+    self._enable_incremental()
 
 
   def save(self, save_path=None):
