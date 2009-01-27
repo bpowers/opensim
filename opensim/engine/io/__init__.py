@@ -23,22 +23,23 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import logging, os, re
-import opensim.engine.errors
-
+import logging, os, sys, re
+#import type_osm
+#print(dir(type_osm))
 log = logging.getLogger('opensim.io')
 
 __handler_regex = re.compile('^(type_(\w+))\.py$')
-__handlers = []
+__handlers = {}
 
 # import all tests from python files named test_*.py
-for file in os.listdir('.'):
-  match = __handler_regex.search(file)
+for f in os.listdir(__path__[0]):
+  match = __handler_regex.search(f)
   if match:
-    test_file = match.group(1)
-    mod = __import__(test_file)
-    suite = getattr(mod, 'suite')
-    __tests.append(suite())
+    ext = match.group(2)
+    handler = match.group(1)
+    mod = __import__('opensim.engine.io.' + handler, fromlist=[''])
+    __handlers[ext] = mod
+
 
 def get_handler(model_path):
   '''
@@ -49,5 +50,17 @@ def get_handler(model_path):
   module can, we return a reference to the module, which must provide the
   interface for OpenSim IO handlers.
   '''
-  log.error('in get handler')
+  # fast path - check the file extension against the known handlers
+  if len(model_path) > 4:
+    ext = model_path[-3]
+    if ext in __handlers.keys() and __handlers[ext].can_handle(model_path):
+      return __handlers[ext]
+
+  # if that doesn't work, loop through all the known handlers to see
+  # if anyone knows what to do with this file
+  for k,handler in __handlers.iteritems():
+    if handler.can_handle(model_path):
+      return handler
+
+  return None
 

@@ -24,7 +24,6 @@
 #===-----------------------------------------------------------------------===#
 
 import logging
-import errors
 
 log = logging.getLogger('opensim.io')
 
@@ -44,6 +43,10 @@ def can_handle(model_path):
 
   Returns a boolean to indicate if we can work with this model or not.
   '''
+  # cheat and only look at the extension for now
+  if len(model_path) > 4 and model_path[-3:] == 'osm':
+    return True
+
   return False
 
 
