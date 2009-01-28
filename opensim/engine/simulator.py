@@ -210,6 +210,7 @@ class Simulator(gobject.GObject):
     elif prop.name == 'output-type':
       if not isinstance(value, str):
         raise AttributeError('output type is a string, not %s' % type(value))
+      # TODO: move the check for a valid output type from run-time to here
       self.__output_type = value
 
     elif prop.name == 'output-file-name':

@@ -94,8 +94,8 @@ class ASTBinExpr(ASTNode):
   def __init__(self, op, lvalue, rvalue):
     self.parent = None
     self.op = op
-    self.lvalue = lvalue
-    self.rvalue = rvalue
+    self.lval = lvalue
+    self.rval = rvalue
 
   def gen(self, visitor):
     return visitor.visit_bin_expr(self)
@@ -172,6 +172,9 @@ class ASTEuler(ASTNode):
     else:
       self.stocks = ASTList(self)
 
+  def gen(self, visitor):
+    return visitor.visit_euler(self)
+
 
 class ASTCall(ASTNode):
   '''
@@ -182,4 +185,7 @@ class ASTCall(ASTNode):
     self.parent = None
     self.name = name
     self.args = args
+
+  def gen(self, visitor):
+    return visitor.visit_call(self)
 
