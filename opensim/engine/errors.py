@@ -81,14 +81,17 @@ def report_eqn_error(error, var, tok, other_toks=None, log=None):
   desc = '%s: %s' % (var.props.name, error)
 
   # equation, second line
-  eqn = '%s = %s' % (var.props.name, var.props.equation)
+  eqn = var.props.equation
+
+  # deal with lining up the underline when there are newlines
+  # in the equation
+  start = tok.start - eqn.count('\n', 0, tok.start)
 
   uline = ' ' * len(var.props.equation)
-  uline = uline[0:tok.start] + '^' + '~'*(tok.length-1) + \
-          uline[tok.start+tok.length-1:-1]
-  uline = uline.rjust(len(eqn))
+  uline = uline[0:start] + '^' + '~'*(tok.length-1) + \
+          uline[start+tok.length-1:-1]
 
-  err = '%s\n%s\n%s' % (desc, eqn, uline)
+  err = '%s\n%s\n%s' % (desc, eqn.rstrip(), uline)
   log.error(err)
 
   return None
