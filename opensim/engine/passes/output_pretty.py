@@ -34,6 +34,8 @@ class PrettyPrint:
   '''
   This class implements the visitor methods needed to pretty print a model.
   '''
+  def __init__(self):
+    self.space = ''
 
   def visit_scope(self, node):
     '''
@@ -64,17 +66,29 @@ class PrettyPrint:
     This is basically a glorified loop, but is used to distinguish
     between a basic loop and a more complicated RK one.
     '''
-    print('using euler integration\n')
+    print 'using euler integration'
+
+    start = self.vars['time_start'].props.equation.strip()
+    end = self.vars['time_end'].props.equation.strip()
+    step = self.vars['time_step'].props.equation.strip()
+
+    print 'loop i=%s,%s by %s\n' % (start, end, step)
+    # indent things!
+    self.space = self.space + '    '
+    print '  flows:\n'
     node.body.gen(self)
 
+    print '\n  stocks:'
     node.stocks.gen(self)
+
+    self.space = self.space[:-4]
 
 
   def visit_assign(self, node):
     '''
     Visiting an assignment statement.
     '''
-    print node.var_name + ' = ',
+    print self.space + node.var_name + ' = ',
     node.value.gen(self)
     print
 
