@@ -109,7 +109,7 @@ class ASTUnaryExpr(ASTNode):
   def __init__(self, op, lvalue):
     self.parent = None
     self.op = op
-    self.lvalue = lvalue
+    self.lval = lvalue
 
   def gen(self, visitor):
     return visitor.visit_unary(self)

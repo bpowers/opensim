@@ -66,7 +66,7 @@ class PrettyPrint:
     This is basically a glorified loop, but is used to distinguish
     between a basic loop and a more complicated RK one.
     '''
-    print 'using euler integration'
+    print '\nusing euler integration'
 
     start = self.vars['time_start'].props.equation.strip()
     end = self.vars['time_end'].props.equation.strip()
@@ -100,6 +100,12 @@ class PrettyPrint:
     node.lval.gen(self)
     print node.op,
     node.rval.gen(self)
+
+
+  def visit_unary(self, node):
+    print node.op + '(',
+    node.lval.gen(self)
+    print ')',
 
 
   def visit_var_ref(self, node):

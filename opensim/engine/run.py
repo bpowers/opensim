@@ -88,6 +88,29 @@ class Manager:
         var.table = parser.table
       elif parser.kind is sim.AUX or parser.kind is sim.FLOW:
         self.__ast_loop.body.append(parser.ast)
+      elif parser.kind is sim.CONST:
+        self.__ast_initial.append(parser.ast)
+      else:
+        nf_name = self._make_unique(var.props.name + '_net_flow')
+        nf_ast = ast.ASTAssignExpr(nf_name, parser.net_flow)
+        nf_var = parse.TempVar(nf_name)
+        up_stock = ast.ASTAssignExpr(var.props.name, ast.ASTVarRef(nf_name))
+
+        self.__vars[nf_name] = nf_var
+        self.__ast_loop.body.append(nf_ast)
+        self.__ast_initial.append(parser.initial)
+        self.__ast_loop.stocks.append(up_stock)
+
+
+  def _make_unique(self, name):
+    '''
+    Takes a name and makes sure it is unique.
+
+    Used for netflows and function expansions to avoid namespace
+    collisions.
+    '''
+    # TODO: actually implement this.
+    return name
 
 
   def update(self, var):

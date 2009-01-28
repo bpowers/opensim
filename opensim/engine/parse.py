@@ -154,6 +154,8 @@ class Parser:
     # TODO: need to sort out assignment and intial
     self.valid = True
     self.kind = sim.STOCK
+    self.net_flow = net_flow
+    self.initial = ASTAssignExpr(self.__var.props.name, initial_val)
 
 
 
@@ -301,10 +303,9 @@ class Parser:
       return self._parse_paren()
 
     # our only allowed binary operators are + and -
-    if self.__cur_tok.iden != '+' or self.__cur_tok.iden != '-':
-      #err = 'unexpected or unknown unary operator: %s' % self.__cur_tok.iden
-      #return report_eqn_error(err, self.__var, self.__cur_tok)
-      return None
+    if not self.__cur_tok.iden == '+' and not self.__cur_tok.iden == '-':
+      err = 'unexpected or unknown unary operator: %s' % self.__cur_tok.iden
+      return report_eqn_error(err, self.__var, self.__cur_tok)
 
     # get our operator then eat the token
     op = self.__cur_tok.iden
