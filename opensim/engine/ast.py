@@ -46,6 +46,17 @@ class ASTList(ASTNode):
     self.statements = []
 
 
+  def append(self, item):
+    '''
+    Convience method for adding an item to a list.
+    '''
+    self.statements.append(item)
+
+
+  def gen(self, visitor):
+    return visitor.visit_list(self)
+
+
 class ASTScope(ASTNode):
   '''
   AST Node representing scope
@@ -57,16 +68,22 @@ class ASTScope(ASTNode):
     self.vars = {}
     self.child = None
 
+  def gen(self, visitor):
+    return visitor.visit_scope(self)
+
 
 class ASTAssignExpr(ASTNode):
   '''
   AST Node representing an assignment expression
   '''
 
-  def __init(self, var_name, value):
+  def __init__(self, var_name, value):
     self.parent = None
     self.var_name = var_name
     self.value = value
+
+  def gen(self, visitor):
+    return visitor.visit_assign(self)
 
 
 class ASTBinExpr(ASTNode):
@@ -80,6 +97,9 @@ class ASTBinExpr(ASTNode):
     self.lvalue = lvalue
     self.rvalue = rvalue
 
+  def gen(self, visitor):
+    return visitor.visit_bin_expr(self)
+
 
 class ASTUnaryExpr(ASTNode):
   '''
@@ -90,6 +110,9 @@ class ASTUnaryExpr(ASTNode):
     self.parent = None
     self.op = op
     self.lvalue = lvalue
+
+  def gen(self, visitor):
+    return visitor.visit_unary(self)
 
 
 class ASTVarRef(ASTNode):
@@ -104,6 +127,9 @@ class ASTVarRef(ASTNode):
     # recursively searching through scopes.  What are the downsides?
     self.var = var
 
+  def gen(self, visitor):
+    return visitor.visit_var_ref(self)
+
 
 class ASTValue(ASTNode):
   '''
@@ -114,6 +140,9 @@ class ASTValue(ASTNode):
     self.parent = None
     self.val = val
     self.type = kind
+
+  def gen(self, visitor):
+    return visitor.visit_value(self)
 
 
 class ASTLookup(ASTNode):
@@ -133,8 +162,15 @@ class ASTEuler(ASTNode):
 
   def __init__(self, parent, body=None, stocks=None):
     self.parent = parent
-    self.body = body
-    self.stocks = stocks
+    if body:
+      self.body = body
+    else:
+      self.body = ASTList(self)
+
+    if stocks:
+      self.stocks = stocks
+    else:
+      self.stocks = ASTList(self)
 
 
 class ASTCall(ASTNode):
