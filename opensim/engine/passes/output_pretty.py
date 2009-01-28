@@ -78,6 +78,15 @@ class PrettyPrint:
     print '  flows:\n'
     node.body.gen(self)
 
+    print
+    print '    # determining whether or not to save results next iteration'
+    print '    save_count += 1'
+    print '    if save_count >= save_iterations or time+time_step > time_end:'
+    print '      do_save = True'
+    print '      save_count = 0'
+    print '    else:'
+    print '      do_save = False'
+
     print '\n  stocks:'
     node.stocks.gen(self)
 

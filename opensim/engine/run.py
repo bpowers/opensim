@@ -26,7 +26,7 @@
 
 import math, logging
 
-import ast
+from ast import *
 import lex
 import parse
 import constants as sim
@@ -58,11 +58,11 @@ class Manager:
     self.__unparsed = list(self.__var_list)
     self.__in_progress = []
     self.__parsed = []
-    self.__ast = ast.ASTScope(None, 'root')
+    self.__ast = ASTScope(None, 'root')
     self.__ast.vars = self.__vars
-    self.__ast.child = ast.ASTList(self.__ast)
-    self.__ast_initial = ast.ASTList(self.__ast.child)
-    self.__ast_loop = ast.ASTEuler(self.__ast.child)
+    self.__ast.child = ASTList(self.__ast)
+    self.__ast_initial = ASTList(self.__ast.child)
+    self.__ast_loop = ASTEuler(self.__ast.child)
     self.__ast.child.statements = [self.__ast_initial, self.__ast_loop]
 
     while len(self.__unparsed) > 0:
@@ -92,14 +92,14 @@ class Manager:
         self.__ast_initial.append(parser.ast)
       else:
         nf_name = self._make_unique(var.props.name + '_net_flow')
-        nf_ast = ast.ASTAssignExpr(nf_name, parser.net_flow)
+        nf_ast = ASTAssignExpr(nf_name, parser.net_flow)
         nf_var = parse.TempVar(nf_name)
-        up_stock = ast.ASTAssignExpr(var.props.name, ast.ASTVarRef(nf_name))
+        up_stock_expr = self._create_stock_expr(var.props.name, nf_name)
 
         self.__vars[nf_name] = nf_var
         self.__ast_loop.body.append(nf_ast)
         self.__ast_initial.append(parser.initial)
-        self.__ast_loop.stocks.append(up_stock)
+        self.__ast_loop.stocks.append(up_stock_expr)
 
 
   def _make_unique(self, name):
@@ -112,6 +112,17 @@ class Manager:
     # TODO: actually implement this.
     return name
 
+
+  def _create_stock_expr(self, var_name, nf_name):
+    '''
+    Create the AST structure representing an updating of a stock.
+
+    has the form:
+    stock = stock + net_flow * time_step
+    '''
+    mult = ASTBinExpr('*', ASTVarRef(nf_name), ASTVarRef('time_step'))
+    add = ASTBinExpr('+', ASTVarRef(var_name), mult)
+    return ASTAssignExpr(var_name, add)
 
   def update(self, var):
     '''
@@ -138,33 +149,4 @@ class Manager:
     Produce some kind of output by walking the ast.
     '''
     self.__ast.gen(output_walker)
-
-
-
-# standard python range function doesn't allow floating point
-# increments in ranges, so we define our own
-def frange(lim_start, lim_end, increment = 1.):
-  lim_start = float(lim_start)
-  count = int(math.ceil(lim_end - lim_start)/increment + 1)
-  return (lim_start + n*increment for n in range(count))
-
-
-# simple lookup table implementation
-def lookup(table, index):
-
-  if len(table) is 0: return 0
-
-  # if the request is outside the min or max, then we return
-  # the nearest element of the array
-  if   index < table[0][0]:  return table[0][1]
-  elif index > table[-1][0]: return table[-1][1]
-
-  for i in range(0, len(table)):
-    x, y = table[i]
-
-    if index == x: return y
-    if index < x:
-      # slope = deltaY/deltaX
-      slope = (y - table[i-1][1])/(x - table[i-1][0])
-      return (index-table[i-1][0])*slope + table[i-1][1]
 

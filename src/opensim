@@ -138,6 +138,8 @@ def main():
 
 if __name__ == "__main__":
   PROGRAM_NAME = sys.argv[0]
-  opensim.enable_logging()
+
+  # output warnings and errors if we encounter them
+  opensim.config_logging(logging.WARNING)
   main()
 
