@@ -25,9 +25,8 @@
 #===-----------------------------------------------------------------------===#
 
 import sys, logging, getopt
-import gobject
+import opensim
 from opensim import engine
-from opensim.engine import Simulator
 
 
 VERSION = "0.4.8"
@@ -113,21 +112,21 @@ def main():
 
   model_file = args[0]
   
-  new_walk = engine.emit_Output
+  new_walk = 'pretty'
 
   if target is not None:
     if target == "python":
-      new_walk = engine.emit_Python
+      new_walk = target
     elif target == "as3":
-      new_walk = engine.emit_AS3
+      new_walk = target
     elif target == "interpret":
-      new_walk = engine.emit_Output
+      new_walk = target
     else:
       print("%s: invalid target language: %s." % (PROGRAM_NAME, target))
       print("  Try `%s --help' for more information.\n" % PROGRAM_NAME)
       sys.exit(2)
 
-  sim = Simulator()
+  sim = engine.Simulator()
   sim.load(model_file)
   sim.props.output_type = new_walk
 
@@ -139,5 +138,6 @@ def main():
 
 if __name__ == "__main__":
   PROGRAM_NAME = sys.argv[0]
+  opensim.enable_logging()
   main()
 

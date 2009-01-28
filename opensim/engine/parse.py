@@ -43,6 +43,14 @@ _precedence = {'=': 2,
               }
 
 
+class TempVar:
+  '''
+  Temporary variable object for storing e.g. net flows.
+  '''
+  def __init__(self, name):
+    self.name = name
+
+
 
 class Parser:
   '''
@@ -179,7 +187,7 @@ class Parser:
     ast = self._parse_expr()
 
     if ast:
-      self.ast = ast
+      self.ast = ASTAssignExpr(self.__var.props.name, ast)
       self.valid = True
       if isinstance(ast, ASTValue):
         self.kind = sim.CONST

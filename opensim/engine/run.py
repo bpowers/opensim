@@ -39,6 +39,8 @@ class Manager:
 
   def __init__(self, variables, var_list):
 
+    self.passes = []
+
     self.__ast = None
     self.__vars = None
     self.__var_list = None
@@ -53,7 +55,9 @@ class Manager:
 
     log.debug('initializing AST')
 
-    self.__top_level_vars = list(self.__var_list)
+    self.__unparsed = list(self.__var_list)
+    self.__in_progress = []
+    self.__parsed = []
     self.__ast = ast.ASTScope(None, 'root')
     self.__ast.vars = self.__vars
     self.__ast.child = ast.ASTList(self.__ast)
@@ -61,18 +65,29 @@ class Manager:
     self.__ast_loop = ast.ASTEuler(self.__ast.child)
     self.__ast.child.statements = [self.__ast_initial, self.__ast_loop]
 
-    while len(self.__top_level_vars) > 0:
-      var = self.__top_level_vars.pop()
-      parser = parse.Parser(var)
-      parser.parse()
-
-      if parser.valid:
-        var._set_type(parser.kind)
-        if parser.kind is sim.LOOKUP:
-          var.table = parser.table
+    while len(self.__unparsed) > 0:
+      var = self.__unparsed.pop()
+      self._add(var)
 
     if len(self.__errors) > 0:
       log.error('the model has %d errors' % len(self.__errors))
+
+
+  def _add(self, var):
+    '''
+    Add a variable to our model representation.
+
+    Recursively deals with variables the current one depends on.
+    '''
+    parser = parse.Parser(var)
+    parser.parse()
+
+    if parser.valid:
+      var._set_type(parser.kind)
+      if parser.kind is sim.LOOKUP:
+        var.table = parser.table
+      elif parser.kind is sim.AUX or parser.kind is sim.FLOW:
+        self.__ast_loop.body.append(parser.ast)
 
 
   def update(self, var):
@@ -93,6 +108,13 @@ class Manager:
     self.__var_list = var_list
 
     self.__initialize()
+
+
+  def walk(self, output_walker):
+    '''
+    Produce some kind of output by walking the ast.
+    '''
+    self.__ast.gen(output_walker)
 
 
 

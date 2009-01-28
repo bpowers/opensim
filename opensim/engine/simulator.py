@@ -35,6 +35,7 @@ from constants import *
 from variable import Variable
 import run
 import io
+import passes
 
 log = logging.getLogger('opensim.sim')
 
@@ -53,12 +54,10 @@ class Simulator(gobject.GObject):
                           _('the path to the model file'),
                           None,
                           gobject.PARAM_READWRITE),
-    'output_type' :      (gobject.TYPE_INT,
+    'output_type' :      (gobject.TYPE_STRING,
                           _('output type'),
                           _('type of output we\'re interested in'),
-                          1,
-                          5,
-                          4,
+                          'interpret',
                           gobject.PARAM_READWRITE),
     'output_file_name' : (gobject.TYPE_STRING,
                           _('output file name'),
@@ -199,24 +198,22 @@ class Simulator(gobject.GObject):
       value = ''
 
     if prop.name == 'model-name':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('model name is a string, not %s' % type(value))
       self.__model_name = value
 
     elif prop.name == 'file-name':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('file name is a string, not %s' % type(value))
       self.__file_name = value
 
     elif prop.name == 'output-type':
-      if type(value) is not int:
-        raise AttributeError('output type is an int, not %s' % type(value))
-      elif value < EMIT_RANGE_MIN or value > EMIT_RANGE_MAX:
-        raise AttributeError('output type out of range with %d' % value)
+      if not isinstance(value, str):
+        raise AttributeError('output type is a string, not %s' % type(value))
       self.__output_type = value
 
     elif prop.name == 'output-file-name':
-      if type(value) is not str:
+      if not isinstance(value, str):
         raise AttributeError('output file name is a string, not %s' % 
                              type(value))
       self.__output_file_name = value
@@ -234,15 +231,16 @@ class Simulator(gobject.GObject):
     the right output type (and corresponding backend).
     '''
 
-    if not self.props.valid_model:
-      log.error('cannot run an invalid model')
-      return -1
+    #if not self.props.valid_model:
+    #  log.error('cannot run an invalid model')
+    #  return -1
 
-    if self.__output_type is EMIT_OUTPUT:
-      pass
-    else:
+    walker = passes.get_output_pass(self.__output_type)
+    if not walker:
       raise NotImplementedError('The output type (%d) is not supported.' %
                                 self.__output_type)
+    else:
+      self.__manager.walk(walker)
 
 
   def load(self, model_path=None):

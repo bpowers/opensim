@@ -1,4 +1,4 @@
-SUBDIRS = io
+SUBDIRS = io passes
 
 ngdir = $(pkgpythondir)/engine
 
