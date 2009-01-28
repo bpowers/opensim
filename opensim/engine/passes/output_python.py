@@ -1,4 +1,4 @@
-#===--- output_pretty.py - pretty print an opensim model -----------------===#
+#===--- output_python.py - convert an opensim model to python ------------===#
 #
 # Copyright 2009 Bobby Powers
 #
@@ -19,15 +19,17 @@
 #
 #===-----------------------------------------------------------------------===#
 #
-# This file contains the class to pretty print a model AST.
+# This file contains the class to pretty print a model AST as Python.
 #
 #===-----------------------------------------------------------------------===#
 
-import logging
+import logging, sys
 
-log = logging.getLogger('opensim.pretty')
+import common
 
-CLASS_NAME = 'PrettyPrint'
+log = logging.getLogger('opensim.python')
+
+CLASS_NAME = 'PythonPrint'
 
 py_header = """
 #!/usr/bin/env python
@@ -73,12 +75,25 @@ def lookup(table, index):
 """
 
 
-class PrettyPrint:
+class PythonPrint:
   '''
   This class implements the visitor methods needed to pretty print a model.
+
+  fd is the file decriptor that we will write to, or any object that
+  supports the write(str) method.
   '''
-  def __init__(self):
+  def __init__(self, fd=sys.stdout):
     self.space = ''
+    self.fd = fd
+
+
+  def write(self, string, end='\n'):
+    '''
+    Writes a string to self.fd and appends a newline
+    '''
+    self.fd.write(string)
+    self.fd.write(end)
+
 
   def visit_scope(self, node):
     '''
@@ -90,8 +105,8 @@ class PrettyPrint:
     '''
     if node.name == 'root':
       self.vars = node.vars
-      print py_header
-      print '# initial values and stock initializations'
+      self.write(py_header)
+      self.write('# initial values and stock initializations')
 
     node.child.gen(self)
 
@@ -111,12 +126,18 @@ class PrettyPrint:
     This is basically a glorified loop, but is used to distinguish
     between a basic loop and a more complicated RK one.
     '''
-    print '\n# variables related to outputting results'
-    print 'save_count = 0'
-    print 'save_iterations = time_savestep / time_step'
-    print 'do_save = True'
+    self.write('\n# variables related to outputting results')
+    self.write('save_count = 0')
+    self.write('save_iterations = time_savestep / time_step')
+    self.write('do_save = True')
 
-    print '\nfor time in frange(time_start, time_end, time_step):'
+    # output headers for csv output
+    self.write('\nprint \'', end='')
+
+    self.write('\'')
+
+
+    self.write('\nfor time in frange(time_start, time_end, time_step):')
 
     #start = self.vars['time_start'].props.equation.strip()
     #end = self.vars['time_end'].props.equation.strip()
@@ -124,21 +145,21 @@ class PrettyPrint:
 
     # indent things!
     self.space = self.space + '  '
-    print '  # calculate flows:'
+    self.write('  # calculate flows:')
     node.body.gen(self)
 
-    print '\n  # update stocks:'
+    self.write('\n  # update stocks:')
     node.stocks.gen(self)
 
     # determine whether we need to write the next round of output to stdout
-    print
-    print '  # determining whether or not to save results next iteration'
-    print '  save_count += 1'
-    print '  if save_count >= save_iterations or time+time_step > time_end:'
-    print '    do_save = True'
-    print '    save_count = 0'
-    print '  else:'
-    print '    do_save = False'
+    self.write('')
+    self.write('  # determining whether or not to save results next iteration')
+    self.write('  save_count += 1')
+    self.write('  if save_count >= save_iterations or time+time_step > time_end:')
+    self.write('    do_save = True')
+    self.write('    save_count = 0')
+    self.write('  else:')
+    self.write('    do_save = False')
 
     self.space = self.space[:-4]
 
@@ -147,9 +168,9 @@ class PrettyPrint:
     '''
     Visiting an assignment statement.
     '''
-    print self.space + node.var_name + ' = ',
+    self.write(self.space + node.var_name + ' = ', end='')
     node.value.gen(self)
-    print
+    self.write('')
 
 
   def visit_bin_expr(self, node):
@@ -159,18 +180,18 @@ class PrettyPrint:
     We add parentheses becuase when we create the AST we respect
     parenthesis, but they are not represented in the tree
     '''
-    print '(',
+    self.write('(', end='')
     node.lval.gen(self)
-    print node.op,
+    self.write(' %s ' % node.op, end='')
     node.rval.gen(self)
-    print ')',
+    self.write(')', end='')
 
 
 
   def visit_unary(self, node):
-    print node.op + '(',
+    self.write(node.op + '(', end='')
     node.lval.gen(self)
-    print ')',
+    self.write(')', end='')
 
 
   def visit_var_ref(self, node):
@@ -179,7 +200,7 @@ class PrettyPrint:
 
     Leaf node!
     '''
-    print node.name,
+    self.write(node.name, end='')
 
 
   def visit_value(self, node):
@@ -188,5 +209,5 @@ class PrettyPrint:
 
     Leaf node!
     '''
-    print node.val,
+    self.write(str(node.val), end='')
 
