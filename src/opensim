@@ -112,7 +112,7 @@ def main():
 
   model_file = args[0]
   
-  new_walk = 'pretty'
+  new_walk = 'python'
 
   if target is not None:
     if target == "python":

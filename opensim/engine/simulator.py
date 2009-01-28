@@ -238,7 +238,7 @@ class Simulator(gobject.GObject):
 
     walker = passes.get_output_pass(self.__output_type)
     if not walker:
-      raise NotImplementedError('The output type (%d) is not supported.' %
+      raise NotImplementedError('The output type (%s) is not supported.' %
                                 self.__output_type)
     else:
       self.__manager.walk(walker)
