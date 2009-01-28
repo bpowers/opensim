@@ -25,17 +25,6 @@
 #===----------------------------------------------------------------------===#
 
 
-# constants for the type of output we want
-EMIT_IR               = 1
-EMIT_PYTHON           = 2
-EMIT_FORTRAN          = 3
-EMIT_OUTPUT           = 4
-EMIT_AS3              = 5
-
-EMIT_RANGE_MIN        = EMIT_IR
-EMIT_RANGE_MAX        = EMIT_AS3
-
-
 # fundamental variable types
 UNDEF                 = 0
 STOCK                 = 1
