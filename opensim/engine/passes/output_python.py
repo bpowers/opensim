@@ -131,11 +131,14 @@ class PythonPrint:
     self.write('save_iterations = time_savestep / time_step')
     self.write('do_save = True')
 
+    format = '%s'
+    vars_list = 'time'
+    for stmt in node.body.statements:
+      vars_list += ',' + stmt.var_name
+      format += ',%s'
+
     # output headers for csv output
-    self.write('\nprint \'', end='')
-
-    self.write('\'')
-
+    self.write('\nprint \'%s\'' % vars_list)
 
     self.write('\nfor time in frange(time_start, time_end, time_step):')
 
@@ -147,6 +150,10 @@ class PythonPrint:
     self.space = self.space + '  '
     self.write('  # calculate flows:')
     node.body.gen(self)
+
+    self.write('\n  # output results:')
+    self.write('  if do_save:')
+    self.write("    print '" + format + "' % (" + vars_list + ')')
 
     self.write('\n  # update stocks:')
     node.stocks.gen(self)
