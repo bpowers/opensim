@@ -58,6 +58,9 @@ def read_model(sim, model_path):
   doc = libxml2.parseFile(model_path)
 
   root = doc.children
+  while root is not None and root.name != "opensim":
+    root = root.next
+
   if root.name != "opensim":
     log.error("not an opensim XML file")
     return
