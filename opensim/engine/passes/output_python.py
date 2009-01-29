@@ -136,6 +136,9 @@ class PythonPrint:
     for stmt in node.body.statements:
       vars_list += ',' + stmt.var_name
       format += ',%s'
+    for stmt in node.stocks.statements:
+      vars_list += ',' + stmt.var_name
+      format += ',%s'
 
     # output headers for csv output
     self.write('\nprint \'%s\'' % vars_list)
