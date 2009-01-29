@@ -23,7 +23,7 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import logging, sys
+import logging, sys, math
 from common import *
 
 log = logging.getLogger('opensim.interpret')
@@ -185,3 +185,22 @@ class Interpret:
     Leaf node!
     '''
     return node.val
+
+  def visit_call(self, node):
+    '''
+    Visit a node representing a function call.
+    '''
+    if node.name.lower() == 'max':
+      if len(node.args) != 2:
+        raise AttributeError, 'Incorrect # of args to max (%d).' % \
+                              len(node.args)
+      return max(node.args[0].gen(self), node.args[1].gen(self))
+    else:
+      raise ValueError, 'Unknown function call: %s' % node.name
+
+
+  def visit_lookup(self, node):
+    '''
+    Visit a node representing a lookup reference.
+    '''
+    return lookup(self.vars[node.name].table, node.arg.gen(self))

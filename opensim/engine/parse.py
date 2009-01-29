@@ -68,6 +68,7 @@ class Parser:
 
     self.kind = sim.UNDEF
     self.valid = False
+    self.refs = None
 
 
   def parse(self):
@@ -168,7 +169,7 @@ class Parser:
     Python for declaring lists of two-tuples.
     '''
     try:
-      self.table = eval(self.__var.props.equation)
+      self.table = eval(self.__var.props.equation.strip())
       assert isinstance(self.table, list)
     except:
       # TODO: we should be more expressive here
@@ -265,11 +266,26 @@ class Parser:
     # eat identifier expression
     self._get_next_tok()
 
-    if not self.__cur_tok or self.__cur_tok.iden != '(':
+    if not self.__cur_tok or (not self.__cur_tok.iden == '(' and \
+       not self.__cur_tok.iden == '['):
+      if not self.refs:
+        self.refs = [iden]
+      else:
+        self.refs.append(iden)
       return ASTVarRef(iden)
 
-    # eat '('
+    # eat '(' or '['
+    paren_char = self.__cur_tok.iden
     self._get_next_tok()
+
+    # if we have a lookup...
+    if paren_char == '[':
+      arg = self._parse_expr()
+      if not self.__cur_tok.iden == ']':
+        err = 'Expected \']\' not \'%s\'' % self.__cur_tok.iden
+        return report_eqn_error(err, self.__var, self.__cur_tok)
+      self._get_next_tok()
+      return ASTLookupRef(iden, arg)
 
     args = []
     if self.__cur_tok.iden != ')':

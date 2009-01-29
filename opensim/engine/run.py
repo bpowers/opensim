@@ -79,10 +79,19 @@ class Manager:
 
     Recursively deals with variables the current one depends on.
     '''
+    self.__in_progress.append(var)
     parser = parse.Parser(var)
     parser.parse()
 
     if parser.valid:
+      if parser.refs:
+        for ref in parser.refs:
+          if ref in self.__unparsed:
+            self.__unparsed.remove(ref)
+            self._add(ref)
+          elif ref in self.__in_progress:
+            raise ValueError, 'circular ref!'
+
       var._set_type(parser.kind)
       if parser.kind is sim.LOOKUP:
         var.table = parser.table
@@ -100,6 +109,9 @@ class Manager:
         self.__ast_loop.body.append(nf_ast)
         self.__ast_initial.append(parser.initial)
         self.__ast_loop.stocks.append(up_stock_expr)
+
+      # probably do some in_progress, unparsed, parsed
+      # checking here
 
 
   def _make_unique(self, name):

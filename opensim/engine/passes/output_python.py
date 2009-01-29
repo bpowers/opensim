@@ -221,3 +221,28 @@ class PythonPrint:
     '''
     self.write(str(node.val), end='')
 
+  def visit_call(self, node):
+    '''
+    Visit a node representing a function call.
+    '''
+    if node.name.lower() == 'max':
+      if len(node.args) != 2:
+        raise AttributeError, 'Incorrect # of args to max (%d).' % \
+                              len(node.args)
+      self.write('%s(' % node.name, end='')
+      node.args[0].gen(self)
+      self.write(', ', end='')
+      node.args[1].gen(self)
+      self.write(')', end='')
+    else:
+      raise ValueError, 'Unknown function call: %s' % node.name
+
+
+  def visit_lookup(self, node):
+    '''
+    Visit a node representing a lookup reference.
+    '''
+    self.write('lookup(%s, ' % node.name, end='')
+    node.arg.gen(self)
+    self.write(')', end='')
+

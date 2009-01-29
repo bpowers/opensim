@@ -176,7 +176,7 @@ class ASTEuler(ASTNode):
     return visitor.visit_euler(self)
 
 
-class ASTCall(ASTNode):
+class ASTCallExpr(ASTNode):
   '''
   AST Node representing a function call
   '''
@@ -189,3 +189,16 @@ class ASTCall(ASTNode):
   def gen(self, visitor):
     return visitor.visit_call(self)
 
+
+class ASTLookupRef(ASTNode):
+  '''
+  AST Node representing a lookup
+  '''
+
+  def __init__(self, name, arg):
+    self.parent = None
+    self.name = name
+    self.arg = arg
+
+  def gen(self, visitor):
+    return visitor.visit_lookup(self)
