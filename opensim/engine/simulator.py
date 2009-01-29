@@ -257,6 +257,8 @@ class Simulator(gobject.GObject):
 
     self._disable_incremental()
     handler.read_model(self, path)
+    if not 'time' in self.__vars.keys():
+      self.new_var('time')
     self._enable_incremental()
 
 

@@ -131,14 +131,14 @@ class PythonPrint:
     self.write('save_iterations = time_savestep / time_step')
     self.write('do_save = True')
 
-    format = '%s'
+    format = '%f'
     vars_list = 'time'
     for stmt in node.body.statements:
       vars_list += ',' + stmt.var_name
-      format += ',%s'
+      format += ',%f'
     for stmt in node.stocks.statements:
       vars_list += ',' + stmt.var_name
-      format += ',%s'
+      format += ',%f'
 
     # output headers for csv output
     self.write('\nprint \'%s\'' % vars_list)
