@@ -301,7 +301,7 @@ class Simulator(gobject.GObject):
     Get a reference to a variable from the current model.
     '''
 
-    var_name = var_name.replace('_', ' ')
+    var_name = var_name.replace(' ', '_')
 
     if not self.__vars.has_key(var_name):
       log.error('tried to get non-existant variable "%s"' % var_name)
