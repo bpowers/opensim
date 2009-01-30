@@ -105,6 +105,7 @@ class PythonPrint:
     '''
     if node.name == 'root':
       self.vars = node.vars
+      self.tables = node.tables
       self.write(py_header)
       self.write('# initial values and stock initializations')
 
@@ -131,6 +132,10 @@ class PythonPrint:
     self.write('save_iterations = time_savestep / time_step')
     self.write('do_save = True')
 
+    self.write('\n# lookup tables:')
+    for v in self.tables:
+      self.write('%s = %s' % (v.props.name, v.table))
+
     format = '%f'
     vars_list = 'time'
     for stmt in node.body.statements:
@@ -144,10 +149,6 @@ class PythonPrint:
     self.write('\nprint \'%s\'' % vars_list)
 
     self.write('\nfor time in frange(time_start, time_end, time_step):')
-
-    #start = self.vars['time_start'].props.equation.strip()
-    #end = self.vars['time_end'].props.equation.strip()
-    #step = self.vars['time_step'].props.equation.strip()
 
     # indent things!
     self.space = self.space + '  '

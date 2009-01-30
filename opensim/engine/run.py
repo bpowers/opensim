@@ -59,6 +59,7 @@ class Manager:
     self.__in_progress = []
     self.__parsed = []
     self.__ast = ASTScope(None, 'root')
+    self.__ast.tables = []
     self.__ast.vars = self.__vars
     self.__ast.child = ASTList(self.__ast)
     self.__ast_initial = ASTList(self.__ast.child)
@@ -101,6 +102,7 @@ class Manager:
 
       if parser.kind is sim.LOOKUP:
         var.table = parser.table
+        self.__ast.tables.append(var)
       elif parser.kind is sim.AUX or parser.kind is sim.FLOW:
         self.__ast_loop.body.append(parser.ast)
       elif parser.kind is sim.CONST:
