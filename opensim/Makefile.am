@@ -1,4 +1,4 @@
-SUBDIRS = engine
+SUBDIRS = engine visuals
 
 pkgpython_PYTHON = __init__.py
 #activitydir = $(top_srcdir)/activity/site-packages/opensim
