@@ -84,15 +84,21 @@ class Manager:
     parser.parse()
 
     if parser.valid:
+      var._set_type(parser.kind)
       if parser.refs:
         for ref in parser.refs:
+          ref = self.__vars[ref]
+          if ref.props.type is sim.STOCK:
+            continue
           if ref in self.__unparsed:
             self.__unparsed.remove(ref)
             self._add(ref)
           elif ref in self.__in_progress:
-            raise ValueError, 'circular ref!'
+            raise ValueError, 'circular ref (%s) for %s!' % (ref.props.name,
+                              var.props.name)
+      self.__in_progress.remove(var)
+      self.__parsed.append(var)
 
-      var._set_type(parser.kind)
       if parser.kind is sim.LOOKUP:
         var.table = parser.table
       elif parser.kind is sim.AUX or parser.kind is sim.FLOW:

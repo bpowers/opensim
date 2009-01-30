@@ -68,7 +68,7 @@ class Parser:
 
     self.kind = sim.UNDEF
     self.valid = False
-    self.refs = None
+    self.refs = []
 
 
   def parse(self):
@@ -268,10 +268,7 @@ class Parser:
 
     if not self.__cur_tok or (not self.__cur_tok.iden == '(' and \
        not self.__cur_tok.iden == '['):
-      if not self.refs:
-        self.refs = [iden]
-      else:
-        self.refs.append(iden)
+      self.refs.append(iden)
       return ASTVarRef(iden)
 
     # eat '(' or '['

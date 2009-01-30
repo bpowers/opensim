@@ -31,6 +31,7 @@ from gettext import gettext as _
 
 from constants import *
 import simulator
+import parse
 
 log = logging.getLogger('opensim.var')
 
@@ -134,7 +135,7 @@ class Variable(gobject.GObject):
     elif prop.name == 'comments':
       return self.__comments
     elif prop.name == 'type':
-      return self.__type
+      return self.__get_type()
     elif prop.name == 'parent':
       return self.__parent
     elif prop.name == 'valid':
@@ -189,6 +190,18 @@ class Variable(gobject.GObject):
 
     else:
       raise AttributeError('unknown prop: "%s" ("%s")' % (prop.name, value))
+
+
+  def __get_type(self):
+    '''
+    figure out what type of variable we are...
+    '''
+    if self.__type is UNDEF:
+      parser = parse.Parser(self)
+      parser.parse()
+      self.__type = parser.kind
+
+    return self.__type
 
 
   def get_influences(self):
