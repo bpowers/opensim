@@ -92,7 +92,7 @@ def run():
   # and save our model
   sim.connect("saving", save_extra)
   sim.props.file_name = "test_sim.osm"
-  #sim.save()
+  sim.save()
 
 
 # run if we're the main module
