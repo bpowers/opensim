@@ -83,7 +83,7 @@ def run():
   print('')
   # set our output to be python, and call run.  since we haven't specified
   # an output file-name, it defaults to standard output.
-  #sim.props.output_type =  engine.EMIT_PYTHON
+  #sim.props.output_type =  'python'
   sim.run()
   #sim.output_debug_info()
 

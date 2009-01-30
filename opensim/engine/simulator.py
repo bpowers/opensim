@@ -89,7 +89,7 @@ class Simulator(gobject.GObject):
 
     self.__model_name = ''
     self.__file_name = ''
-    self.__output_type = 4
+    self.__output_type = 'interpret'
     self.__output_file_name = ''
 
     # keep track of whether we should be incrementally updating
@@ -275,6 +275,7 @@ class Simulator(gobject.GObject):
     '''
     # create the variable first, because we do name and equation
     # validation in the constructor
+    var_name = var_name.replace(' ', '_')
     new_var = Variable(self, var_name, var_eqn)
 
     # make sure it is actually new
@@ -366,4 +367,3 @@ class Simulator(gobject.GObject):
 
 
 gobject.type_register(Simulator)
-

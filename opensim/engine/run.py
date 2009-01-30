@@ -94,10 +94,9 @@ class Manager:
           if ref in self.__unparsed:
             self.__unparsed.remove(ref)
             self._add(ref)
-          elif ref in self.__in_progress:
-            raise ValueError, 'circular ref (%s) for %s!' % (ref.props.name,
-                              var.props.name)
-      self.__in_progress.remove(var)
+          #elif ref in self.__in_progress:
+          #  raise ValueError, 'circular ref (%s) for %s!' % (ref.props.name,
+          #                    var.props.name)
       self.__parsed.append(var)
 
       if parser.kind is sim.LOOKUP:
@@ -120,6 +119,7 @@ class Manager:
 
       # probably do some in_progress, unparsed, parsed
       # checking here
+      self.__in_progress.remove(var)
 
 
   def _make_unique(self, name):

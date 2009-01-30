@@ -240,4 +240,3 @@ def name_for_type(var_type):
     return 'lookup'
 
   return 'undefined'
-
