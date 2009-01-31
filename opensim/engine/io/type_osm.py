@@ -142,10 +142,10 @@ def _write_model(sim, open_file):
 
   for var in sim.get_vars():
     open_file.write('  <var>\n')
-    open_file.write('  <name>%s</name>\n' % var.props.name)
-    open_file.write('  <equation>\n')
-    open_file.write('    %s\n' % var.props.equation.strip())
-    open_file.write('  </equation>\n')
+    open_file.write('    <name>%s</name>\n' % var.props.name)
+    open_file.write('    <equation>\n')
+    open_file.write('      %s\n' % var.props.equation.strip())
+    open_file.write('    </equation>\n')
     open_file.write('  </var>\n\n')
 
   open_file.write('</model>\n\n')
