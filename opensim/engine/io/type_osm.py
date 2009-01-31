@@ -82,7 +82,8 @@ def read_model(sim, model_path):
   while var is not None:
 
     if var.name == 'name':
-      sim.props.model_name = var.children.content.strip()
+      if var.children.content:
+        sim.props.model_name = var.children.content.strip()
     elif var.name == 'var':
       var_item = var.children
       var_name = "undefined"
@@ -110,15 +111,15 @@ def write_model(sim, model_path):
   '''
   if model_path is None or model_path.strip() == '':
     _write_header(sim, sys.stdout)
-    sim.emit('saving', sys.stdout)
     _write_model(sim, sys.stdout)
+    sim.emit('saving', sys.stdout)
     _write_footer(sim, sys.stdout)
 
   else:
     with open(model_path, 'w') as fp:
       _write_header(sim, fp)
-      sim.emit('saving', fp)
       _write_model(sim, fp)
+      sim.emit('saving', fp)
       _write_footer(sim, fp)
 
 

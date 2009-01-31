@@ -36,9 +36,9 @@ def equation_checker(var, old_equation):
 # callback function that is executed when sim.save () is called
 def save_extra(sim, save_file):
 
-  save_file.write("\n<more_info>\n")
+  save_file.write("<more_info>\n")
   save_file.write("  oh so sweet metadata for %s\n" % sim.props.model_name)
-  save_file.write("</more_info>\n")
+  save_file.write("</more_info>\n\n")
 
 
 def run():

@@ -458,8 +458,7 @@ class Canvas (gtk.ScrolledWindow):
     logging.debug("Canvas: Saved model.")
 
 
-  def save_visual_state(self, widget, save_file_pointer):
-    f = engine.get_file (widget, save_file_pointer)
+  def save_visual_state(self, widget, f):
     logging.debug("Canvas: Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
@@ -471,7 +470,7 @@ class Canvas (gtk.ScrolledWindow):
       f.write(widget.xml_representation())
 
     f.write('\n  </page>\n\n')
-    f.write('</visuals>\n')
+    f.write('</visuals>\n\n')
 
 
 
