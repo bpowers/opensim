@@ -74,7 +74,7 @@ class Simulator(gobject.GObject):
   __gsignals__ = {
     'saving' :           (gobject.SIGNAL_RUN_FIRST,
                           gobject.TYPE_NONE,
-                          (gobject.TYPE_OBJECT,))
+                          (gobject.TYPE_PYOBJECT,))
   }
 
 
@@ -91,6 +91,9 @@ class Simulator(gobject.GObject):
     self.__file_name = ''
     self.__output_type = 'interpret'
     self.__output_file_name = ''
+
+    # io handler
+    self.__handler = None
 
     # keep track of whether we should be incrementally updating
     # the model's AST representation upon changes.
@@ -245,25 +248,39 @@ class Simulator(gobject.GObject):
 
 
   def load(self, model_path=None):
+    '''
+    Load a model from the specified path, or the file_name property.
+    '''
     if model_path:
       self.props.file_name = model_path
     path = self.props.file_name
-    handler = io.get_handler(path)
-    if not handler:
+    self.__handler = io.get_handler(path)
+    if not self.__handler:
       raise TypeError, "unable to load file, unknown type: '%s'" % path
 
     # get rid of any existing variables and structure
     self.__clean_model()
 
     self._disable_incremental()
-    handler.read_model(self, path)
+    self.__handler.read_model(self, path)
     if not 'time' in self.__vars.keys():
       self.new_var('time')
     self._enable_incremental()
 
 
   def save(self, save_path=None):
-    log.debug('save stub')
+    '''
+    Saves a model to either the model's file name, or specified path.
+    '''
+    if save_path and not save_path == self.props.file_name:
+      self.props.file_name = save_path
+    path = self.props.file_name
+    if not self.__handler:
+      self.__handler = io.get_handler(path)
+    if not self.__handler:
+      raise TypeError, "unable to save file, unknown type: '%s'" % path
+
+    self.__handler.write_model(self, path)
 
 
   def new_var(self, var_name, var_eqn=None):

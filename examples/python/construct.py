@@ -37,7 +37,7 @@ def equation_checker(var, old_equation):
 def save_extra(sim, save_file):
 
   save_file.write("\n<more_info>\n")
-  save_file.write("  oh so sweet metadata for %s\n" % sim.model_name)
+  save_file.write("  oh so sweet metadata for %s\n" % sim.props.model_name)
   save_file.write("</more_info>\n")
 
 

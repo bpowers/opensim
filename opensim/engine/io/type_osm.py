@@ -23,7 +23,9 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import logging
+from __future__ import with_statement
+
+import logging, sys
 import libxml2
 
 log = logging.getLogger('opensim.io')
@@ -79,7 +81,9 @@ def read_model(sim, model_path):
   # now for the meat and potatoes.
   while var is not None:
 
-    if var.name == 'var':
+    if var.name == 'name':
+      sim.props.model_name = var.children.content.strip()
+    elif var.name == 'var':
       var_item = var.children
       var_name = "undefined"
       eqn = None
@@ -97,14 +101,25 @@ def read_model(sim, model_path):
   doc.freeDoc()
 
 
-def write_file(sim, model_path):
+def write_model(sim, model_path):
   '''
   Write a model to a specified file.
 
   Helper function which wraps _write_header, _write_model, and
   _write_footer.
   '''
-  pass
+  if model_path is None or model_path.strip() == '':
+    _write_header(sim, sys.stdout)
+    sim.emit('saving', sys.stdout)
+    _write_model(sim, sys.stdout)
+    _write_footer(sim, sys.stdout)
+
+  else:
+    with open(model_path, 'w') as fp:
+      _write_header(sim, fp)
+      sim.emit('saving', fp)
+      _write_model(sim, fp)
+      _write_footer(sim, fp)
 
 
 def _write_header(sim, open_file):
@@ -113,14 +128,26 @@ def _write_header(sim, open_file):
 
   Important for things like XML doctype, opening tags, etc.
   '''
-  pass
+  open_file.write('<?xml version="1.0" encoding="UTF-8"?>\n\n')
+  open_file.write('<opensim markup="1.0">\n\n')
 
 
 def _write_model(sim, open_file):
   '''
   Writes the meat and potatoes of the model to an open file object.
   '''
-  pass
+  open_file.write('<model>\n')
+  open_file.write('  <name>%s</name>\n\n' % sim.props.model_name)
+
+  for var in sim.get_vars():
+    open_file.write('  <var>\n')
+    open_file.write('  <name>%s</name>\n' % var.props.name)
+    open_file.write('  <equation>\n')
+    open_file.write('    %s\n' % var.props.equation.strip())
+    open_file.write('  </equation>\n')
+    open_file.write('  </var>\n\n')
+
+  open_file.write('</model>\n\n')
 
 
 def _write_footer(sim, open_file):
@@ -129,5 +156,5 @@ def _write_footer(sim, open_file):
 
   Important for XML, etc.
   '''
-  pass
+  open_file.write('</opensim>\n')
 
