@@ -64,7 +64,7 @@ def lookup(table, index):
 
 # pertinent llvm types
 void_t = Type.void()
-bool_t = Type.int(8)
+bool_t = Type.int(1)
 real_t = Type.double()
 func_t = Type.function(void_t, [])
 
@@ -84,7 +84,7 @@ class JIT:
     '''
     Create entry block alloca instance.
     '''
-    entry = self.func.entry_basic_block
+    entry = self.fn_sim.entry_basic_block
     builder = Builder.new(entry)
     builder.position_at_beginning(entry)
     return builder.alloca(kind, var_name)
@@ -104,16 +104,67 @@ class JIT:
       self.tables = node.tables
 
       self.module = Module.new(self.name + '_jit')
-      self.func = Function.new(self.module, func_t, self.name + '_simulate')
+      self.fn_sim = Function.new(self.module, func_t, self.name + '_simulate')
 
-      bb = self.func.append_basic_block('entry')
-      self.bb_begin = self.func.append_basic_block('begin')
+      self.__create_init_functions(node)
+
+      bb = self.fn_sim.append_basic_block('entry')
+      self.bb_begin = self.fn_sim.append_basic_block('begin')
       builder = Builder.new(bb)
       builder.branch(self.bb_begin)
 
     node.child.gen(self)
 
     print self.module
+
+
+  def __create_init_functions(self, root):
+    '''
+    Create the IR for several initialization functions.
+    '''
+    import opensim.engine as opensim
+    # define our data structures first
+    node = root.child.statements[1]
+
+    sim_format = [real_t]
+    sim_vars = ['time']
+    for stmt in node.body.statements:
+      if isinstance(self.vars[stmt.var_name], opensim.Variable):
+        sim_vars.append(stmt.var_name)
+        sim_format.append(real_t)
+    for stmt in node.stocks.statements:
+      sim_vars.append(stmt.var_name)
+      sim_format.append(real_t)
+
+    self.sim_data_vars = sim_vars
+    self.sim_data_t = Type.struct(sim_format)
+    self.sim_data_pt = Type.pointer(self.sim_data_t)
+
+    node = root.child.statements[0]
+
+    const_format = [self.sim_data_pt, self.sim_data_pt]
+    const_vars = []
+    for stmt in node.statements:
+      const_vars.append(stmt.var_name)
+      const_format.append(real_t)
+
+    self.const_data_vars = const_vars
+    self.data_t = Type.struct(const_format)
+    self.data_pt = Type.pointer(self.data_t)
+
+    init_fn_t = Type.function(void_t, [self.data_pt])
+    self.fn_init = Function.new(self.module, init_fn_t, self.name + '_init')
+
+    new_fn_t = Type.function(self.data_pt, [])
+    self.fn_new = Function.new(self.module, new_fn_t, self.name + '_new')
+
+    bb = self.fn_new.append_basic_block('entry')
+    builder = Builder.new(bb)
+    #curr = builder.malloc(self.sim_data_t, 'curr')
+    #next = builder.malloc(self.sim_data_t, 'next')
+    sim = builder.malloc(self.data_t, 'sim')
+    builder.call(self.fn_init, [sim])
+    builder.ret(sim)
 
 
   def visit_list(self, node):
