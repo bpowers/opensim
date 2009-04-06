@@ -51,6 +51,7 @@ Options:\n")
                         Supported langages:\n\
                           python\n\
                           as3\n\
+                          jit\n\
                           interpret [DEFUALT]\n")
   
   print("\
@@ -120,6 +121,8 @@ def main():
     elif target == "as3":
       new_walk = target
     elif target == "interpret":
+      new_walk = target
+    elif target == "jit":
       new_walk = target
     else:
       print("%s: invalid target language: %s." % (PROGRAM_NAME, target))

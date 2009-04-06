@@ -35,8 +35,11 @@ for f in os.listdir(__path__[0]):
   if match:
     ext = match.group(2)
     handler = match.group(1)
-    mod = __import__('opensim.engine.passes.' + handler, fromlist=[''])
-    __output_passes[ext] = mod
+    try:
+      mod = __import__('opensim.engine.passes.' + handler, fromlist=[''])
+      __output_passes[ext] = mod
+    except ImportError:
+      pass
 
 
 def get_output_pass(kind):
