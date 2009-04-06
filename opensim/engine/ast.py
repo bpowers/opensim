@@ -62,11 +62,12 @@ class ASTScope(ASTNode):
   AST Node representing scope
   '''
 
-  def __init__(self, parent, name):
+  def __init__(self, parent, name, sim=None):
     self.parent = parent
     self.name = name
     self.vars = {}
     self.child = None
+    self.sim = sim
 
   def gen(self, visitor):
     return visitor.visit_scope(self)

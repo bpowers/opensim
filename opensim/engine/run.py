@@ -37,7 +37,7 @@ log = logging.getLogger('opensim.run')
 
 class Manager:
 
-  def __init__(self, variables, var_list):
+  def __init__(self, variables, var_list, sim):
 
     self.passes = []
 
@@ -47,6 +47,7 @@ class Manager:
     self.__errors = []
     self.__vars = variables
     self.__var_list = var_list
+    self.__sim = sim
 
     self.__initialize()
 
@@ -58,7 +59,7 @@ class Manager:
     self.__unparsed = list(self.__var_list)
     self.__in_progress = []
     self.__parsed = []
-    self.__ast = ASTScope(None, 'root')
+    self.__ast = ASTScope(None, 'root', self.__sim)
     self.__ast.tables = []
     self.__ast.vars = self.__vars
     self.__ast.child = ASTList(self.__ast)

@@ -109,7 +109,7 @@ class Simulator(gobject.GObject):
     else:
       self.__initialize_time()
 
-    self.__manager = run.Manager(self.__vars, self.__vars_list)
+    self.__manager = run.Manager(self.__vars, self.__vars_list, self)
 
 
   def _disable_incremental(self):
@@ -165,7 +165,7 @@ class Simulator(gobject.GObject):
 
     self.__vars = {}
     self.__vars_list = []
-    self.__manager = run.Manager(self.__vars, self.__vars_list)
+    self.__manager = run.Manager(self.__vars, self.__vars_list, self)
 
 
   def do_get_property(self, prop):
