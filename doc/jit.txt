@@ -1,20 +1,42 @@
-compile model
-  define constant and data structs
-  create function to initialize constants
+#===--- JIT compilation notes --------------------------------------------===#
 
-  translate maths into llvm
+I've always wanted to work with JIT compilation because of its possible
+performance benefits and (from my point of view) elegance.  I had a
+somewhat working backend a year ago, but it was fragile (didn't work on
+windows, and worked differently on mac and linux).  My current work is
+focusing on a robust JIT using LLVM, as well as a playground for my
+object-oriented system dynamics ideas.
 
-  initialize constants
-  simulate once
 
-simulate function (depends somewhat on RC4 or euler etc)
+#===--- general outline --------------------------------------------------===#
 
-  
+- define data structures (see below)
+- create function(s) to initialize constants
+  - a 'new' function to get a new initialized simulation instance
+  - an 'init' function to initialize the constants and stock initial
+    values
+- create simulate function (depends somewhat on RC4 or euler etc)
+  - translate maths into llvm
+- load in function to print sim structs (probably easiest to write it
+  in C, and use clang or llvm-gcc to emit llvm bitcode)
+- create a new sim struct and pass it to the simulate function
 
-  simulate loop
-    equations...
 
-~~~~~~~~~~
+#===--- data-structure outline -------------------------------------------===#
+
+struct data:
+  uint32_t length
+  real_t time
+  ... other aux, stock and flow variables
+
+struct sim:
+  uint32_t length
+  data *curr
+  data *next
+  ... other constant data and initial stock values
+
+
+#===--- example ----------------------------------------------------------===#
 
 struct _data_SIMNAME
 {

@@ -5,11 +5,13 @@ along with observations about other programs.
 I use 'model' and 'simulation' rather interchangably here.  If I were
 more precise, a model is a simplified representation of reality, of
 some system that exists (probably) in the Real World.  A simulation
+is a particular instance of a model.
 
 Oddities compared to a 'regular' programming language:
   - Other SD programs don't assume equations and variables are ordered
-    in their save-files.  This means that its not possible to read in
-    a model and run it in a single pass.
+    in their save-files (Vensim I'm looking at you).  This means that
+    its not possible to read in a model and run it in a single pass;
+    if we want compatability we need at least a 2-pass compiler.
   - Function calls do nasty and evil things, like creating a large
     amount of model structure that is visible only to them but needs
     to exist in the global model context.  This can't be fixed (for
@@ -25,7 +27,7 @@ Very basic structure of a SD model (leaving out memory allocation):
   L- set stock initial values
 
 * simulation loop (representing e.g. Euler or RK integration)
-  |- calculate flows
+  |- calculate flows & auxiliary variables
   |- output/save results
   L- update stocks
 
