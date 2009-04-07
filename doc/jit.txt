@@ -44,7 +44,6 @@ struct _data_SIMNAME
   real_t flow_1;
   real_t stock_1;
 }
-
 typedef struct _data_SIMNAME data_SIMNAME;
 
 
@@ -57,13 +56,13 @@ struct _sim_SIMNAME
   data_SIMNAME *curr;
   data_SIMNAME *next;
 }
-
 typedef struct _sim_SIMNAME (sim_SIMNAME *);
 
 
-void init_SIMNAME (sim_SIMNAME *);
+void SIMNAME_init (sim_SIMNAME *);
 
-sim_SIMNAME *new_SIMNAME ()
+sim_SIMNAME *
+SIMNAME_new ()
 {
   sim_SIMNAME *inst = malloc (sizeof (sim_SIMNAME));
 
@@ -73,7 +72,8 @@ sim_SIMNAME *new_SIMNAME ()
 }
 
 
-void init_SIMNAME (sim_SIMNAME *self)
+void
+SIMNAME_init (sim_SIMNAME *self)
 {
   // initializing constants should be seperate somehow
   self->const_1 = 45;
