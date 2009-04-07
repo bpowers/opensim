@@ -65,7 +65,6 @@ def lookup(table, index):
 # pertinent llvm types
 void_t = Type.void()
 bool_t = Type.int(1)
-real_t = Type.double()
 int_t = Type.int(32)
 
 
@@ -76,17 +75,20 @@ class JIT:
   fd is the file decriptor that we will write to, or any object that
   supports the write(str) method.
   '''
-  def __init__(self, fd=sys.stdout):
+  def __init__(self, fd=sys.stdout, real_t=Type.double()):
     self.space = ''
     self.fd = fd
+    self.real_t = real_t
 
-  def _create_alloca(self, var_name, kind=real_t):
+  def _create_alloca(self, var_name, kind=None):
     '''
     Create entry block alloca instance.
     '''
     entry = self.fn_sim.entry_basic_block
     builder = Builder.new(entry)
     builder.position_at_beginning(entry)
+    if not kind:
+      kind = self.real_t
     return builder.alloca(kind, var_name)
 
 
@@ -284,7 +286,7 @@ class JIT:
 
     # first find and record the variables in the main integration loop
     loop = root.child.statements[1]
-    sim_format = [real_t]
+    sim_format = [self.real_t]
     sim_vars = ['time']
     # keep track of the index in the struct a variable is stored at
     sim_idx = {'time': 0}; i = 1
@@ -293,12 +295,12 @@ class JIT:
       # want to keep track of them in the long term.
       if isinstance(self.vars[stmt.var_name], opensim.Variable):
         sim_vars.append(stmt.var_name)
-        sim_format.append(real_t)
+        sim_format.append(self.real_t)
         sim_idx[stmt.var_name] = i
         i += 1
     for stmt in loop.stocks.statements:
       sim_vars.append(stmt.var_name)
-      sim_format.append(real_t)
+      sim_format.append(self.real_t)
       sim_idx[stmt.var_name] = i
       i += 1
 
@@ -317,7 +319,7 @@ class JIT:
     const_idx = {}; i = 2
     for stmt in init.statements:
       const_vars.append(stmt.var_name)
-      const_format.append(real_t)
+      const_format.append(self.real_t)
       const_idx[stmt.var_name] = i
       i += 1
 
