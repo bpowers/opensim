@@ -1,0 +1,67 @@
+compile model
+  define constant and data structs
+  create function to initialize constants
+
+  translate maths into llvm
+
+  initialize constants
+  simulate once
+
+simulate function (depends somewhat on RC4 or euler etc)
+
+  
+
+  simulate loop
+    equations...
+
+~~~~~~~~~~
+
+struct _data_SIMNAME
+{
+  real_t time;
+  real_t flow_1;
+  real_t stock_1;
+}
+
+typedef struct _data_SIMNAME data_SIMNAME;
+
+
+struct _sim_SIMNAME
+{
+  real_t const_1;
+  real_t const_2;
+  real_t stock_1_init;
+
+  data_SIMNAME *curr;
+  data_SIMNAME *next;
+}
+
+typedef struct _sim_SIMNAME (sim_SIMNAME *);
+
+
+void init_SIMNAME (sim_SIMNAME *);
+
+sim_SIMNAME *new_SIMNAME ()
+{
+  sim_SIMNAME *inst = malloc (sizeof (sim_SIMNAME));
+
+  init_SIMNAME (inst);
+
+  return inst;
+}
+
+
+void init_SIMNAME (sim_SIMNAME *self)
+{
+  // initializing constants should be seperate somehow
+  self->const_1 = 45;
+  ...
+  self->stock_1_init = 5;
+
+  self->curr = malloc (sizeof (sim_SIMNAME));
+  self->next = malloc (sizeof (sim_SIMNAME));
+
+  // initialize all the initial values of the stocks
+  self->curr->stock_1 = self->stock_1_init;
+}
+

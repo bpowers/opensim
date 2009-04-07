@@ -121,88 +121,10 @@ class JIT:
     node.child.gen(self)
 
     print self.module
-    mp = ModuleProvider.new(self.module)
-    ee = ExecutionEngine.new(mp)
-    sim = ee.run_function(self.fn_new, [])
-    ee.run_function(self.fn_sim, [sim])
-
-
-  def __create_init_functions(self, root):
-    '''
-    Create the IR for several initialization functions.
-    '''
-    import opensim.engine as opensim
-    # define our data structures first
-    node = root.child.statements[1]
-
-    sim_format = [real_t]
-    sim_vars = ['time']
-    # keep track of the index in the struct a variable is stored at
-    sim_idx = {'time': 0}
-    i = 1
-    for stmt in node.body.statements:
-      if isinstance(self.vars[stmt.var_name], opensim.Variable):
-        sim_vars.append(stmt.var_name)
-        sim_format.append(real_t)
-        sim_idx[stmt.var_name] = i
-        i += 1
-    for stmt in node.stocks.statements:
-      sim_vars.append(stmt.var_name)
-      sim_format.append(real_t)
-      sim_idx[stmt.var_name] = i
-      i += 1
-
-    self.sim_data_vars = sim_vars
-    self.sim_data = sim_idx
-    self.sim_data_t = Type.struct(sim_format)
-    self.sim_data_pt = Type.pointer(self.sim_data_t)
-
-    node = root.child.statements[0]
-
-    const_format = [self.sim_data_pt, self.sim_data_pt]
-    const_vars = []
-    const_idx = {}
-    # its 2 becuase 0 is curr, and 1 is next
-    i = 2
-    for stmt in node.statements:
-      const_vars.append(stmt.var_name)
-      const_format.append(real_t)
-      const_idx[stmt.var_name] = i
-      i += 1
-
-    self.const_data_vars = const_vars
-    self.data = const_idx
-    self.data_t = Type.struct(const_format)
-    self.data_pt = Type.pointer(self.data_t)
-
-    init_fn_t = Type.function(int_t, [self.data_pt])
-    self.fn_init = Function.new(self.module, init_fn_t, self.name + '_init')
-
-    new_fn_t = Type.function(self.data_pt, [])
-    self.fn_new = Function.new(self.module, new_fn_t, self.name + '_new')
-
-    bb = self.fn_new.append_basic_block('entry')
-    builder = Builder.new(bb)
-    sim = builder.malloc(self.data_t, 'sim')
-    builder.call(self.fn_init, [sim])
-    builder.ret(sim)
-
-    # now we're going to build the initialization function
-    bb = self.fn_init.append_basic_block('entry')
-    builder = Builder.new(bb)
-    sim = self.fn_init.args[0]
-    curr = builder.malloc(self.sim_data_t, 'curr')
-    sim_curr_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 0)])
-    builder.store(curr, sim_curr_p)
-
-    next = builder.malloc(self.sim_data_t, 'next')
-    sim_next_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 1)])
-    builder.store(next, sim_next_p)
-
-    builder.ret(Constant.int(int_t, 0))
-
-    sim_fn_t = Type.function(int_t, [self.data_pt])
-    self.fn_sim = Function.new(self.module, sim_fn_t, self.name + '_simulate')
+    #mp = ModuleProvider.new(self.module)
+    #ee = ExecutionEngine.new(mp)
+    #sim = ee.run_function(self.fn_new, [])
+    #ee.run_function(self.fn_sim, [sim])
 
 
   def visit_list(self, node):
@@ -220,7 +142,7 @@ class JIT:
     This is basically a glorified loop, but is used to distinguish
     between a basic loop and a more complicated RK one.
     '''
-    builder = Builder.new(self.bb_begin)
+    self.builder = Builder.new(self.bb_begin)
 
     #self.write('\n# variables related to outputting results')
     self._create_alloca('save_count')
@@ -345,4 +267,104 @@ class JIT:
     self.write('lookup(%s, ' % node.name, end='')
     node.arg.gen(self)
     self.write(')', end='')
+
+
+  def __create_init_functions(self, root):
+    '''
+    Create the IR for several initialization functions.
+    '''
+    # we get circular import errors if we import this earlier.
+    import opensim.engine as opensim
+
+    # we need to probe to find out how many constants (and stock
+    # initializations) we have, as well as how many stocks, flows
+    # and auxilliary variables we have.  we need this to figure out
+    # the size of our data structures for the simulation.  see
+    # doc/jit.txt for more specific information
+
+    # first find and record the variables in the main integration loop
+    loop = root.child.statements[1]
+    sim_format = [real_t]
+    sim_vars = ['time']
+    # keep track of the index in the struct a variable is stored at
+    sim_idx = {'time': 0}; i = 1
+    for stmt in loop.body.statements: 
+      # we create temporary variables for certain things, and we don't
+      # want to keep track of them in the long term.
+      if isinstance(self.vars[stmt.var_name], opensim.Variable):
+        sim_vars.append(stmt.var_name)
+        sim_format.append(real_t)
+        sim_idx[stmt.var_name] = i
+        i += 1
+    for stmt in loop.stocks.statements:
+      sim_vars.append(stmt.var_name)
+      sim_format.append(real_t)
+      sim_idx[stmt.var_name] = i
+      i += 1
+
+    # now record this stuff
+    self.sim_data = sim_idx
+    self.sim_data_vars = sim_vars
+    # and define the llvm struct types that we're dealing with
+    self.sim_data_t = Type.struct(sim_format)
+    self.sim_data_pt = Type.pointer(self.sim_data_t)
+
+    # next go through and do the same for our constants.
+    init = root.child.statements[0]
+    const_format = [self.sim_data_pt, self.sim_data_pt]
+    const_vars = []
+    # its 2 becuase 0 is curr, and 1 is next
+    const_idx = {}; i = 2
+    for stmt in init.statements:
+      const_vars.append(stmt.var_name)
+      const_format.append(real_t)
+      const_idx[stmt.var_name] = i
+      i += 1
+
+    # record these in instance variables as well
+    self.data = const_idx
+    self.data_vars = const_vars
+    # and again define the corresponding llvm types
+    self.data_t = Type.struct(const_format)
+    self.data_pt = Type.pointer(self.data_t)
+
+    # now that we know the kind of structs we're dealing with, we can
+    # create the init and new functions to work with these.
+
+    # we have to declare the init function before the new function
+    # because we call into it.
+    init_fn_t = Type.function(int_t, [self.data_pt])
+    self.fn_init = Function.new(self.module, init_fn_t, self.name + '_init')
+
+    # the new function allocates space on the heap for the data object,
+    # calls init() on the struct (which malloc's space for two sim 
+    # structs and initializes constant values), and returns the initialized
+    # structure.
+    new_fn_t = Type.function(self.data_pt, [])
+    self.fn_new = Function.new(self.module, new_fn_t, self.name + '_new')
+    bb = self.fn_new.append_basic_block('entry')
+    builder = Builder.new(bb)
+    sim = builder.malloc(self.data_t, 'sim')
+    builder.call(self.fn_init, [sim])
+    builder.ret(sim)
+
+    # now we're going to build the initialization function
+    bb = self.fn_init.append_basic_block('entry')
+    builder = Builder.new(bb)
+    sim = self.fn_init.args[0]
+    # we need to allocate memory for the next and curr structs, and store
+    # a pointer to them in the const data (sim) struct.
+    curr = builder.malloc(self.sim_data_t, 'curr')
+    sim_curr_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 0)])
+    builder.store(curr, sim_curr_p)
+    next = builder.malloc(self.sim_data_t, 'next')
+    sim_next_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 1)])
+    builder.store(next, sim_next_p)
+
+    # finally return 0 for no error
+    builder.ret(Constant.int(int_t, 0))
+
+    # declare, but don't define, our simulute function as well
+    sim_fn_t = Type.function(int_t, [self.data_pt])
+    self.fn_sim = Function.new(self.module, sim_fn_t, self.name + '_simulate')
 
