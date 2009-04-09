@@ -27,7 +27,11 @@
 import pygtk
 pygtk.require("2.0")
 
-import gobject, gtk, cairo, pango, goocanvas, math
+import math
+import gobject, gtk
+import cairo, pango
+import gaphas
+import gaphas.tool as tool
 import constants as sim
 import widgets
 import libxml2
@@ -38,68 +42,25 @@ import tools
 
 import logging
 
-class SimGoo(goocanvas.Canvas):
-  def __init__(self, line_control=tools.LineControl(), **kwargs):
-    super(SimGoo, self).__init__(**kwargs)
-    self.highlighted = None
-    self.highlight_cb = None
-    self.engine = Simulator()
+class SimView(gaphas.GtkView):
+  def __init__(self, engine, **kwargs):
+    super(SimView, self).__init__(**kwargs)
 
-    # used to denote when we're overriding mouseclicks on canvas items.
-    # mostly for when we're drawing lines and rates
-    self.override = False
+    self.canvas = gaphas.Canvas()
 
-    # if we've got a line we're making, we want to attach the
-    # motion callback to it.  When we're done moving the line, 
-    # detach the callback.  keep track of the callback id here.
-    self.line = line_control
-  
+    self.tool = tool.ToolChain().             \
+                append(tool.HoverTool()).     \
+                append(tool.RubberbandTool())
 
-  def grab_highlight(self, widget):
-    if self.highlighted is widget:
-      return
-    elif self.highlighted is not None:
-      self.highlighted.emit("highlight_out_event", self)
-    self.highlighted = widget
-    self.highlight_cb = widget.connect("highlight_out_event", 
-                                       self.highlight_out)
-    self.highlighted.cb = self.highlight_cb
-    widget.emit("highlight_in_event", self)
-    self.grab_focus(self.highlighted)
-    #logging.debug("done grab_highlight")
+    self.engine = engine
 
+    display = gtk.gdk.display_get_default()
+    screen = display.get_default_screen()
+    self.dpi = screen.get_resolution()
 
-  def drop_highlight(self):
-    if self.highlighted is not None:
-      self.highlighted.emit("highlight_out_event", self)
-      self.highlighted = None
-
-
-  def highlight_out(self, item, target):
-    #logging.debug("SimGoo: highlight_out")
-    if item is not self.highlighted:
-      logging.error("receiving highlight events, but not from right object.")
-      self.item.disconnect(self.item.cb)
-      self.item.cb = None
-      #return False
-
-    self.highlighted.disconnect(self.highlight_cb)
-    self.highlight_cb = None
-    self.highlighted = None
-    self.sim.grab_focus()
-    return False
-
-
-  def remove_item(self, item):
-    logging.debug("SimGooCanvas: removing '%s'." % item.name())
-    self.sim.display_vars.remove(item)
-    item.remove()
-    self.highlighted = None
-
-    # give the LineControl instance the variable we're removing.
-    # if we're removing the line currently being made, then 
-    # reset LineControl
-    self.line.cleanup(item)
+    self.set_flags(gtk.CAN_FOCUS)
+    self.set_flags(gtk.CAN_DEFAULT)
+    self.set_size_request(1440, 900)
 
 
   def new_variable(self, var_name):
@@ -107,170 +68,39 @@ class SimGoo(goocanvas.Canvas):
 
 
 
-class Canvas (gtk.ScrolledWindow):
+class Canvas(gtk.ScrolledWindow):
 
   active_tool = sim.UNDEFINED
 
   def __init__(self):
     super(Canvas, self).__init__()
-    self.last_state = 0
-    self.dragging = False
-    self.drag_x = 0
-    self.drag_y = 0
 
-    self.line = tools.LineControl()
-    self.line.set_canvas(self)
+    self.engine = Simulator()
 
-    self.goocanvas = SimGoo(self.line)
-    self.engine = self.goocanvas.engine 
-    self.goocanvas.sim = self
     self.display_vars = []
 
-    # allow us to add all our layout information to the 
-    # save file
+    # allow us to add all our layout information to the save file
     self.engine.connect("saving", self.save_visual_state)
 
-    display = gtk.gdk.display_get_default()
-    screen = display.get_default_screen()
-    self.goocanvas.dpi = screen.get_resolution()
-
-    # white background
-    #color_white = gtk.gdk.Color(65535, 65535, 65535)
-    #self.goocanvas.modify_base(gtk.STATE_NORMAL, color_white)
-
-    self.goocanvas.set_flags(gtk.CAN_FOCUS)
-    self.goocanvas.set_flags(gtk.CAN_DEFAULT)
-    self.goocanvas.set_size_request(1440, 900)
-    self.goocanvas.set_bounds(0, 0, 1440, 900)
-
-    self.goocanvas.automatic_bounds = True
-
-    root = self.goocanvas.get_root_item()
-    root.connect("button_press_event", self.on_background_button_press)
-    root.connect("motion_notify_event", self.on_motion)
-
-    self.connect("focus_in_event", self.on_focus_in)
-    self.connect("focus_out_event", self.on_focus_out)
-
-    self.add(self.goocanvas)
-
-    self.goocanvas.show()
-
+    self.view = SimView(self.engine)
+    self.add_with_viewport(self.view)
+    self.view.show()
 
 
   def set_active_tool(self, tool_type):
     self.active_tool = tool_type
-    if tool_type is sim.FLOW or tool_type is sim.INFLUENCE:
-      self.goocanvas.override = True
-    else:
-      self.goocanvas.override = False
-
-    if self.goocanvas.highlighted:
-      self.goocanvas.highlighted.emit("highlight_out_event", self)
 
 
   def get_active_tool(self):
     return self.active_tool
 
 
-  def on_background_button_press (self, item, target, event):
-    root = self.goocanvas.get_root_item()
-    
-    if event.button is 1:
-      if self.active_tool is sim.STOCK:
-        new_stock = widgets.StockItem(event.x, event.y, \
-                                      parent=root, can_focus=True)
-        self.display_vars.append(new_stock)
-
-      elif self.active_tool is sim.VARIABLE:
-        new_var = widgets.VariableItem(event.x, event.y, \
-                                       parent=root, can_focus=True)
-        self.display_vars.append(new_var)
-
-      elif self.active_tool is sim.INFLUENCE:
-        widget = self.goocanvas.get_item_at(event.x, event.y, False)
-
-        if self.line.cb_id is None:
-          if widget is None or (type(widget) is not widgets.StockItem and
-                                type(widget) is not widgets.FlowItem and 
-                                type(widget) is not widgets.VariableItem):
-            logging.debug("Canvas: can't start a link here")
-            return True
-
-          logging.debug("sweet new line")
-          self.line.new_link(widget)
-        else:
-          if widget is None or (type(widget) is not widgets.FlowItem and 
-                                type(widget) is not widgets.VariableItem):
-            logging.debug("Canvas: can't end a link here")
-            if widget is None:
-              logging.debug("Canvas: no widget")
-            else:
-              logging.debug("Canvas: '%s'" % type(widget))
-            return True
-
-          self.line.end_flow(widget)
-
-      elif self.active_tool is sim.FLOW:
-        widget = self.goocanvas.get_item_at(event.x, event.y, False)
-
-
-        if self.line.cb_id is None:
-          if widget is not None and type(widget) is not widgets.StockItem:
-            # if we landed on anything but a stock, break
-            return True
-          elif not widget:
-            # create a cloud if they clicked on the background for a flow 
-            logging.debug("creating a cloud")
-            new_var = widgets.CloudItem(event.x, event.y, parent=root)
-            self.display_vars.append(new_var)
-            widget = new_var
-        
-          logging.debug("starting new flow")
-          self.line.new_flow(widget)
-
-        else:
-
-          #okay, we're finishing the line here.
-          if widget is not None and type(widget) is not widgets.StockItem:
-            # if we landed on anything but a stock, break
-            return True
-          elif not widget:
-            # don't allow flows between 2 clouds
-            if type(self.line.line.flow_from) is widgets.CloudItem:
-              self.goocanvas.remove_item(self.line.line)
-              return True
-
-            # create a cloud if they clicked on the background for a flow 
-            logging.debug("creating a cloud")
-            new_var = widgets.CloudItem(event.x, event.y, parent=root)
-            self.display_vars.append(new_var)
-            widget = new_var
-          
-          logging.debug("ending new flow")
-          self.line.end_flow(widget)
-
-      else:
-        self.goocanvas.drop_highlight()
-        self.grab_focus()
-
-    return True
-
-
-  def on_motion(self, item, target, event):
-    if self.active_tool is sim.FLOW or self.active_tool is sim.VARIABLE:
-      #logging.debug("motion notify!")
-      pass
-
-
   def on_focus_in(self, target, event):
     #logging.debug("Canvas: got focus")
-
     return False
 
   def on_focus_out(self, target, event):
     #logging.debug("Canvas: left focus")
-
     return False
 
 
@@ -449,11 +279,9 @@ class Canvas (gtk.ScrolledWindow):
 
 
   def save_model(self, file_path):
-    logging.debug("Canvas: Dropping highlight to save.")
-    self.goocanvas.drop_highlight()
     logging.debug("Canvas: Setting model file and saving.")
     self.engine.props.file_name = file_path
-    self.engine.save ()
+    self.engine.save()
 
     logging.debug("Canvas: Saved model.")
 
