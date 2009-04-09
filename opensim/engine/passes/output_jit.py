@@ -243,7 +243,7 @@ class JIT:
 
     Leaf node!
     '''
-    self.write(str(node.val), end='')
+    return self.builder.node.val
 
   def visit_call(self, node):
     '''
@@ -286,37 +286,40 @@ class JIT:
 
     # first find and record the variables in the main integration loop
     loop = root.child.statements[1]
-    sim_format = [self.real_t]
-    sim_vars = ['time']
-    # keep track of the index in the struct a variable is stored at
-    sim_idx = {'time': 0}; i = 1
+    data_format = [int_t, self.real_t]
+    data_vars = ['time']
+    # keep track of the index in the struct a variable is stored at-
+    # we start i at 2 becuase the 0th indexed element is size, 1 is
+    # time, so we start after that.
+    data_idx = {'time': 1}; i = 2
     for stmt in loop.body.statements: 
       # we create temporary variables for certain things, and we don't
       # want to keep track of them in the long term.
       if isinstance(self.vars[stmt.var_name], opensim.Variable):
-        sim_vars.append(stmt.var_name)
-        sim_format.append(self.real_t)
-        sim_idx[stmt.var_name] = i
+        data_vars.append(stmt.var_name)
+        data_format.append(self.real_t)
+        data_idx[stmt.var_name] = i
         i += 1
     for stmt in loop.stocks.statements:
-      sim_vars.append(stmt.var_name)
-      sim_format.append(self.real_t)
-      sim_idx[stmt.var_name] = i
+      data_vars.append(stmt.var_name)
+      data_format.append(self.real_t)
+      data_idx[stmt.var_name] = i
       i += 1
 
     # now record this stuff
-    self.sim_data = sim_idx
-    self.sim_data_vars = sim_vars
+    self.data = data_idx
+    self.data_vars = data_vars
     # and define the llvm struct types that we're dealing with
-    self.sim_data_t = Type.struct(sim_format)
-    self.sim_data_pt = Type.pointer(self.sim_data_t)
+    self.data_t = Type.struct(data_format)
+    self.data_pt = Type.pointer(self.data_t)
 
     # next go through and do the same for our constants.
     init = root.child.statements[0]
-    const_format = [self.sim_data_pt, self.sim_data_pt]
+    const_format = [int_t, self.data_pt, self.data_pt]
     const_vars = []
-    # its 2 becuase 0 is curr, and 1 is next
-    const_idx = {}; i = 2
+    # initialize i to 3 becuase the first element is the size, second
+    # element is data *curr, third is data *next
+    const_idx = {}; i = 3
     for stmt in init.statements:
       const_vars.append(stmt.var_name)
       const_format.append(self.real_t)
@@ -324,29 +327,29 @@ class JIT:
       i += 1
 
     # record these in instance variables as well
-    self.data = const_idx
-    self.data_vars = const_vars
+    self.sim = const_idx
+    self.sim_vars = const_vars
     # and again define the corresponding llvm types
-    self.data_t = Type.struct(const_format)
-    self.data_pt = Type.pointer(self.data_t)
+    self.sim_t = Type.struct(const_format)
+    self.sim_pt = Type.pointer(self.sim_t)
 
     # now that we know the kind of structs we're dealing with, we can
     # create the init and new functions to work with these.
 
     # we have to declare the init function before the new function
     # because we call into it.
-    init_fn_t = Type.function(int_t, [self.data_pt])
+    init_fn_t = Type.function(int_t, [self.sim_pt])
     self.fn_init = Function.new(self.module, init_fn_t, self.name + '_init')
 
     # the new function allocates space on the heap for the data object,
     # calls init() on the struct (which malloc's space for two sim 
     # structs and initializes constant values), and returns the initialized
     # structure.
-    new_fn_t = Type.function(self.data_pt, [])
+    new_fn_t = Type.function(self.sim_pt, [])
     self.fn_new = Function.new(self.module, new_fn_t, self.name + '_new')
     bb = self.fn_new.append_basic_block('entry')
     builder = Builder.new(bb)
-    sim = builder.malloc(self.data_t, 'sim')
+    sim = builder.malloc(self.sim_t, 'sim')
     builder.call(self.fn_init, [sim])
     builder.ret(sim)
 
@@ -356,10 +359,10 @@ class JIT:
     sim = self.fn_init.args[0]
     # we need to allocate memory for the next and curr structs, and store
     # a pointer to them in the const data (sim) struct.
-    curr = builder.malloc(self.sim_data_t, 'curr')
+    curr = builder.malloc(self.data_t, 'curr')
     sim_curr_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 0)])
     builder.store(curr, sim_curr_p)
-    next = builder.malloc(self.sim_data_t, 'next')
+    next = builder.malloc(self.data_t, 'next')
     sim_next_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 1)])
     builder.store(next, sim_next_p)
 
@@ -367,6 +370,6 @@ class JIT:
     builder.ret(Constant.int(int_t, 0))
 
     # declare, but don't define, our simulute function as well
-    sim_fn_t = Type.function(int_t, [self.data_pt])
+    sim_fn_t = Type.function(int_t, [self.sim_pt])
     self.fn_sim = Function.new(self.module, sim_fn_t, self.name + '_simulate')
 
