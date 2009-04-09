@@ -24,6 +24,8 @@
 #
 #===----------------------------------------------------------------------===#
 
+from __future__ import with_statement
+
 import pygtk
 pygtk.require("2.0")
 
@@ -243,6 +245,10 @@ class Simulator(gobject.GObject):
     if not walker:
       raise NotImplementedError('The output type (%s) is not supported.' %
                                 self.__output_type)
+    elif self.__output_file_name != '':
+        with open(self.__output_file_name, 'w') as fd:
+          walker.fd = fd
+          self.__manager.walk(walker)
     else:
       self.__manager.walk(walker)
 
