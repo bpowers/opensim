@@ -37,30 +37,33 @@ import logging
 from opensim.visuals.tools import edit_equation
 from text import TextInfo
 
+LINE_WIDTH = 2.0
+PADDING = 5.0
 
-class StockItem(Element):
 
-  def __init__(self, name=None,
-               line_width=2.0):
+class StockItem(gobject.GObject, Element):
+
+  __gtype_name__ = 'StockItem'
+
+  def __init__(self, name, x, y, width, height):
     super(StockItem, self).__init__()
+    Element.__init__(self)
 
-    self._new = True
     # this will be the variable created in the simulator
     self.var = None
 
     self.active_color = [0, 0, 0]
-    self.line_width = line_width
+    self.line_width = LINE_WIDTH
     self.__old_name = ''
-    self.named = True
 
-    self.width = 150
-    self.height = 75
+    self.width = width
+    self.height = height
 
     # keep track of inflows and outflows, for use in engine
     self.inflows = []
     self.outflows = []
 
-    self.padding = 5
+    self.padding = PADDING
     text_width = self.width - self.padding*2
 
     if name is not None:
@@ -70,7 +73,7 @@ class StockItem(Element):
       self._display_name = TextInfo('(enter name)', wrap_width=text_width, 
                                     placeholder_text=True)
 
-    self.__needs_resize_calc = True
+    self.set_position(x - width/2, y - height/2)
 
 
   def set_position(self, x, y):
@@ -87,17 +90,8 @@ class StockItem(Element):
     return (int(self.width/2), int(self.height/2))
 
 
-  def abs_center(self):
-    center = self.center()
-    transform = self.get_transform()
-    x0, y0 = 0, 0
-    if transform is not None:
-      xx, yx, xy, yy, x0, y0 = transform
-    return (x0 + center[0], y0 + center[1])
-
-
   def edge_point(self, end_point):
-    center_x, center_y = self.abs_center()
+    center_x, center_y = self.center()
     
     line_angle = math.atan2((end_point[1] - center_y), 
                             (end_point[0] - center_x))
@@ -130,34 +124,30 @@ class StockItem(Element):
     return (center_x, center_y)
 
 
-  '''
   def pre_update(self, context):
     cr = context.cairo
-    if self.__needs_resize_calc:
-      self._display_name.update_extents(cr)
+    self._display_name.width = self.width - self.padding*2
+    self._display_name.update_extents(cr)
 
-      old_center_x = self.x + self.width/2.0
-      old_center_y = self.y + self.height/2.0
-      self.height = max(self.height, \
-                        self._display_name.height + 2*self.padding)
-      self.x = old_center_x - self.width/2.0
-      self.y = old_center_y - self.height/2.0
-      
-      self.bounds_x1 = self.x - self.line_width/2.0 
-      self.bounds_y1 = self.y - self.line_width/2.0
-      self.bounds_x2 = self.x + self.width + self.line_width/2.0 
-      self.bounds_y2 = self.y + self.height + self.line_width/2.0
+    self.height = max(self.height, self._display_name.height + 2*self.padding)
+    self.width = max(self.width, self._display_name.text_width + 2*self.padding)
 
-      self.__needs_resize_calc = False
-  '''
 
   def draw(self, context):
     cr = context.cairo
     cr.save()
 
     cr.rectangle(0, 0, self.width, self.height)
-    cr.set_source_rgb (1, 1, 1)
+
+    # give some visual clues as to what our state is
+    if context.focused:
+      cr.set_source_rgba(.8,.8,1, .8)
+    elif context.hovered:
+      cr.set_source_rgba(.9,.9,1, .8)
+    else:
+      cr.set_source_rgba(1,1,1, .8)
     cr.fill_preserve()
+
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
@@ -175,8 +165,9 @@ class StockItem(Element):
     # get the center of the widget, so that we get the correct 
     # behavior when it loads.  also, add the cairo transformation
     # matrix offset.
-    x_center = self.bounds_x1 + self.width/2.0
-    y_center = self.bounds_y1 + self.height/2.0
+    x, y = self.get_position()
+    x += self.width/2
+    y += self.height/2
 
     xml_string = '\
     <stock>\n\
@@ -185,7 +176,7 @@ class StockItem(Element):
       <y>%d</y>\n\
       <width>%f</width>\n\
       <height>%f</height>\n\
-    </stock>\n' % (self._display_name.string, x_center, y_center, 
+    </stock>\n' % (self._display_name.string, x, y, 
                    self.width, self.height)
 
     return xml_string
@@ -193,26 +184,6 @@ class StockItem(Element):
 
   def name(self):
     return self._display_name.string
-
-
-  def on_key_press(self, item, target, event):
-    key_name = gtk.gdk.keyval_name(event.keyval)
-
-    if key_name in self.enter_key:
-      self.emit("highlight_out_event", self)
-    elif key_name in self.delete_key:
-      self._display_name.backspace()
-    elif key_name in self.escape_key:
-      print("escape key!")
-    else:
-      # add key to name buffer
-      self._display_name.add(event.string)
-
-    self.__needs_resize_calc = True
-    self.force_redraw()
-
-    # return true to stop propogation
-    return True
 
 
   def get_rectangle(self):
