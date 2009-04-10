@@ -30,17 +30,18 @@ pygtk.require("2.0")
 
 import gtk, gobject
 import constants as sim
+from gaphas import tool
 
 # on the mac we don't have sugar so we compensate
 import sys
-if sys.platform == 'darwin':
-  from gtk import ToggleToolButton
-  from toolcombobox import ToolComboBox
-  from gtk import ToolButton
-else:
-  from sugar.graphics.toggletoolbutton import ToggleToolButton
-  from sugar.graphics.toolcombobox import ToolComboBox
-  from sugar.graphics.toolbutton import ToolButton
+#if sys.platform == 'darwin':
+from gtk import ToggleToolButton
+from toolcombobox import ToolComboBox
+from gtk import ToolButton
+#else:
+#  from sugar.graphics.toggletoolbutton import ToggleToolButton
+#  from sugar.graphics.toolcombobox import ToolComboBox
+#  from sugar.graphics.toolbutton import ToolButton
 import logging
 
 from constants import *
@@ -230,7 +231,6 @@ class ViewToolbar(gtk.Toolbar):
       self.view_var.set_sensitive(False)
 
 
-
 class EquationEditor(gtk.Dialog):
   '''
   Provides a pop-up window for editing the equations of variables
@@ -278,79 +278,6 @@ class EquationEditor(gtk.Dialog):
     ok.show()
 
 
-class LineControl:
-  '''
-  This class keeps track of things related to the process of
-  adding new lines to the canvas.
-  '''
-  def __init__(self):
-    # if we've got a line we're making, we want to attach the
-    # motion callback to it.  When we're done moving the line, 
-    # detach the callback.  keep track of the callback id here.
-    self.cb_id = None
-    self.line = None
-    self._canvas = None
-
-
-  def set_canvas(self, canvas):
-    self._canvas = canvas
-
-
-  def cleanup(self, item):
-    if item is not self.line:
-      return
-
-    logging.debug("LineControl: cleaning up line junk.")
-
-    if self.cb_id and self._canvas:
-      logging.debug("LineControl: disconnecting callback")
-      self._canvas.goocanvas.get_root_item().disconnect(self.cb_id)
-      self.cb_id = None
-    self.line = None
-
-
-  def new_flow(self, flow_from):
-    if not flow_from:
-      logging.error("LineControl: no widget as source.")
-
-    root = self._canvas.goocanvas.get_root_item()
-
-    new_var = widgets.FlowItem(flow_from=flow_from,
-                               parent=root, can_focus=True)
-    self.cb_id = root.connect("motion_notify_event", 
-                              new_var.on_motion_notify)
-
-    new_var.lower(None)
-    self.line = new_var
-    self._canvas.display_vars.append(new_var)
-
-
-  def new_link(self, link_from):
-    if not link_from:
-      logging.error("LineControl: no widget as source.")
-
-    root = self._canvas.goocanvas.get_root_item()
-
-    new_var = widgets.LinkItem(flow_from=link_from,
-                               parent=root, can_focus=True)
-    self.cb_id = root.connect("motion_notify_event", 
-                              new_var.on_motion_notify)
-
-    new_var.lower(None)
-    self.line = new_var
-    self._canvas.display_vars.append(new_var)
-
-
-  def end_flow(self, flow_to):
-    if not self.cb_id or not self._canvas:
-      logging.error("LineControl: something is screwey finishing line.")
-    
-    self.line.set_flow_to(flow_to)
-
-    self.cleanup(self.line)
-
-
-
 def edit_equation(var, influences=None):
   if var is None:
     raise ValueError
@@ -368,3 +295,15 @@ def edit_equation(var, influences=None):
     var.props.equation = editor.equation.get_text()
   else:
     logging.debug('oh well, canceled editor or something.')
+
+
+def factory(view, class_):
+    """
+    Canvas item factory, for use in PlacementTool.
+    """
+    def wrapper():
+        item = class_()
+        view.canvas.add(item)
+        return item
+    return wrapper
+

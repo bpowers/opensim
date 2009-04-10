@@ -53,7 +53,10 @@ class TextInfo():
 
 
   def create_layout(self, cr):
-    pcctx = pangocairo.CairoContext(cr)
+    try:
+      pcctx = pangocairo.CairoContext(cr)
+    except TypeError:
+      pcctx = pangocairo.CairoContext(cr._cairo)
     font_map = pangocairo.cairo_font_map_get_default()
     pcr = font_map.create_context()
     p_layout = pango.Layout(pcr)
@@ -72,7 +75,10 @@ class TextInfo():
 
     self.text_width, self.height = layout.get_pixel_size()
     cr.translate(-int(self.width/2), -int(self.height/2))
-    pc = pangocairo.CairoContext(cr)
+    try:
+      pc = pangocairo.CairoContext(cr)
+    except:
+      pc = pangocairo.CairoContext(cr._cairo)
     pc.show_layout(layout)
 
     cr.restore()

@@ -32,15 +32,18 @@ import gobject, gtk
 import cairo, pango
 import gaphas
 import gaphas.tool as tool
+from gaphas.tool import PlacementTool, HandleTool, ItemTool
 import constants as sim
 import widgets
 import libxml2
 from opensim import engine
 from opensim.engine import Simulator
+import constants as sim
 import tools
-
+from tools import factory
 
 import logging
+
 
 class SimView(gaphas.GtkView):
   def __init__(self, engine, **kwargs):
@@ -49,7 +52,9 @@ class SimView(gaphas.GtkView):
     self.canvas = gaphas.Canvas()
 
     self.tool = tool.ToolChain().             \
+                append(tool.HandleTool()).    \
                 append(tool.HoverTool()).     \
+                append(tool.ItemTool()).      \
                 append(tool.RubberbandTool())
 
     self.engine = engine
@@ -88,7 +93,16 @@ class Canvas(gtk.ScrolledWindow):
 
 
   def set_active_tool(self, tool_type):
-    self.active_tool = tool_type
+    item = None
+    if tool_type is sim.STOCK:
+      item = widgets.StockItem
+    elif tool_type is sim.VARIABLE:
+      item = widgets.VariableItem
+
+    if item:
+      self.view.tool.grab(PlacementTool(factory(self.view, item), HandleTool(), 2))
+    else:
+      raise ValueError, 'wtf.'
 
 
   def get_active_tool(self):
