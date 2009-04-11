@@ -45,13 +45,14 @@ class StockItem(gobject.GObject, Element):
 
   __gtype_name__ = 'StockItem'
 
-  def __init__(self, name, x, y, width, height):
+  def __init__(self, name, x, y, width, height, obj_id, var=None):
     super(StockItem, self).__init__()
     Element.__init__(self)
 
     # this will be the variable created in the simulator
-    self.var = None
+    self.var = var
 
+    self.obj_id = obj_id
     self.active_color = [0, 0, 0]
     self.line_width = LINE_WIDTH
     self.__old_name = ''

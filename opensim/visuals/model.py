@@ -25,51 +25,46 @@
 #===-----------------------------------------------------------------------===#
 
 import gobject
-import widgets
+import gtk
 from opensim.engine import Simulator
+from constants import *
 
-class SimModel(gobject.GObject):
+class SimModel(gtk.TreeStore):
   '''
   The model of our view, in MVC terms (not simulation terms).
   '''
-
   __gtype_name__ = 'SimModel'
-
-  __gsignals__ = {
-    'new-object' :    (gobject.SIGNAL_RUN_FIRST,
-                       gobject.TYPE_NONE,
-                       (gobject.TYPE_OBJECT,)),
-    'remove-object' : (gobject.SIGNAL_RUN_FIRST,
-                       gobject.TYPE_NONE,
-                       (gobject.TYPE_OBJECT,)),
-  }
-
 
   def __init__(self, **kwargs):
     '''
     Initialize a new view model.
     '''
-    super(SimModel, self).__init__(**kwargs)
+    super(SimModel, self).__init__(int, str, int, int, int, int, str)
 
     self._engine = Simulator()
     # allow us to add all our layout information to the save file
     self._engine.connect("saving", self.save_visual_state)
 
+    self._next_id = 0
     self._vars = []
+    self._vars_by_name = {}
+    self._vars_by_id = {}
 
 
   def new_object(self, obj_type, x, y, width=150, height=75, name=None, eqn=''):
     '''
     Add a new object to our model and our simulation
     '''
-    sim_var = None
-    if name:
-      sim_var = self._engine.new_var(name, eqn)
+    #sim_var = None
+    #if name:
+    #  sim_var = self._engine.new_var(name, eqn)
 
-    stock = obj_type(name, x, y, width, height)
-    self._vars.append(stock)
-    self.emit('new-object', stock)
-    return stock
+    object_id = self._next_id
+
+    # add it as a new, top-level row
+    self.append(None, (object_id, name, x, y, width, height, obj_type))
+    self._next_id += 1
+    return object_id
 
 
   def open_model(self, file_path):

@@ -333,10 +333,9 @@ class PlacementTool(tool.Tool):
 
 
     def _create_item(self, context, pos):
-        #view = context.view
-        item = self._model.new_object(self._new_type, *pos)
-        #x, y = view.get_matrix_v2i(item).transform_point(*pos)
-        #item.matrix.translate(x, y)
+        view = context.view
+        item_id = self._model.new_object(self._new_type, *pos)
+        item = view.widget_for_id(item_id)
         return item
 
 

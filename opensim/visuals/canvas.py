@@ -38,7 +38,7 @@ from gaphas.tool import HandleTool, ItemTool
 
 from opensim import engine
 from opensim.engine import Simulator
-import constants as sim
+from constants import *
 import widgets
 import tools
 import model
@@ -54,9 +54,11 @@ class SimView(gaphas.GtkView):
     super(SimView, self).__init__(**kwargs)
 
     self.model = model
-    self.model.connect('new-object', self._new_object)
+    self.model.connect('row-changed', self.__row_changed_cb)
+    self.model.connect('row-deleted', self.__row_deleted_cb)
 
     self.canvas = gaphas.Canvas()
+    self._widgets_by_id = {}
 
     # useful tools chained together
     self.tool = tool.ToolChain().             \
@@ -73,11 +75,39 @@ class SimView(gaphas.GtkView):
     self.set_size_request(1440, 900)
 
 
-  def _new_object(self, model, obj):
+  def widget_for_id(self, widget_id):
     '''
-    Callback for when a new object is added to the model.
+    Return the widget corresponding to the given integer ID.
     '''
-    self.canvas.add(obj)
+    try:
+      return self._widgets_by_id[widget_id]
+    except KeyError:
+      return None
+
+
+  def __row_changed_cb(self, model, path, iter):
+    row = model[iter]
+
+    if not row[KIND]:
+      return
+
+    obj = self.widget_for_id(row[ID])
+    if obj is None:
+      logging.debug('__row_changed_cb %r' % ((row[ID], row[NAME], row[KIND], row[X], row[Y],),))
+      kind = get_widget_kind_by_string(row[KIND])
+      new_item = kind(row[NAME], row[X], row[Y], row[WIDTH], row[HEIGHT], row[ID])
+      self._widgets_by_id[row[ID]] = new_item
+      self.canvas.add(new_item)
+    else:
+      obj.name = row[NAME]
+      obj.set_position(row[X], row[Y])
+      obj.width = row[WIDTH]
+      obj.height = row[HEIGHT]
+
+
+  def __row_deleted_cb(self, model, path):
+    logging.debug('__row_deleted_cb %r' % path)
+    raise NotImplementedError()
 
 
 class Canvas(gtk.ScrolledWindow):
@@ -87,7 +117,7 @@ class Canvas(gtk.ScrolledWindow):
   def __init__(self):
     super(Canvas, self).__init__()
 
-    self.active_tool = sim.UNDEFINED
+    self.active_tool = UNDEFINED
 
     self.model = model.SimModel()
 
@@ -97,18 +127,31 @@ class Canvas(gtk.ScrolledWindow):
 
 
   def set_active_tool(self, tool_type):
-    item = None
-    if tool_type is sim.STOCK:
-      item = widgets.StockItem
-    elif tool_type is sim.VARIABLE:
-      item = widgets.VariableItem
-
-    if item:
-      self.view.tool.grab(tools.PlacementTool(self.model, item))
+    '''
+    Sets the active tool; for drawing new things on the canvas.
+    '''
+    if tool_type is STOCK:
+      widget_type = 'stock'
+    elif tool_type is VARIABLE:
+      widget_type = 'variable'
     else:
       raise ValueError, 'wtf.'
+
+    self.view.tool.grab(tools.PlacementTool(self.model, widget_type))
 
 
   def get_active_tool(self):
     return self.active_tool
+
+
+def get_widget_kind_by_string(kind_name):
+  '''
+  Return the appropriate widget type for a given string.
+  '''
+  if kind_name == 'stock':
+    return widgets.StockItem
+  elif kind_name == 'variable':
+    return widgets.VariableItem
+  else:
+    raise ValueError
 
