@@ -34,66 +34,57 @@ import logging
 
 from opensim.visuals.tools import edit_equation
 from text import TextInfo
-from item import SimItem
+
+LINE_HEIGHT = 2
+ICON_SIZE = 40
 
 class VariableItem(SimItem):
 
-  def __init__(self, x, y, width=200, height=80, name=None,
-               focus=True, line_width=3.5, **kwargs):
-    super(VariableItem, self).__init__(**kwargs)
-    self.x = int(x - width/2)
-    self.y = int(y - height/2)
+  __gtype_name__ = 'VariableItem'
+
+  def __init__(self, name, x, y, width, height, obj_id, var=None):
+    super(StockItem, self).__init__()
+
+    # this will be the variable created in the simulator
+    self.var = var
+
+    self.obj_id = obj_id
+    self.active_color = [0, 0, 0]
+    self.line_width = LINE_WIDTH
+    self.__old_name = ''
+
     self.width = width
     self.height = height
-    self.__needs_resize_calc = True
-    self.dragging = False
-    self.active_color = [0, 0, 0]
-    self.__old_name = ""
-    self.named = True
 
-    self._new = True
-    # this will be the variable created in the simulator
-    self.var = None
+    # keep track of inflows and outflows, for use in engine
+    self.inflows = []
+    self.outflows = []
 
-    self.line_width = line_width
-
-    text_width = self.width - self.padding*2 - self.icon_size
+    self.padding = PADDING
+    text_width = self.width - self.padding*2
 
     if name is not None:
       self._display_name = TextInfo(name, wrap_width=text_width, 
-                                    align=pango.ALIGN_LEFT, 
                                     placeholder_text=False)
     else:
-      self._display_name = TextInfo("(enter name)", wrap_width=text_width, 
-                                    align=pango.ALIGN_LEFT, 
+      self._display_name = TextInfo('(enter name)', wrap_width=text_width,
                                     placeholder_text=True)
 
-    if focus:
-      self.get_canvas().grab_focus(self)
-      self.get_canvas().grab_highlight(self)
+    self.set_position(x - width/2, y - height/2)
 
 
-  def do_simple_create_path(self, cr):
-    self.ensure_size(cr)
+  def set_position(self, x, y):
+    if (x, y) != self.get_position():
+      self.matrix = (1.0, 0.0, 0.0, 1, x, y)
 
-    # define the bounding path here.
-    cr.rectangle(self.x - self.line_width/2.0, 
-                 self.y - self.line_width/2.0,
-                 self.width + self.line_width/2.0, 
-                 self.height + self.line_width/2.0)
+  def get_position(self):
+    return self.matrix[4], self.matrix[5]
+
+  position = property(get_position, set_position)
 
 
   def center(self):
-    return (int(self.x + self.width/2), int(self.y + self.height/2))
-
-
-  def abs_center(self):
-    center = self.center()
-    transform = self.get_transform()
-    x0, y0 = 0, 0
-    if transform is not None:
-      xx, yx, xy, yy, x0, y0 = self.get_transform()
-    return (x0 + self.x + self.icon_size/2.0, y0 + center[1])
+    return (int(self.width/2), int(self.height/2))
 
 
   def edge_point(self, end_point):
@@ -134,6 +125,13 @@ class VariableItem(SimItem):
       self.force_redraw()
 
 
+  def pre_update(self, context):
+    cr = context.cairo
+    self._display_name.width = self.width - self.padding*2
+    self._display_name.update_extents(cr)
+
+    self.height = max(self.height, self._display_name.height + 2*self.padding)
+    self.width = max(self.width, self._display_name.text_width + 2*self.padding)
 
 
   def do_simple_paint(self, cr, bounds):
@@ -181,125 +179,6 @@ class VariableItem(SimItem):
                       self.active_color[2])
     cr.stroke()
 
-
-  def xml_representation(self):
-    # get the center of the widget, so that we get the correct 
-    # behavior when it loads.  also, add the cairo transformation
-    # matrix offset.
-    x_center = self.bounds_x1 + self.width/2
-    y_center = self.bounds_y1 + self.height/2
-
-    xml_string = '\
-    <var>\n\
-      <name>%s</name>\n\
-      <x>%d</x>\n\
-      <y>%d</y>\n\
-      <width>%f</width>\n\
-      <height>%f</height>\n\
-    </var>\n' % (self._display_name.string, x_center, y_center, 
-                   self.width, self.height)
-
-    return xml_string
-
-
   def name(self):
     return self._display_name.string
-
-
-  def on_key_press(self, item, target, event):
-    key_name = gtk.gdk.keyval_name(event.keyval)
-
-    if key_name in self.enter_key:
-      self.emit("highlight_out_event", self)
-    elif key_name in self.delete_key:
-      self._display_name.backspace()
-    elif key_name in self.escape_key:
-      print("escape key!")
-    else:
-      # add key to name buffer
-      self._display_name.add(event.string)
-
-    self.__needs_resize_calc = True
-    self.force_redraw()
-
-    # return true to stop propogation
-    return True
-
-
-  def on_button_press(self, item, target, event):
-    canvas = self.get_canvas()
-
-    if canvas.override:
-      # if we're in the process of drawing a line, just 
-      # propogate the signal.  first fix the coordinates
-      canvas = self.get_canvas()
-      event.x, event.y = canvas.convert_from_item_space(self, 
-                                                        event.x, event.y)
-      return False
-
-    canvas.grab_focus(item)
-    logging.debug("**before grab")
-    canvas.grab_highlight(self)
-    logging.debug("**after grab")
-
-    if event.button is 1:
-      self.drag_x = event.x
-      self.drag_y = event.y
-
-      fleur = gtk.gdk.Cursor(gtk.gdk.FLEUR)
-      canvas = item.get_canvas()
-      canvas.pointer_grab(item,
-                          gtk.gdk.POINTER_MOTION_MASK 
-                           | gtk.gdk.BUTTON_RELEASE_MASK,
-                          fleur, event.time)
-      self.dragging = True
-    elif event.button is 3:
-      edit_equation(self.var, self.get_influences())
-      canvas.drop_highlight()
-    else:
-      print "unsupported button: %d" % event.button
-
-    return True
-
-
-  def on_button_release(self, item, target, event):
-    if event.button is 1:
-      canvas = item.get_canvas()
-      canvas.pointer_ungrab(item, event.time)
-      self.dragging = False
-
-
-  def on_motion_notify (self, item, target, event):
-    if (self.dragging == True) and (event.state & gtk.gdk.BUTTON1_MASK):
-      new_x = event.x
-      new_y = event.y
-      item.translate(new_x - self.drag_x, new_y - self.drag_y)
-      self.emit("item_moved_event", self)
-      return True
-    canvas = self.get_canvas()
-    event.x, event.y = canvas.convert_from_item_space(self, event.x, event.y)
-    return False
-
-
-  def on_focus_in(self, item, target, event):
-    return False
-
-
-  def on_focus_out(self, item, target, event):
-    return False
-
-
-  def on_highlight_in(self, item, target):
-    self.active_color = [1, .6, .2]
-    self.force_redraw()
-
-    logging.debug("h_in : '%s'" % self.name())
-
-    self.__old_name = self.name()
-
-    return False
-
-
-
-gobject.type_register(VariableItem)
 

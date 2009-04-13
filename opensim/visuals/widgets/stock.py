@@ -1,4 +1,4 @@
-#===--- stock.py - OpenSim Stock widget -----------------===#
+#===--- stock.py - OpenSim Stock widget ----------------------------------===#
 #
 # Copyright 2008 Bobby Powers
 #
@@ -41,13 +41,12 @@ LINE_WIDTH = 2.0
 PADDING = 5.0
 
 
-class StockItem(gobject.GObject, Element):
+class StockItem(Element):
 
   __gtype_name__ = 'StockItem'
 
   def __init__(self, name, x, y, width, height, obj_id, var=None):
     super(StockItem, self).__init__()
-    Element.__init__(self)
 
     # this will be the variable created in the simulator
     self.var = var
@@ -71,7 +70,7 @@ class StockItem(gobject.GObject, Element):
       self._display_name = TextInfo(name, wrap_width=text_width, 
                                     placeholder_text=False)
     else:
-      self._display_name = TextInfo('(enter name)', wrap_width=text_width, 
+      self._display_name = TextInfo('(enter name)', wrap_width=text_width,
                                     placeholder_text=True)
 
     self.set_position(x - width/2, y - height/2)
@@ -160,27 +159,6 @@ class StockItem(gobject.GObject, Element):
     self._display_name.show_text(cr)
 
     cr.restore()
-
-
-  def xml_representation(self):
-    # get the center of the widget, so that we get the correct 
-    # behavior when it loads.  also, add the cairo transformation
-    # matrix offset.
-    x, y = self.get_position()
-    x += self.width/2
-    y += self.height/2
-
-    xml_string = '\
-    <stock>\n\
-      <name>%s</name>\n\
-      <x>%d</x>\n\
-      <y>%d</y>\n\
-      <width>%f</width>\n\
-      <height>%f</height>\n\
-    </stock>\n' % (self._display_name.string, x, y, 
-                   self.width, self.height)
-
-    return xml_string
 
 
   def name(self):
