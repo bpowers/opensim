@@ -31,19 +31,13 @@ pygtk.require("2.0")
 import gtk
 import gobject
 import sys
+import logging
 
-import constants as sim
-from gaphas import tool
-
-# on the mac we don't have sugar so we compensate
 from gtk import ToggleToolButton
 from toolcombobox import ToolComboBox
 from gtk import ToolButton
-#else:
-#  from sugar.graphics.toggletoolbutton import ToggleToolButton
-#  from sugar.graphics.toolcombobox import ToolComboBox
-#  from sugar.graphics.toolbutton import ToolButton
-import logging
+
+from gaphas import tool
 
 from constants import *
 import widgets
