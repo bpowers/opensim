@@ -92,11 +92,11 @@ class OpenSimGTK (gobject.GObject):
         gtk.icon_theme_get_default().append_search_path(icon_path)
         logging.debug("current working directory: %s" % self.data_path)
     else:
+      # I may have to investigate whether we're installing icons into
+      # the recommended directory, but for now this works well.
       icon_path = os.path.join(self.data_path, 'icons')
       gtk.icon_theme_get_default().append_search_path(icon_path)
       logging.debug("setting icon theme path: %s" % icon_path)
-
-    #Set and load the Glade file
 
     #Get the Main Window, and connect the "destroy" event
     self.window = gtk.Window()
@@ -117,22 +117,19 @@ class OpenSimGTK (gobject.GObject):
     self.main_vbox = gtk.VBox()
     self.window.add(self.main_vbox)
 
-    self.toolbar = tools.ModelToolbar()
-    self.toolbar.stock.connect('toggled', self.drawing_tool_toggled)
-    self.toolbar.flow.connect('toggled', self.drawing_tool_toggled)
-    self.toolbar.influence.connect('toggled', self.drawing_tool_toggled)
-    self.toolbar.variable.connect('toggled', self.drawing_tool_toggled)
+    self.__build_main_menu()
+
+    self.model_toolbar = tools.ModelToolbar()
+    self.model_toolbar.connect_toggled(self.drawing_tool_toggled)
 
     self.canvas = sim.Canvas()
     self.status_bar = gtk.Statusbar()
     self.graphs = sim.GraphViewer()
 
-    self.main_vbox.pack_start(self.toolbar, False)
+    self.main_vbox.pack_start(self.main_menu, False)
+    self.main_vbox.pack_start(self.model_toolbar, False)
     self.main_vbox.pack_start(self.canvas)
-    #main_vbox.pack_start (self.status_bar, False, False, 0)
 
-
-    #self.main_menu = self.wTree.get_widget('main_menu_bar')
     if on_mac:
       self.mac_menu = mac.MacMenu()
       self.mac_menu.set_menu_bar(self.main_menu)
@@ -140,12 +137,33 @@ class OpenSimGTK (gobject.GObject):
       quit_item = self.wTree.get_widget('imagemenuitem5')
       #self.mac_menu.set_quit_menu_item(quit_item)
 
-    self.toolbar.show()
+    self.main_menu.show()
+    self.model_toolbar.show()
     self.canvas.show()
     self.main_vbox.show()
     self.window.show()
     #self.status_bar.show ()
     self.canvas.grab_focus()
+
+
+  def __build_main_menu(self):
+    '''
+    Construct our main menu (file, edit, etc)
+    '''
+    self.main_menu = gtk.MenuBar()
+
+    file_menu = gtk.Menu()
+    m_open = gtk.MenuItem('Open Model')
+    m_open.render_icon(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
+    file_menu.append(m_open)
+    m_open.show()
+
+
+    file_item = gtk.MenuItem('File')
+    file_item.show()
+    file_item.set_submenu(file_menu)
+
+    self.main_menu.append(file_item)
 
 
   def delete_event(self, widget, event=None):
@@ -168,13 +186,13 @@ class OpenSimGTK (gobject.GObject):
 
     # switch between possible widgets.
     if widget.type != sim.VARIABLE:
-      self.toolbar.variable.set_active(False)    
+      self.model_toolbar.variable.set_active(False)    
     if widget.type != sim.INFLUENCE:
-      self.toolbar.influence.set_active(False)
+      self.model_toolbar.influence.set_active(False)
     if widget.type != sim.STOCK:
-      self.toolbar.stock.set_active(False)
+      self.model_toolbar.stock.set_active(False)
     if widget.type != sim.FLOW:
-      self.toolbar.flow.set_active(False)
+      self.model_toolbar.flow.set_active(False)
 
     # let the canvas know what tool is active
     self.canvas.set_active_tool(widget.type)

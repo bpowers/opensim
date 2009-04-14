@@ -82,6 +82,15 @@ class ModelToolbar(gtk.Toolbar):
     self.influence.show()
     self.influence.type = INFLUENCE
 
+  def connect_toggled(self, callback):
+    '''
+    Connect our drawing tools to a callback function for the toggle signal.
+    '''
+    self.stock.connect('toggled', callback)
+    self.flow.connect('toggled', callback)
+    self.influence.connect('toggled', callback)
+    self.variable.connect('toggled', callback)
+
 
 class SimulateToolbar(gtk.Toolbar):
   '''Provides the toolbar containing the basic modeling functions'''
@@ -179,8 +188,10 @@ class ViewToolbar(gtk.Toolbar):
     self.insert(separator, -1)
     separator.show()
 
-    self.view_canvas = ToggleToolButton('opensim-canvas')
+    self.view_canvas = ToggleToolButton()
+    self.view_canvas.set_label(_('View Model'))
     self.view_canvas.set_tooltip_text(_('View model diagram'))
+    self.view_canvas.set_icon_name('opensim-canvas')
     self.insert(self.view_canvas, -1)
     self.view_canvas.set_active(True)
     self.view_canvas.show()
@@ -190,8 +201,10 @@ class ViewToolbar(gtk.Toolbar):
     self.insert(separator, -1)
     separator.show()
 
-    self.view_graphs = ToggleToolButton('opensim-graphs')
+    self.view_graphs = ToggleToolButton()
+    self.view_graphs.set_label(_('View results'))
     self.view_graphs.set_tooltip_text(_('View simulation graphs'))
+    self.view_graphs.set_icon_name('opensim-graphs')
     self.insert(self.view_graphs, -1)
     self.view_graphs.show()
     
