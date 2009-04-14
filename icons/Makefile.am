@@ -1,4 +1,4 @@
-iconsdir = $(datadir)/icons
+iconsdir = $(pkgdatadir)/icons
 
 icons_DATA = opensim-cloud.svg opensim-stock.svg opensim-flow.svg \
              opensim-var.svg opensim-infl.svg opensim-canvas.svg \
