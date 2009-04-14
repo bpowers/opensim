@@ -50,26 +50,34 @@ class ModelToolbar(gtk.Toolbar):
     gtk.Toolbar.__init__(self)
 
     #Get our 4 buttons & add type attributes to them
-    self.stock = ToggleToolButton("opensim-stock")
-    self.stock.set_tooltip_text(_('Create Stocks'))
+    self.stock = ToggleToolButton()
+    self.stock.set_label(_('Stock'))
+    self.stock.set_tooltip_text(_('Create stocks'))
+    self.stock.set_icon_name('opensim-stock')
     self.insert(self.stock, -1)
     self.stock.show()
     self.stock.type = STOCK
 
-    self.flow = ToggleToolButton("opensim-flow")
-    self.flow.set_tooltip_text(_('Create Flows'))
+    self.flow = ToggleToolButton()
+    self.flow.set_label(_('Flow'))
+    self.flow.set_tooltip_text(_('Create flows'))
+    self.flow.set_icon_name('opensim-flow')
     self.insert(self.flow, -1)
     self.flow.show()
     self.flow.type = FLOW
 
-    self.variable = ToggleToolButton("opensim-var")
-    self.variable.set_tooltip_text(_('Create Variables'))
+    self.variable = ToggleToolButton()
+    self.variable.set_label(_('Variable'))
+    self.variable.set_tooltip_text(_('Create auxiliary variables'))
+    self.variable.set_icon_name('opensim-var')
     self.insert(self.variable, -1)
     self.variable.show()
     self.variable.type = VARIABLE
 
-    self.influence = ToggleToolButton("opensim-infl")
-    self.influence.set_tooltip_text(_('Create Influence Arrows'))
+    self.influence = ToggleToolButton()
+    self.influence.set_label(_('Influence'))
+    self.stock.set_tooltip_text(_('Create influence arrows'))
+    self.influence.set_icon_name('opensim-infl')
     self.insert(self.influence, -1)
     self.influence.show()
     self.influence.type = INFLUENCE
