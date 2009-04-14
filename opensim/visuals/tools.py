@@ -350,9 +350,7 @@ class PlacementTool(tool.Tool):
 
 
   def _create_item(self, context, pos):
-    view = context.view
-    item_id = self._model.new_object(self._new_type, *pos)
-    item = view.widget_for_id(item_id)
+    item = self._model.new_stock(*pos)
     return item
 
 

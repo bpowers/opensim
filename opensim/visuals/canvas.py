@@ -26,8 +26,9 @@
 
 import pygtk
 pygtk.require("2.0")
-import gobject, gtk
-import cairo, pango
+import gobject
+import gtk
+import cairo
 
 import math
 import libxml2
@@ -54,10 +55,8 @@ class SimView(gaphas.GtkView):
     super(SimView, self).__init__(**kwargs)
 
     self.model = model
-    self.model.connect('row-changed', self.__row_changed_cb)
-    self.model.connect('row-deleted', self.__row_deleted_cb)
 
-    self.canvas = gaphas.Canvas()
+    self.canvas = self.model.canvas
     self._widgets_by_id = {}
 
     # useful tools chained together
@@ -85,31 +84,6 @@ class SimView(gaphas.GtkView):
       return None
 
 
-  def __row_changed_cb(self, model, path, iter):
-    row = model[iter]
-
-    if not row[KIND]:
-      return
-
-    obj = self.widget_for_id(row[ID])
-    if obj is None:
-      logging.debug('__row_changed_cb %r' % ((row[ID], row[NAME], row[KIND], row[X], row[Y],),))
-      kind = get_widget_kind_by_string(row[KIND])
-      new_item = kind(row[NAME], row[X], row[Y], row[WIDTH], row[HEIGHT], row[ID])
-      self._widgets_by_id[row[ID]] = new_item
-      self.canvas.add(new_item)
-    else:
-      obj.name = row[NAME]
-      obj.set_position(row[X], row[Y])
-      obj.width = row[WIDTH]
-      obj.height = row[HEIGHT]
-
-
-  def __row_deleted_cb(self, model, path):
-    logging.debug('__row_deleted_cb %r' % path)
-    raise NotImplementedError()
-
-
 class Canvas(gtk.ScrolledWindow):
 
   __gtype_name__ = 'Canvas'
@@ -119,7 +93,7 @@ class Canvas(gtk.ScrolledWindow):
 
     self.active_tool = UNDEFINED
 
-    self.model = model.SimModel()
+    self.model = model.SimModel(gaphas.Canvas())
 
     self.view = SimView(self.model)
     self.add_with_viewport(self.view)

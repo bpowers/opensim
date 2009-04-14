@@ -26,32 +26,35 @@
 
 import gobject
 import gtk
+
 from opensim.engine import Simulator
+import widgets
 from constants import *
 
-class SimModel(gtk.TreeStore):
+class SimModel(gobject.GObject):
   '''
   The model of our view, in MVC terms (not simulation terms).
   '''
   __gtype_name__ = 'SimModel'
 
-  def __init__(self, **kwargs):
+  def __init__(self, canvas, **kwargs):
     '''
     Initialize a new view model.
     '''
-    super(SimModel, self).__init__(int, str, int, int, int, int, str)
+    super(SimModel, self).__init__(**kwargs)
 
     self._engine = Simulator()
     # allow us to add all our layout information to the save file
     self._engine.connect("saving", self.save_visual_state)
 
-    self._next_id = 0
+    self.canvas = canvas
+
     self._vars = []
     self._vars_by_name = {}
     self._vars_by_id = {}
 
 
-  def new_object(self, obj_type, x, y, width=150, height=75, name=None, eqn=''):
+  def new_stock(self, x, y, width=150, height=75, name=None, eqn=''):
     '''
     Add a new object to our model and our simulation
     '''
@@ -59,12 +62,10 @@ class SimModel(gtk.TreeStore):
     #if name:
     #  sim_var = self._engine.new_var(name, eqn)
 
-    object_id = self._next_id
-
     # add it as a new, top-level row
-    self.append(None, (object_id, name, x, y, width, height, obj_type))
-    self._next_id += 1
-    return object_id
+    stock = widgets.StockItem(name, x, y, width, height)
+    self.canvas.add(stock)
+    return stock
 
 
   def open_model(self, file_path):
