@@ -27,10 +27,17 @@
 
 import pygtk
 pygtk.require ("2.0")
+import gtk
+import gobject
 
-import os, os.path, sys, gtk, gtk.glade, gobject, goocanvas, math
+import os
+import os.path
+import sys
+import math
 import logging
+
 import opensim.visuals as sim
+import opensim.visuals.tools as tools
 
 # mac-native gtk doesn't like svg icons
 ICON_NAME = 'model-icon'
@@ -44,8 +51,10 @@ else:
 
 class OpenSimGTK (gobject.GObject):
 
+  __gtype_name__ = 'OpenSimGTK'
+
   def __init__ (self, **kwargs):
-    super (OpenSimGTK, self).__init__ (**kwargs)
+    super(OpenSimGTK, self).__init__ (**kwargs)
 
     # this is for the SAVE file, not the data directory
     self.file_path = None
@@ -63,14 +72,14 @@ class OpenSimGTK (gobject.GObject):
       all_paths.extend(share_paths)
 
     for path in all_paths:
-      path = os.path.join(path, "opensim")
+      path = os.path.join(path, 'opensim')
       if os.path.exists(path):
         self.data_path = path
         break
 
     if self.data_path is None:
       if not on_mac:
-        logging.error("no data directory found.")
+        logging.error('no data directory found.')
         raise Exception
       else:
         # if we're on the mac and we get here, we're most likely in an
@@ -82,54 +91,48 @@ class OpenSimGTK (gobject.GObject):
         icon_path = os.path.join(self.data_path, 'icons')
         gtk.icon_theme_get_default().append_search_path(icon_path)
         logging.debug("current working directory: %s" % self.data_path)
+    else:
+      icon_path = os.path.join(self.data_path, 'icons')
+      gtk.icon_theme_get_default().append_search_path(icon_path)
+      logging.debug("setting icon theme path: %s" % icon_path)
 
     #Set and load the Glade file
-    self.gladefile = os.path.join (self.data_path, "opensim-main.glade")
-    self.wTree = gtk.glade.XML (self.gladefile) 
 
     #Get the Main Window, and connect the "destroy" event
-    self.window = self.wTree.get_widget ("main_window")
-    self.window.set_icon_from_file (os.path.join (self.data_path, 
-                                    ICON_NAME))
-    self.window.set_title ('new simulation | Model')
+    self.window = gtk.Window()
+    self.window.set_icon_from_file(os.path.join(self.data_path, 
+                                                ICON_NAME))
+    self.window.set_title('new simulation | Model')
+    self.window.set_size_request(800, 600)
+    self.window.connect('delete_event', self.delete_event)
 
-    dic = {"on_drawing_tool_toggled" : self.drawing_tool_toggled, 
-           "on_view_toggled" : self.view_toggled,
-           "on_open" : self.open_clicked,
-           "on_save" : self.save_clicked,
-           "on_save_as" : self.save_as_clicked,
-           "on_main_window_destroy" : gtk.main_quit, 
-           "on_file_quit" : gtk.main_quit}
-    self.wTree.signal_autoconnect(dic)
-    
-    #Get our 4 buttons & add type attributes to them
-    self.button_variable = self.wTree.get_widget ("but_variable")
-    self.button_variable.type = sim.VARIABLE
-    self.button_influence = self.wTree.get_widget ("but_influence")
-    self.button_influence.type = sim.INFLUENCE
-    self.button_stock = self.wTree.get_widget ("but_stock")
-    self.button_stock.type = sim.STOCK
-    self.button_flow = self.wTree.get_widget ("but_flow")
-    self.button_flow.type = sim.FLOW
+    dic = {
+      'on_drawing_tool_toggled' : self.drawing_tool_toggled, 
+      'on_view_toggled' : self.view_toggled,
+      'on_open' : self.open_clicked,
+      'on_save' : self.save_clicked,
+      'on_save_as' : self.save_as_clicked,
+    }
 
-    self.view_canvas = self.wTree.get_widget ("but_view_canvas")
-    self.view_var = self.wTree.get_widget ("but_view_var")
-    self.view_graphs = self.wTree.get_widget ("but_view_graphs")
+    self.main_vbox = gtk.VBox()
+    self.window.add(self.main_vbox)
 
-    #insert our goocanvas (since I don't want to deal with 
-    #getting it working with glade just yet...)
-    self.main_vbox = self.wTree.get_widget ("main_vbox")
-    main_tool_bar = self.wTree.get_widget ("main_tool_bar")
+    self.toolbar = tools.ModelToolbar()
+    self.toolbar.stock.connect('toggled', self.drawing_tool_toggled)
+    self.toolbar.flow.connect('toggled', self.drawing_tool_toggled)
+    self.toolbar.influence.connect('toggled', self.drawing_tool_toggled)
+    self.toolbar.variable.connect('toggled', self.drawing_tool_toggled)
 
-    self.canvas = sim.Canvas ()
-    self.status_bar = gtk.Statusbar ()
+    self.canvas = sim.Canvas()
+    self.status_bar = gtk.Statusbar()
     self.graphs = sim.GraphViewer()
 
-    self.main_vbox.pack_start (self.canvas, True, True, 0)
+    self.main_vbox.pack_start(self.toolbar, False)
+    self.main_vbox.pack_start(self.canvas)
     #main_vbox.pack_start (self.status_bar, False, False, 0)
 
 
-    self.main_menu = self.wTree.get_widget('main_menu_bar')
+    #self.main_menu = self.wTree.get_widget('main_menu_bar')
     if on_mac:
       self.mac_menu = mac.MacMenu()
       self.mac_menu.set_menu_bar(self.main_menu)
@@ -137,30 +140,41 @@ class OpenSimGTK (gobject.GObject):
       quit_item = self.wTree.get_widget('imagemenuitem5')
       #self.mac_menu.set_quit_menu_item(quit_item)
 
-    self.canvas.show ()
+    self.toolbar.show()
+    self.canvas.show()
+    self.main_vbox.show()
+    self.window.show()
     #self.status_bar.show ()
     self.canvas.grab_focus()
 
 
-  def drawing_tool_toggled (self, widget):
+  def delete_event(self, widget, event=None):
+    '''
+    Close the program.
+    '''
+    gtk.main_quit()
+    return False
+
+
+  def drawing_tool_toggled(self, widget):
 
     # if a widget is being un-toggled, then we don't have
     # to worry about it (otherwise breaks toggle effect)
-    if widget.get_active () is False:
+    if widget.get_active() is False:
       # make sure we catch the case where no tool is active.
-      if widget.type == self.canvas.get_active_tool ():
-        self.canvas.set_active_tool (sim.NONE)
+      if widget.type == self.canvas.get_active_tool():
+        self.canvas.set_active_tool(sim.NONE)
       return
 
     # switch between possible widgets.
     if widget.type != sim.VARIABLE:
-      self.button_variable.set_active (False)    
+      self.toolbar.variable.set_active(False)    
     if widget.type != sim.INFLUENCE:
-      self.button_influence.set_active (False)
+      self.toolbar.influence.set_active(False)
     if widget.type != sim.STOCK:
-      self.button_stock.set_active (False)
+      self.toolbar.stock.set_active(False)
     if widget.type != sim.FLOW:
-      self.button_flow.set_active (False)
+      self.toolbar.flow.set_active(False)
 
     # let the canvas know what tool is active
     self.canvas.set_active_tool(widget.type)
@@ -174,102 +188,94 @@ class OpenSimGTK (gobject.GObject):
 
     if widget is self.view_graphs:
       self.view_var.show()
-      self.main_vbox.remove (self.canvas)
-      self.main_vbox.pack_start (self.graphs, True, True, 0)
+      self.main_vbox.remove(self.canvas)
+      self.main_vbox.pack_start(self.graphs, True, True)
     else:
       self.view_var.hide()
-      self.main_vbox.remove (self.graphs)
-      self.main_vbox.pack_start (self.canvas, True, True, 0)
+      self.main_vbox.remove(self.graphs)
+      self.main_vbox.pack_start(self.canvas, True, True)
 
 
-  def create_dialog (self, requested_title, requested_action):
+  def create_dialog(self, requested_title, requested_action):
 
     save_or_open = gtk.STOCK_OPEN
     if requested_action is gtk.FILE_CHOOSER_ACTION_SAVE:
       save_or_open = gtk.STOCK_SAVE
 
-    dialog = gtk.FileChooserDialog (title=requested_title,
-                                    action=requested_action,
-                                    buttons=(gtk.STOCK_CANCEL,
-                                             gtk.RESPONSE_CANCEL,
-                                             save_or_open,gtk.RESPONSE_OK))
-    dialog.set_default_response (gtk.RESPONSE_OK)
+    dialog = gtk.FileChooserDialog(title=requested_title,
+                                   action=requested_action,
+                                   buttons=(gtk.STOCK_CANCEL,
+                                            gtk.RESPONSE_CANCEL,
+                                            save_or_open,gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
    
-    filter = gtk.FileFilter ()
-    filter.set_name ("Models")
-    filter.add_pattern ("*.osm")
-    filter.add_pattern ("*.mdl")
-    dialog.add_filter (filter)
+    filter = gtk.FileFilter()
+    filter.set_name("Models")
+    filter.add_pattern("*.osm")
+    filter.add_pattern("*.mdl")
+    dialog.add_filter(filter)
 
-    filter = gtk.FileFilter ()
-    filter.set_name ("All files")
-    filter.add_pattern ("*")
-    dialog.add_filter (filter)   
+    filter = gtk.FileFilter()
+    filter.set_name("All files")
+    filter.add_pattern("*")
+    dialog.add_filter(filter)   
 
     return_val = None   
-    response = dialog.run ()
+    response = dialog.run()
     if response == gtk.RESPONSE_OK:
-      return_val = dialog.get_filename ()
+      return_val = dialog.get_filename()
 
-    dialog.destroy ()
+    dialog.destroy()
     return return_val
 
 
   def open_clicked (self, widget):
-    model_file = self.create_dialog ("Open Existing Model...",
-                                     gtk.FILE_CHOOSER_ACTION_OPEN)
+    model_file = self.create_dialog("Open Existing Model...",
+                                    gtk.FILE_CHOOSER_ACTION_OPEN)
     if model_file:
       self.file_path = model_file
-      self.read_file (self.file_path)
+      self.read_file(self.file_path)
 
 
-  def save_clicked (self, widget):
+  def save_clicked(self, widget):
     if self.file_path:
-      self.write_file (self.file_path)
+      self.write_file(self.file_path)
     else:
-      self.save_as_clicked (self)
+      self.save_as_clicked(self)
 
 
-  def save_as_clicked (self, widget):
-    model_file = self.create_dialog ("Save Model As...",
-                                     gtk.FILE_CHOOSER_ACTION_SAVE)
+  def save_as_clicked(self, widget):
+    model_file = self.create_dialog("Save Model As...",
+                                    gtk.FILE_CHOOSER_ACTION_SAVE)
     if model_file:
       self.file_path = model_file
       self.write_file (self.file_path)
 
 
-  def write_file (self, file_path):
+  def write_file(self, file_path):
     '''
     Implement this method to save your activity's state.
     '''
-    logging.debug ('opensim-gtk: writing file')
-    self.canvas.save_model (file_path)
-    logging.debug ('opensim-gtk: done writing file')
+    logging.debug('opensim-gtk: writing file')
+    self.canvas.save_model(file_path)
+    logging.debug('opensim-gtk: done writing file')
 
     
-  def read_file (self, file_path):
+  def read_file(self, file_path):
     '''
     Implement this method to resume state saved in write_file().
     '''
-    logging.debug ('opensim-gtk: reading file')
-    self.canvas.open_model (file_path)
-    logging.debug ('opensim-gtk: done reading file')
+    logging.debug('opensim-gtk: reading file')
+    self.canvas.open_model(file_path)
+    logging.debug('opensim-gtk: done reading file')
 
 
-  def main (self):
-    gtk.main ()
-
-
-
-gobject.type_register (OpenSimGTK)
-
-
-if __name__ == "__main__":
-  logging.basicConfig (level=logging.DEBUG)
-  theme = gtk.icon_theme_get_default ()
+if __name__ == '__main__':
+  logging.basicConfig(level=logging.DEBUG)
+  theme = gtk.icon_theme_get_default()
   if on_mac:
-    theme.append_search_path ('/usr/local/share/icons')
-    theme.append_search_path ('/usr/share/icons')
-  gui = OpenSimGTK ()
-  gui.main ()
+    theme.append_search_path('/usr/local/share/icons')
+    theme.append_search_path('/usr/share/icons')
+  gui = OpenSimGTK()
+  gtk.main()
 
