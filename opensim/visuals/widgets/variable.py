@@ -26,9 +26,12 @@
 
 import gobject
 import gtk
-import goocanvas
 import math
-import cairo, pango
+import cairo
+
+from gaphas.item import Element
+from gaphas.connector import Handle
+from gaphas.geometry import Rectangle
 
 import logging
 
@@ -38,7 +41,7 @@ from text import TextInfo
 LINE_HEIGHT = 2
 ICON_SIZE = 40
 
-class VariableItem(SimItem):
+class VariableItem(Element):
 
   __gtype_name__ = 'VariableItem'
 

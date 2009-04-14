@@ -51,25 +51,25 @@ class ModelToolbar(gtk.Toolbar):
 
     #Get our 4 buttons & add type attributes to them
     self.stock = ToggleToolButton("opensim-stock")
-    self.stock.set_tooltip(_('Create Stocks'))
+    self.stock.set_tooltip_text(_('Create Stocks'))
     self.insert(self.stock, -1)
     self.stock.show()
     self.stock.type = STOCK
 
     self.flow = ToggleToolButton("opensim-flow")
-    self.flow.set_tooltip(_('Create Flows'))
+    self.flow.set_tooltip_text(_('Create Flows'))
     self.insert(self.flow, -1)
     self.flow.show()
-    self.flow.type = FLOW    
+    self.flow.type = FLOW
 
     self.variable = ToggleToolButton("opensim-var")
-    self.variable.set_tooltip(_('Create Variables'))
+    self.variable.set_tooltip_text(_('Create Variables'))
     self.insert(self.variable, -1)
     self.variable.show()
     self.variable.type = VARIABLE
 
     self.influence = ToggleToolButton("opensim-infl")
-    self.influence.set_tooltip(_('Create Influence Arrows'))
+    self.influence.set_tooltip_text(_('Create Influence Arrows'))
     self.insert(self.influence, -1)
     self.influence.show()
     self.influence.type = INFLUENCE
@@ -113,9 +113,9 @@ class SimulateToolbar(gtk.Toolbar):
 
     self.timestep = ToolComboBox(label_text=_('Timestep:'))
     #self.timestep.combo.connect('changed', self.__share_changed_cb)
-    self.timestep.combo.append_item(.125, _('.125'))
-    self.timestep.combo.append_item(.25, _('.25'))
-    self.timestep.combo.append_item(1, _('1'))
+    self.timestep.combo.append_text(_('.125'))
+    self.timestep.combo.append_text(_('.25'))
+    self.timestep.combo.append_text(_('1'))
     self.timestep.combo.set_active(0)
     self.insert(self.timestep, -1)
     self.timestep.show()
@@ -127,9 +127,9 @@ class SimulateToolbar(gtk.Toolbar):
 
     self.savestep = ToolComboBox(label_text=_('Savestep:'))
     #self.timestep.combo.connect('changed', self.__share_changed_cb)
-    self.savestep.combo.append_item(1, _('1'))
-    self.savestep.combo.append_item(.25, _('.25'))
-    self.savestep.combo.append_item(.125, _('.125'))
+    self.savestep.combo.append_text(_('1'))
+    self.savestep.combo.append_text(_('.25'))
+    self.savestep.combo.append_text(_('.125'))
     self.savestep.combo.set_active(0)
     self.insert(self.savestep, -1)
     self.savestep.show()
@@ -140,7 +140,8 @@ class SimulateToolbar(gtk.Toolbar):
     self.insert(separator, -1)
     separator.show()
 
-    self.run = ToolButton('media-playback-start', tooltip=_('Run Simulation'))
+    self.run = ToolButton('media-playback-start')
+    self.run.set_tooltip_text = _('Run Simulation')
     #self.run.props.accelerator = '<Ctrl>Q'
     #self.run.connect('clicked', self.__stop_clicked_cb)
     self.insert(self.run, -1)
@@ -171,7 +172,7 @@ class ViewToolbar(gtk.Toolbar):
     separator.show()
 
     self.view_canvas = ToggleToolButton('opensim-canvas')
-    self.view_canvas.set_tooltip(_('View model diagram'))
+    self.view_canvas.set_tooltip_text(_('View model diagram'))
     self.insert(self.view_canvas, -1)
     self.view_canvas.set_active(True)
     self.view_canvas.show()
@@ -182,7 +183,7 @@ class ViewToolbar(gtk.Toolbar):
     separator.show()
 
     self.view_graphs = ToggleToolButton('opensim-graphs')
-    self.view_graphs.set_tooltip(_('View simulation graphs'))
+    self.view_graphs.set_tooltip_text(_('View simulation graphs'))
     self.insert(self.view_graphs, -1)
     self.view_graphs.show()
     
@@ -198,9 +199,9 @@ class ViewToolbar(gtk.Toolbar):
 
     self.view_var = ToolComboBox(label_text=_('View behavior of:'))
     #self.timestep.combo.connect('changed', self.__share_changed_cb)
-    self.view_var.combo.append_item(1, _('rabbits'))
-    self.view_var.combo.append_item(2, _('foxes'))
-    self.view_var.combo.append_item(3, _('rabbit births'))
+    self.view_var.combo.append_text(_('rabbits'))
+    self.view_var.combo.append_text(_('foxes'))
+    self.view_var.combo.append_text(_('rabbit births'))
     self.view_var.combo.set_active(0)
     self.insert(self.view_var, -1)
     self.view_var.set_sensitive(False)

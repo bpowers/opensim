@@ -18,7 +18,8 @@
 import gtk
 import gobject
 
-from gtk import ComboBox
+DEFAULT_SPACING = 15
+DEFAULT_PADDING = 6
 
 class ToolComboBox(gtk.ToolItem):
     __gproperties__ = {
@@ -32,9 +33,9 @@ class ToolComboBox(gtk.ToolItem):
 
         gobject.GObject.__init__(self, **kwargs)
 
-        self.set_border_width(style.DEFAULT_PADDING)
+        self.set_border_width(DEFAULT_PADDING)
 
-        hbox = gtk.HBox(False, style.DEFAULT_SPACING)
+        hbox = gtk.HBox(False, DEFAULT_SPACING)
 
         self.label = gtk.Label(self._label_text)
         hbox.pack_start(self.label, False)
@@ -43,7 +44,7 @@ class ToolComboBox(gtk.ToolItem):
         if combo:
             self.combo = combo
         else:
-            self.combo = ComboBox()
+            self.combo = gtk.combo_box_new_text()
 
         hbox.pack_start(self.combo)
         self.combo.show()
@@ -56,3 +57,4 @@ class ToolComboBox(gtk.ToolItem):
             self._label_text = value
             if self.label:
                 self.label.set_text(self._label_text)
+
