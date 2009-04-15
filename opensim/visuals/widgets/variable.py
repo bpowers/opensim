@@ -26,8 +26,9 @@
 
 import gobject
 import gtk
-import math
 import cairo
+import pango
+import math
 
 from gaphas.item import Element
 from gaphas.connector import Handle
@@ -38,20 +39,20 @@ import logging
 from opensim.visuals.tools import edit_equation
 from text import TextInfo
 
-LINE_HEIGHT = 2
-ICON_SIZE = 40
+LINE_WIDTH = 2
+ICON_SIZE = 55
+PADDING = 5
 
 class VariableItem(Element):
 
   __gtype_name__ = 'VariableItem'
 
-  def __init__(self, name, x, y, width, height, obj_id, var=None):
-    super(StockItem, self).__init__()
+  def __init__(self, name, x, y, width, height, var=None):
+    super(VariableItem, self).__init__()
 
     # this will be the variable created in the simulator
     self.var = var
 
-    self.obj_id = obj_id
     self.active_color = [0, 0, 0]
     self.line_width = LINE_WIDTH
     self.__old_name = ''
@@ -64,14 +65,16 @@ class VariableItem(Element):
     self.outflows = []
 
     self.padding = PADDING
-    text_width = self.width - self.padding*2
+    text_width = self.width - self.padding - ICON_SIZE
 
     if name is not None:
       self._display_name = TextInfo(name, wrap_width=text_width, 
-                                    placeholder_text=False)
+                                    placeholder_text=False,
+                                    align=pango.ALIGN_LEFT)
     else:
       self._display_name = TextInfo('(enter name)', wrap_width=text_width,
-                                    placeholder_text=True)
+                                    placeholder_text=True,
+                                    align=pango.ALIGN_LEFT)
 
     self.set_position(x - width/2, y - height/2)
 
@@ -98,7 +101,7 @@ class VariableItem(Element):
     if line_angle < 0: line_angle = 2*math.pi + line_angle
     
     
-    radius = self.icon_size/2
+    radius = ICON_SIZE/2
  
     center_x = center_x + radius * math.cos(line_angle)
     center_y = center_y + radius * math.sin(line_angle)
@@ -112,7 +115,7 @@ class VariableItem(Element):
 
       old_center_x = self.x + self.width/2.0
       old_center_y = self.y + self.height/2.0
-      self.height = max(self.icon_size, self._display_name.height) \
+      self.height = max(ICON_SIZE, self._display_name.height) \
                     + 2*self.padding
       self.x = old_center_x - self.width/2.0
       self.y = old_center_y - self.height/2.0
@@ -130,27 +133,26 @@ class VariableItem(Element):
 
   def pre_update(self, context):
     cr = context.cairo
-    self._display_name.width = self.width - self.padding*2
+    self._display_name.width = self.width - self.padding*2 + ICON_SIZE
     self._display_name.update_extents(cr)
+    new_width = self._display_name.text_width + self.padding + ICON_SIZE
 
-    self.height = max(self.height, self._display_name.height + 2*self.padding)
-    self.width = max(self.width, self._display_name.text_width + 2*self.padding)
+    self.height = max(self.height, ICON_SIZE)
+    self.width = max(self.width, new_width)
 
 
-  def do_simple_paint(self, cr, bounds):
-
+  def draw(self, context):
+    cr = context.cairo
     cr.save()
 
     # keep track of the transformation matrix, so we can save 
     # the right coordinates
     matrix = cr.get_matrix()
 
-    self.ensure_size(cr)
-    
     self.type_icon(cr)
 
     center = self.center()
-    cr.translate(int(center[0] + self.icon_size/2 + self.padding), center[1])
+    cr.translate(int(center[0] + ICON_SIZE/2 + self.padding), center[1])
 
     # white background for text
     cr.rectangle(-self._display_name.width/2.0, 
@@ -164,15 +166,22 @@ class VariableItem(Element):
                       self.active_color[1], \
                       self.active_color[2]) 
 
+    center = self.center()
+    cr.translate(ICON_SIZE + self.padding, 0)
     self._display_name.show_text(cr)
 
     cr.restore()
 
 
   def type_icon(self, cr):
-    cr.move_to(self.x + self.icon_size, self.y + .5*self.height)
-    cr.arc(self.x + .5*self.icon_size, self.y + .5*self.height, 
-           self.icon_size/2, 0, 2*math.pi)
+
+    cr.save()
+    cr.translate(.5*ICON_SIZE, .5*self.height)
+    cr.scale(.5*ICON_SIZE, .5*ICON_SIZE)
+    cr.move_to(1.0, 0.0)
+    cr.arc(0.0, 0.0, 1.0, 0.0, 2.0 * math.pi)
+    cr.restore()
+
     cr.close_path()
     cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
@@ -181,6 +190,7 @@ class VariableItem(Element):
                       self.active_color[1], \
                       self.active_color[2])
     cr.stroke()
+
 
   def name(self):
     return self._display_name.string

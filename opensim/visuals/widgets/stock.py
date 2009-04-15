@@ -152,7 +152,7 @@ class StockItem(Element):
                       self.active_color[1], \
                       self.active_color[2])
     cr.stroke()
-    
+
     center = self.center()
     cr.translate(center[0], center[1])
     self._display_name.show_text(cr)

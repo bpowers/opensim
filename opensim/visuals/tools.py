@@ -164,7 +164,6 @@ class SimulateToolbar(gtk.Toolbar):
     self.insert(self.run, -1)
     self.run.show()
 
-
   def _add_widget(self, widget, expand=False):
     tool_item = gtk.ToolItem()
     tool_item.set_expand(expand)
@@ -233,7 +232,6 @@ class ViewToolbar(gtk.Toolbar):
     separator.set_expand(True)
     self.insert(separator, -1)
     separator.show()
-
 
   def __toggled(self, widget):
     # fight infinite loops!
@@ -329,7 +327,6 @@ class PlacementTool(tool.Tool):
                             doc="Index of handle to be used by handle_tool")
   new_item = property(lambda s: s._new_item, doc="The newly created item")
 
-
   def on_button_press(self, context, event):
     view = context.view
     canvas = view.canvas
@@ -348,11 +345,14 @@ class PlacementTool(tool.Tool):
       context.grab()
     return True
 
-
   def _create_item(self, context, pos):
-    item = self._model.new_stock(*pos)
+    if self._new_type == 'stock':
+      item = self._model.new_stock(*pos)
+    elif self._new_type == 'variable':
+      item = self._model.new_variable(*pos)
+    else:
+      raise ValueError, 'bad new type: "%s"' % self._new_type
     return item
-
 
   def on_button_release(self, context, event):
     context.ungrab()

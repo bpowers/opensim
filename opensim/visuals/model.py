@@ -54,18 +54,22 @@ class SimModel(gobject.GObject):
     self._vars_by_id = {}
 
 
-  def new_stock(self, x, y, width=150, height=75, name=None, eqn=''):
+  def new_stock(self, x, y, width=150, height=75, name=None):
     '''
     Add a new object to our model and our simulation
     '''
-    #sim_var = None
-    #if name:
-    #  sim_var = self._engine.new_var(name, eqn)
-
-    # add it as a new, top-level row
     stock = widgets.StockItem(name, x, y, width, height)
     self.canvas.add(stock)
     return stock
+
+
+  def new_variable(self, x, y, width=175, height=55, name=None):
+    '''
+    Add a new object to our model and our simulation
+    '''
+    aux = widgets.VariableItem(name, x, y, width, height)
+    self.canvas.add(aux)
+    return aux
 
 
   def open_model(self, file_path):
