@@ -88,15 +88,13 @@ class OpenSimGTK (gobject.GObject):
         # we want to strip MacOS/Model...
         self.data_path = os.path.dirname(os.path.dirname(sys.argv[0]))
         self.data_path = os.path.join(self.data_path, 'Resources')
-        icon_path = os.path.join(self.data_path, 'icons')
-        gtk.icon_theme_get_default().append_search_path(icon_path)
         logging.debug("current working directory: %s" % self.data_path)
-    else:
-      # I may have to investigate whether we're installing icons into
-      # the recommended directory, but for now this works well.
-      icon_path = os.path.join(self.data_path, 'icons')
-      gtk.icon_theme_get_default().append_search_path(icon_path)
-      logging.debug("setting icon theme path: %s" % icon_path)
+
+    # I may have to investigate whether we're installing icons into
+    # the recommended directory, but for now this works well.
+    icon_path = os.path.join(self.data_path, 'icons')
+    gtk.icon_theme_get_default().append_search_path(icon_path)
+    logging.debug("setting icon theme path: %s" % icon_path)
 
     #Get the Main Window, and connect the "destroy" event
     self.window = gtk.Window()
@@ -121,25 +119,33 @@ class OpenSimGTK (gobject.GObject):
 
     self.model_toolbar = tools.ModelToolbar()
     self.model_toolbar.connect_toggled(self.drawing_tool_toggled)
+    #self.model_toolbar.append_space()
+    self.sim_toolbar = tools.SimulateToolbar()
 
     self.canvas = sim.Canvas()
     self.status_bar = gtk.Statusbar()
     self.graphs = sim.GraphViewer()
 
+    self.toolbars = gtk.HBox()
     self.main_vbox.pack_start(self.main_menu, False)
-    self.main_vbox.pack_start(self.model_toolbar, False)
+    self.main_vbox.pack_start(self.toolbars, False)
+    self.toolbars.homogeneous = False
+    self.toolbars.pack_start(self.model_toolbar)
+    self.toolbars.pack_start(self.sim_toolbar)
     self.main_vbox.pack_start(self.canvas)
 
     if on_mac:
       self.mac_menu = mac.MacMenu()
       self.mac_menu.set_menu_bar(self.main_menu)
       self.main_vbox.remove(self.main_menu)
-      quit_item = self.wTree.get_widget('imagemenuitem5')
+      #quit_item = self.wTree.get_widget('imagemenuitem5')
       #self.mac_menu.set_quit_menu_item(quit_item)
 
     self.main_menu.show()
     self.model_toolbar.show()
+    self.sim_toolbar.show()
     self.canvas.show()
+    self.toolbars.show()
     self.main_vbox.show()
     self.window.show()
     #self.status_bar.show ()
@@ -290,10 +296,7 @@ class OpenSimGTK (gobject.GObject):
 
 if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG)
-  theme = gtk.icon_theme_get_default()
-  if on_mac:
-    theme.append_search_path('/usr/local/share/icons')
-    theme.append_search_path('/usr/share/icons')
+
   gui = OpenSimGTK()
   gtk.main()
 

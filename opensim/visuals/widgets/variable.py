@@ -64,8 +64,7 @@ class VariableItem(Element):
     self.inflows = []
     self.outflows = []
 
-    self.padding = PADDING
-    text_width = self.width - self.padding - ICON_SIZE
+    text_width = self.width - PADDING - ICON_SIZE
 
     if name is not None:
       self._display_name = TextInfo(name, wrap_width=text_width, 
@@ -109,33 +108,11 @@ class VariableItem(Element):
     return (center_x, center_y)
 
 
-  def ensure_size(self, cr):
-    if self.__needs_resize_calc:
-      self._display_name.update_extents(cr)
-
-      old_center_x = self.x + self.width/2.0
-      old_center_y = self.y + self.height/2.0
-      self.height = max(ICON_SIZE, self._display_name.height) \
-                    + 2*self.padding
-      self.x = old_center_x - self.width/2.0
-      self.y = old_center_y - self.height/2.0
-
-      self.bounds_x1 = self.x - self.line_width/2.0 
-      self.bounds_y1 = self.y - self.line_width/2.0
-      self.bounds_x2 = self.x + self.width + self.line_width \
-                       + 2*self.padding
-      self.bounds_y2 = self.y + self.height + self.line_width \
-                       + 2*self.padding
-
-      self.__needs_resize_calc = False
-      self.force_redraw()
-
-
   def pre_update(self, context):
     cr = context.cairo
-    self._display_name.width = self.width - self.padding*2 + ICON_SIZE
+    self._display_name.width = self.width - PADDING*2 - ICON_SIZE
     self._display_name.update_extents(cr)
-    new_width = self._display_name.text_width + self.padding + ICON_SIZE
+    new_width = self._display_name.text_width + PADDING + ICON_SIZE
 
     self.height = max(self.height, ICON_SIZE)
     self.width = max(self.width, new_width)
@@ -145,35 +122,30 @@ class VariableItem(Element):
     cr = context.cairo
     cr.save()
 
-    # keep track of the transformation matrix, so we can save 
-    # the right coordinates
-    matrix = cr.get_matrix()
-
-    self.type_icon(cr)
+    self.type_icon(context)
 
     center = self.center()
-    cr.translate(int(center[0] + ICON_SIZE/2 + self.padding), center[1])
+    cr.translate(int(center[0] + ICON_SIZE/2 + PADDING), center[1])
 
     # white background for text
-    cr.rectangle(-self._display_name.width/2.0, 
-                 -self._display_name.height/2.0,
-                 self._display_name.text_width, 
-                 self._display_name.height)
-    cr.set_source_rgba(1, 1, 1, .8)
-    cr.fill()
+    #cr.rectangle(ICON_SIZE + PADDING, -self._display_name.height/2.0,
+    #             self._display_name.text_width, self._display_name.height/2.0)
+    #cr.fill()
 
     cr.set_source_rgb(self.active_color[0], \
                       self.active_color[1], \
                       self.active_color[2]) 
 
-    center = self.center()
-    cr.translate(ICON_SIZE + self.padding, 0)
-    self._display_name.show_text(cr)
 
     cr.restore()
 
+    center = self.center()
+    cr.translate(ICON_SIZE + PADDING, self.height/2)
+    self._display_name.show_text(cr)
 
-  def type_icon(self, cr):
+
+  def type_icon(self, context):
+    cr = context.cairo
 
     cr.save()
     cr.translate(.5*ICON_SIZE, .5*self.height)
@@ -182,8 +154,14 @@ class VariableItem(Element):
     cr.arc(0.0, 0.0, 1.0, 0.0, 2.0 * math.pi)
     cr.restore()
 
+    # give some visual clues as to what our state is
+    if context.focused:
+      cr.set_source_rgba(.8,.8,1, .8)
+    elif context.hovered:
+      cr.set_source_rgba(.9,.9,1, .8)
+    else:
+      cr.set_source_rgba(1,1,1, .8)
     cr.close_path()
-    cr.set_source_rgb (1, 1, 1)
     cr.fill_preserve()
     cr.set_line_width(self.line_width)
     cr.set_source_rgb(self.active_color[0], \

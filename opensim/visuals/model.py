@@ -37,11 +37,11 @@ class SimModel(gobject.GObject):
   '''
   __gtype_name__ = 'SimModel'
 
-  def __init__(self, canvas, **kwargs):
+  def __init__(self, canvas):
     '''
     Initialize a new view model.
     '''
-    super(SimModel, self).__init__(**kwargs)
+    super(SimModel, self).__init__()
 
     self._engine = Simulator()
     # allow us to add all our layout information to the save file

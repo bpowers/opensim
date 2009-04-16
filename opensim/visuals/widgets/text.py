@@ -24,7 +24,9 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import cairo, pango, pangocairo
+import cairo
+import pango
+import pangocairo
 
 
 class TextInfo():
@@ -42,7 +44,6 @@ class TextInfo():
 
     self.font_description = "%s normal %d" % (self.font_face, self.font_size)
 
-
   def update_extents(self, cr):
     cr.save()
 
@@ -50,7 +51,6 @@ class TextInfo():
     self.text_width, self.height = layout.get_pixel_size()
 
     cr.restore()
-
 
   def create_layout(self, cr):
     try:
@@ -68,13 +68,15 @@ class TextInfo():
     p_layout.set_text(self.string)
     return p_layout
 
-
   def show_text(self, cr):
     cr.save()
     layout = self.create_layout(cr)
 
     self.text_width, self.height = layout.get_pixel_size()
-    cr.translate(-int(self.width/2), -int(self.height/2))
+    if self.align is pango.ALIGN_CENTER:
+      cr.translate(-int(self.width/2), 0)
+    cr.translate(0, -int(self.height/2))
+
     try:
       pc = pangocairo.CairoContext(cr)
     except:
@@ -82,7 +84,6 @@ class TextInfo():
     pc.show_layout(layout)
 
     cr.restore()
-
 
   def add(self, string):
     if self.placeholder:
@@ -93,7 +94,6 @@ class TextInfo():
   def backspace(self):
     if len(self.string) > 0:
       self.string = self.string[0:-1]
-
 
   def new_width(self, requested_width):
     self.width = requested_width

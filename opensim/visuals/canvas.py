@@ -37,7 +37,6 @@ import gaphas
 import gaphas.tool as tool
 from gaphas.tool import HandleTool, ItemTool
 
-from opensim import engine
 from opensim.engine import Simulator
 from constants import *
 import widgets
@@ -74,19 +73,9 @@ class SimView(gaphas.GtkView):
     self.set_size_request(1440, 900)
 
 
-  def widget_for_id(self, widget_id):
-    '''
-    Return the widget corresponding to the given integer ID.
-    '''
-    try:
-      return self._widgets_by_id[widget_id]
-    except KeyError:
-      return None
-
-
 class Canvas(gtk.ScrolledWindow):
 
-  __gtype_name__ = 'Canvas'
+  __gtype_name__ = 'OpensimCanvas'
 
   def __init__(self):
     super(Canvas, self).__init__()
@@ -94,11 +83,9 @@ class Canvas(gtk.ScrolledWindow):
     self.active_tool = UNDEFINED
 
     self.model = model.SimModel(gaphas.Canvas())
-
     self.view = SimView(self.model)
     self.add_with_viewport(self.view)
     self.view.show()
-
 
   def set_active_tool(self, tool_type):
     '''
@@ -109,23 +96,10 @@ class Canvas(gtk.ScrolledWindow):
     elif tool_type is VARIABLE:
       widget_type = 'variable'
     else:
-      raise ValueError, 'wtf.'
+      raise ValueError, 'unknown tool type.'
 
     self.view.tool.grab(tools.PlacementTool(self.model, widget_type))
 
-
   def get_active_tool(self):
     return self.active_tool
-
-
-def get_widget_kind_by_string(kind_name):
-  '''
-  Return the appropriate widget type for a given string.
-  '''
-  if kind_name == 'stock':
-    return widgets.StockItem
-  elif kind_name == 'variable':
-    return widgets.VariableItem
-  else:
-    raise ValueError
 
