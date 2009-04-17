@@ -24,25 +24,42 @@
 #
 #===-----------------------------------------------------------------------===#
 
+from gtk import TextBuffer
 import cairo
 import pango
 import pangocairo
 
+PLACEHOLDER_TEXT = '(enter name)'
 
 class TextInfo():
 
-  def __init__(self, string, font_face='Arial,sans', wrap_width=180,
-               font_size=14, align=pango.ALIGN_CENTER, 
-               placeholder_text=False, cr=None):
-    self.string = string
+  def __init__(self, string, buff=None,
+               font_face='Arial,sans', font_size=14,
+               wrap_width=180, align=pango.ALIGN_CENTER):
+
+    if not buff:
+      buff = TextBuffer()
+    if not string:
+      string = PLACEHOLDER_TEXT
+    self.buffer = buff
     self.font_face = font_face
     self.font_size = font_size
     self.width = wrap_width
     self.text_width = self.width
-    self.placeholder = placeholder_text
+
+    if string is PLACEHOLDER_TEXT:
+      self.placeholder = True
+
+    self.buffer.insert(self.buffer.get_end_iter(), string)
     self.align = align
 
     self.font_description = "%s normal %d" % (self.font_face, self.font_size)
+
+  def _get_string(self):
+    return self.buffer.get_text(self.buffer.get_start_iter(),
+                                self.buffer.get_end_iter())
+
+  string = property(_get_string)
 
   def update_extents(self, cr):
     cr.save()
@@ -81,6 +98,11 @@ class TextInfo():
       pc = pangocairo.CairoContext(cr)
     except:
       pc = pangocairo.CairoContext(cr._cairo)
+
+    if self.placeholder:
+      cr.set_source_rgb(.5, .5, .5)
+    else:
+      cr.set_source_rgb(0, 0, 0)
     pc.show_layout(layout)
 
     cr.restore()

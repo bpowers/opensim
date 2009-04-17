@@ -49,24 +49,34 @@ class VariableItem(Item):
   __gtype_name__ = 'VariableItem'
 
   def __init__(self, name, x, y, width, height, var=None):
+    '''
+    Constructor for our VariableItem.
+
+    We have to do a lot more here than for our StockItem because I
+    decided to get fancy with custom handles.  It was good learning
+    experience with graphas.
+    '''
     super(VariableItem, self).__init__()
 
+    # the 0th handle is always at the item's origin (0,0)
     h_0 = Handle(movable=False)
-    h_0.visible = False
     h_l = Handle(movable=False)
-    h_l.visible = False
     h_r = Handle()
+    # we don't want to be able to see or interact with either of these,
+    # they're basically for positioning the h_r
+    h_0.visible = False
+    h_l.visible = False
 
     self._handles = (h_0, h_l, h_r)
     self.handle = h_r
-    self._ports = (LinePort(h_0.pos, h_l.pos), LinePort(h_l.pos, h_r.pos))
+    self._ports = (LinePort(h_0.pos, h_l.pos),
+                   LinePort(h_l.pos, h_r.pos))
 
     # setup constraints
     self.constraint(above=(h_0.pos, h_l.pos), delta=ICON_SIZE/2)
     self.constraint(above=(h_l.pos, h_0.pos), delta=-ICON_SIZE/2)
     self.constraint(horizontal=(h_l.pos, h_r.pos))
-
-    # create minimal size constraints
+    # create minimal width constraint
     self._c_min_w = self.constraint(left_of=(h_l.pos, h_r.pos), delta=ICON_SIZE)
 
     # this will be the variable created in the simulator
@@ -85,13 +95,7 @@ class VariableItem(Item):
 
     text_width = self.width - PADDING - ICON_SIZE
 
-    if name is not None:
-      self._display_name = TextInfo(name, wrap_width=text_width, 
-                                    placeholder_text=False,
-                                    align=pango.ALIGN_LEFT)
-    else:
-      self._display_name = TextInfo('(enter name)', wrap_width=text_width,
-                                    placeholder_text=True,
+    self._display_name = TextInfo(name, wrap_width=text_width,
                                     align=pango.ALIGN_LEFT)
 
     self.set_position(x - width/2, y - height/2)
@@ -113,17 +117,15 @@ class VariableItem(Item):
 
   def edge_point(self, end_point):
     center_x, center_y = self.abs_center()
-    
+
     line_angle = math.atan2((end_point[1] - center_y), 
                             (end_point[0] - center_x))
     if line_angle < 0: line_angle = 2*math.pi + line_angle
-    
-    
+
     radius = ICON_SIZE/2
- 
     center_x = center_x + radius * math.cos(line_angle)
     center_y = center_y + radius * math.sin(line_angle)
-    
+
     return (center_x, center_y)
 
 
@@ -139,24 +141,8 @@ class VariableItem(Item):
 
   def draw(self, context):
     cr = context.cairo
-    cr.save()
 
     self.type_icon(context)
-
-    center = self.center()
-    cr.translate(int(center[0] + ICON_SIZE/2 + PADDING), center[1])
-
-    # white background for text
-    #cr.rectangle(ICON_SIZE + PADDING, -self._display_name.height/2.0,
-    #             self._display_name.text_width, self._display_name.height/2.0)
-    #cr.fill()
-
-    cr.set_source_rgb(self.active_color[0], \
-                      self.active_color[1], \
-                      self.active_color[2]) 
-
-
-    cr.restore()
 
     center = self.center()
     cr.translate(ICON_SIZE + PADDING, self.height/2)
@@ -167,6 +153,7 @@ class VariableItem(Item):
     cr = context.cairo
 
     cr.save()
+    # draw our circle of diameter ICON_SIZE
     cr.translate(.5*ICON_SIZE, .5*self.height)
     cr.scale(.5*ICON_SIZE, .5*ICON_SIZE)
     cr.move_to(1.0, 0.0)

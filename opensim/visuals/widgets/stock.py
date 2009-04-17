@@ -65,12 +65,7 @@ class StockItem(Element):
     self.padding = PADDING
     text_width = self.width - self.padding*2
 
-    if name is not None:
-      self._display_name = TextInfo(name, wrap_width=text_width, 
-                                    placeholder_text=False)
-    else:
-      self._display_name = TextInfo('(enter name)', wrap_width=text_width,
-                                    placeholder_text=True)
+    self._display_name = TextInfo(name, wrap_width=text_width)
 
     self.set_position(x - width/2, y - height/2)
 
