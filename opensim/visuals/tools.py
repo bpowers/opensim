@@ -29,6 +29,7 @@ import pygtk
 pygtk.require("2.0")
 
 import gtk
+import gtk.gdk as gdk
 import gobject
 import sys
 import logging
@@ -312,11 +313,20 @@ def edit_equation(var, influences=None):
     logging.debug('oh well, canceled editor or something.')
 
 
+class HandleTool(tool.HandleTool):
+
+  def __init__(self, **kwargs):
+    super(HandleTool, self).__init__(**kwargs)
+
+  def on_key_press(self, context, event):
+    print 'got key: ' + gdk.keyval_name(event.keyval)
+
+
 class PlacementTool(tool.Tool):
 
   def __init__(self, model, obj_type):
     self._model = model
-    self._handle_tool = tool.HandleTool()
+    self._handle_tool = HandleTool()
     self._handle_index = 2
     self._new_type = obj_type
     self._new_item = None

@@ -60,7 +60,7 @@ class SimView(gaphas.GtkView):
 
     # useful tools chained together
     self.tool = tool.ToolChain().             \
-                append(tool.HandleTool()).    \
+                append(tools.HandleTool()).   \
                 append(tool.HoverTool()).     \
                 append(tool.ItemTool()).      \
                 append(tool.RubberbandTool())
