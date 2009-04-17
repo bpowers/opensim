@@ -30,9 +30,10 @@ import cairo
 import pango
 import math
 
-from gaphas.item import Element
-from gaphas.connector import Handle
+from gaphas.item import Item
+from gaphas.connector import Handle, LinePort
 from gaphas.geometry import Rectangle
+from gaphas.state import observed, reversible_property
 
 import logging
 
@@ -43,12 +44,30 @@ LINE_WIDTH = 2
 ICON_SIZE = 55
 PADDING = 5
 
-class VariableItem(Element):
+class VariableItem(Item):
 
   __gtype_name__ = 'VariableItem'
 
   def __init__(self, name, x, y, width, height, var=None):
     super(VariableItem, self).__init__()
+
+    h_0 = Handle(movable=False)
+    h_0.visible = False
+    h_l = Handle(movable=False)
+    h_l.visible = False
+    h_r = Handle()
+
+    self._handles = (h_0, h_l, h_r)
+    self.handle = h_r
+    self._ports = (LinePort(h_0.pos, h_l.pos), LinePort(h_l.pos, h_r.pos))
+
+    # setup constraints
+    self.constraint(above=(h_0.pos, h_l.pos), delta=ICON_SIZE/2)
+    self.constraint(above=(h_l.pos, h_0.pos), delta=-ICON_SIZE/2)
+    self.constraint(horizontal=(h_l.pos, h_r.pos))
+
+    # create minimal size constraints
+    self._c_min_w = self.constraint(left_of=(h_l.pos, h_r.pos), delta=ICON_SIZE)
 
     # this will be the variable created in the simulator
     self.var = var
@@ -172,4 +191,49 @@ class VariableItem(Element):
 
   def name(self):
     return self._display_name.string
+
+  @observed
+  def _set_min_width(self, min_width):
+    """
+    Set minimal width.
+    """
+    if min_width < 0:
+      raise ValueError, 'Minimal width cannot be less than 0'
+
+    self._c_min_w.delta = min_width
+    if self.canvas:
+      self.canvas.solver.request_resolve_constraint(self._c_min_w)
+
+  min_width = reversible_property(lambda s: s._c_min_w.delta, _set_min_width)
+
+  def _set_width(self, width):
+    """
+    Set our width.
+    """
+    if width < self.min_width:
+      width = self.min_width
+    self.handle.x = width
+
+  def _get_width(self):
+    """
+    Width of the box, calculated as the distance from the left and
+    right handle.
+    """
+    return float(self.handle.x)
+
+  width = property(_get_width, _set_width)
+
+  def _set_height(self, height):
+    """
+    Set the height.
+    """
+    self.__height = height
+
+  def _get_height(self):
+    """
+    Variable's height.  Min ICON_SIZE, max depending on text height.
+    """
+    return self.__height
+
+  height = property(_get_height, _set_height)
 
