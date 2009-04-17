@@ -131,7 +131,7 @@ class OpenSimGTK (gobject.GObject):
     self.main_vbox.pack_start(self.toolbars, False)
     self.toolbars.homogeneous = False
     self.toolbars.pack_start(self.model_toolbar)
-    self.toolbars.pack_start(self.sim_toolbar)
+    #self.toolbars.pack_start(self.sim_toolbar)
     self.main_vbox.pack_start(self.canvas)
 
     if on_mac:
