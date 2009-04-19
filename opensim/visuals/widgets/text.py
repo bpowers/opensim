@@ -107,16 +107,6 @@ class TextInfo():
 
     cr.restore()
 
-  def add(self, string):
-    if self.placeholder:
-      self.string = ''
-      self.placeholder = False
-    self.string = self.string + string
-
-  def backspace(self):
-    if len(self.string) > 0:
-      self.string = self.string[0:-1]
-
   def new_width(self, requested_width):
     self.width = requested_width
 

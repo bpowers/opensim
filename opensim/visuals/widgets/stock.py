@@ -66,8 +66,29 @@ class StockItem(Element):
     text_width = self.width - self.padding*2
 
     self._display_name = TextInfo(name, wrap_width=text_width)
+    self._buffer = self._display_name.buffer
+    self._buffer.connect('changed', self._buffer_changed)
 
     self.set_position(x - width/2, y - height/2)
+
+
+  def _buffer_changed(self, widget):
+    '''
+    Called when our underlying text buffer changes.
+    '''
+    self._display_name.placeholder = False
+    self.request_update()
+
+  def _get_buffer(self):
+    return self._buffer
+
+  buffer = property(_get_buffer)
+
+
+  def _get_new(self):
+    return self._display_name.placeholder
+
+  new = property(_get_new)
 
 
   def set_position(self, x, y):

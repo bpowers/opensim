@@ -319,7 +319,25 @@ class HandleTool(tool.HandleTool):
     super(HandleTool, self).__init__(**kwargs)
 
   def on_key_press(self, context, event):
-    print 'got key: ' + gdk.keyval_name(event.keyval)
+    view = context.view
+
+    # Make the item who's handle we hover over the hovered_item:
+    item = view.focused_item
+    if item:
+      buff = item.buffer
+      if event.keyval == gtk.keysyms.BackSpace:
+        insert_iter = buff.get_iter_at_mark(buff.get_insert())
+        buff.backspace(insert_iter, True, True)
+      elif event.keyval == gtk.keysyms.Return:
+        view.unselect_all()
+      else:
+        key = gdk.keyval_name(event.keyval)
+        if event.keyval == gtk.keysyms.space:
+          key = ' '
+        if len(key) == 1:
+          if item.new:
+            buff.set_text('')
+          buff.insert_at_cursor(key)
 
 
 class PlacementTool(tool.Tool):
