@@ -58,11 +58,13 @@ class SimView(gaphas.GtkView):
     self.canvas = self.model.canvas
     self._widgets_by_id = {}
 
+    self.placement_tool = tools.PlacementTool(self.model)
     # useful tools chained together
     self.tool = tool.ToolChain().             \
                 append(tools.HandleTool()).   \
                 append(tool.HoverTool()).     \
                 append(tool.ItemTool()).      \
+                append(self.placement_tool).  \
                 append(tool.RubberbandTool())
 
     # dpi, although I'm not sure if we use it at this point
@@ -91,14 +93,18 @@ class Canvas(gtk.ScrolledWindow):
     '''
     Sets the active tool; for drawing new things on the canvas.
     '''
+    self.active_tool = tool_type
+
     if tool_type is STOCK:
-      widget_type = 'stock'
+      widget_kind = 'stock'
     elif tool_type is VARIABLE:
-      widget_type = 'variable'
+      widget_kind = 'variable'
+    elif tool_type is NONE:
+      widget_kind = 'none'
     else:
       raise ValueError, 'unknown tool type.'
 
-    self.view.tool.grab(tools.PlacementTool(self.model, widget_type))
+    self.view.placement_tool.insert_kind = widget_kind
 
   def get_active_tool(self):
     return self.active_tool

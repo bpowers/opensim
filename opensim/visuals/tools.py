@@ -342,20 +342,30 @@ class HandleTool(tool.HandleTool):
 
 class PlacementTool(tool.Tool):
 
-  def __init__(self, model, obj_type):
+  def __init__(self, model, obj_kind='none'):
     self._model = model
     self._handle_tool = HandleTool()
     self._handle_index = 2
-    self._new_type = obj_type
+    self._new_kind = obj_kind
     self._new_item = None
     self._grabbed_handle = None
 
-  handle_tool = property(lambda s: s._handle_tool, doc="Handle tool")
+  handle_tool = property(lambda s: s._handle_tool, doc='Handle tool')
   handle_index = property(lambda s: s._handle_index,
-                            doc="Index of handle to be used by handle_tool")
-  new_item = property(lambda s: s._new_item, doc="The newly created item")
+                          doc='Index of handle to be used by handle_tool')
+  new_item = property(lambda s: s._new_item, doc='The newly created item')
+
+  def _set_insert_kind(self, kind):
+    self._new_kind = kind
+  insert_kind = property(lambda s: s._new_kind, _set_insert_kind,
+                         doc='The kind of widget to insert')
 
   def on_button_press(self, context, event):
+
+    # don't handle the button press if we don't have a kind set
+    if self._new_kind == 'none':
+      return False
+
     view = context.view
     canvas = view.canvas
     new_item = self._create_item(context, (event.x, event.y))
@@ -374,12 +384,12 @@ class PlacementTool(tool.Tool):
     return True
 
   def _create_item(self, context, pos):
-    if self._new_type == 'stock':
+    if self._new_kind == 'stock':
       item = self._model.new_stock(*pos)
-    elif self._new_type == 'variable':
+    elif self._new_kind == 'variable':
       item = self._model.new_variable(*pos)
     else:
-      raise ValueError, 'bad new type: "%s"' % self._new_type
+      raise ValueError, 'bad new type: "%s"' % self._new_kind
     return item
 
   def on_button_release(self, context, event):
