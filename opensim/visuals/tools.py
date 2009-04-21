@@ -77,7 +77,7 @@ class ModelToolbar(gtk.Toolbar):
 
     self.influence = ToggleToolButton()
     self.influence.set_label(_('Influence'))
-    self.stock.set_tooltip_text(_('Create influence arrows'))
+    self.influence.set_tooltip_text(_('Create influence arrows'))
     self.influence.set_icon_name('opensim-infl')
     self.insert(self.influence, -1)
     self.influence.show()
