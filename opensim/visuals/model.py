@@ -51,7 +51,13 @@ class SimModel(gobject.GObject):
 
     self._vars = []
     self._vars_by_name = {}
-    self._vars_by_id = {}
+
+
+  def remove(self, item):
+    '''
+    Removes an item from the model
+    '''
+    self.canvas.remove(item)
 
 
   def new_stock(self, x, y, width=150, height=75, name=None):

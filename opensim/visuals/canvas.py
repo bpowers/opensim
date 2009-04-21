@@ -89,6 +89,15 @@ class Canvas(gtk.ScrolledWindow):
     self.add_with_viewport(self.view)
     self.view.show()
 
+    self.view.connect('focus-changed', self._focus_changed)
+
+  def _focus_changed(self, view, old_item):
+    '''
+    Called when the focus changes.
+    '''
+    if old_item and old_item.new:
+      self.model.remove(old_item)
+
   def set_active_tool(self, tool_type):
     '''
     Sets the active tool; for drawing new things on the canvas.
@@ -104,6 +113,7 @@ class Canvas(gtk.ScrolledWindow):
     else:
       raise ValueError, 'unknown tool type.'
 
+    del self.view.focused_item
     self.view.placement_tool.insert_kind = widget_kind
 
   def get_active_tool(self):
