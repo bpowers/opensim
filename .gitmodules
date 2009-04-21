@@ -1,0 +1,3 @@
+[submodule "gaphas"]
+	path = gaphas
+	url = git://dev.laptop.org/users/bobbyp/gaphas
