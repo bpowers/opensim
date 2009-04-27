@@ -41,13 +41,13 @@ import opensim.visuals.tools as tools
 
 # mac-native gtk doesn't like svg icons
 ICON_NAME = 'model-icon'
+ICON_SUFFIX = '.png'
 if sys.platform == 'darwin':
   import igemacintegration as mac
-  on_mac = True
-  ICON_NAME += '.png'
-else:
-  on_mac = False
-  ICON_NAME += '.svg'
+elif sys.platform == 'linux2':
+  ICON_SUFFIX = '.svg'
+
+ICON_NAME += ICON_SUFFIX
 
 main_menu = '''
 <ui>
@@ -103,10 +103,9 @@ class OpenSimGTK (gobject.GObject):
         break
 
     if self.data_path is None:
-      if not on_mac:
-        logging.error('no data directory found.')
-        raise Exception
-      else:
+      if sys.platform == 'win32':
+        self.data_path = '.'
+      elif sys.platform == 'darwin':
         # if we're on the mac and we get here, we're most likely in an
         # application bundle.  We need to make sure we can get our 
         # icons and glade files.
@@ -114,6 +113,9 @@ class OpenSimGTK (gobject.GObject):
         self.data_path = os.path.dirname(os.path.dirname(sys.argv[0]))
         self.data_path = os.path.join(self.data_path, 'Resources')
         logging.debug("current working directory: %s" % self.data_path)
+      else:
+        logging.error('no data directory found.')
+        raise ValueError
 
     # I may have to investigate whether we're installing icons into
     # the recommended directory, but for now this works well.
@@ -150,8 +152,9 @@ class OpenSimGTK (gobject.GObject):
     self.toolbars.pack_start(self.model_toolbar)
     #self.toolbars.pack_start(self.sim_toolbar)
     self.main_vbox.pack_start(self.canvas)
+    self.main_vbox.pack_start(self.status_bar, False)
 
-    if on_mac:
+    if sys.platform == 'darwin':
       self.mac_menu = mac.MacMenu()
       self.mac_menu.set_menu_bar(self.main_menu)
       self.main_vbox.remove(self.main_menu)
@@ -165,7 +168,7 @@ class OpenSimGTK (gobject.GObject):
     self.toolbars.show()
     self.main_vbox.show()
     self.window.show()
-    #self.status_bar.show ()
+    self.status_bar.show()
     self.canvas.grab_focus()
 
 
