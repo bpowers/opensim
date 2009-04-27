@@ -49,6 +49,29 @@ else:
   on_mac = False
   ICON_NAME += '.svg'
 
+main_menu = '''
+<ui>
+  <menubar name="MainMenu">
+    <menu action="File">
+      <menuitem action="New"/>
+      <menuitem action="Open"/>
+      <separator/>
+      <menuitem action="Save"/>
+      <menuitem action="SaveAs"/>
+      <separator/>
+      <menuitem action="Quit"/>
+    </menu>
+    <menu action="Edit">
+    </menu>
+    <menu action="Tools">
+    </menu>
+    <menu action="Help">
+    </menu>
+  </menubar>
+</ui>
+'''
+
+
 class OpenSimGTK (gobject.GObject):
 
   __gtype_name__ = 'OpenSimGTK'
@@ -104,18 +127,10 @@ class OpenSimGTK (gobject.GObject):
     self.window.set_size_request(800, 600)
     self.window.connect('delete_event', self.delete_event)
 
-    dic = {
-      'on_drawing_tool_toggled' : self.drawing_tool_toggled, 
-      'on_view_toggled' : self.view_toggled,
-      'on_open' : self.open_clicked,
-      'on_save' : self.save_clicked,
-      'on_save_as' : self.save_as_clicked,
-    }
-
     self.main_vbox = gtk.VBox()
     self.window.add(self.main_vbox)
 
-    self.__build_main_menu()
+    self.main_menu = self.__build_main_menu()
 
     self.model_toolbar = tools.ModelToolbar()
     self.model_toolbar.connect_toggled(self.drawing_tool_toggled)
@@ -156,20 +171,39 @@ class OpenSimGTK (gobject.GObject):
     '''
     Construct our main menu (file, edit, etc)
     '''
-    self.main_menu = gtk.MenuBar()
-
-    file_menu = gtk.Menu()
-    m_open = gtk.MenuItem('Open Model')
-    m_open.render_icon(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
-    file_menu.append(m_open)
-    m_open.show()
 
 
-    file_item = gtk.MenuItem('File')
-    file_item.show()
-    file_item.set_submenu(file_menu)
+    ui_manager = gtk.UIManager()
+    ui_manager.add_ui_from_string(main_menu)
 
-    self.main_menu.append(file_item)
+    ag_menu = gtk.ActionGroup('MainMenus')
+    ag_menu.add_actions((('File', None, '_File'),
+                         ('Edit', None, '_Edit'),
+                         ('Tools', None, '_Tools'),
+                         ('Help', None, '_Help'),
+                       ))
+    ui_manager.insert_action_group(ag_menu, 0)
+
+    ag_general = gtk.ActionGroup('General')
+    ag_general.add_actions((('New', gtk.STOCK_NEW, '_New', None, 
+                             'New simulation', None),
+                            ('Open', gtk.STOCK_OPEN, '_Open...', None,
+                             'Open existing simulation', self.open_clicked),
+                            ('Save', gtk.STOCK_SAVE, '_Save', None,
+                             'Save current simulation', self.save_clicked),
+                            ('SaveAs', gtk.STOCK_SAVE_AS, '_Save As...', None,
+                             'Save under a new name', self.save_as_clicked),
+                            ('Quit', gtk.STOCK_QUIT, '_Quit', None,
+                             'Quit Model', self.delete_event),
+                          ))
+    ui_manager.insert_action_group(ag_general, 1)
+
+    accel_group = ui_manager.get_accel_group()
+    self.window.add_accel_group(accel_group)
+
+    self.ui_manager = ui_manager
+    return ui_manager.get_widget('/MainMenu')
+
 
 
   def delete_event(self, widget, event=None):
