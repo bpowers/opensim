@@ -62,6 +62,8 @@ main_menu = '''
       <menuitem action="Quit"/>
     </menu>
     <menu action="Edit">
+      <menuitem action="Undo"/>
+      <menuitem action="Redo"/>
     </menu>
     <menu action="Tools">
     </menu>
@@ -184,19 +186,32 @@ class OpenSimGTK (gobject.GObject):
                        ))
     ui_manager.insert_action_group(ag_menu, 0)
 
-    ag_general = gtk.ActionGroup('General')
-    ag_general.add_actions((('New', gtk.STOCK_NEW, '_New', None, 
-                             'New simulation', None),
-                            ('Open', gtk.STOCK_OPEN, '_Open...', None,
-                             'Open existing simulation', self.open_clicked),
-                            ('Save', gtk.STOCK_SAVE, '_Save', None,
-                             'Save current simulation', self.save_clicked),
-                            ('SaveAs', gtk.STOCK_SAVE_AS, '_Save As...', None,
-                             'Save under a new name', self.save_as_clicked),
-                            ('Quit', gtk.STOCK_QUIT, '_Quit', None,
-                             'Quit Model', self.delete_event),
-                          ))
-    ui_manager.insert_action_group(ag_general, 1)
+    ag_file = gtk.ActionGroup('File')
+    ag_file.add_actions((('New', gtk.STOCK_NEW, '_New', None,
+                          'New simulation', None),
+                         ('Open', gtk.STOCK_OPEN, '_Open...', None,
+                          'Open existing simulation', self.open_clicked),
+                         ('Save', gtk.STOCK_SAVE, '_Save', None,
+                          'Save current simulation', self.save_clicked),
+                         ('SaveAs', gtk.STOCK_SAVE_AS, '_Save As...', None,
+                          'Save under a new name', self.save_as_clicked),
+                         ('Quit', gtk.STOCK_QUIT, '_Quit', None,
+                          'Quit Model', self.delete_event),
+                       ))
+    ui_manager.insert_action_group(ag_file, 1)
+
+    ag_edit = gtk.ActionGroup('Edit')
+    ag_edit.add_actions((('Undo', gtk.STOCK_UNDO, '_Undo', None,
+                          'Undo previous action', None),
+                         ('Redo', gtk.STOCK_REDO, '_Redo', None,
+                          'Redo the last undone action', None),
+                       ))
+    ui_manager.insert_action_group(ag_edit, 2)
+
+    widget = ui_manager.get_widget('/MainMenu/Edit/Undo')
+    widget.set_sensitive(False)
+    widget = ui_manager.get_widget('/MainMenu/Edit/Redo')
+    widget.set_sensitive(False)
 
     accel_group = ui_manager.get_accel_group()
     self.window.add_accel_group(accel_group)
