@@ -363,7 +363,7 @@ class PlacementTool(tool.Tool):
   def on_button_press(self, context, event):
 
     # don't handle the button press if we don't have a kind set
-    if self._new_kind == 'none':
+    if self._new_kind is NONE:
       return False
 
     view = context.view
@@ -384,10 +384,12 @@ class PlacementTool(tool.Tool):
     return True
 
   def _create_item(self, context, pos):
-    if self._new_kind == 'stock':
+    if self._new_kind is STOCK:
       item = self._model.new_stock(*pos)
-    elif self._new_kind == 'variable':
+    elif self._new_kind is VARIABLE:
       item = self._model.new_variable(*pos)
+    elif self._new_kind is FLOW:
+      item = self._model.new_cloud(*pos)
     else:
       raise ValueError, 'bad new type: "%s"' % self._new_kind
     return item

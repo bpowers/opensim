@@ -104,17 +104,8 @@ class Canvas(gtk.ScrolledWindow):
     '''
     self.active_tool = tool_type
 
-    if tool_type is STOCK:
-      widget_kind = 'stock'
-    elif tool_type is VARIABLE:
-      widget_kind = 'variable'
-    elif tool_type is NONE:
-      widget_kind = 'none'
-    else:
-      raise ValueError, 'unknown tool type.'
-
     del self.view.focused_item
-    self.view.placement_tool.insert_kind = widget_kind
+    self.view.placement_tool.insert_kind = tool_type
 
   def get_active_tool(self):
     return self.active_tool

@@ -103,6 +103,12 @@ class VariableItem(Item):
     self._buffer.connect('changed', self._buffer_changed)
 
 
+  def _name(self):
+    return self._display_name.string
+
+  name = property(_name)
+
+
   def _buffer_changed(self, widget):
     '''
     Called when our underlying text buffer changes.
@@ -196,9 +202,6 @@ class VariableItem(Item):
                       self.active_color[2])
     cr.stroke()
 
-
-  def name(self):
-    return self._display_name.string
 
   @observed
   def _set_min_width(self, min_width):

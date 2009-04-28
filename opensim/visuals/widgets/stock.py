@@ -72,6 +72,12 @@ class StockItem(Element):
     self.set_position(x - width/2, y - height/2)
 
 
+  def _name(self):
+    return self._display_name.string
+
+  name = property(_name)
+
+
   def _buffer_changed(self, widget):
     '''
     Called when our underlying text buffer changes.
@@ -174,11 +180,6 @@ class StockItem(Element):
     self._display_name.show_text(cr)
 
     cr.restore()
-
-
-  def name(self):
-    return self._display_name.string
-
 
   def get_rectangle(self):
     x, y = self.get_position()

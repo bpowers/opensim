@@ -41,6 +41,8 @@ from cloud import CloudItem
 
 class FlowItem(SimItem):
 
+  __g_type_name__ = 'FlowItem'
+
   def __init__(self, flow_from=None, name=None, start=None, end=None, 
                dragging=True, focus=True, line_width=9, **kwargs):
     super(FlowItem, self).__init__(**kwargs)
@@ -423,8 +425,4 @@ class FlowItem(SimItem):
       self.__old_name = ""
 
     return False
-
-
-
-gobject.type_register(FlowItem)
 

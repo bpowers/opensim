@@ -40,6 +40,8 @@ from cloud import CloudItem
 
 class LinkItem(SimItem):
 
+  __g_type_name__ = 'LinkItem'
+
   def __init__(self, flow_from=None, start=None, end=None, 
                dragging=True, focus=True, line_width=3, **kwargs):
     super(LinkItem, self).__init__(**kwargs)
@@ -302,7 +304,4 @@ class LinkItem(SimItem):
     self.force_redraw()
 
     return False
-
-
-gobject.type_register(LinkItem)
 

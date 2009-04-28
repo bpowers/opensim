@@ -25,30 +25,54 @@
 
 import gobject
 import gtk
-import goocanvas
 import math
 import cairo
 import rsvg
 import os
+
+from gaphas.item import Item
+from gaphas.connector import Handle, LinePort
+from gaphas.geometry import Rectangle
+from gaphas.state import observed, reversible_property
 
 import logging
 
 from text import TextInfo
 from item import SimItem
 
+ICON_SIZE = 55
 
 class CloudItem(SimItem):
 
-  def __init__(self, x, y, width=55, height=55, **kwargs):
-    super(CloudItem, self).__init__(**kwargs)
+  __gtype_name__ = 'CloudItem'
 
-    self._new = True
+  def __init__(self, x, y):
+    super(CloudItem, self).__init__()
 
-    self.x = x - width/2.0
-    self.y = y - height/2.0
-    self.width = width
-    self.height = height
-    self.dragging = False
+    self.width = ICON_SIZE
+    self.height = ICON_SIZE
+
+    # the 0th handle is always at the item's origin (0,0)
+    h_0 = Handle(movable=False)
+    h_l = Handle(movable=False)
+    h_r = Handle(movable=False)
+    # we don't want to be able to see or interact with either of these,
+    # they're basically for positioning the h_r
+    h_0.visible = False
+    h_l.visible = False
+    h_r.visible = False
+
+    self._handles = (h_0, h_l, h_r)
+    self._ports = (LinePort(h_0.pos, h_l.pos),
+                   LinePort(h_l.pos, h_r.pos))
+
+    # setup constraints
+    self.constraint(above=(h_0.pos, h_l.pos), delta=ICON_SIZE)
+    self.constraint(left_of=(h_l.pos, h_r.pos), delta=ICON_SIZE)
+
+    # keep track of inflows and outflows, for use in engine
+    self.inflows = []
+    self.outflows = []
 
     # find our cloud icon hanging out with the other icons.
     icon_paths = gtk.icon_theme_get_default().get_search_path()
@@ -62,42 +86,41 @@ class CloudItem(SimItem):
 
     if cloud_path is None:
       logging.error("could not find cloud svg!")
-      raise Exception
+      raise ValueError, 'missing cloud svg'
 
     self._cloud = rsvg.Handle(cloud_path)
 
-    # keep track of inflows and outflows, for use in engine
-    self.inflows = []
-    self.outflows = []
-
-    self.__needs_resize_calc = True
+    self.set_position(x - self.width/2, y - self.height/2)
 
 
-  def name(self):
-    return "cloud"
+  def _name(self):
+    return 'cloud'
+
+  name = property(_name)
 
 
-  def do_simple_create_path(self, cr):
-    self.ensure_size(cr)
+  def _get_new(self):
+    return False
 
-    # define the bounding path here.
-    cr.rectangle(self.x, self.y, self.width, self.height)
+  new = property(_get_new)
+
+
+  def set_position(self, x, y):
+    if (x, y) != self.get_position():
+      self.matrix = (1.0, 0.0, 0.0, 1, x, y)
+
+  def get_position(self):
+    return self.matrix[4], self.matrix[5]
+
+  position = property(get_position, set_position)
 
 
   def center(self):
-    return (int(self.x + self.width/2), int(self.y + self.height/2))
-
-
-  def abs_center(self):
-    if self.__needs_resize_calc:
-      logging.debug("WEIRD DEBUG")
-      return self.center()
-    return (int(self.bounds_x1 + self.width/2), 
-            int(self.bounds_y2 - self.height/2))
+    return (int(self.width/2), int(self.height/2))
 
 
   def edge_point(self, end_point):
-    center_x, center_y = self.abs_center()
+    center_x, center_y = self.center()
     
     line_angle = math.atan2((end_point[1] - center_y), 
                             (end_point[0] - center_x))
@@ -115,109 +138,24 @@ class CloudItem(SimItem):
     return (center_x, center_y)
 
 
-  def ensure_size(self, cr):
-    if self.__needs_resize_calc:
-      
-      self.bounds_x1 = self.x
-      self.bounds_y1 = self.y
-      self.bounds_x2 = self.x + self.width 
-      self.bounds_y2 = self.y + self.height
-
-      self.__needs_resize_calc = False
-      self.force_redraw()
-
-
-  def do_simple_paint(self, cr, bounds):
-
+  def draw(self, context):
+    '''
+    Render our nice cloud on the cairo context.
+    '''
+    cr = context.cairo
     cr.save()
-    self.ensure_size(cr)
-    cr.translate(self.x, self.y)
-    self._cloud.render_cairo(cr)
-
+    try:
+      self._cloud.render_cairo(cr)
+    except:
+      self._cloud.render_cairo(cr._cairo)
     cr.restore()
 
 
   def xml_representation(self):
-    return ""
+    return ''
 
 
-  def on_key_press(self, item, target, event):
-    return False
-
-
-  def on_button_press(self, item, target, event):
-    canvas = self.get_canvas()
-
-    if canvas.override:
-      # if we're in the process of drawing a line, just 
-      # propogate the signal.  first fix the coordinates
-      canvas = self.get_canvas()
-      event.x, event.y = canvas.convert_from_item_space(self, 
-                                                        event.x, event.y)
-      return False
-
-    canvas.grab_focus(item)
-    canvas.grab_highlight(self)
-
-    if event.button == 1:
-      self.drag_x = event.x
-      self.drag_y = event.y
-
-      fleur = gtk.gdk.Cursor(gtk.gdk.FLEUR)
-      canvas = item.get_canvas()
-      canvas.pointer_grab(item,
-                          gtk.gdk.POINTER_MOTION_MASK 
-                           | gtk.gdk.BUTTON_RELEASE_MASK,
-                          fleur, event.time)
-      self.dragging = True
-    elif event.button == 3:
-      # right-click, handle later
-      pass
-    else:
-      print "unsupported button: %d" % event.button
-    return True
-
-
-  def on_button_release(self, item, target, event):
-    canvas = item.get_canvas()
-    canvas.pointer_ungrab(item, event.time)
-    self.dragging = False
-
-
-  def on_motion_notify (self, item, target, event):
-    if (self.dragging == True) and (event.state & gtk.gdk.BUTTON1_MASK):
-      new_x = event.x
-      new_y = event.y
-      item.translate(new_x - self.drag_x, new_y - self.drag_y)
-      self.emit("item_moved_event", self)
-      return True
-    return False
-
-
-  def on_focus_in(self, item, target, event):
-    return False
-
-
-  def on_focus_out(self, item, target, event):
-    return False
-
-
-  def on_highlight_in(self, item, target):
-    self.text_color = [1, .6, .2]
-    self.force_redraw()
-
-    return False
-
-
-  def on_highlight_out(self, item, target):
-    self.text_color = [0, 0, 0]
-    self.force_redraw()
-
-    self._new = False
-
-    return False
-
-
-
-gobject.type_register(CloudItem)
+  def get_rectangle(self):
+    x, y = self.get_position()
+    return Rectangle(x, y, self.width, self.height)
 

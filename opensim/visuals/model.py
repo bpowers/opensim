@@ -78,6 +78,15 @@ class SimModel(gobject.GObject):
     return aux
 
 
+  def new_cloud(self, x, y):
+    '''
+    Add a new object to our model and our simulation
+    '''
+    cloud = widgets.CloudItem(x, y)
+    self.canvas.add(cloud)
+    return cloud
+
+
   def open_model(self, file_path):
     '''
     Load an opensim simulation into our view's model.
@@ -203,7 +212,7 @@ class SimModel(gobject.GObject):
     
     # now do postprocessing to finish hooking up flows and influences
     for var in post:
-      logging.debug("hooking up '%s'", var[0].name())
+      logging.debug("hooking up '%s'", var[0].name)
       
       widget = None
       if var[1] == "cloud":
@@ -214,7 +223,7 @@ class SimModel(gobject.GObject):
       else:
         # here we need to get the stock with the name var[1]
         for d_var in self.display_vars:
-          if d_var.name() == var[1]:
+          if d_var.name == var[1]:
             widget = d_var
             break
       if widget:
@@ -230,7 +239,7 @@ class SimModel(gobject.GObject):
       else:
         # here we need to get the stock with the name var[2]
         for d_var in self.display_vars:
-          if d_var.name() == var[2]:
+          if d_var.name == var[2]:
             widget = d_var
             break
       if widget:
