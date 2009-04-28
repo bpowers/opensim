@@ -326,6 +326,8 @@ class OpenSimGTK (gobject.GObject):
     about.set_comments(_('A visual modeler for system dynamics'))
     about.set_authors(opensim.AUTHORS)
     about.set_logo_icon_name(ICON_BASE_NAME)
+    about.set_copyright(opensim.COPYRIGHT)
+    about.set_license(opensim.LICENSE)
 
     about.run()
     about.destroy()
