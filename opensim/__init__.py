@@ -26,6 +26,9 @@
 import engine.errors as errors
 from engine.errors import config_logging
 
+VERSION = '0.5.1'
+AUTHORS = ('Bobby Powers <bobbypowers@gmail.com>',)
+
 # initialize opensim's logging of errors
 config_logging(ostream=None, handler=errors.NullHandler())
 
