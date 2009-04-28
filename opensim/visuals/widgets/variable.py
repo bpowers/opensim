@@ -38,7 +38,7 @@ from gaphas.state import observed, reversible_property
 import logging
 
 from opensim.visuals.tools import edit_equation
-from text import TextInfo
+from text import TextInfo, PLACEHOLDER_TEXT
 
 LINE_WIDTH = 2
 ICON_SIZE = 55
@@ -113,7 +113,6 @@ class VariableItem(Item):
     '''
     Called when our underlying text buffer changes.
     '''
-    self._display_name.placeholder = False
     self.request_update()
 
   def _get_buffer(self):
@@ -123,9 +122,19 @@ class VariableItem(Item):
 
 
   def _get_new(self):
-    return self._display_name.placeholder
+    # XXX: why the f- doesn't this work?  it seems to cache the
+    # value and not call the getter function after the first or
+    # second time
+    #new = self._display_name.placeholder
+    return self._display_name.string == PLACEHOLDER_TEXT
 
   new = property(_get_new)
+
+  def reset_text(self):
+    '''
+    Revert whatever text we have back to the placeholder
+    '''
+    self._display_name.set_placeholder()
 
 
   def set_position(self, x, y):

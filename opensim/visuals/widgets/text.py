@@ -47,9 +47,6 @@ class TextInfo():
     self.width = wrap_width
     self.text_width = self.width
 
-    if string is PLACEHOLDER_TEXT:
-      self.placeholder = True
-
     self.buffer.insert(self.buffer.get_end_iter(), string)
     self.align = align
 
@@ -60,6 +57,11 @@ class TextInfo():
                                 self.buffer.get_end_iter())
 
   string = property(_get_string)
+
+  def set_placeholder(self):
+    buff = self.buffer
+    buff.delete(buff.get_start_iter(), buff.get_end_iter())
+    buff.insert(buff.get_end_iter(), PLACEHOLDER_TEXT)
 
   def update_extents(self, cr):
     cr.save()
@@ -99,7 +101,7 @@ class TextInfo():
     except:
       pc = pangocairo.CairoContext(cr._cairo)
 
-    if self.placeholder:
+    if self.string == PLACEHOLDER_TEXT:
       cr.set_source_rgb(.5, .5, .5)
     else:
       cr.set_source_rgb(0, 0, 0)

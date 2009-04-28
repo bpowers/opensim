@@ -52,6 +52,8 @@ class CloudItem(SimItem):
     self.width = ICON_SIZE
     self.height = ICON_SIZE
 
+    self.buffer = None
+
     # the 0th handle is always at the item's origin (0,0)
     h_0 = Handle(movable=False)
     h_l = Handle(movable=False)

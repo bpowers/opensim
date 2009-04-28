@@ -34,6 +34,8 @@ import gobject
 import sys
 import logging
 
+log = logging.getLogger('opensim.tools')
+
 from gtk import ToggleToolButton
 from toolcombobox import ToolComboBox
 from gtk import ToolButton
@@ -319,15 +321,23 @@ class HandleTool(tool.HandleTool):
     super(HandleTool, self).__init__(**kwargs)
 
   def on_key_press(self, context, event):
+    '''
+    Pass along appropriate key presses to widgets.
+    '''
     view = context.view
 
     # Make the item who's handle we hover over the hovered_item:
     item = view.focused_item
-    if item:
+    if item and item.buffer:
       buff = item.buffer
       if event.keyval == gtk.keysyms.BackSpace:
+        # don't delete the placeholder text.
+        if item.new:
+          return
         insert_iter = buff.get_iter_at_mark(buff.get_insert())
         buff.backspace(insert_iter, True, True)
+        if buff.get_char_count() == 0:
+          item.reset_text()
       elif event.keyval == gtk.keysyms.Return:
         view.unselect_all()
       else:
@@ -336,6 +346,9 @@ class HandleTool(tool.HandleTool):
           key = ' '
         if len(key) == 1:
           if item.new:
+            # identifiers can't start with a space or digit.
+            if key.isdigit() or key == ' ':
+              return
             buff.set_text('')
           buff.insert_at_cursor(key)
 
