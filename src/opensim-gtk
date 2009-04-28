@@ -29,6 +29,7 @@ import pygtk
 pygtk.require ("2.0")
 import gtk
 import gobject
+from gettext import gettext as _
 
 import os
 import os.path
@@ -43,14 +44,14 @@ import opensim.visuals.tools as tools
 log = logging.getLogger('opensim.gtk')
 
 # mac-native gtk doesn't like svg icons
-ICON_NAME = 'model-icon'
+ICON_BASE_NAME = 'model-icon'
 ICON_SUFFIX = '.png'
 if sys.platform == 'darwin':
   import igemacintegration as mac
 elif sys.platform == 'linux2':
   ICON_SUFFIX = '.svg'
 
-ICON_NAME += ICON_SUFFIX
+ICON_NAME = ICON_BASE_NAME + ICON_SUFFIX
 
 main_menu = '''
 <ui>
@@ -319,7 +320,15 @@ class OpenSimGTK (gobject.GObject):
     '''
     Pop-up and give focus to an about box.
     '''
-    pass
+    about = gtk.AboutDialog()
+    about.set_name(_('OpenSim'))
+    about.set_version(opensim.VERSION)
+    about.set_comments(_('A visual modeler for system dynamics'))
+    about.set_authors(opensim.AUTHORS)
+    about.set_logo_icon_name(ICON_BASE_NAME)
+
+    about.run()
+    about.destroy()
 
 
   def open_clicked(self, widget):
