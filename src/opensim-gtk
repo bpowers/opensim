@@ -92,7 +92,6 @@ class OpenSimGTK (gobject.GObject):
 
     # http://standards.freedesktop.org/basedir-spec/basedir-spec-0.6.html
     share_paths = ['/usr/local/share/', '/usr/share/']
-    all_paths = share_paths
 
     # check this environmental variable, but if nothing is there fall 
     # back to the ones in share_paths
@@ -100,6 +99,8 @@ class OpenSimGTK (gobject.GObject):
       xdg_string = os.environ['XDG_DATA_DIRS']
       all_paths = xdg_string.split(':')
       all_paths.extend(share_paths)
+    else:
+      all_paths = share_paths
 
     for path in all_paths:
       path = os.path.join(path, 'opensim')
@@ -107,6 +108,9 @@ class OpenSimGTK (gobject.GObject):
         self.data_path = path
         break
 
+    # on linux or any system that opensim was installed using our
+    # configure script, data_path shouldn't be None at this point.
+    # however on windows and mac, things are located differnetly.
     if self.data_path is None:
       if sys.platform == 'win32':
         self.data_path = '.'
@@ -114,7 +118,8 @@ class OpenSimGTK (gobject.GObject):
         # if we're on the mac and we get here, we're most likely in an
         # application bundle.  We need to make sure we can get our 
         # icons and glade files.
-        # we want to strip MacOS/Model...
+        # XXX: is it necessary to nest dirname calls like this??? I'll
+        # check next time im on the mac
         self.data_path = os.path.dirname(os.path.dirname(sys.argv[0]))
         self.data_path = os.path.join(self.data_path, 'Resources')
         log.debug("current working directory: %s" % self.data_path)
@@ -123,16 +128,18 @@ class OpenSimGTK (gobject.GObject):
         raise ValueError
 
     # I may have to investigate whether we're installing icons into
-    # the recommended directory, but for now this works well.
+    # the recommended directory and what to do about it, but for now
+    # this works well.
     icon_path = os.path.join(self.data_path, 'icons')
     gtk.icon_theme_get_default().append_search_path(icon_path)
-    log.debug("setting icon theme path: %s" % icon_path)
 
-    #Get the Main Window, and connect the "destroy" event
+    # configure the main window.  set its icon file, minimum size,
+    # make sure the delete signal does what we want
     self.window = gtk.Window()
     self.window.set_icon_from_file(os.path.join(self.data_path, 
                                                 ICON_NAME))
     self.window.set_title('new simulation | Model')
+    # XXX: should we really be setting this minimum size?
     self.window.set_size_request(800, 600)
     self.window.connect('delete_event', self.delete_event)
 
@@ -143,34 +150,32 @@ class OpenSimGTK (gobject.GObject):
 
     self.model_toolbar = tools.ModelToolbar()
     self.model_toolbar.connect_toggled(self.drawing_tool_toggled)
-    #self.model_toolbar.append_space()
     self.sim_toolbar = tools.SimulateToolbar()
 
     self.canvas = sim.Canvas()
     self.status_bar = gtk.Statusbar()
     self.graphs = sim.GraphViewer()
 
-    self.toolbars = gtk.HBox()
     self.main_vbox.pack_start(self.main_menu, False)
-    self.main_vbox.pack_start(self.toolbars, False)
-    self.toolbars.homogeneous = False
-    self.toolbars.pack_start(self.model_toolbar)
-    #self.toolbars.pack_start(self.sim_toolbar)
+    self.main_vbox.pack_start(self.model_toolbar, False)
     self.main_vbox.pack_start(self.canvas)
     self.main_vbox.pack_start(self.status_bar, False)
 
+    # on mac, we do this to achieve some sort of Mac integration. it
+    # moves the main menu up to where it goes on the mac to give us
+    # more of that mac look and feel
     if sys.platform == 'darwin':
       self.mac_menu = mac.MacMenu()
       self.mac_menu.set_menu_bar(self.main_menu)
       self.main_vbox.remove(self.main_menu)
-      #quit_item = self.wTree.get_widget('imagemenuitem5')
-      #self.mac_menu.set_quit_menu_item(quit_item)
+      quit_item = self.ui_manager.get_widget('/MainMenu/File/Quit')
+      self.mac_menu.set_quit_menu_item(quit_item)
 
+    # make sure we show all of these widgets we just added to our window.
     self.main_menu.show()
     self.model_toolbar.show()
     self.sim_toolbar.show()
     self.canvas.show()
-    self.toolbars.show()
     self.main_vbox.show()
     self.window.show()
     self.status_bar.show()
