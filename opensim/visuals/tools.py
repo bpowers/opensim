@@ -355,7 +355,7 @@ class HandleTool(tool.HandleTool):
 
 class PlacementTool(tool.Tool):
 
-  def __init__(self, model, obj_kind='none'):
+  def __init__(self, model, obj_kind=NONE):
     self._model = model
     self._handle_tool = HandleTool()
     self._handle_index = 2

@@ -153,6 +153,7 @@ class OpenSimGTK (gobject.GObject):
     self.sim_toolbar = tools.SimulateToolbar()
 
     self.canvas = sim.Canvas()
+    self.model = self.canvas.model
     self.status_bar = gtk.Statusbar()
     self.graphs = sim.GraphViewer()
 
@@ -366,7 +367,7 @@ class OpenSimGTK (gobject.GObject):
     Implement this method to save your activity's state.
     '''
     log.debug('writing file')
-    self.canvas.save_model(file_path)
+    self.model.save_model(file_path)
     log.debug('done writing file')
 
     
@@ -375,7 +376,7 @@ class OpenSimGTK (gobject.GObject):
     Implement this method to resume state saved in write_file().
     '''
     log.debug('reading file')
-    self.canvas.open_model(file_path)
+    self.model.open_model(file_path)
     log.debug('done reading file')
 
 

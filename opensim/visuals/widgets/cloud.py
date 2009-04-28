@@ -112,13 +112,18 @@ class CloudItem(SimItem):
       self.matrix = (1.0, 0.0, 0.0, 1, x, y)
 
   def get_position(self):
-    return self.matrix[4], self.matrix[5]
+    return (self.matrix[4], self.matrix[5])
 
   position = property(get_position, set_position)
 
 
   def center(self):
     return (int(self.width/2), int(self.height/2))
+
+  def abs_center(self):
+    center_x, center_y = self.center()
+    pos_x, pos_y = self.position
+    return (pos_x + center_x, pos_y + center_y)
 
 
   def edge_point(self, end_point):

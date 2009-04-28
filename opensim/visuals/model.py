@@ -26,6 +26,10 @@
 
 import gobject
 import gtk
+import logging
+import libxml2
+
+log = logging.getLogger('opensim.visuals.model')
 
 from opensim.engine import Simulator
 import widgets
@@ -92,15 +96,15 @@ class SimModel(gobject.GObject):
     Load an opensim simulation into our view's model.
     '''
 
-    logging.debug("Loading simulation.")
+    log.debug("Loading simulation.")
     self._engine.load(file_path)
 
-    logging.debug("Loading visual model '%s'." % file_path)
+    log.debug("Loading visual model '%s'." % file_path)
     doc = libxml2.parseFile(file_path)
 
     root = doc.children
     if root.name != "opensim":
-      logging.error("not an opensim XML file")
+      log.error("not an opensim XML file")
       return
 
     vis_root = root.children
@@ -110,19 +114,19 @@ class SimModel(gobject.GObject):
       vis_root = vis_root.next
 
     if vis_root is None:
-      logging.error("no node named 'visuals'")
+      log.error("no node named 'visuals'")
       return
 
     # make a copy so we're not editing the list we're iterating through
-    self.display_vars = []
+    self._vars = []
 
     page = vis_root.children
     while page is not None and page.name != "page":
         page = page.next
     
     if page is None:
-      logging.error("Canvas: each visual part of a savefile must have " + \
-                    "at least one page.")
+      log.error("each visual part of a savefile must have " + \
+                "at least one page.")
 
     post = []
     var = page.children
@@ -148,19 +152,19 @@ class SimModel(gobject.GObject):
 
         # using ints for output so that its more readable.  values
         # are actually floats
-        logging.debug("Canvas: Adding variable " + 
-                      "'%s' (x'%d', y'%d', w'%d', h'%d')" % \
-                      (var_name, x, y, width, height))
+        log.debug("Adding variable " +
+                  "'%s' (x'%d', y'%d', w'%d', h'%d')" % \
+                  (var_name, x, y, width, height))
 
         # FIXME: we assume correct input.  handle errors!
         if name == "var":
-          var = self._engine.get_var(var_name)
-          new_var = widgets.VariableItem(x, y, width, height, var_name, var)
-          self.display_vars.append(new_var)
+          sim_var = self._engine.get_var(var_name)
+          new_var = widgets.VariableItem(var_name, x, y, width, height, sim_var)
+          self._vars.append(new_var)
         if name == "stock":
-          var = self._engine.get_var(var_name)
-          new_var = widgets.StockItem(x, y, width, height, var_name, var)
-          self.display_vars.append(new_var)
+          sim_var = self._engine.get_var(var_name)
+          new_var = widgets.StockItem(var_name, x, y, width, height, sim_var)
+          self._vars.append(new_var)
 
       if name == "flow" or name == "link":
         var_item = var.children
@@ -185,25 +189,24 @@ class SimModel(gobject.GObject):
 
         # using ints for output so that its more readable.  values
         # are actually floats
-        logging.debug("Canvas: Adding flow " + 
-                      "'%s' (x1'%d', y1'%d', x2'%d', y2'%d', s'%s' e'%s')" % \
-                      (var_name, x1, y1, x2, y2, start, end))
+        #log.debug("Adding flow " +
+        #              "'%s' (x1'%d', y1'%d', x2'%d', y2'%d', s'%s' e'%s')" % \
+        #              (var_name, x1, y1, x2, y2, start, end))
 
         new_var = None
         if name == "flow":
           # FIXME: we assume correct input.  handle errors!
           new_var = widgets.FlowItem(None, var_name, (x1, y1), (x2, y2),
-                                     focus=False, parent=goo_root,
-                                     dragging=False, can_focus=True)
+                                     focus=False)
           new_var.var = self._engine.get_var(var_name)
-        else:
-          new_var = widgets.LinkItem(None, (x1, y1), (x2, y2),
-                                     focus=False, parent=goo_root,
-                                     dragging=False, can_focus=True)
-        # add info to post in order to finish hooking up rate.
+        #else:
+        #  new_var = widgets.LinkItem(None, (x1, y1), (x2, y2),
+        #                             focus=False, parent=goo_root,
+        #                             dragging=False, can_focus=True)
 
-        new_var.lower(None)
-        self.display_vars.append(new_var)
+        # add info to post in order to finish hooking up rate.
+        #new_var.lower(None)
+        #self._vars.append(new_var)
         post.append((new_var, start, end))
 
       var = var.next
@@ -212,50 +215,58 @@ class SimModel(gobject.GObject):
     
     # now do postprocessing to finish hooking up flows and influences
     for var in post:
-      logging.debug("hooking up '%s'", var[0].name)
+      # FIXME: remove this when fully implemented
+      if not var[0]:
+        continue
+
+      log.debug("hooking up '%s'", var[0].name)
       
       widget = None
       if var[1] == "cloud":
-        logging.debug("creating a cloud for the start")
-        new_cloud = widgets.CloudItem(var[0].x1, var[0].y1, parent=goo_root)
-        self.display_vars.append(new_cloud)
+        log.debug("creating a cloud for the start")
+        new_cloud = widgets.CloudItem(var[0].x1, var[0].y1)
+        self._vars.append(new_cloud)
         widget = new_cloud
       else:
         # here we need to get the stock with the name var[1]
-        for d_var in self.display_vars:
+        for d_var in self._vars:
           if d_var.name == var[1]:
             widget = d_var
             break
       if widget:
-        logging.debug("setting flow-from")
+        log.debug("setting flow-from")
         var[0].set_flow_from(widget)
       
       widget = None
       if var[2] == "cloud":
-        logging.debug("creating a cloud for the start")
-        new_cloud = widgets.CloudItem(var[0].x2, var[0].y2, parent=goo_root)
-        self.display_vars.append(new_cloud)
+        log.debug("creating a cloud for the start")
+        new_cloud = widgets.CloudItem(var[0].x2, var[0].y2)
+        self._vars.append(new_cloud)
         widget = new_cloud
       else:
         # here we need to get the stock with the name var[2]
-        for d_var in self.display_vars:
+        for d_var in self._vars:
           if d_var.name == var[2]:
             widget = d_var
             break
       if widget:
-        logging.debug("setting flow-to")
+        log.debug("setting flow-to")
         var[0].set_flow_to(widget)
+
+    # TODO: also hook up _vars_by_name
+    for v in self._vars:
+      self.canvas.add(v)
 
 
   def save_model(self, file_path):
-    logging.debug("Canvas: Setting model file and saving.")
+    log.debug("Setting model file and saving.")
     self._engine.props.file_name = file_path
     self._engine.save()
-    logging.debug("Canvas: Saved model.")
+    log.debug("Saved model.")
 
 
   def save_visual_state(self, widget, f):
-    logging.debug("Canvas: Saving visual state.")
+    log.debug("Saving visual state.")
  
     f.write('\n<!-- below this is layout information for sketches -->\n')
     f.write('<visuals markup="1.0">\n\n')

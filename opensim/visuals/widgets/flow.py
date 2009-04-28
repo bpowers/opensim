@@ -66,8 +66,8 @@ class FlowItem(SimItem):
       self.flow_from = flow_from
 
       #now make sure we update our endpoints when the targets move
-      self.__start_cb = self.flow_from.connect("item_moved_event", 
-                                               self.update_point)
+      #self.__start_cb = self.flow_from.connect("item_moved_event",
+      #                                         self.update_point)
     else:
       if not start or not end:
         logging.error("flow_from and start or end undefined!")
@@ -83,12 +83,7 @@ class FlowItem(SimItem):
     self.var = None
     self.line_width = line_width
 
-    if name is not None:
-      self._display_name = TextInfo(name, 
-                                    placeholder_text=False)
-    else:
-      self._display_name = TextInfo("(new flow)", 
-                                    placeholder_text=True)
+    self._display_name = TextInfo(name)
 
     if focus:
       self.get_canvas().grab_focus(self)
@@ -174,7 +169,6 @@ class FlowItem(SimItem):
 
       #self._display_name.update_extents(cr)
       self.__needs_resize_calc = False
-      self.force_redraw()
 
 
   def do_simple_paint(self, cr, bounds):
@@ -263,11 +257,10 @@ class FlowItem(SimItem):
     self._new = False
 
     #now make sure we update our endpoints when the targets move
-    self.__start_cb = self.flow_from.connect("item_moved_event", 
-                                             self.update_point)
+    #self.__start_cb = self.flow_from.connect("item_moved_event",
+    #                                         self.update_point)
 
     self.__needs_resize_calc = True
-    self.force_redraw()
     
 
   def set_flow_to(self, flow_to):
@@ -283,12 +276,11 @@ class FlowItem(SimItem):
     self._new = False
 
     #now make sure we update our endpoints when the targets move
-    self.__end_cb = self.flow_to.connect("item_moved_event", 
-                                         self.update_point)
+    #self.__end_cb = self.flow_to.connect("item_moved_event",
+    #                                     self.update_point)
 
     self.dragging = False
     self.__needs_resize_calc = True
-    self.force_redraw()
 
 
   def update_point(self, item, target):
@@ -300,7 +292,6 @@ class FlowItem(SimItem):
 
     self.__needs_resize_calc = True
     self.emit("item_moved_event", self)
-    self.force_redraw()
 
 
   def xml_representation(self):
@@ -363,7 +354,6 @@ class FlowItem(SimItem):
       self._display_name.add(event.string)
 
     self.__needs_resize_calc = True
-    self.force_redraw()
 
     # return true to stop propogation
     return True
@@ -401,7 +391,6 @@ class FlowItem(SimItem):
       self.x2 = event.x
       self.y2 = event.y
       self.__needs_resize_calc = True
-      self.force_redraw()
       return True
     return False
 
@@ -416,7 +405,6 @@ class FlowItem(SimItem):
 
   def on_highlight_in(self, item, target):
     self.active_color = [1, .6, .2]
-    self.force_redraw()
 
     #logging.debug("h_in : (%s)" % self.name())
 

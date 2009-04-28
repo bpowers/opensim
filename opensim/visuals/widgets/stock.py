@@ -120,6 +120,12 @@ class StockItem(Element):
     return (int(self.width/2), int(self.height/2))
 
 
+  def abs_center(self):
+    center_x, center_y = self.center()
+    pos_x, pos_y = self.position
+    return (center_x + pos_x, center_y + pos_y)
+
+
   def edge_point(self, end_point):
     center_x, center_y = self.center()
     
