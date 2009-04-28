@@ -36,8 +36,11 @@ import sys
 import math
 import logging
 
+import opensim
 import opensim.visuals as sim
 import opensim.visuals.tools as tools
+
+log = logging.getLogger('opensim.gtk')
 
 # mac-native gtk doesn't like svg icons
 ICON_NAME = 'model-icon'
@@ -68,6 +71,7 @@ main_menu = '''
     <menu action="Tools">
     </menu>
     <menu action="Help">
+      <menuitem action="About"/>
     </menu>
   </menubar>
 </ui>
@@ -112,16 +116,16 @@ class OpenSimGTK (gobject.GObject):
         # we want to strip MacOS/Model...
         self.data_path = os.path.dirname(os.path.dirname(sys.argv[0]))
         self.data_path = os.path.join(self.data_path, 'Resources')
-        logging.debug("current working directory: %s" % self.data_path)
+        log.debug("current working directory: %s" % self.data_path)
       else:
-        logging.error('no data directory found.')
+        log.error('no data directory found.')
         raise ValueError
 
     # I may have to investigate whether we're installing icons into
     # the recommended directory, but for now this works well.
     icon_path = os.path.join(self.data_path, 'icons')
     gtk.icon_theme_get_default().append_search_path(icon_path)
-    logging.debug("setting icon theme path: %s" % icon_path)
+    log.debug("setting icon theme path: %s" % icon_path)
 
     #Get the Main Window, and connect the "destroy" event
     self.window = gtk.Window()
@@ -210,6 +214,12 @@ class OpenSimGTK (gobject.GObject):
                           'Redo the last undone action', None),
                        ))
     ui_manager.insert_action_group(ag_edit, 2)
+
+    ag_help = gtk.ActionGroup('Help')
+    ag_help.add_actions((('About', gtk.STOCK_ABOUT, '_About', None,
+                          'About OpenSim', self.about_clicked),
+                       ))
+    ui_manager.insert_action_group(ag_help, 3)
 
     widget = ui_manager.get_widget('/MainMenu/Edit/Undo')
     widget.set_sensitive(False)
@@ -305,7 +315,14 @@ class OpenSimGTK (gobject.GObject):
     return return_val
 
 
-  def open_clicked (self, widget):
+  def about_clicked(self, widget):
+    '''
+    Pop-up and give focus to an about box.
+    '''
+    pass
+
+
+  def open_clicked(self, widget):
     model_file = self.create_dialog("Open Existing Model...",
                                     gtk.FILE_CHOOSER_ACTION_OPEN)
     if model_file:
@@ -332,22 +349,22 @@ class OpenSimGTK (gobject.GObject):
     '''
     Implement this method to save your activity's state.
     '''
-    logging.debug('opensim-gtk: writing file')
+    log.debug('writing file')
     self.canvas.save_model(file_path)
-    logging.debug('opensim-gtk: done writing file')
+    log.debug('done writing file')
 
     
   def read_file(self, file_path):
     '''
     Implement this method to resume state saved in write_file().
     '''
-    logging.debug('opensim-gtk: reading file')
+    log.debug('reading file')
     self.canvas.open_model(file_path)
-    logging.debug('opensim-gtk: done reading file')
+    log.debug('done reading file')
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG)
+  opensim.enable_logging()
 
   gui = OpenSimGTK()
   gtk.main()
