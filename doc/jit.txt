@@ -80,8 +80,8 @@ SIMNAME_init (sim_SIMNAME *self)
   ...
   self->stock_1_init = 5;
 
-  self->curr = malloc (sizeof (sim_SIMNAME));
-  self->next = malloc (sizeof (sim_SIMNAME));
+  self->curr = malloc (sizeof (data_SIMNAME));
+  self->next = malloc (sizeof (data_SIMNAME));
 
   // initialize all the initial values of the stocks
   self->curr->stock_1 = self->stock_1_init;

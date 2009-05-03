@@ -312,6 +312,9 @@ class JIT:
     # and define the llvm struct types that we're dealing with
     self.data_t = Type.struct(data_format)
     self.data_pt = Type.pointer(self.data_t)
+    # FIXME: the name should be 'data_' + self.name, but for now
+    # its just sim, because it makes for more readable IR
+    self.module.add_type_name('data', self.data_t)
 
     # next go through and do the same for our constants.
     init = root.child.statements[0]
@@ -332,6 +335,9 @@ class JIT:
     # and again define the corresponding llvm types
     self.sim_t = Type.struct(const_format)
     self.sim_pt = Type.pointer(self.sim_t)
+    # FIXME: the name should be 'sim_' + self.name, but for now
+    # its just sim, because it makes for more readable IR
+    self.module.add_type_name('sim', self.sim_t)
 
     # now that we know the kind of structs we're dealing with, we can
     # create the init and new functions to work with these.
@@ -360,10 +366,10 @@ class JIT:
     # we need to allocate memory for the next and curr structs, and store
     # a pointer to them in the const data (sim) struct.
     curr = builder.malloc(self.data_t, 'curr')
-    sim_curr_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 0)])
+    sim_curr_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 1)])
     builder.store(curr, sim_curr_p)
     next = builder.malloc(self.data_t, 'next')
-    sim_next_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 1)])
+    sim_next_p = builder.gep(sim, [Constant.int(int_t, 0), Constant.int(int_t, 2)])
     builder.store(next, sim_next_p)
 
     # finally return 0 for no error
