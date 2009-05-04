@@ -3,27 +3,8 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-/*
-    sim variables:
-      0: time_start
-      1: time_end
-      2: time_step
-      3: time_savestep
-      4: number_of_contacts_per_day
-      5: prob_of_infection
-      6: total_population
-      7: susceptible
-      8: infected
 
-    data variables:
-      0: time
-      1: daily_contacts_per_infected
-      2: proportion_susceptible
-      3: susceptibles_contacted_daily
-      4: infection_rate
-      5: susceptible
-      6: infected
- */
+//==--- runtime ----------------------------------------------------------==//
 
 // different runtime errors we might be faced with
 #define ERRNEW  1
@@ -56,6 +37,130 @@ struct _sim
 typedef struct _sim sim_t;
 
 
+/**
+ * opensim_data_free:
+ * @data: the data_t object to be freed
+ *
+ * This function frees the given data_t object. It is undefined to call
+ * this function with @sim being NULL.
+ */
+void
+opensim_data_free (data_t *data)
+{
+  if (data->values)
+    free (data->values);
+
+  free (data);
+}
+
+
+/**
+ * opensim_sim_free:
+ * @sim: the sim_t object to be freed
+ *
+ * This function frees the given sim_t object and any associated data_t
+ * objects.  It is undefined to call this function with @sim being NULL.
+ */
+void
+opensim_sim_free (sim_t *sim)
+{
+  if (sim->curr)
+    opensim_data_free (sim->curr);
+
+  if (sim->next)
+    opensim_data_free (sim->next);
+
+  if (sim->constants)
+    free (sim->constants);
+
+  free (sim);
+}
+
+
+/**
+ * opensim_data_new:
+ * @count: the number of elements in the new data_t.
+ *
+ * This function allocates a new data_t with enough space to store
+ * @count number of values.
+ *
+ * Returns: a pointer to the new data_t on success, NULL on failure.
+ */
+data_t *
+opensim_data_new (size_t count)
+{
+  data_t *new_data = malloc (sizeof (data_t));
+  if (!new_data)
+  {
+    fprintf (stderr, "couldn't allocate space for new data_t.\n");
+    return NULL;
+  }
+
+  new_data->count = count;
+  new_data->values = malloc (count * sizeof (real_t));
+  if (!new_data->values)
+  {
+    fprintf (stderr, "couldn't allocate array for new data_t.\n");
+    free (new_data);
+    return NULL;
+  }
+
+  return new_data;
+}
+
+
+/**
+ * opensim_data_print:
+ * @file: an open FILE handle to write our output to.
+ * @data: a data_t* containing the data we want printed
+ *
+ * This takes the values stored in data and prints them out to the
+ * specified file in the format:
+ * val1,val2,val3
+ * We put a comma between each value, but not a trailing comma.
+ *
+ * Returns: 0 on success, a negative number on failure.
+ */
+int
+opensim_data_print (FILE *file, data_t *data)
+{
+  // gracefully handle NULL and zero-length data.
+  if (!data || data->count == 0)
+    return -1;
+
+  fprintf (file, "%f", data->values[0]);
+  for (uint32_t i = 1; i < data->count; ++i)
+    fprintf (file, ",%f", data->values[i]);
+  fprintf (file, "\n");
+
+  return 0;
+}
+
+
+//==--- generated sim-specific code --------------------------------------==//
+
+/*
+    sim variables:
+      0: time_start
+      1: time_end
+      2: time_step
+      3: time_savestep
+      4: number_of_contacts_per_day
+      5: prob_of_infection
+      6: total_population
+      7: susceptible
+      8: infected
+
+    data variables:
+      0: time
+      1: daily_contacts_per_infected
+      2: proportion_susceptible
+      3: susceptibles_contacted_daily
+      4: infection_rate
+      5: susceptible
+      6: infected
+ */
+
 // these are the constants specified by the rabbit fox model. you can
 // change a constant without having to recompile or regenerate any
 // bitcode.
@@ -72,7 +177,7 @@ static const real_t infection_constants[] = {1.0,  // time_start
 
 static const data_t infection_defaults = {
   .values = (real_t *)infection_constants,
-  .count = sizeof (infection_constants) / sizeof (real_t)
+  .count  = sizeof (infection_constants) / sizeof (real_t)
 };
 
 static const size_t infection_num_vars = 7;
@@ -114,8 +219,13 @@ infection_new ()
 int
 infection_init (sim_t *self)
 {
-  self->curr = opensim_data_new (infection_defaults.count);
-  self->next = opensim_data_new (infection_defaults.count);
+  if (self->curr)
+    opensim_data_free (self->curr);
+  if (self->next)
+    opensim_data_free (self->next);
+
+  self->curr = opensim_data_new (infection_num_vars);
+  self->next = opensim_data_new (infection_num_vars);
   if (!self->curr || !self->next)
   {
     fprintf (stderr, "couldn't allocate memory for 'curr' or 'next'.\n");
@@ -196,92 +306,30 @@ infection_simulate(sim_t *self)
 }
 
 
-//==--- runtime ----------------------------------------------------------==//
-void
-free_data (data_t *data)
-{
-  if (data->values)
-    free (data->values);
-
-  free (data);
-}
-
-
-void
-free_sim (sim_t *sim)
-{
-  if (sim->curr)
-    free_data (sim->curr);
-
-  if (sim->next)
-    free_data (sim->next);
-
-  if (sim->constants)
-    free (sim->constants);
-
-  free (sim);
-}
-
-
-data_t *
-opensim_data_new (size_t size)
-{
-  data_t *new_data = malloc (sizeof (data_t));
-  if (!new_data)
-  {
-    fprintf (stderr, "couldn't allocate memory for new data_t.\n");
-    return NULL;
-  }
-
-  new_data->count = size;
-  new_data->values = malloc (size * sizeof (real_t));
-  if (!new_data->values)
-  {
-    fprintf (stderr, "couldn't allocate array for new data_t.\n");
-    return NULL;
-  }
-
-  return new_data;
-}
-
-
-int
-opensim_data_print (FILE *file, data_t *data)
-{
-  if (!data || data->count == 0)
-    return -1;
-
-  fprintf (file, "%f", data->values[0]);
-  for (uint32_t i = 1; i < data->count; ++i)
-    fprintf (file, ",%f", data->values[i]);
-  fprintf (file, "\n");
-
-  return 0;
-}
-
+//==--- driver -----------------------------------------------------------==//
 
 int
 main (int argc, char *argv[])
 {
-  sim_t *run = NULL;
+  sim_t *run;
   int ret;
 
   // try to allocate a new structure;
   run = infection_new ();
-  if (run == NULL)
+  if (!run)
     return -ERRNEW;
-
-  ret = infection_init (run);
-  if (ret < 0)
-    return ret;
 
   // if you want to change a constant for this run, you can do it here
 
-  ret = infection_simulate (run);
-  if (ret < 0)
+  ret = infection_init (run);
+  if (ret != 0)
     return ret;
 
-  free_sim (run);
+  ret = infection_simulate (run);
+  if (ret != 0)
+    return ret;
+
+  opensim_sim_free (run);
 
   return 0;
 }
