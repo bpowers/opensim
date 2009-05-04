@@ -52,10 +52,20 @@ struct _control
 typedef struct _control control_t;
 
 
+struct _class
+{
+  uint32_t num_vars;
+  char **var_names;
+  char **constant_names;
+};
+typedef struct _class class_info;
+
+
 // the sim structure represents an instance of a simulation
 struct _sim
 {
   sim_ops *ops;
+  class_info *info;
 
   data_t *curr;
   data_t *next;
@@ -117,7 +127,7 @@ opensim_sim_free (sim_t *sim)
  * Returns: a pointer to the new data_t on success, NULL on failure.
  */
 data_t *
-opensim_data_new (size_t count)
+opensim_data_new (uint32_t count)
 {
   data_t *new_data = malloc (sizeof (data_t));
   if (!new_data)
@@ -136,6 +146,86 @@ opensim_data_new (size_t count)
   }
 
   return new_data;
+}
+
+
+/**
+ * opensim_sim_new:
+ * @ops: class operations
+ * @info: class information
+ * @control: time variables
+ * @defaults: default constants
+ *
+ * This function does the common tasks associated with creating a
+ * correctly sized new sim_t.  It requires a number of parameters and
+ * creates a sim_t to their specifications.
+ *
+ * Returns: a pointer to a correctly formed sim_t on success, NULL on error.
+ */
+sim_t *
+opensim_sim_new (sim_ops *ops,
+                 class_info *info,
+                 control_t *control,
+                 data_t *defaults)
+{
+  sim_t *sim = malloc (sizeof (sim_t));
+  if (!sim)
+  {
+    fprintf (stderr, "couldn't allocate memory for instance.\n");
+    return NULL;
+  }
+
+  sim->ops = ops;
+  sim->info = info;
+
+  sim->time.start     = control->start;
+  sim->time.end       = control->end;
+  sim->time.step      = control->step;
+  sim->time.save_step = control->save_step;
+
+  sim->count = defaults->count;
+  sim->constants = malloc (defaults->count * sizeof (real_t));
+  if (!sim->constants)
+  {
+    fprintf (stderr, "couldn't allocate memory for constants.\n");
+    return NULL;
+  }
+
+  // initialize our instances constant values from the defaults
+  for (size_t i=0; i<defaults->count; ++i)
+    sim->constants[i] = defaults->values[i];
+
+  return sim;
+}
+
+
+/**
+ * opensim_sim_init:
+ * @sim: the simulation to be initialized
+ *
+ * This function performs the common initialization for sim_t objects.
+ * If the sim has any existing data it frees it, then allocates new
+ * data for curr and next.
+ *
+ * Returns: 0 on success, a negative error code on error.
+ */
+int
+opensim_sim_init (sim_t *sim)
+{
+  if (sim->curr)
+    opensim_data_free (sim->curr);
+  if (sim->next)
+    opensim_data_free (sim->next);
+
+  sim->curr = opensim_data_new (sim->info->num_vars);
+  sim->next = opensim_data_new (sim->info->num_vars);
+  if (!sim->curr || !sim->next)
+  {
+    fprintf (stderr, "couldn't allocate memory for 'curr' or 'next'.\n");
+    return -ERRINIT;
+  }
+
+  return 0;
 }
 
 
@@ -247,12 +337,28 @@ opensim_simulate_euler (sim_t *sim)
 
 // forward declarations of some functions, so we can point to them in
 // our infection_ops structure.
-int infection_simulate_flows (sim_t *self);
-int infection_update_stocks (sim_t *self);
+int infection_simulate_flows (sim_t *);
+int infection_update_stocks (sim_t *);
 
 // these are the constants specified by the rabbit fox model. you can
 // change a constant without having to recompile or regenerate any
 // bitcode.
+static sim_ops infection_ops = {
+  .simulate_flows = infection_simulate_flows,
+  .update_stocks  = infection_update_stocks
+};
+
+static class_info infection_info = {
+  .num_vars = 7
+};
+
+static control_t infection_def_control = {
+  .start     = 1.0,
+  .end       = 20.0,
+  .step      = 0.5,
+  .save_step = 1.0
+};
+
 static const real_t infection_constants[] = {1.0,  // number_of_contacts_per_d
                                              0.5,  // prob_of_infection
                                              23.0, // total_population
@@ -260,78 +366,36 @@ static const real_t infection_constants[] = {1.0,  // number_of_contacts_per_d
                                              2.0,  // infected
                                             };
 
-static const data_t infection_defaults = {
+static data_t infection_defaults = {
   .values = (real_t *)infection_constants,
   .count  = sizeof (infection_constants) / sizeof (real_t)
-};
-
-static const size_t infection_num_vars = 7;
-
-static const sim_ops infection_ops = {
-  .simulate_flows = infection_simulate_flows,
-  .update_stocks  = infection_update_stocks
-};
-
-static const control_t infection_def_control = {
-  .start     = 1.0,
-  .end       = 20.0,
-  .step      = 0.5,
-  .save_step = 1.0
 };
 
 
 sim_t *
 infection_new ()
 {
-  sim_t *self = malloc (sizeof (sim_t));
-  if (!self)
-  {
-    fprintf (stderr, "couldn't allocate memory for instance.\n");
-    return NULL;
-  }
-
-  self->ops = (sim_ops *)&infection_ops;
-
-  self->time.start     = infection_def_control.start;
-  self->time.end       = infection_def_control.end;
-  self->time.step      = infection_def_control.step;
-  self->time.save_step = infection_def_control.save_step;
-
-  self->count = infection_defaults.count;
-  self->constants = malloc (infection_defaults.count * sizeof (real_t));
-  if (!self->constants)
-  {
-    fprintf (stderr, "couldn't allocate memory for constants.\n");
-    return NULL;
-  }
-
-  // initialize our instances constant values from the defaults
-  for (size_t i=0; i<infection_defaults.count; ++i)
-    self->constants[i] = infection_defaults.values[i];
-
-  return self;
+  // basically all we have to do here is call the runtime sim_new function
+  // with pointers to our infection specific structures
+  return opensim_sim_new (&infection_ops,
+                          &infection_info,
+                          &infection_def_control,
+                          &infection_defaults);
 }
 
 
 int
 infection_init (sim_t *self)
 {
-  if (self->curr)
-    opensim_data_free (self->curr);
-  if (self->next)
-    opensim_data_free (self->next);
+  opensim_sim_init (self);
 
-  self->curr = opensim_data_new (infection_num_vars);
-  self->next = opensim_data_new (infection_num_vars);
-  if (!self->curr || !self->next)
-  {
-    fprintf (stderr, "couldn't allocate memory for 'curr' or 'next'.\n");
-  }
-
-  // initialize all the initial values of the stocks
   real_t *susceptible = &self->curr->values[5];
   real_t *infected = &self->curr->values[6];
 
+  // initialize all the initial values of the stocks. for other
+  // simulations, there might be some maths in here, so that
+  // the initial values of stocks can be based on an equation
+  // involving constants.
   *susceptible = self->constants[3];
   *infected = self->constants[4];
 
