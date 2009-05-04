@@ -39,6 +39,18 @@ struct _sim_ops
 };
 typedef struct _sim_ops sim_ops;
 
+// control keeps track of the start, end,step and save_step constants.
+// I'm putting these in their own structure because they aren't really
+// appropriate to expose as constants to the rest of the model.
+struct _control
+{
+  real_t start;
+  real_t end;
+  real_t step;
+  real_t save_step;
+};
+typedef struct _control control_t;
+
 
 // the sim structure represents an instance of a simulation
 struct _sim
@@ -47,6 +59,8 @@ struct _sim
 
   data_t *curr;
   data_t *next;
+
+  control_t time;
 
   uint32_t count;
   real_t *constants;
@@ -165,10 +179,11 @@ opensim_data_print (FILE *file, data_t *data)
 int
 opensim_simulate_euler (sim_t *sim)
 {
-  real_t start     = sim->constants[0];
-  real_t end       = sim->constants[1];
-  real_t step      = sim->constants[2];
-  real_t save_step = sim->constants[3];
+  real_t start     = sim->time.start;
+  real_t end       = sim->time.end;
+  real_t step      = sim->time.step;
+  real_t save_step = sim->time.save_step
+;
   bool do_save = true;
   uint32_t save_count = 0;
   uint32_t save_iterations = save_step / step;
@@ -180,12 +195,18 @@ opensim_simulate_euler (sim_t *sim)
     real_t *stime = &sim->curr->values[0];
     *stime = time;
 
+    // now simulate the flows. by definition this should only effect
+    // the 'curr' member of sim.
     sim->ops->simulate_flows (sim);
 
+    // update our stocks in preperation for the next iteration. this
+    // should only effect the 'next' member of sim.
+    sim->ops->update_stocks (sim);
+
+    // if we're suppose to 'save' or print the values from this
+    // timestep, then we do it here.
     if (do_save)
       opensim_data_print (stdout, sim->curr);
-
-    sim->ops->update_stocks (sim);
 
     ++save_count;
     if (save_count >= save_iterations || time + step > end)
@@ -208,15 +229,11 @@ opensim_simulate_euler (sim_t *sim)
 
 /*
     sim variables:
-      0: time_start
-      1: time_end
-      2: time_step
-      3: time_savestep
-      4: number_of_contacts_per_day
-      5: prob_of_infection
-      6: total_population
-      7: susceptible
-      8: infected
+      0: number_of_contacts_per_day
+      1: prob_of_infection
+      2: total_population
+      3: susceptible
+      4: infected
 
     data variables:
       0: time
@@ -236,11 +253,7 @@ int infection_update_stocks (sim_t *self);
 // these are the constants specified by the rabbit fox model. you can
 // change a constant without having to recompile or regenerate any
 // bitcode.
-static const real_t infection_constants[] = {1.0,  // time_start
-                                             20.0, // time_end
-                                             0.5,  // time_step
-                                             1.0,  // time_savestep
-                                             1.0,  // number_of_contacts_per_d
+static const real_t infection_constants[] = {1.0,  // number_of_contacts_per_d
                                              0.5,  // prob_of_infection
                                              23.0, // total_population
                                              21.0, // susceptible
@@ -256,7 +269,14 @@ static const size_t infection_num_vars = 7;
 
 static const sim_ops infection_ops = {
   .simulate_flows = infection_simulate_flows,
-  .update_stocks = infection_update_stocks
+  .update_stocks  = infection_update_stocks
+};
+
+static const control_t infection_def_control = {
+  .start     = 1.0,
+  .end       = 20.0,
+  .step      = 0.5,
+  .save_step = 1.0
 };
 
 
@@ -271,6 +291,12 @@ infection_new ()
   }
 
   self->ops = (sim_ops *)&infection_ops;
+
+  self->time.start     = infection_def_control.start;
+  self->time.end       = infection_def_control.end;
+  self->time.step      = infection_def_control.step;
+  self->time.save_step = infection_def_control.save_step;
+
   self->count = infection_defaults.count;
   self->constants = malloc (infection_defaults.count * sizeof (real_t));
   if (!self->constants)
@@ -306,8 +332,8 @@ infection_init (sim_t *self)
   real_t *susceptible = &self->curr->values[5];
   real_t *infected = &self->curr->values[6];
 
-  *susceptible = self->constants[7];
-  *infected = self->constants[8];
+  *susceptible = self->constants[3];
+  *infected = self->constants[4];
 
   return 0;
 }
@@ -318,9 +344,9 @@ infection_simulate_flows (sim_t *self)
 {
   // these are convience aliases to make the equations readable.  they
   // get completely optimized away when compiled
-  real_t *number_of_contacts_per_day   = &self->constants[4];
-  real_t *prob_of_infection            = &self->constants[5];
-  real_t *total_population             = &self->constants[6];
+  real_t *number_of_contacts_per_day   = &self->constants[0];
+  real_t *prob_of_infection            = &self->constants[1];
+  real_t *total_population             = &self->constants[2];
   real_t *time                         = &self->curr->values[0];
   real_t *daily_contacts_per_infected  = &self->curr->values[1];
   real_t *proportion_susceptible       = &self->curr->values[2];
@@ -345,7 +371,7 @@ infection_update_stocks (sim_t *self)
 {
   // these are convience aliases to make the equations readable.  they
   // get completely optimized away when compiled
-  real_t *step                         = &self->constants[2];
+  real_t *step                         = &self->time.step;
   real_t *infection_rate               = &self->curr->values[4];
   real_t *susceptible                  = &self->curr->values[5];
   real_t *infected                     = &self->curr->values[6];
@@ -368,25 +394,34 @@ infection_update_stocks (sim_t *self)
 int
 main (int argc, char *argv[])
 {
-  sim_t *run;
+  sim_t *sim;
   int ret;
 
-  // try to allocate a new structure;
-  run = infection_new ();
-  if (!run)
+  // allocate space for a new simulation.
+  sim = infection_new ();
+  if (!sim)
     return -ERRNEW;
 
   // if you want to change a constant for this run, you can do it here
 
-  ret = infection_init (run);
+  // before we simulate, we have to initialize the sim.  This means that
+  // we allocate space to store the values for auxiliary and flow
+  // variables, and set the initial values for the stocks.
+  ret = infection_init (sim);
   if (ret != 0)
     return ret;
 
-  ret = opensim_simulate_euler (run);
+  // now that we have an initialized sim object, we can simulate it
+  // from start to finish using this convenience function.
+  ret = opensim_simulate_euler (sim);
   if (ret != 0)
     return ret;
 
-  opensim_sim_free (run);
+
+  // finally, its good practice to free the simulation to get back its
+  // memory.  Not so important here, but if this were embedded in a
+  // larger program, you would begin to leak memory.
+  opensim_sim_free (sim);
 
   return 0;
 }
