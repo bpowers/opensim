@@ -56,6 +56,8 @@ struct _class
 {
   uint32_t num_vars;
   char **var_names;
+
+  uint32_t num_constants;
   char **constant_names;
 };
 typedef struct _class class_info;
@@ -258,6 +260,35 @@ opensim_data_print (FILE *file, data_t *data)
 
 
 /**
+ * opensim_header_print:
+ * @file: an open FILE handle to write our output to.
+ * @names: a char** containing the names we want printed
+ * @count: the number of names to print
+ *
+ * This takes the strings stored in names and prints them out to the
+ * specified file in the format:
+ * name1,name2,name3
+ * We put a comma between each value, but not a trailing comma.
+ *
+ * Returns: 0 on success, a negative number on failure.
+ */
+int
+opensim_header_print (FILE *file, char *names[], uint32_t count)
+{
+  // gracefully handle NULL and zero-length data.
+  if (!names || count == 0)
+    return -1;
+
+  fprintf (file, "%s", names[0]);
+  for (uint32_t i = 1; i < count; ++i)
+    fprintf (file, ",%s", names[i]);
+  fprintf (file, "\n");
+
+  return 0;
+}
+
+
+/**
  * opensim_simulate_euler:
  * @sim: the initialized simulation to be run.
  *
@@ -277,6 +308,8 @@ opensim_simulate_euler (sim_t *sim)
   bool do_save = true;
   uint32_t save_count = 0;
   uint32_t save_iterations = save_step / step;
+
+  opensim_header_print (stdout, sim->info->var_names, sim->info->num_vars);
 
   for (double time = start; time <= end; time = time + step)
   {
@@ -348,23 +381,43 @@ static sim_ops infection_ops = {
   .update_stocks  = infection_update_stocks
 };
 
+static char *infection_var_names[] = {"time",
+                                      "daily_contacts_per_infected",
+                                      "proportion_susceptible",
+                                      "susceptibles_contacted_daily",
+                                      "infection_rate",
+                                      "susceptible",
+                                      "infected"
+                                     };
+
+static char *infection_const_names[] = {"number_of_contacts_per_day",
+                                        "prob_of_infection",
+                                        "total_population",
+                                        "susceptible",
+                                        "infected"
+                                       };
+
 static class_info infection_info = {
-  .num_vars = 7
+  .var_names = infection_var_names,
+  .num_vars = sizeof (infection_var_names) / sizeof (char *),
+
+  .constant_names = infection_const_names,
+  .num_constants = sizeof (infection_const_names) / sizeof (char *)
 };
 
 static control_t infection_def_control = {
-  .start     = 1.0,
+  .start     = 0.0,
   .end       = 20.0,
   .step      = 0.5,
   .save_step = 1.0
 };
 
-static const real_t infection_constants[] = {1.0,  // number_of_contacts_per_d
-                                             0.5,  // prob_of_infection
-                                             23.0, // total_population
-                                             21.0, // susceptible
-                                             2.0,  // infected
-                                            };
+static real_t infection_constants[] = {1.0,  // number_of_contacts_per_day
+                                       0.5,  // prob_of_infection
+                                       23.0, // total_population
+                                       21.0, // susceptible
+                                       2.0,  // infected
+                                      };
 
 static data_t infection_defaults = {
   .values = (real_t *)infection_constants,
