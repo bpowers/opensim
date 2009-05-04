@@ -10,103 +10,14 @@ object-oriented system dynamics ideas.
 
 #===--- general outline --------------------------------------------------===#
 
-- define data structures (see below)
-- create function(s) to initialize constants
+- load in runtime from .bc (generated from C file using clang)
+- create sim-specific instances of data structures
+- create function(s) to create and initialize new sim instances
   - a 'new' function to get a new initialized simulation instance
-  - an 'init' function to initialize the constants and stock initial
-    values
-- create simulate function (depends somewhat on RC4 or euler etc)
-  - translate maths into llvm
-- load in function to print sim structs (probably easiest to write it
-  in C, and use clang or llvm-gcc to emit llvm bitcode)
-- create a new sim struct and pass it to the simulate function
+  - an 'init' function to initialize the stock initial values
+    and space for data.
+- create functions to both calcuate the flows and update the stocks.
+- create and initialize sim instance, pass it to simulate runtime function
 
-
-#===--- data-structure outline -------------------------------------------===#
-
-struct data:
-  uint32_t length
-  real_t time
-  ... other aux, stock and flow variables
-
-struct sim:
-  uint32_t length
-  data *curr
-  data *next
-  ... other constant data and initial stock values
-
-
-#===--- example ----------------------------------------------------------===#
-
-struct _data
-{
-  uint32_t count;
-  real_t *values;
-}
-typedef struct _data data_t;
-
-//  real_t time;
-//  real_t flow_1;
-//  real_t stock_1;
-
-
-struct _sim
-{
-  data_t *curr;
-  data_t *next;
-
-  uint32_t count;
-  real_t *constants;
-}
-typedef struct _sim (sim_SIMNAME *);
-
-
-void SIMNAME_init (sim_SIMNAME *);
-
-sim_SIMNAME *
-SIMNAME_new ()
-{
-  sim_SIMNAME *inst = malloc (sizeof (sim_SIMNAME));
-
-  return inst;
-}
-
-
-void
-SIMNAME_init (sim_SIMNAME *self)
-{
-  // initializing constants should be seperate somehow
-  self->const_1 = 45;
-  ...
-  self->stock_1_init = 5;
-
-  self->curr = malloc (sizeof (data_SIMNAME));
-  self->next = malloc (sizeof (data_SIMNAME));
-
-  // initialize all the initial values of the stocks
-  self->curr->stock_1 = self->stock_1_init;
-}
-
-
-#===--- runtime ----------------------------------------------------------===#
-
-At runtime, we want to do something like this:
-
-sim_SIMNAME *run = NULL;
-int ret;
-
-// try to allocate a new structure;
-run = SIMNAME_new();
-if (run == NULL)
-  return -ERRNEW;
-
-ret = SIMNAME_init(run);
-if (ret < 0)
-  return -ERRINIT;
-
-// if you want to change a constant for this run, you can do it here
-
-ret = SIMNAME_simulate(run);
-if (ret < 0)
-  return -ERRSIM;
+the ex.c file has a detailed example of how this will look.
 
