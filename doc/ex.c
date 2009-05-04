@@ -25,16 +25,32 @@ struct _data
 typedef struct _data data_t;
 
 
+struct _sim;
+typedef struct _sim sim_t;
+
+// each different simulation will have different functions for these
+// operations, so by storing the function pointers here, we can abstract
+// most of the simulate funcion into the runtime, making the simulation
+// code independent of the integration type (I think) (rk4, euler, etc)
+struct _sim_ops
+{
+  int (*simulate_flows) (sim_t *);
+  int (*update_stocks) (sim_t *);
+};
+typedef struct _sim_ops sim_ops;
+
+
 // the sim structure represents an instance of a simulation
 struct _sim
 {
+  sim_ops *ops;
+
   data_t *curr;
   data_t *next;
 
   uint32_t count;
   real_t *constants;
 };
-typedef struct _sim sim_t;
 
 
 /**
@@ -137,6 +153,57 @@ opensim_data_print (FILE *file, data_t *data)
 }
 
 
+/**
+ * opensim_simulate_euler:
+ * @sim: the initialized simulation to be run.
+ *
+ * This function uses euler integration to simulate a function from
+ * start to finish.
+ *
+ * Returns: 0 on success, a negative number on failure.
+ */
+int
+opensim_simulate_euler (sim_t *sim)
+{
+  real_t start     = sim->constants[0];
+  real_t end       = sim->constants[1];
+  real_t step      = sim->constants[2];
+  real_t save_step = sim->constants[3];
+  bool do_save = true;
+  uint32_t save_count = 0;
+  uint32_t save_iterations = save_step / step;
+
+  for (double time = start; time <= end; time = time + step)
+  {
+    // set the time variable in the data here, so we don't have
+    // to pass time explicitly to simulate functions.
+    real_t *stime = &sim->curr->values[0];
+    *stime = time;
+
+    sim->ops->simulate_flows (sim);
+
+    if (do_save)
+      opensim_data_print (stdout, sim->curr);
+
+    sim->ops->update_stocks (sim);
+
+    ++save_count;
+    if (save_count >= save_iterations || time + step > end)
+    {
+      do_save = true;
+      save_count = 0;
+    }
+    else
+      do_save = false;
+
+    data_t *tmp = sim->curr;
+    sim->curr = sim->next;
+    sim->next = tmp;
+  }
+  return 0;
+}
+
+
 //==--- generated sim-specific code --------------------------------------==//
 
 /*
@@ -161,6 +228,11 @@ opensim_data_print (FILE *file, data_t *data)
       6: infected
  */
 
+// forward declarations of some functions, so we can point to them in
+// our infection_ops structure.
+int infection_simulate_flows (sim_t *self);
+int infection_update_stocks (sim_t *self);
+
 // these are the constants specified by the rabbit fox model. you can
 // change a constant without having to recompile or regenerate any
 // bitcode.
@@ -182,12 +254,10 @@ static const data_t infection_defaults = {
 
 static const size_t infection_num_vars = 7;
 
-
-
-// forward-declatations
-int infection_init (sim_t *);
-data_t *opensim_data_new (size_t size);
-int opensim_data_print (FILE *, data_t *);
+static const sim_ops infection_ops = {
+  .simulate_flows = infection_simulate_flows,
+  .update_stocks = infection_update_stocks
+};
 
 
 sim_t *
@@ -200,6 +270,7 @@ infection_new ()
     return NULL;
   }
 
+  self->ops = (sim_ops *)&infection_ops;
   self->count = infection_defaults.count;
   self->constants = malloc (infection_defaults.count * sizeof (real_t));
   if (!self->constants)
@@ -243,65 +314,51 @@ infection_init (sim_t *self)
 
 
 int
-infection_simulate(sim_t *self)
+infection_simulate_flows (sim_t *self)
 {
-  real_t start     = self->constants[0];
-  real_t end       = self->constants[1];
-  real_t step      = self->constants[2];
-  real_t save_step = self->constants[3];
-  bool do_save = true;
-  uint32_t save_count = 0;
-  uint32_t save_iterations = save_step / step;
+  // these are convience aliases to make the equations readable.  they
+  // get completely optimized away when compiled
+  real_t *number_of_contacts_per_day   = &self->constants[4];
+  real_t *prob_of_infection            = &self->constants[5];
+  real_t *total_population             = &self->constants[6];
+  real_t *time                         = &self->curr->values[0];
+  real_t *daily_contacts_per_infected  = &self->curr->values[1];
+  real_t *proportion_susceptible       = &self->curr->values[2];
+  real_t *susceptibles_contacted_daily = &self->curr->values[3];
+  real_t *infection_rate               = &self->curr->values[4];
+  real_t *susceptible                  = &self->curr->values[5];
+  real_t *infected                     = &self->curr->values[6];
 
-  real_t *number_of_contacts_per_day = &self->constants[4];
-  real_t *prob_of_infection          = &self->constants[5];
-  real_t *total_population           = &self->constants[6];
+  // calculate flows
+  *daily_contacts_per_infected = (*infected * *number_of_contacts_per_day);
+  *proportion_susceptible = (*susceptible / 21.0);
+  *susceptibles_contacted_daily = (*proportion_susceptible *
+                                   *daily_contacts_per_infected);
+  *infection_rate = (*prob_of_infection * *susceptibles_contacted_daily);
 
-  for (double time = start; time <= end; time = time + step)
-  { 
-    // make some aliases to have things easier to read
-    real_t *stime                        = &self->curr->values[0];
-    real_t *daily_contacts_per_infected  = &self->curr->values[1];
-    real_t *proportion_susceptible       = &self->curr->values[2];
-    real_t *susceptibles_contacted_daily = &self->curr->values[3];
-    real_t *infection_rate               = &self->curr->values[4];
-    real_t *susceptible                  = &self->curr->values[5];
-    real_t *infected                     = &self->curr->values[6];
-    real_t *susceptible_next             = &self->next->values[5];
-    real_t *infected_next                = &self->next->values[6];
-    real_t susceptible_net_flow;
-    real_t infected_net_flow;
+  return 0;
+}
 
-    *stime = time;
 
-    // calculate flows
-    *daily_contacts_per_infected = (*infected * *number_of_contacts_per_day);
-    *proportion_susceptible = (*susceptible / 21.0);
-    *susceptibles_contacted_daily = (*proportion_susceptible * 
-                                     *daily_contacts_per_infected);
-    *infection_rate = (*prob_of_infection * *susceptibles_contacted_daily);
-    susceptible_net_flow = -(*infection_rate);
-    infected_net_flow = *infection_rate;
+int
+infection_update_stocks (sim_t *self)
+{
+  // these are convience aliases to make the equations readable.  they
+  // get completely optimized away when compiled
+  real_t *step                         = &self->constants[2];
+  real_t *infection_rate               = &self->curr->values[4];
+  real_t *susceptible                  = &self->curr->values[5];
+  real_t *infected                     = &self->curr->values[6];
+  real_t *susceptible_next             = &self->next->values[5];
+  real_t *infected_next                = &self->next->values[6];
+  real_t susceptible_net_flow;
+  real_t infected_net_flow;
 
-    if (do_save)
-      opensim_data_print (stdout, self->curr);
+  susceptible_net_flow = -(*infection_rate);
+  infected_net_flow = *infection_rate;
+  *susceptible_next = *susceptible + (susceptible_net_flow * *step);
+  *infected_next = *infected + (infected_net_flow * *step);
 
-    *susceptible_next = *susceptible + (susceptible_net_flow * step);
-    *infected_next = *infected + (infected_net_flow * step);
-
-    ++save_count;
-    if (save_count >= save_iterations || time + step > end)
-    {
-      do_save = true;
-      save_count = 0;
-    }
-    else
-      do_save = false;
-
-    data_t *tmp = self->curr;
-    self->curr = self->next;
-    self->next = tmp;
-  }
   return 0;
 }
 
@@ -325,7 +382,7 @@ main (int argc, char *argv[])
   if (ret != 0)
     return ret;
 
-  ret = infection_simulate (run);
+  ret = opensim_simulate_euler (run);
   if (ret != 0)
     return ret;
 
