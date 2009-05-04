@@ -38,25 +38,27 @@ struct sim:
 
 #===--- example ----------------------------------------------------------===#
 
-struct _data_SIMNAME
+struct _data
 {
-  real_t time;
-  real_t flow_1;
-  real_t stock_1;
+  uint32_t count;
+  real_t *values;
 }
-typedef struct _data_SIMNAME data_SIMNAME;
+typedef struct _data data_t;
+
+//  real_t time;
+//  real_t flow_1;
+//  real_t stock_1;
 
 
-struct _sim_SIMNAME
+struct _sim
 {
-  real_t const_1;
-  real_t const_2;
-  real_t stock_1_init;
+  data_t *curr;
+  data_t *next;
 
-  data_SIMNAME *curr;
-  data_SIMNAME *next;
+  uint32_t count;
+  real_t *constants;
 }
-typedef struct _sim_SIMNAME (sim_SIMNAME *);
+typedef struct _sim (sim_SIMNAME *);
 
 
 void SIMNAME_init (sim_SIMNAME *);
@@ -65,8 +67,6 @@ sim_SIMNAME *
 SIMNAME_new ()
 {
   sim_SIMNAME *inst = malloc (sizeof (sim_SIMNAME));
-
-  init_SIMNAME (inst);
 
   return inst;
 }
@@ -86,4 +86,27 @@ SIMNAME_init (sim_SIMNAME *self)
   // initialize all the initial values of the stocks
   self->curr->stock_1 = self->stock_1_init;
 }
+
+
+#===--- runtime ----------------------------------------------------------===#
+
+At runtime, we want to do something like this:
+
+sim_SIMNAME *run = NULL;
+int ret;
+
+// try to allocate a new structure;
+run = SIMNAME_new();
+if (run == NULL)
+  return -ERRNEW;
+
+ret = SIMNAME_init(run);
+if (ret < 0)
+  return -ERRINIT;
+
+// if you want to change a constant for this run, you can do it here
+
+ret = SIMNAME_simulate(run);
+if (ret < 0)
+  return -ERRSIM;
 

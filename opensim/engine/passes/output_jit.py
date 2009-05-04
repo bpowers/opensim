@@ -123,6 +123,16 @@ class JIT:
     node.child.gen(self)
 
     print self.module
+
+    print '\nsim variables:'
+    for k, v in enumerate(self.sim_vars):
+      print '  %s: %s' % (k, v)
+
+    print '\ndata variables:'
+    for k, v in enumerate(self.data_vars):
+      print '  %s: %s' % (k, v)
+
+    print ''
     #mp = ModuleProvider.new(self.module)
     #ee = ExecutionEngine.new(mp)
     #sim = ee.run_function(self.fn_new, [])
