@@ -19,5 +19,5 @@ object-oriented system dynamics ideas.
 - create functions to both calcuate the flows and update the stocks.
 - create and initialize sim instance, pass it to simulate runtime function
 
-the ex.c file has a detailed example of how this will look.
+the infection.c file has a detailed example of how this will look.
 
