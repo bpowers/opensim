@@ -26,16 +26,50 @@
 #ifndef OPENSIM_TOKEN_H
 #define OPENSIM_TOKEN_H
 
+#include "opensim/c_runtime.h"
 #include <iostream>
 #include <string>
 
 
-namespace opensim {
+namespace opensim
+{
 
-struct Token {
-  int tag;
+struct Token
+{
+  uint16_t start;
+  uint16_t end;
+  std::string file;
+
+  uint32_t tag;
 
   Token(int t) : tag(t) {}
+  Token() {}
+};
+
+
+struct Word: public Token
+{
+  uint16_t start;
+  uint16_t end;
+  std::string file;
+
+  uint32_t tag;
+  std::string iden;
+
+  Word(std::string lexeme, int t) : tag(tag), iden(lexeme) {}
+};
+
+
+struct Number: public Token
+{
+  uint16_t start;
+  uint16_t end;
+  std::string file;
+
+  uint32_t tag;
+  real_t iden;
+
+  Number(real_t val, int t) : iden(val), tag(t) {}
 };
 
 }

@@ -26,6 +26,14 @@
 
 
 #include "opensim/lex.h"
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+
+#include <stdio.h>
+#include <stdbool.h>
+
 #include <cstdio>
 #include <iostream>
 #include <exception>
@@ -38,22 +46,58 @@ using std::exception;
 
 Scanner::Scanner(std::string fName) {
 
+  FILE *model_fp;
   fileName = fName;
-  file = fopen(fName.c_str(), "r");
-  if (!file)
+  model_fp = fopen(fName.c_str(), "r");
+  if (!model_fp)
   {
     cout << "opensim: error: Couldn't find or open '" << fName << "'.\n";
     throw exception();
   }
 
+  uint32_t err;
+  err = fseek(model_fp, 0, SEEK_END);
+  if (err)
+  {
+    cout << "opensim: error: problem seeking 1\n";
+    goto clean_seek;
+  }
+
+  len = ftell(model_fp);
+  err = fseek(model_fp, 0, SEEK_SET);
+  if (err)
+    goto clean_seek;
+  fclose(model_fp);
+  model_fp = NULL;
+
+  file = open(fileName.c_str(), O_RDONLY);
+
+  mappedFile = (char *)mmap(NULL,
+                            len,
+                            PROT_READ,
+                            MAP_SHARED,
+                            file,
+                            0);
+
   cout << "scanner stub\n";
+  return;
+
+clean_seek:
+
+  if (model_fp)
+    fclose(model_fp);
+  cout << "opensim: error: problem seeking on input file\n";
+  throw exception();
 }
 
 
 Scanner::~Scanner() {
 
+  if (mappedFile)
+    munmap(mappedFile, len);
+
   if (file)
-    fclose(file);
+    close(file);
 }
 
 
