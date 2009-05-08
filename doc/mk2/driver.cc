@@ -2,8 +2,6 @@
 #include <cstdio>
 #include "run.h"
 
-using namespace opensim;
-
 int
 main (int argc, char *argv[])
 {
@@ -13,9 +11,9 @@ main (int argc, char *argv[])
     return 0;
   }
 
-  Runtime model;
+  opensim::Runtime model;
 
-  model.parse(argv[1]);
+  model.loadFile(argv[1]);
 
   model.simulate();
 

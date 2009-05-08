@@ -46,7 +46,7 @@ Runtime::~Runtime() {
 }
 
 
-int Runtime::parse(std::string fileName)
+int Runtime::loadFile(std::string fileName)
 {
   modelFileName = fileName;
 
@@ -57,7 +57,7 @@ int Runtime::parse(std::string fileName)
   }
   catch (exception& e)
   {
-    cout << "opensim: error: Problem opening '" << fileName << "'\n";
+    cout << "opensim: error: Problem loading '" << fileName << "'\n";
   }
 }
 

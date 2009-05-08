@@ -44,7 +44,7 @@ public:
   Runtime();
   ~Runtime();
 
-  int parse(std::string fileName);
+  int loadFile(std::string fileName);
   int simulate();
 };
 
