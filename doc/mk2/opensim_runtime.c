@@ -68,6 +68,25 @@ opensim_sim_free (sim_t *sim)
 
 
 /**
+ * opensim_table_free:
+ * @table: the table who is to be freed.
+ *
+ * This function frees the given table_t object. It is undefined to call
+ * this function with @table being NULL.
+ */
+void
+opensim_table_free (table_t *table)
+{
+  if (table->x)
+    free (table->x);
+  if (table->y)
+    free (table->y);
+
+  free (table);
+}
+
+
+/**
  * opensim_data_new:
  * @count: the number of elements in the new data_t.
  *
@@ -116,7 +135,8 @@ sim_t *
 opensim_sim_new (sim_ops *ops,
                  class_info *info,
                  control_t *control,
-                 data_t *defaults)
+                 data_t *defaults,
+                 tables_t *lookups)
 {
   sim_t *sim = (sim_t *)malloc (sizeof (sim_t));
   if (!sim)
@@ -133,7 +153,9 @@ opensim_sim_new (sim_ops *ops,
   sim->time.step      = control->step;
   sim->time.save_step = control->save_step;
 
-  sim->count = defaults->count;
+  sim->lookups = lookups;
+
+  sim->num_constants = defaults->count;
   sim->constants = (real_t *)malloc (defaults->count * sizeof (real_t));
   if (!sim->constants)
   {
@@ -146,6 +168,43 @@ opensim_sim_new (sim_ops *ops,
     sim->constants[i] = defaults->values[i];
 
   return sim;
+}
+
+
+/**
+ * opensim_table_new:
+ * @size: the size (number of x,y pairs) of the table to allocate.
+ *
+ * This function allocates a new table_t with enough space to store
+ * @size number of two-tuples.
+ *
+ * Returns: a pointer to the new table_t on success, NULL on failure.
+ */
+table_t *
+opensim_table_new (uint32_t size)
+{
+  table_t *new_table = (table_t *)malloc (sizeof (table_t));
+  if (!new_table)
+  {
+    fprintf (stderr, "couldn't allocate space for new table_t.\n");
+    return NULL;
+  }
+
+  new_table->size = size;
+  new_table->x = (real_t *)malloc (size * sizeof (real_t));
+  new_table->y = (real_t *)malloc (size * sizeof (real_t));
+  if (!new_table->x || !new_table->y)
+  {
+    fprintf (stderr, "couldn't allocate array for new table_t.\n");
+    if (new_table->x)
+      free (new_table->x);
+    if (new_table->y)
+      free (new_table->y);
+    free (new_table);
+    return NULL;
+  }
+
+  return new_table;
 }
 
 
@@ -292,6 +351,45 @@ opensim_simulate_euler (sim_t *sim)
     sim->curr = sim->next;
     sim->next = tmp;
   }
+  return 0;
+}
+
+
+inline real_t
+max (real_t a, real_t b)
+{
+  return a > b ? a : b;
+}
+
+
+real_t
+lookup (table_t *table, real_t index)
+{
+  uint32_t size = table->size;
+  if (table->size == 0) return 0;
+
+  // if the request is outside the min or max, then we return
+  // the nearest element of the array
+  if (index < table->x[0])
+    return table->y[0];
+  else if (index > table->x[size-1])
+    return table->y[size-1];
+
+  for (uint32_t i=1; i < size; ++i)
+  {
+    if (index == table->x[i])
+      return table->y[i];
+
+    if (index < table->x[i])
+    {
+      // slope = deltaY/deltaX
+      real_t slope = (table->y[i] - table->y[i-1])
+                    /(table->x[i] - table->x[i-1]);
+
+      return (index-table->x[i-1])*slope + table->y[i-1];
+    }
+  }
+
   return 0;
 }
 

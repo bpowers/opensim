@@ -56,6 +56,22 @@ struct _data_t
 };
 typedef struct _data_t data_t;
 
+// the data structure representing a lookup table
+struct _table_t
+{
+  uint32_t size;
+  real_t *x;
+  real_t *y;
+};
+typedef struct _table_t table_t;
+
+// the data structure representing a lookup table
+struct _tables_t
+{
+  uint32_t count;
+  table_t **tables;
+};
+typedef struct _tables_t tables_t;
 
 struct _sim_t;
 typedef struct _sim_t sim_t;
@@ -106,14 +122,17 @@ struct _sim_t
 
   control_t time;
 
-  uint32_t count;
+  uint32_t num_constants;
   real_t *constants;
+
+  tables_t *lookups;
 };
 
 
 /* functions to free memory created during the course of simulating */
 void opensim_data_free (data_t *sim);
 void opensim_sim_free (sim_t *data);
+void opensim_table_free (table_t *table);
 
 /* create a new data_t structure to hold 'count' number of variables */
 data_t *opensim_data_new (uint32_t count);
@@ -123,7 +142,11 @@ data_t *opensim_data_new (uint32_t count);
 sim_t *opensim_sim_new (sim_ops *ops,
                         class_info *info,
                         control_t *control,
-                        data_t *defaults);
+                        data_t *defaults,
+                        tables_t *lookups);
+
+/* create a new table to store lookup data */
+table_t *opensim_table_new (uint32_t size);
 
 /* perform the sim-independent initialization of a sim_t */
 int32_t opensim_sim_init (sim_t *sim);
@@ -135,6 +158,9 @@ int32_t opensim_header_print (FILE *file, char *names[], uint32_t count);
 /* run a simulation using euler integration */
 int32_t opensim_simulate_euler (sim_t *sim);
 
+
+real_t max (real_t a, real_t b);
+real_t lookup (table_t *table, real_t index);
 
 #ifdef __cplusplus
 }
