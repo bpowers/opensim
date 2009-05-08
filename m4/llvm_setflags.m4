@@ -8,6 +8,6 @@ AC_DEFUN(
     AC_SUBST(OPENSIM_LLVM_CXXFLAGS, ['esyscmd(llvm-config --cppflags)'])
     AC_SUBST(OPENSIM_LLVM_LDFLAGS,  ['esyscmd(llvm-config --ldflags)'])
     AC_SUBST(OPEMSIM_LLVM_LIBS, 
-             ['esyscmd(llvm-config --libs core jit native)'])
+             ['esyscmd(llvm-config --libs jit)'])
   ]
 )

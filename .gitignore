@@ -5,19 +5,7 @@ Makefile.in
 *.pyc
 
 configure
-doltcompile
-doltlibtool
-libtool
 
-config.h*
-config.log
-config.status
-config/
-
-stamp-h1
 packaging/mac/.deps/
-
-aclocal.m4
-autom4te.cache/
 
 .DS_Store

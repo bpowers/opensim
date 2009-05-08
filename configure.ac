@@ -1,17 +1,21 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
+AC_INIT([OpenSim], [0.7.0], [bobby@laptop.org])
+AC_COPYRIGHT([Copyright 2008-2009 Bobby Powers.])
 AC_PREREQ(2.61)
-AC_INIT([OpenSim], [0.5.1], [bobby@laptop.org])
-AC_CONFIG_SRCDIR([src/opensim])
-AC_CONFIG_HEADER([config.h])
-AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_SRCDIR([lib/runtime.cc])
+AC_CONFIG_HEADER([include/opensim/config.h])
+AC_CONFIG_AUX_DIR([autoconf])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 AM_MAINTAINER_MODE
 
-# we really only need gcc if we're on the mac
+
+# Checks for programs.
+AC_PROG_CC_C99
+AC_PROG_CXX
 
 # Check if we're on the mac.
 AC_CANONICAL_HOST
@@ -24,42 +28,61 @@ AM_CONDITIONAL([DARWIN], $on_mac)
 
 if test x$on_mac == xtrue; then
   AM_CONDITIONAL([am__fastdepOBJC], true)
-
-#  AC_PROG_CC_C99
-#  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
-#  AC_DISABLE_FAST_INSTALL
-#  AC_DISABLE_STATIC
-#  AC_PROG_LIBTOOL
-#  DOLT
+  AC_PROG_OBJC(['gcc -std=gnu99' gcc objcc objc])
 else
   AM_CONDITIONAL([am__fastdepOBJC], false)
 fi
 
 
+AC_DISABLE_FAST_INSTALL
 
+AC_LIBTOOL_WIN32_DLL
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
+DOLT
+SHAVE_INIT([autoconf/shave], [disable])
+
+
+AC_ARG_ENABLE([python],
+              AC_HELP_STRING([--enable-python],
+                             [python bindings and frontend]),,
+              [enable_python=yes])
+
+
+
+if test "x$enable_python" = "xyes"; then
+  AM_PATH_PYTHON([2.5])
+
+  AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find python headers)])
+
+  have_python=yes
+fi
+
+AM_CONDITIONAL(HAVE_PYTHON, test x$have_python = xyes)
 
 # Checks for programs.
 AC_PROG_INSTALL
 
-# automake macros
-AM_PATH_PYTHON
-
-
-AC_SUBST(ABS_TOP, ['esyscmd(pwd)'])
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_SIZE_T
 
 
 AC_CONFIG_FILES([
-opensim/engine/Makefile
-opensim/engine/io/Makefile
-opensim/engine/passes/Makefile
-opensim/visuals/widgets/Makefile
-opensim/visuals/Makefile
-opensim/Makefile
-icons/Makefile
-share/Makefile
-src/Makefile
-tests/Makefile
-Makefile
+  autogen/shave
+  autogen/shave-libtool
+  opensim/engine/Makefile
+  opensim/engine/io/Makefile
+  opensim/engine/passes/Makefile
+  opensim/visuals/widgets/Makefile
+  opensim/visuals/Makefile
+  opensim/Makefile
+  icons/Makefile
+  share/Makefile
+  src/Makefile
+  tests/Makefile
+  Makefile
 ])
 
 
