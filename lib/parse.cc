@@ -24,9 +24,9 @@
 //===--------------------------------------------------------------------===//
 
 
-#include "parse.h"
-#include "run.h"
-#include "lex.h"
+#include "opensim/parse.h"
+#include "opensim/runtime.h"
+#include "opensim/lex.h"
 #include <iostream>
 #include <exception>
 

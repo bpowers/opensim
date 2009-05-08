@@ -24,7 +24,7 @@
 //===--------------------------------------------------------------------===//
 
 
-#include "token.h"
+#include "opensim/token.h"
 #include <iostream>
 
 

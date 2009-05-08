@@ -1,6 +1,6 @@
 
 #include <cstdio>
-#include "run.h"
+#include "opensim/runtime.h"
 
 int
 main (int argc, char *argv[])

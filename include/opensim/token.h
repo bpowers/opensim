@@ -35,7 +35,7 @@ namespace opensim {
 struct Token {
   int tag;
 
-  virtual Token(int t) : tag(t) {}
+  Token(int t) : tag(t) {}
 };
 
 }

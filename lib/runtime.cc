@@ -24,9 +24,9 @@
 //
 //===--------------------------------------------------------------------===//
 
-#include "run.h"
-#include "opensim_runtime.h"
-#include "parse.h"
+#include "opensim/runtime.h"
+#include "opensim/c_runtime.h"
+#include "opensim/parse.h"
 #include <iostream>
 #include <fstream>
 #include <exception>
