@@ -26,7 +26,6 @@
 #ifndef OPENSIM_LEX_H
 #define OPENSIM_LEX_H
 
-#include <inttypes.h>
 #include <cstdio>
 #include <string>
 
@@ -38,12 +37,12 @@ class Token;
 
 class Scanner {
   std::string fileName;
-  int file;
-  uint32_t len;
-  char *mappedFile;
+  const char *fileStart;
+  const char *fileEnd;
+  const char *pos;
 
 public:
-  Scanner(std::string fName);
+  Scanner(std::string fName, const char *fStart, const char *fEnd);
   ~Scanner();
 
   Token *getToken();

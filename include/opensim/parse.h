@@ -36,6 +36,9 @@ class Scanner;
 
 class Parser {
   std::string fileName;
+  char *fileStart;
+  char *fileEnd;
+  int file;
   Scanner *scanner;
 
 public:
