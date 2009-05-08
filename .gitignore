@@ -6,6 +6,27 @@ Makefile.in
 
 configure
 
-packaging/mac/.deps/
+.deps
+
+aclocal.m4
+m4/lt*
+m4/libtool.m4
+libtool
+dolt*
+
+autoconf/config.guess
+autoconf/config.sub
+autoconf/depcomp
+autoconf/install-sh
+autoconf/ltmain.sh
+autoconf/missing
+autoconf/py-compile
+autoconf/shave
+autoconf/shave-libtool
+
+config.log
+config.status
+include/opensim/config.h
+
 
 .DS_Store

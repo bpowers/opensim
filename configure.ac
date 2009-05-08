@@ -5,12 +5,11 @@ AC_INIT([OpenSim], [0.7.0], [bobby@laptop.org])
 AC_COPYRIGHT([Copyright 2008-2009 Bobby Powers.])
 AC_PREREQ(2.61)
 AC_CONFIG_SRCDIR([lib/runtime.cc])
-AC_CONFIG_HEADER([include/opensim/config.h])
+AC_CONFIG_HEADERS([include/opensim/config.h])
 AC_CONFIG_AUX_DIR([autoconf])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
-AM_MAINTAINER_MODE
 
 
 # Checks for programs.
@@ -40,7 +39,7 @@ AC_LIBTOOL_WIN32_DLL
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
-SHAVE_INIT([autoconf/shave], [disable])
+SHAVE_INIT([autoconf], [enable])
 
 
 AC_ARG_ENABLE([python],
@@ -68,10 +67,12 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_TYPE_SIZE_T
 
+OPENSIM_LLVM_SETFLAGS([])
+
 
 AC_CONFIG_FILES([
-  autogen/shave
-  autogen/shave-libtool
+  autoconf/shave
+  autoconf/shave-libtool
   opensim/engine/Makefile
   opensim/engine/io/Makefile
   opensim/engine/passes/Makefile
@@ -80,10 +81,15 @@ AC_CONFIG_FILES([
   opensim/Makefile
   icons/Makefile
   share/Makefile
+  lib/Makefile
   src/Makefile
   tests/Makefile
   Makefile
 ])
 
-
 AC_OUTPUT
+
+# clean up silly leftover files
+`rm -f include/opensim/config.h.in*`
+`rm -f include/opensim/stamp-h1`
+`rm -rf autom4te.cache`
