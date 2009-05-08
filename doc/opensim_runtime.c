@@ -251,8 +251,8 @@ opensim_simulate_euler (sim_t *sim)
   real_t start     = sim->time.start;
   real_t end       = sim->time.end;
   real_t step      = sim->time.step;
-  real_t save_step = sim->time.save_step
-;
+  real_t save_step = sim->time.save_step;
+
   bool do_save = true;
   uint32_t save_count = 0;
   uint32_t save_iterations = save_step / step;

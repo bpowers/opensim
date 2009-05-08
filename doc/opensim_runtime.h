@@ -45,16 +45,16 @@ typedef double real_t;
 
 
 // the data structure is for each 'frame' of our simulation
-struct _data
+struct _data_t
 {
   uint32_t count;
   real_t *values;
 };
-typedef struct _data data_t;
+typedef struct _data_t data_t;
 
 
-struct _sim;
-typedef struct _sim sim_t;
+struct _sim_t;
+typedef struct _sim_t sim_t;
 
 // each different simulation will have different functions for these
 // operations, so by storing the function pointers here, we can abstract
@@ -70,17 +70,17 @@ typedef struct _sim_ops sim_ops;
 // control keeps track of the start, end,step and save_step constants.
 // I'm putting these in their own structure because they aren't really
 // appropriate to expose as constants to the rest of the model.
-struct _control
+struct _control_t
 {
   real_t start;
   real_t end;
   real_t step;
   real_t save_step;
 };
-typedef struct _control control_t;
+typedef struct _control_t control_t;
 
 
-struct _class
+struct _class_info
 {
   uint32_t num_vars;
   char **var_names;
@@ -88,11 +88,11 @@ struct _class
   uint32_t num_constants;
   char **constant_names;
 };
-typedef struct _class class_info;
+typedef struct _class_info class_info;
 
 
 // the sim structure represents an instance of a simulation
-struct _sim
+struct _sim_t
 {
   sim_ops *ops;
   class_info *info;
@@ -105,6 +105,7 @@ struct _sim
   uint32_t count;
   real_t *constants;
 };
+
 
 /* functions to free memory created during the course of simulating */
 void opensim_data_free (data_t *sim);

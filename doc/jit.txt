@@ -3,7 +3,8 @@
 I've always wanted to work with JIT compilation because of its possible
 performance benefits and (from my point of view) elegance.  I had a
 somewhat working backend a year ago, but it was fragile (didn't work on
-windows, and worked differently on mac and linux).  My current work is
+windows, and worked differently on mac and linux.  in retrospect this was
+probably because of different calling conventions).  My current work is
 focusing on a robust JIT using LLVM, as well as a playground for my
 object-oriented system dynamics ideas.
 
