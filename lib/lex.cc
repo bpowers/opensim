@@ -25,7 +25,7 @@
 //===--------------------------------------------------------------------===//
 
 
-#include "lex.h"
+#include "opensim/lex.h"
 #include <cstdio>
 #include <iostream>
 #include <exception>

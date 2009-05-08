@@ -1,9 +1,17 @@
-INCLUDES                = -I$(top_builddir) -I$(top_builddir)/lib \
-                          -I$(top_srcdir) -I$(top_srcdir)/lib
+
+AM_CXXFLAGS             = $(OPENSIM_LLVM_CXXFLAGS)
+AM_LDFLAGS              = $(OPENSIM_LLVM_LDFLAGS) \
+                          $(OPEMSIM_LLVM_LIBS)
+
+INCLUDES                = -I$(top_srcdir)/include -I$(top_builddir)/include
 
 MAINTAINERCLEANFILES    = Makefile.in
 
-EXTRA_DIST              = opensim opensim-gtk opensim-main.glade
+EXTRA_DIST              = opensim opensim-gtk
 
 bin_SCRIPTS             = opensim opensim-gtk
-pkgdata_DATA            = opensim-main.glade
+bin_PROGRAMS            = opensim2
+
+opensim2_SOURCES       = driver.cc
+opensim2_LDADD         = $(top_builddir)/lib/libsim.la
+

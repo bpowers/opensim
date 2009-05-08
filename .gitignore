@@ -3,16 +3,25 @@ Makefile
 Makefile.in
 
 *.pyc
+*.o
+*.lo
+*.la
 
 configure
 
 .deps
+.libs
 
 aclocal.m4
 m4/lt*
 m4/libtool.m4
 libtool
 dolt*
+
+config.h.in
+config.h.in~
+
+src/opensim2
 
 autoconf/config.guess
 autoconf/config.sub

@@ -36,7 +36,6 @@ fi
 AC_DISABLE_FAST_INSTALL
 
 AC_LIBTOOL_WIN32_DLL
-AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
 SHAVE_INIT([autoconf], [enable])
@@ -90,6 +89,6 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 # clean up silly leftover files
-`rm -f include/opensim/config.h.in*`
+#`rm -f include/opensim/config.h.in*`
 `rm -f include/opensim/stamp-h1`
 `rm -rf autom4te.cache`
