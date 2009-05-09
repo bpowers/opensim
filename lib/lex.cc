@@ -51,6 +51,8 @@ Scanner::Scanner(std::string fName,
                                      fileEnd(fEnd) {
 
   pos = fStart;
+  peek = ' ';
+  line = 1;
 }
 
 
@@ -59,7 +61,27 @@ Scanner::~Scanner() {
 }
 
 
+bool Scanner::getChar() {
+
+  if (pos < fileEnd)
+    peek = *pos++;
+  else
+    peek = '\0';
+}
+
+
 Token *Scanner::getToken() {
+
+  do {
+    if (peek == ' ' || peek == '\t' || peek == '\r')
+      continue;
+    else if (peek == '\n')
+      ++line;
+    else if (peek == '\0')
+      return NULL;
+    else
+      break;
+  } while (getChar());
 
   cout << "getToken stub\n";
   return NULL;

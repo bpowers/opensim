@@ -26,6 +26,7 @@
 #ifndef OPENSIM_LEX_H
 #define OPENSIM_LEX_H
 
+#include <inttypes.h>
 #include <cstdio>
 #include <string>
 
@@ -39,7 +40,12 @@ class Scanner {
   std::string fileName;
   const char *fileStart;
   const char *fileEnd;
+
   const char *pos;
+  uint32_t peek;
+  uint32_t line;
+
+  bool getChar();
 
 public:
   Scanner(std::string fName, const char *fStart, const char *fEnd);
