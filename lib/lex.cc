@@ -51,6 +51,10 @@ using std::exception;
 using llvm::StringMap;
 using llvm::StringMapIterator;
 
+// I imagine that it would be nice for some Europeans to have decimal
+// represented as ',', but time will tell...
+#define DECIMAL '.'
+
 
 Scanner::Scanner(std::string fName,
                  const char *fStart,
@@ -111,19 +115,23 @@ inline Word *Scanner::getReserved(std::string lexeme) {
 
 Token *Scanner::getToken() {
 
+  // skip any whitespace we might encounter, but keep track of our
+  // line and where the curent line begins
   do {
     if (peek == '\n') {
       ++line;
       lineStart = pos;
     }
-
-    if (!isspace(peek))
-      break;
+    // finally, break when we don't have anymore whitespace
+    if (!isspace(peek)) break;
   } while (getChar());
 
+  // if we've reached the end of the input, we should see a null character
   if (peek == '\0')
     return NULL;
 
+  // keep track of the start of the token, relative to the start of
+  // the current line
   uint32_t start = pos - lineStart;
 
   // XXX: additional two-char tokens like '==' should be matched here
@@ -135,12 +143,16 @@ Token *Scanner::getToken() {
       return new Token('=', fileName, line, start, start);
   }
 
-  if (isdigit(peek) || peek == '.') {
+  // match numbers first, which either begin with a digit or a decimal
+  if (isdigit(peek) || peek == DECIMAL) {
+    // we only want to match the first decimal, any subsequent one
+    // is probably misplaced.
     bool have_decimal = false;
-    const char *startPos = pos;
+    // subtract one for pos, because pos points to peek+1
+    const char *startPos = pos-1;
     // iterate through while making sure we stay within bounds
     while (getChar()) {
-      if (peek == '.')
+      if (peek == DECIMAL)
         if (!have_decimal)
           have_decimal = true;
         else
@@ -151,15 +163,18 @@ Token *Scanner::getToken() {
 
     char *end;
     real_t num = strtod(startPos, &end);
+
+    // make sure that strtod gets the same number we do.  perhaps we
+    // only need to use strtod, we shall see.
     if (!(pos-1 == end)) {
-      cerr << "opensim: ERROR: Problem reading number: "
-           << string(startPos, pos-startPos) << "(tod: " << num << ") pos:"
-           << (uint64_t)(pos-fileStart) << " != end:"
-           << (uint64_t)(end-fileStart) << ".\n";
+      fprintf(stderr, "opensim: ERROR: Problem reading number '%s' as '%f'. "
+              "(pos:%d != end:%d)\n", string(startPos, pos-startPos).c_str(),
+              num, pos-1-fileStart, end-fileStart);
       return NULL;
     }
+    // finally, return our new number token.
     return new Number(string(startPos, pos-startPos), num, fileName,
-                      line, start, pos-lineStart);
+                      line, start, pos-lineStart-1);
   }
 
   if (isalpha(peek) || peek == '_') {
@@ -177,7 +192,7 @@ Token *Scanner::getToken() {
     return w;
   }
 
-  Token *tok = new Token(peek, fileName, line, start, start);
+  Token *tok = new Token(peek, fileName, line, start, start+1);
   getChar();
 
   return tok;
