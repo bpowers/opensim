@@ -66,18 +66,15 @@ Scanner::Scanner(std::string fName,
   peek = *pos;
   line = 1;
 
-  reservedWords = new StringMap<Word *>(16);
+  reservedWords = new StringMap<uint32_t>(16);
 
-  reserve(new Word("if", tag::If));
-  reserve(new Word("integral", tag::Integral));
+  reserve("if", Tag::If);
+  reserve("integral", Tag::Integral);
+  reserve("Model", Tag::Model);
 }
 
 
 Scanner::~Scanner() {
-
-  for (StringMapIterator<Word *> i = reservedWords->begin();
-       i != reservedWords->end(); ++i)
-    delete i->getValue();
 
   delete reservedWords;
 }
@@ -87,10 +84,8 @@ inline bool Scanner::getChar() {
 
   if (pos < fileEnd)
     peek = *++pos;
-  else
-    peek = '\0';
 
-  return !(peek == '\0');
+  return peek;
 }
 
 
@@ -101,19 +96,19 @@ inline bool Scanner::getChar(const char c) {
 }
 
 
-inline void Scanner::reserve(Word *tok) {
+inline void Scanner::reserve(std::string lexeme, uint32_t t) {
 
-  (*reservedWords)[tok->iden] = tok;
+  (*reservedWords)[lexeme] = t;
 }
 
 
-inline Word *Scanner::getReserved(std::string lexeme) {
+inline uint32_t Scanner::getReserved(std::string lexeme) {
 
   return (*reservedWords)[lexeme];
 }
 
 
-Token *Scanner::getToken() {
+inline void Scanner::skipWhitespace() {
 
   // skip any whitespace we might encounter, but keep track of our
   // line and where the curent line begins
@@ -125,9 +120,15 @@ Token *Scanner::getToken() {
     // finally, break when we don't have anymore whitespace
     if (!isspace(peek)) break;
   } while (getChar());
+}
 
-  // if we've reached the end of the input, we should see a null character
-  if (peek == '\0')
+
+Token *Scanner::getToken() {
+
+  skipWhitespace();
+
+  // if we've reached the end of the input, peek is null
+  if (!peek)
     return NULL;
 
   // keep track of the start of the token, relative to the start of
@@ -138,7 +139,7 @@ Token *Scanner::getToken() {
   switch (peek) {
   case '=':
     if (getChar('='))
-      return new Word("==", tag::Eq, fileName, line, start, start+2);
+      return new Word("==", Tag::Eq, fileName, line, start, start+2);
     else
       return new Token('=', fileName, line, start, start+1);
   }
@@ -184,11 +185,11 @@ Token *Scanner::getToken() {
     } while (isalnum(peek) || peek == '_' || peek == '.');
 
     // check if its a reserved word
-    Word *w = getReserved(s);
-    if (!w)
-      w = new Word(s, tag::Id, fileName, line, start, pos-lineStart);
+    uint32_t t = getReserved(s);
+    if (!t)
+      t = Tag::Id;
 
-    return w;
+    return new Word(s, t, fileName, line, start, pos-lineStart);
   }
 
   Token *tok = new Token(peek, fileName, line, start, start+1);

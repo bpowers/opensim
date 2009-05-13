@@ -33,7 +33,7 @@
 
 namespace opensim {
 
-struct tag {
+struct Tag {
   static const uint32_t And      = 256,
                         Else     = 257,
                         Eq       = 258,
@@ -47,7 +47,8 @@ struct tag {
                         Num      = 266,
                         Or       = 267,
                         True     = 268,
-                        Integral = 269;
+                        Integral = 269,
+                        Model    = 270;
 };
 
 struct Token
@@ -97,7 +98,7 @@ struct Number: public Token
 
   Number(std::string lexeme, real_t val, std::string f,
          uint32_t l, uint16_t s, uint16_t e) {
-    tag = tag::Num;
+    tag = Tag::Num;
     iden = lexeme;
     value = val;
     file = f;

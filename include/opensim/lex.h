@@ -54,18 +54,19 @@ class Scanner {
   uint32_t line;
   const char *lineStart;
 
-  llvm::StringMap<Word *, llvm::MallocAllocator> *reservedWords;
+  llvm::StringMap<uint32_t, llvm::MallocAllocator> *reservedWords;
 
   bool getChar();
   bool getChar(const char c);
 
-  Word *getReserved(std::string lexeme);
+  uint32_t getReserved(std::string lexeme);
+  void skipWhitespace();
 
 public:
   Scanner(std::string fName, const char *fStart, const char *fEnd);
   ~Scanner();
 
-  void reserve(Word *tok);
+  void reserve(std::string lexeme, uint32_t t);
   Token *getToken();
 };
 
