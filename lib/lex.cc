@@ -28,12 +28,6 @@
 #include "opensim/lex.h"
 #include "opensim/token.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-
-#include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include <assert.h>
 

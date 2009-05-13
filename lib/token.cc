@@ -23,9 +23,10 @@
 //
 //===--------------------------------------------------------------------===//
 
-
 #include "opensim/token.h"
-#include <iostream>
+
+#include <cstdio>
+
 
 void opensim::Token::dump() {
   fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(), line,

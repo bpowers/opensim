@@ -27,10 +27,9 @@
 #include "opensim/runtime.h"
 #include "opensim/c_runtime.h"
 #include "opensim/parse.h"
-#include <iostream>
-#include <fstream>
-#include <exception>
 
+#include <iostream>
+#include <exception>
 
 using namespace opensim;
 using namespace std;
@@ -57,7 +56,7 @@ int Runtime::loadFile(std::string fileName)
   }
   catch (exception& e)
   {
-    cout << "opensim: error: Problem loading '" << fileName << "'\n";
+    cerr << "opensim: ERROR: Problem loading '" << fileName << "'\n";
   }
 }
 

@@ -29,11 +29,6 @@
 #include "opensim/lex.h"
 #include "opensim/token.h"
 
-#include <inttypes.h>
-
-#include <stdio.h>
-#include <stdbool.h>
-
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <cstdio>
