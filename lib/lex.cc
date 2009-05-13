@@ -63,7 +63,7 @@ Scanner::Scanner(std::string fName,
                                      fileEnd(fEnd) {
 
   pos = fStart;
-  peek = ' ';
+  peek = *pos;
   line = 1;
 
   reservedWords = new StringMap<Word *>(16);
@@ -86,7 +86,7 @@ Scanner::~Scanner() {
 inline bool Scanner::getChar() {
 
   if (pos < fileEnd)
-    peek = *pos++;
+    peek = *++pos;
   else
     peek = '\0';
 
@@ -138,9 +138,9 @@ Token *Scanner::getToken() {
   switch (peek) {
   case '=':
     if (getChar('='))
-      return new Word("==", tag::Eq, fileName, line, start, start+1);
+      return new Word("==", tag::Eq, fileName, line, start, start+2);
     else
-      return new Token('=', fileName, line, start, start);
+      return new Token('=', fileName, line, start, start+1);
   }
 
   // match numbers first, which either begin with a digit or a decimal
@@ -148,8 +148,7 @@ Token *Scanner::getToken() {
     // we only want to match the first decimal, any subsequent one
     // is probably misplaced.
     bool have_decimal = false;
-    // subtract one for pos, because pos points to peek+1
-    const char *startPos = pos-1;
+    const char *startPos = pos;
     // iterate through while making sure we stay within bounds
     while (getChar()) {
       if (peek == DECIMAL)
@@ -166,7 +165,7 @@ Token *Scanner::getToken() {
 
     // make sure that strtod gets the same number we do.  perhaps we
     // only need to use strtod, we shall see.
-    if (!(pos-1 == end)) {
+    if (!(pos == end)) {
       fprintf(stderr, "opensim: ERROR: Problem reading number '%s' as '%f'. "
               "(pos:%d != end:%d)\n", string(startPos, pos-startPos).c_str(),
               num, pos-1-fileStart, end-fileStart);
@@ -174,7 +173,7 @@ Token *Scanner::getToken() {
     }
     // finally, return our new number token.
     return new Number(string(startPos, pos-startPos), num, fileName,
-                      line, start, pos-lineStart-1);
+                      line, start, pos-lineStart);
   }
 
   if (isalpha(peek) || peek == '_') {
