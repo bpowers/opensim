@@ -118,6 +118,7 @@ int Parser::parse()
   while (curTok = scanner->getToken())
   {
     curTok->dump();
+    delete curTok;
   }
 }
 

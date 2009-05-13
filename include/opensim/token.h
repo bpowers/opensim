@@ -34,23 +34,25 @@
 namespace opensim {
 
 struct tag {
-  static const uint32_t And   = 256,
-                        Else  = 257,
-                        Eq    = 258,
-                        False = 259,
-                        Id    = 260,
-                        If    = 261,
-                        Index = 262,
-                        Le    = 263,
-                        Minus = 264,
-                        Ne    = 265,
-                        Num   = 266,
-                        Or    = 267,
-                        True  = 268;
+  static const uint32_t And      = 256,
+                        Else     = 257,
+                        Eq       = 258,
+                        False    = 259,
+                        Id       = 260,
+                        If       = 261,
+                        Index    = 262,
+                        Le       = 263,
+                        Minus    = 264,
+                        Ne       = 265,
+                        Num      = 266,
+                        Or       = 267,
+                        True     = 268,
+                        Integral = 269;
 };
 
 struct Token
 {
+  uint32_t line;
   uint16_t start;
   uint16_t end;
   std::string file;
@@ -58,7 +60,13 @@ struct Token
   uint32_t tag;
   std::string iden;
 
-  Token(int t) : tag(t) {}
+  Token(uint32_t t, std::string f, uint32_t l,
+        uint16_t s, uint16_t e) : tag(t) {
+    file = f;
+    line = l;
+    start = s;
+    end = e;
+  }
   Token() {}
   virtual void dump();
 };
@@ -66,7 +74,16 @@ struct Token
 
 struct Word: public Token
 {
-  Word(std::string lexeme, int t) {
+  Word(std::string lexeme, uint32_t t, std::string f,
+       uint32_t l, uint16_t s, uint16_t e) {
+    tag = t;
+    iden = lexeme;
+    file = f;
+    line = l;
+    start = s;
+    end = e;
+  }
+  Word(std::string lexeme, uint32_t t) {
     tag = t;
     iden = lexeme;
   }
@@ -78,10 +95,15 @@ struct Number: public Token
 {
   real_t value;
 
-  Number(std::string lexeme, real_t val) {
+  Number(std::string lexeme, real_t val, std::string f,
+         uint32_t l, uint16_t s, uint16_t e) {
     tag = tag::Num;
     iden = lexeme;
     value = val;
+    file = f;
+    line = l;
+    start = s;
+    end = e;
   }
   virtual void dump();
 };

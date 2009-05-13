@@ -40,6 +40,7 @@ namespace llvm {
 
 namespace opensim {
 
+class Word;
 class Token;
 
 
@@ -51,18 +52,20 @@ class Scanner {
   const char *pos;
   uint32_t peek;
   uint32_t line;
+  const char *lineStart;
 
-  llvm::StringMap<Token *, llvm::MallocAllocator> *reservedWords;
+  llvm::StringMap<Word *, llvm::MallocAllocator> *reservedWords;
 
   bool getChar();
+  bool getChar(const char c);
+
+  Word *getReserved(std::string lexeme);
 
 public:
   Scanner(std::string fName, const char *fStart, const char *fEnd);
   ~Scanner();
 
-  void reserve(Token *tok);
-  Token *getReserved(std::string lexeme);
-
+  void reserve(Word *tok);
   Token *getToken();
 };
 

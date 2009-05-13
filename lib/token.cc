@@ -32,16 +32,19 @@ using namespace opensim;
 using namespace std;
 
 void Token::dump() {
-  cout << "Token::dump()\n";
+  fprintf(stderr, "%s %d:%d-%d:\n  Token:  '%c'\n", file.c_str(), line,
+          start, end, tag);
 }
 
 
 void Word::dump() {
-  cout << "Word::dump()\n";
+  fprintf(stderr, "%s %d:%d-%d:\n  Word:   '%s'\n", file.c_str(), line,
+          start, end, iden.c_str());
 }
 
 
 void Number::dump() {
-  cout << "Number::dump()\n";
+  fprintf(stderr, "%s %d:%d-%d:\n  Number: '%f'\n", file.c_str(), line,
+          start, end, value);
 }
 
