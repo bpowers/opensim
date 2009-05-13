@@ -76,11 +76,11 @@ main (int argc, char *argv[])
   }
   catch (const std::string& msg)
   {
-    cerr << argv[0] << ": " << msg << "\n";
+    fprintf(stderr, "%s: %s\n", argv[0], msg.c_str());
   }
   catch (...)
   {
-    cerr << argv[0] << ": Unexpected unknown exception occurred.\n";
+    fprintf(stderr, "%s: Unexpected unknown exception occurred.\n", argv[0]);
   }
 
   return 0;
@@ -94,34 +94,28 @@ print_help()
   printf("\
 Usage: %s [-htvop] input_file\n", program_name);
 
-  fputs("\
+  printf("\
 Simulate system dynamics models.\n\n\
-Options:\n", stdout);
-  
-  puts("");
-  
-  fputs("\
+Options:\n");
+  printf("\n");
+  printf("\
   -h, --help          display this help and exit\n\
-  -v, --version       display version information and exit\n", stdout);
-  
-  puts("");
-
-  fputs("\
+  -v, --version       display version information and exit\n");
+  printf("\n");
+  printf("\
   -t, --target=LANG   output model in the specified language\n\
                         Supported langages:\n\
                           python\n\
                           as3\n\
                           llvm-ir\n\
-                          interpret [DEFUALT]\n", stdout);
-  
-  fputs("\
-  -o, --output=FILE   output model to the specified file\n", stdout);  
+                          interpret [DEFUALT]\n");
+  printf("\
+  -o, --output=FILE   output model to the specified file\n");
 
-  fputs("\
-  -p, --performance   output time taken to run model in ms\n", stdout);
+  printf("\
+  -p, --performance   output time taken to run model in ms\n");
 
   printf("\n");
-
   printf("\
 Report bugs to <%s>.\n", PACKAGE_BUGREPORT);
 
@@ -134,16 +128,13 @@ static int
 print_version ()
 {
   printf("opensim (%s) %s\n", PACKAGE, VERSION);
-  
-  puts("");
-  
+  printf("\n");
   // FSF recommends seperating out the year, for ease in translations.
   printf("\
 Copyright (C) %s Bobby Powers.\n\
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
-There is NO WARRANTY, to the extent permitted by law.\n\n",
-"2008");
+There is NO WARRANTY, to the extent permitted by law.\n\n", "2008");
 
   return 0;
 }

@@ -71,10 +71,12 @@ Parser::~Parser() {
 int Parser::parse()
 {
   fprintf(stderr, "opensim: DEBUG: Parsing...\n");
-  while (curTok = scanner->getToken())
+  while ((curTok = scanner->getToken()))
   {
     curTok->dump();
     delete curTok;
   }
+
+  return 0;
 }
 

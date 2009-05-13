@@ -86,7 +86,7 @@ inline bool Scanner::getChar() {
 inline bool Scanner::getChar(const char c) {
 
   getChar();
-  return c == peek;
+  return c == (char)peek;
 }
 
 

@@ -57,7 +57,10 @@ int Runtime::loadFile(std::string fileName)
   catch (exception& e)
   {
     cerr << "opensim: ERROR: Problem loading '" << fileName << "'\n";
+    return -1;
   }
+
+  return 0;
 }
 
 
@@ -65,5 +68,6 @@ int
 Runtime::simulate() {
 
   cout << "simulate stub\n";
+  return 0;
 }
 
