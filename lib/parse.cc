@@ -30,15 +30,13 @@
 #include "opensim/token.h"
 
 #include <inttypes.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
 
 #include <stdio.h>
 #include <stdbool.h>
 
+#include <llvm/Support/MemoryBuffer.h>
+
 #include <cstdio>
-#include <iostream>
 #include <exception>
 
 
@@ -49,53 +47,19 @@ using namespace std;
 Parser::Parser(std::string fName) {
 
   fileName = fName;
-
-  int len;
-  FILE *model_fp;
-
-  // first we open the file read-only to make sure its there and to find
-  // it's length
-  model_fp = fopen(fName.c_str(), "r");
-  if (!model_fp) {
-    cerr << "opensim: error: Couldn't find or open '" << fName << "'.\n";
+  fileBuffer = llvm::MemoryBuffer::getFile(fName.c_str());
+  if (!fileBuffer) {
+    fprintf(stderr, "opensim: ERROR: Problem mapping '%s'\n",
+            fileName.c_str());
     throw exception();
   }
 
-  // now seek to the end of the file
-  uint32_t err;
-  err = fseek(model_fp, 0, SEEK_END);
-  if (err) {
-    fclose(model_fp);
-    cerr << "opensim: error: Problem seeking on input file.\n";
-    throw exception();
-  }
+  fprintf(stderr, "opensim: DEBUG: Parser mapped '%s' at %p (len:%d).\n",
+          fileName.c_str(), fileBuffer->getBufferStart(),
+          fileBuffer->getBufferSize());
 
-  // so we can get its length.
-  len = ftell(model_fp);
-
-  // we have to close this file, becuase mmap needs a file descriptor and
-  // getting that from a FILE * seems to be undefined.
-  fclose(model_fp);
-  model_fp = NULL;
-
-  // so now reopen it.
-  file = open(fileName.c_str(), O_RDONLY);
-
-  // and map it, read only, into memory.
-  fileStart = (char *)mmap(NULL,
-                           len,
-                           PROT_READ,
-                           MAP_SHARED,
-                           file,
-                           0);
-  // now we have starting and ending char *, which we can use
-  // like iterators.
-  fileEnd = fileStart + len;
-
-  cerr << "opensim: DEBUG:  Parser mapped '" << fileName << "' at "
-       << &fileStart << " (len: " << len << ").\n";
-
-  scanner = new Scanner(fName, fileStart, fileEnd);
+  scanner = new Scanner(fName, fileBuffer->getBufferStart(),
+                        fileBuffer->getBufferEnd());
 }
 
 
@@ -104,17 +68,14 @@ Parser::~Parser() {
   if (scanner)
     delete scanner;
 
-  if (fileStart)
-    munmap(fileStart, fileEnd-fileStart);
-
-  if (file)
-    close(file);
+  if (fileBuffer)
+    delete fileBuffer;
 }
 
 
 int Parser::parse()
 {
-  cout << "opensim: DEBUG: Parsing...\n";
+  fprintf(stderr, "opensim: DEBUG: Parsing...\n");
   while (curTok = scanner->getToken())
   {
     curTok->dump();

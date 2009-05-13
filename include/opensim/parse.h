@@ -29,6 +29,9 @@
 #include <iostream>
 #include <string>
 
+namespace llvm {
+class MemoryBuffer;
+}
 
 namespace opensim {
 
@@ -37,9 +40,7 @@ struct Token;
 
 class Parser {
   std::string fileName;
-  char *fileStart;
-  char *fileEnd;
-  int file;
+  llvm::MemoryBuffer *fileBuffer;
   Scanner *scanner;
   Token *curTok;
 
