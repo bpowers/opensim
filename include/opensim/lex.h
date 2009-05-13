@@ -31,6 +31,13 @@
 #include <string>
 
 
+namespace llvm {
+  template<typename ValueT, typename AllocatorTy>
+  class StringMap;
+  struct MallocAllocator;
+}
+
+
 namespace opensim {
 
 class Token;
@@ -45,11 +52,16 @@ class Scanner {
   uint32_t peek;
   uint32_t line;
 
+  llvm::StringMap<Token *, llvm::MallocAllocator> *reservedWords;
+
   bool getChar();
 
 public:
   Scanner(std::string fName, const char *fStart, const char *fEnd);
   ~Scanner();
+
+  void reserve(Token *tok);
+  Token *getReserved(std::string lexeme);
 
   Token *getToken();
 };

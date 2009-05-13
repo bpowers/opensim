@@ -27,6 +27,7 @@
 #include "opensim/parse.h"
 #include "opensim/runtime.h"
 #include "opensim/lex.h"
+#include "opensim/token.h"
 
 #include <inttypes.h>
 #include <unistd.h>
@@ -51,8 +52,6 @@ Parser::Parser(std::string fName) {
 
   int len;
   FILE *model_fp;
-  fileName = fName;
-  char *fileStart, *fileEnd;
 
   // first we open the file read-only to make sure its there and to find
   // it's length
@@ -93,7 +92,7 @@ Parser::Parser(std::string fName) {
   // like iterators.
   fileEnd = fileStart + len;
 
-  cerr << "opensim: debug:  Parser mapped '" << fileName << "' at "
+  cerr << "opensim: DEBUG:  Parser mapped '" << fileName << "' at "
        << &fileStart << " (len: " << len << ").\n";
 
   scanner = new Scanner(fName, fileStart, fileEnd);
@@ -115,6 +114,10 @@ Parser::~Parser() {
 
 int Parser::parse()
 {
-  cout << "parse stub\n";
+  cout << "opensim: DEBUG: Parsing...\n";
+  while (curTok = scanner->getToken())
+  {
+    curTok->dump();
+  }
 }
 

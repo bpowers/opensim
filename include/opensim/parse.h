@@ -33,6 +33,7 @@
 namespace opensim {
 
 class Scanner;
+struct Token;
 
 class Parser {
   std::string fileName;
@@ -40,6 +41,7 @@ class Parser {
   char *fileEnd;
   int file;
   Scanner *scanner;
+  Token *curTok;
 
 public:
   Parser(std::string fileName);

@@ -26,6 +26,7 @@
 
 
 #include "opensim/lex.h"
+#include "opensim/token.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -34,14 +35,17 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include <llvm/ADT/StringMap.h>
+
 #include <cstdio>
 #include <iostream>
-#include <exception>
 
 
 using namespace opensim;
 using std::cout;
 using std::exception;
+using llvm::StringMap;
+using llvm::StringMapIterator;
 
 
 Scanner::Scanner(std::string fName,
@@ -53,20 +57,41 @@ Scanner::Scanner(std::string fName,
   pos = fStart;
   peek = ' ';
   line = 1;
+
+  reservedWords = new StringMap<Token *>(16);
+
+  reserve(new Word("if", tag::If));
 }
 
 
 Scanner::~Scanner() {
 
+  for (StringMapIterator<Token *> i = reservedWords->begin();
+       i != reservedWords->end(); ++i)
+    delete i->getValue();
+
+  delete reservedWords;
 }
 
 
-bool Scanner::getChar() {
+inline bool Scanner::getChar() {
 
   if (pos < fileEnd)
     peek = *pos++;
   else
     peek = '\0';
+}
+
+
+inline void Scanner::reserve(Token *tok) {
+
+  (*reservedWords)[tok->iden] = tok;
+}
+
+
+inline Token *Scanner::getReserved(std::string lexeme) {
+
+  return (*reservedWords)[lexeme];
 }
 
 

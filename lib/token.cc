@@ -31,3 +31,17 @@
 using namespace opensim;
 using namespace std;
 
+void Token::dump() {
+  cout << "Token::dump()\n";
+}
+
+
+void Word::dump() {
+  cout << "Word::dump()\n";
+}
+
+
+void Number::dump() {
+  cout << "Number::dump()\n";
+}
+

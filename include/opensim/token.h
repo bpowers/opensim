@@ -31,8 +31,23 @@
 #include <string>
 
 
-namespace opensim
-{
+namespace opensim {
+
+struct tag {
+  static const uint32_t And   = 256,
+                        Else  = 257,
+                        Eq    = 258,
+                        False = 259,
+                        Id    = 260,
+                        If    = 261,
+                        Index = 262,
+                        Le    = 263,
+                        Minus = 264,
+                        Ne    = 265,
+                        Num   = 266,
+                        Or    = 267,
+                        True  = 268;
+};
 
 struct Token
 {
@@ -41,35 +56,34 @@ struct Token
   std::string file;
 
   uint32_t tag;
+  std::string iden;
 
   Token(int t) : tag(t) {}
   Token() {}
+  virtual void dump();
 };
 
 
 struct Word: public Token
 {
-  uint16_t start;
-  uint16_t end;
-  std::string file;
-
-  uint32_t tag;
-  std::string iden;
-
-  Word(std::string lexeme, int t) : tag(tag), iden(lexeme) {}
+  Word(std::string lexeme, int t) {
+    tag = t;
+    iden = lexeme;
+  }
+  virtual void dump();
 };
 
 
 struct Number: public Token
 {
-  uint16_t start;
-  uint16_t end;
-  std::string file;
+  real_t value;
 
-  uint32_t tag;
-  real_t iden;
-
-  Number(real_t val, int t) : iden(val), tag(t) {}
+  Number(std::string lexeme, real_t val) {
+    tag = tag::Num;
+    iden = lexeme;
+    value = val;
+  }
+  virtual void dump();
 };
 
 }
