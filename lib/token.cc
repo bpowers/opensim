@@ -27,24 +27,20 @@
 #include "opensim/token.h"
 #include <iostream>
 
-
-using namespace opensim;
-using namespace std;
-
-void Token::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tToken:  '%c'\n", file.c_str(), line,
-          start, end, tag);
+void opensim::Token::dump() {
+  fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(), line,
+          start, end, tag, tag);
 }
 
 
-void Word::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tWord:   '%s'\n", file.c_str(), line,
-          start, end, iden.c_str());
+void opensim::Word::dump() {
+  fprintf(stderr, "%s %d:%d-%d:  \tWord (%3d):   '%s'\n", file.c_str(), line,
+          start, end, tag, iden.c_str());
 }
 
 
-void Number::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tNumber: '%f'\n", file.c_str(), line,
-          start, end, value);
+void opensim::Number::dump() {
+  fprintf(stderr, "%s %d:%d-%d:  \tNumber (%3d): '%f'\n", file.c_str(), line,
+          start, end, tag, value);
 }
 
