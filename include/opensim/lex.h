@@ -41,7 +41,7 @@ namespace llvm {
 namespace opensim {
 
 class Word;
-class Token;
+struct Token;
 
 
 class Scanner {

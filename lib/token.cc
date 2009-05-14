@@ -27,20 +27,21 @@
 
 #include <cstdio>
 
+using namespace opensim;
 
-void opensim::Token::dump() {
+void Token::dump() {
   fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(), line,
           start, end, tag, tag);
 }
 
 
-void opensim::Word::dump() {
+void Word::dump() {
   fprintf(stderr, "%s %d:%d-%d:  \tWord (%3d):   '%s'\n", file.c_str(), line,
           start, end, tag, iden.c_str());
 }
 
 
-void opensim::Number::dump() {
+void Number::dump() {
   fprintf(stderr, "%s %d:%d-%d:  \tNumber (%3d): '%f'\n", file.c_str(), line,
           start, end, tag, value);
 }
