@@ -151,10 +151,12 @@ Token *Scanner::getToken() {
   // XXX: additional two-char tokens like '==' should be matched here
   switch (peek) {
   case '=':
-    if (getChar('='))
+    if (getChar('=')) {
+      // eat the second '=', since we matched
+      getChar();
       return new Word("==", Tag::Eq, fileName,
                       startLoc, SourceLoc(line, start+2));
-    else
+    } else
       return new Token('=', fileName,
                        startLoc, SourceLoc(line, start+2));
   }
@@ -168,6 +170,7 @@ Token *Scanner::getToken() {
     return LexIdentifier(startLoc);
   }
 
+  // if we haven't matched by here, its a simple one character token
   Token *tok = new Token(peek, fileName,
                          SourceLoc(line, start),
                          SourceLoc(line, start+1));
