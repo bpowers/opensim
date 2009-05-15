@@ -51,20 +51,25 @@ struct Tag {
                         Model    = 270;
 };
 
+struct SourceLoc {
+  uint16_t line;
+  uint16_t pos;
+
+  SourceLoc() {};
+  SourceLoc(uint16_t l, uint16_t p) : line(l), pos(p) {};
+};
+
 struct Token
 {
-  uint32_t line;
-  uint16_t start;
-  uint16_t end;
+  SourceLoc start;
+  SourceLoc end;
   std::string file;
 
   uint32_t tag;
   std::string iden;
 
-  Token(uint32_t t, std::string f, uint32_t l,
-        uint16_t s, uint16_t e) : tag(t) {
+  Token(uint32_t t, std::string f, SourceLoc s, SourceLoc e) : tag(t) {
     file = f;
-    line = l;
     start = s;
     end = e;
   }
@@ -76,11 +81,10 @@ struct Token
 struct Word: public Token
 {
   Word(std::string lexeme, uint32_t t, std::string f,
-       uint32_t l, uint16_t s, uint16_t e) {
+       SourceLoc s, SourceLoc e) {
     tag = t;
     iden = lexeme;
     file = f;
-    line = l;
     start = s;
     end = e;
   }
@@ -97,12 +101,11 @@ struct Number: public Token
   real_t value;
 
   Number(std::string lexeme, real_t val, std::string f,
-         uint32_t l, uint16_t s, uint16_t e) {
+         SourceLoc s, SourceLoc e) {
     tag = Tag::Num;
     iden = lexeme;
     value = val;
     file = f;
-    line = l;
     start = s;
     end = e;
   }

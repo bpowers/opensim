@@ -50,6 +50,24 @@ using llvm::StringMapIterator;
 #define DECIMAL '.'
 
 
+static inline bool isNumberStart(uint32_t character) {
+  return isdigit(character) || character == DECIMAL;
+}
+
+static inline bool isNumberBody(uint32_t character) {
+  return isdigit(character) || character == DECIMAL;
+}
+
+
+static inline bool isIdentifierStart(uint32_t character) {
+  return isalpha(character) || character == '_';
+}
+
+static inline bool isIdentifierBody(uint32_t character) {
+  return isalnum(character) || character == '_';
+}
+
+
 Scanner::Scanner(std::string fName,
                  const char *fStart,
                  const char *fEnd) : fileName(fName),
@@ -128,68 +146,85 @@ Token *Scanner::getToken() {
   // keep track of the start of the token, relative to the start of
   // the current line
   uint32_t start = pos - lineStart;
+  SourceLoc startLoc = SourceLoc(line, start);
 
   // XXX: additional two-char tokens like '==' should be matched here
   switch (peek) {
   case '=':
     if (getChar('='))
-      return new Word("==", Tag::Eq, fileName, line, start, start+2);
+      return new Word("==", Tag::Eq, fileName,
+                      startLoc, SourceLoc(line, start+2));
     else
-      return new Token('=', fileName, line, start, start+1);
+      return new Token('=', fileName,
+                       startLoc, SourceLoc(line, start+2));
   }
 
   // match numbers first, which either begin with a digit or a decimal
-  if (isdigit(peek) || peek == DECIMAL) {
-    // we only want to match the first decimal, any subsequent one
-    // is probably misplaced.
-    bool have_decimal = false;
-    const char *startPos = pos;
-    // iterate through while making sure we stay within bounds
-    while (getChar()) {
-      if (peek == DECIMAL)
-        if (!have_decimal)
-          have_decimal = true;
-        else
-          break;
-      else if (!isdigit(peek))
-        break;
-    }
-
-    char *end;
-    real_t num = strtod(startPos, &end);
-
-    // make sure that strtod gets the same number we do.  perhaps we
-    // only need to use strtod, we shall see.
-    if (!(pos == end)) {
-      fprintf(stderr, "opensim: ERROR: Problem reading number '%s' as '%f'. "
-              "(pos:%d != end:%d)\n", string(startPos, pos-startPos).c_str(),
-              num, pos-1-fileStart, end-fileStart);
-      return NULL;
-    }
-    // finally, return our new number token.
-    return new Number(string(startPos, pos-startPos), num, fileName,
-                      line, start, pos-lineStart);
+  if (isNumberStart(peek)) {
+    return LexNumber(startLoc);
   }
 
-  if (isalpha(peek) || peek == '_') {
-    string s;
-    do {
-      s += peek;
-      getChar();
-    } while (isalnum(peek) || peek == '_' || peek == '.');
-
-    // check if its a reserved word
-    uint32_t t = getReserved(s);
-    if (!t)
-      t = Tag::Id;
-
-    return new Word(s, t, fileName, line, start, pos-lineStart);
+  if (isIdentifierStart(peek)) {
+    return LexIdentifier(startLoc);
   }
 
-  Token *tok = new Token(peek, fileName, line, start, start+1);
+  Token *tok = new Token(peek, fileName,
+                         SourceLoc(line, start),
+                         SourceLoc(line, start+1));
   getChar();
 
   return tok;
 }
 
+
+inline Token *Scanner::LexIdentifier(SourceLoc startLoc) {
+
+  string s;
+  do {
+    s += peek;
+    getChar();
+  } while (isalnum(peek) || peek == '_' || peek == '.');
+
+  // check if its a reserved word
+  uint32_t t = getReserved(s);
+  if (!t)
+    t = Tag::Id;
+
+  return new Word(s, t, fileName, startLoc, SourceLoc(startLoc.line,
+                                                      pos-lineStart));
+}
+
+
+inline Token *Scanner::LexNumber(SourceLoc startLoc) {
+
+  // we only want to match the first decimal, any subsequent one
+  // is probably misplaced.
+  bool have_decimal = false;
+  const char *startPos = pos;
+  // iterate through while making sure we stay within bounds
+  while (getChar()) {
+    if (peek == DECIMAL)
+      if (!have_decimal)
+        have_decimal = true;
+      else
+        break;
+    else if (!isdigit(peek))
+      break;
+  }
+
+  char *end;
+  real_t num = strtod(startPos, &end);
+
+  // make sure that strtod gets the same number we do.  perhaps we
+  // only need to use strtod, we shall see.
+  if (!(pos == end)) {
+    fprintf(stderr, "opensim: ERROR: Problem reading number '%s' as '%f'. "
+            "(pos:%d != end:%d)\n", string(startPos, pos-startPos).c_str(),
+            num, pos-1-fileStart, end-fileStart);
+    return NULL;
+  }
+  // finally, return our new number token.
+  return new Number(string(startPos, pos-startPos), num, fileName,
+                    startLoc, SourceLoc(startLoc.line, pos-lineStart));
+}
 

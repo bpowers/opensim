@@ -30,19 +30,19 @@
 using namespace opensim;
 
 void Token::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(), line,
-          start, end, tag, tag);
+  fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(),
+          start.line, start.pos, end.pos, tag, tag);
 }
 
 
 void Word::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tWord (%3d):   '%s'\n", file.c_str(), line,
-          start, end, tag, iden.c_str());
+  fprintf(stderr, "%s %d:%d-%d:  \tWord (%3d):   '%s'\n", file.c_str(),
+          start.line, start.pos, end.pos, tag, iden.c_str());
 }
 
 
 void Number::dump() {
-  fprintf(stderr, "%s %d:%d-%d:  \tNumber (%3d): '%f'\n", file.c_str(), line,
-          start, end, tag, value);
+  fprintf(stderr, "%s %d:%d-%d:  \tNumber (%3d): '%f'\n", file.c_str(),
+          start.line, start.pos, end.pos, tag, value);
 }
 

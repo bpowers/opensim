@@ -42,7 +42,7 @@ namespace opensim {
 
 class Word;
 struct Token;
-
+struct SourceLoc;
 
 class Scanner {
   std::string fileName;
@@ -61,6 +61,9 @@ class Scanner {
 
   uint32_t getReserved(std::string lexeme);
   void skipWhitespace();
+
+  Token *LexIdentifier(SourceLoc startLoc);
+  Token *LexNumber(SourceLoc startLoc);
 
 public:
   Scanner(std::string fName, const char *fStart, const char *fEnd);

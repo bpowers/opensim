@@ -1,7 +1,6 @@
 
-rabbit_fox (Model):
+class rabbit_fox (Model) {
 
-  time = Control ()
   time.start     = 0
   time.end       = 50
   time.step      = 0.015625
@@ -42,4 +41,4 @@ rabbit_fox (Model):
 
   rabbit_population = Stock (rabbit_births - rabbit_deaths, initial_rabbit_population)
   fox_population    = Stock (fox_births - fox_deaths,       initial_fox_population)
-
+}
