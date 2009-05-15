@@ -162,13 +162,11 @@ Token *Scanner::getToken() {
   }
 
   // match numbers first, which either begin with a digit or a decimal
-  if (isNumberStart(peek)) {
+  if (isNumberStart(peek))
     return LexNumber(startLoc);
-  }
 
-  if (isIdentifierStart(peek)) {
+  if (isIdentifierStart(peek))
     return LexIdentifier(startLoc);
-  }
 
   // if we haven't matched by here, its a simple one character token
   Token *tok = new Token(peek, fileName,
@@ -200,32 +198,13 @@ inline Token *Scanner::LexIdentifier(SourceLoc startLoc) {
 
 inline Token *Scanner::LexNumber(SourceLoc startLoc) {
 
-  // we only want to match the first decimal, any subsequent one
-  // is probably misplaced.
-  bool have_decimal = false;
   const char *startPos = pos;
-  // iterate through while making sure we stay within bounds
-  while (getChar()) {
-    if (peek == DECIMAL)
-      if (!have_decimal)
-        have_decimal = true;
-      else
-        break;
-    else if (!isdigit(peek))
-      break;
-  }
-
   char *end;
-  real_t num = strtod(startPos, &end);
+  real_t num = strtod(pos, &end);
 
-  // make sure that strtod gets the same number we do.  perhaps we
-  // only need to use strtod, we shall see.
-  if (!(pos == end)) {
-    fprintf(stderr, "opensim: ERROR: Problem reading number '%s' as '%f'. "
-            "(pos:%d != end:%d)\n", string(startPos, pos-startPos).c_str(),
-            num, pos-1-fileStart, end-fileStart);
-    return NULL;
-  }
+  pos = end - 1;
+  getChar();
+
   // finally, return our new number token.
   return new Number(string(startPos, pos-startPos), num, fileName,
                     startLoc, SourceLoc(startLoc.line, pos-lineStart));
