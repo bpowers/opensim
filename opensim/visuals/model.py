@@ -61,6 +61,11 @@ class SimModel(gobject.GObject):
     '''
     Removes an item from the model
     '''
+    # FIXME: a little slower, but there is some ill-used codepath that
+    # will get us here that I don't have time to look at right now
+    if not item in self.canvas.get_all_items():
+      log.error('tried to remove non-existant item from canvas: %s.', item)
+      return
     self.canvas.remove(item)
 
 

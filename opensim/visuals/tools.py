@@ -351,13 +351,14 @@ class HandleTool(tool.HandleTool):
               return
             buff.set_text('')
           buff.insert_at_cursor(key)
+      return True
 
 
-class PlacementTool(tool.Tool):
+class PlacementTool(HandleTool):
 
   def __init__(self, model, obj_kind=NONE):
+    super(PlacementTool, self).__init__()
     self._model = model
-    self._handle_tool = HandleTool()
     self._handle_index = 2
     self._new_kind = obj_kind
     self._new_item = None
@@ -374,6 +375,7 @@ class PlacementTool(tool.Tool):
                          doc='The kind of widget to insert')
 
   def on_button_press(self, context, event):
+    log.debug('PlacementTool.button_press')
 
     # don't handle the button press if we don't have a kind set
     if self._new_kind is NONE:
@@ -390,10 +392,8 @@ class PlacementTool(tool.Tool):
     view.focused_item = new_item
 
     h = new_item.handles()[self._handle_index]
-    if h.movable:
-      self._handle_tool.grab_handle(new_item, h)
-      self._grabbed_handle = h
-      context.grab()
+    self.grab_handle(new_item, h)
+    context.grab()
     return True
 
   def _create_item(self, context, pos):
@@ -410,15 +410,22 @@ class PlacementTool(tool.Tool):
   def on_button_release(self, context, event):
     context.ungrab()
     if self._grabbed_handle:
-      self._handle_tool.on_button_release(context, event)
+      #super(PlacementTool, self).on_button_release(context, event)
       self._grabbed_handle = None
     self._new_item = None
     return True
 
-  def on_motion_notify(self, context, event):
-    if self._grabbed_handle:
-      return self._handle_tool.on_motion_notify(context, event)
-    else:
-      # act as if the event is handled if we have a new item
-      return bool(self._new_item)
+  def move(self, view, item, handle, pos):
+    if (isinstance(item, widgets.CloudItem) or \
+        isinstance(item, widgets.StockItem)) and self._new_kind is FLOW:
+      # under these conditions, we want to start a new flow.
+      log.debug('new flow logic goes here.')
+      return
+    # we don't want to move if item isn't not movable.  This is necessary
+    # because we're grabbing unmovable handles, to reuse as much code
+    # from gaphas as possible.
+    elif not handle.movable:
+      return
+
+    return super(PlacementTool, self).move(view, item, handle, pos)
 
