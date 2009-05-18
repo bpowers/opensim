@@ -351,6 +351,7 @@ class HandleTool(tool.HandleTool):
               return
             buff.set_text('')
           buff.insert_at_cursor(key)
+      # return true to signal that we handled this signal.
       return True
 
 
