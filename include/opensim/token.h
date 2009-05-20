@@ -47,8 +47,8 @@ struct Tag {
                         Num      = 266,
                         Or       = 267,
                         True     = 268,
-                        Integral = 269,
-                        Model    = 270;
+                        TypeName = 269,
+                        Class    = 270;
 };
 
 struct SourceLoc {
