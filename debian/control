@@ -1,0 +1,36 @@
+Source: opensim
+Section: unknown
+Priority: extra
+Maintainer: bobby <bobby@laptop.org>
+Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, python
+Standards-Version: 3.8.1
+Homepage: http://opensimproject.org
+
+Package: opensim
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Tool to simulate system dynamics models.
+ System dynamics (SD) is a method for studying the complex systems that
+ make up the world we live in. This package installs the opensim command
+ line program to allow the simulation of system dynamics models.
+
+Package: opensim-gtk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Tool to visually create and edit system dynamics models.
+ System dynamics (SD) is a method for studying the complex systems that
+ make up the world we live in. Systems ranging from sheep herding to
+ national development planning can be explored with SD. What system
+ dynamics brings is a focus on the feedback loops and time delays that
+ produce the behavior of systems, and the visual representation systems.
+ SD modeling involves drawing the structure of the model on the computer
+ followed by filling in the mathematical details. This contrasts with
+ writing a computer program that tries to capture the same behavior
+ while managing computer resources and worrying about reading and
+ writing files. The System Dynamics approach is more transparent and
+ leaves the learner free to worry about the problem and system at hand.
+
+Package: opensim-doc
+Architecture: all
+Description: documentation for opensim
+ This package installs the documentation for opensim.
