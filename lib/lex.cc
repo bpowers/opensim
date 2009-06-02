@@ -81,8 +81,7 @@ Scanner::Scanner(std::string fName,
   reservedWords = new StringMap<uint32_t>(16);
 
   reserve("if", Tag::If);
-  reserve("integral", Tag::Integral);
-  reserve("Model", Tag::Model);
+  reserve("class", Tag::Class);
 }
 
 
