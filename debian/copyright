@@ -1,25 +1,36 @@
-This package was debianized by bobby <bobby@laptop.org> on
+This package was debianized by Bobby Powers <bobbypowers@gmail.com> on
 Tue, 02 Jun 2009 15:16:34 -0400.
 
-It was downloaded from <url://example.com>
+It was downloaded from http://opensimproject.org
 
 Upstream Author(s):
 
-    <put author's name and email here>
-    <likewise for another author>
+    Bobby Powers <bobbypowers@gmail.com>
 
 Copyright:
 
-    <Copyright (C) YYYY Name OfAuthor>
-    <likewise for another author>
+    Copyright (C) 2008-2009 Bobby Powers
 
 License:
 
-    <Put the license of the package here indented by 4 spaces>
+    OpenSim is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenSim is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License with
+    the Debian GNU/Linux distribution in the file
+    /usr/share/common-licenses/GPL-3; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 The Debian packaging is:
 
-    Copyright (C) 2009 bobby <bobby@laptop.org>
+    Copyright (C) 2009 Bobby Powers <bobby@laptop.org>
 
 and is licensed under the GPL version 3, 
 see `/usr/share/common-licenses/GPL-3'.

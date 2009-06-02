@@ -1,5 +1,7 @@
 opensim (0.5.90-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
+  * First Debian package
 
- -- bobby <bobby@laptop.org>  Tue, 02 Jun 2009 15:16:34 -0400
+ -- Bobby Powers <bobbypowers@gmail.com>  Tue, 02 Jun 2009 15:16:34 -0400
+

@@ -1,4 +1,4 @@
-EXTRA_DIST            = bootstrap examples packaging doc m4 debian
+EXTRA_DIST            = bootstrap examples packaging doc m4 debian config
 SUBDIRS               = opensim tests share icons src
 
 MAINTAINERCLEANFILES  = Makefile.in aclocal.m4 configure \
