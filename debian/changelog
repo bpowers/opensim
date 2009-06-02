@@ -1,3 +1,9 @@
+opensim (0.5.90-2) unstable; urgency=low
+
+  * Update the automake files to include missing files
+
+ -- Bobby Powers <bobbypowers@gmail.com>  Tue, 02 Jun 2009 18:02:04 -0400
+
 opensim (0.5.90-1) unstable; urgency=low
 
   * Initial release
