@@ -22,5 +22,5 @@ EXTRA_DIST = $(icons_DATA) model-icon.svg model-icon.png
 #app_DATA = $(icons_DATA)
 
 
-hicolordir = /usr/share/icons/hicolor/scalable/apps
+hicolordir = $(iconsdir)/hicolor/scalable/apps
 hicolor_DATA = model-icon.svg
