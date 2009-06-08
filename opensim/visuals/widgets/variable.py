@@ -30,7 +30,7 @@ import cairo
 import pango
 import math
 
-from gaphas.item import Item
+from item import SimItem
 from gaphas.connector import Handle, LinePort
 from gaphas.geometry import Rectangle
 from gaphas.state import observed, reversible_property
@@ -44,7 +44,7 @@ LINE_WIDTH = 2
 ICON_SIZE = 55
 PADDING = 5
 
-class VariableItem(Item):
+class VariableItem(SimItem):
 
   __gtype_name__ = 'VariableItem'
 

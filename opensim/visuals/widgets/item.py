@@ -27,7 +27,8 @@ import gobject
 import gtk
 import math
 
-from gaphas.item import Item
+from gaphas.item import Item, Element
+from gaphas.state import observed, reversible_property
 
 import logging
 
@@ -36,4 +37,11 @@ class SimItem(Item):
 
   def __init__(self):
     super(SimItem, self).__init__()
+
+
+class SimElement(SimItem, Element):
+
+  def __init__(self):
+    Element.__init__(self)
+    SimItem.__init__(self)
 

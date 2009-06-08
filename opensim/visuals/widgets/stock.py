@@ -28,7 +28,7 @@ import gtk
 import math
 import cairo
 
-from gaphas.item import Element
+from item import SimElement
 from gaphas.connector import Handle
 from gaphas.geometry import Rectangle
 
@@ -41,7 +41,7 @@ LINE_WIDTH = 2.0
 PADDING = 5.0
 
 
-class StockItem(Element):
+class StockItem(SimElement):
 
   __gtype_name__ = 'StockItem'
 
