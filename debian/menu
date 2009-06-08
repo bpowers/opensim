@@ -1,0 +1,2 @@
+?package(opensim-gtk):needs="X11|text|vc|wm" section="Applications/Education"\
+  title="OpenSim" command="/usr/bin/opensim-gtk"
