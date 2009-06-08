@@ -35,6 +35,7 @@ import libxml2
 
 import gaphas
 import gaphas.tool as tool
+from gaphas.view import View
 from gaphas.tool import HandleTool, ItemTool
 
 from opensim.engine import Simulator
@@ -92,6 +93,12 @@ class SimView(gaphas.GtkView):
       old_item = self._focused_item
       self._focused_item = item
       self.emit('focus-changed', old_item)
+
+  # what we really want is to override focused_item, which we have to
+  # redefine here.
+  focused_item = property(lambda s: s._focused_item,
+                          _set_focused_item, View._del_focused_item,
+                          'The item with focus (receives key events a.o.)')
 
 
 class Canvas(gtk.ScrolledWindow):
