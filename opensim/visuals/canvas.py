@@ -74,6 +74,25 @@ class SimView(gaphas.GtkView):
 
     self.set_size_request(1440, 900)
 
+  def _set_focused_item(self, item):
+    '''
+    Set the focused item, which is also added to the selected_items set.
+
+    We override this because I find it useful to pass along the old,
+    rather than the new item that had focus (which is the opposite of
+    what Gaphas currently does).  I override it here so that we can
+    rely on upstream Gaphas.
+    '''
+    if not item is self._focused_item:
+      self.queue_draw_item(self._focused_item, item)
+
+    if item:
+      self.select_item(item)
+    if item is not self._focused_item:
+      old_item = self._focused_item
+      self._focused_item = item
+      self.emit('focus-changed', old_item)
+
 
 class Canvas(gtk.ScrolledWindow):
 
