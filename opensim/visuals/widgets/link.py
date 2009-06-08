@@ -25,7 +25,6 @@
 
 import gobject
 import gtk
-import goocanvas
 import math
 from math import pi
 import cairo
