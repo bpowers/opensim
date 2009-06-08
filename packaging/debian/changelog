@@ -1,3 +1,11 @@
+opensim (0.5.91-1) unstable; urgency=low
+
+  * Update to upstream 0.5.91
+  * Move debian files to packaging/debian
+  * Properly create manpage
+
+ -- Bobby Powers <bobbypowers@gmail.com>  Mon, 08 Jun 2009 16:22:25 -0400
+
 opensim (0.5.90-2) unstable; urgency=low
 
   * Update the automake files to include missing files
