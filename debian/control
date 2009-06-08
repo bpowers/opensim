@@ -2,14 +2,14 @@ Source: opensim
 Section: science
 Priority: optional
 Maintainer: Bobby Powers <bobbypowers@gmail.com>
-Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, python
+Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, python-control
 Standards-Version: 3.8.1
 Homepage: http://opensimproject.org
 
 Package: opensim
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-gobject, python-gaphas, python-rsvg, python-gtk2
-Description: Tool to visually create and edit system dynamics models.
+Description: Tool to visually create and edit system dynamics models
  System dynamics (SD) is a method for studying the complex systems that
  make up the world we live in. Systems ranging from sheep herding to
  national development planning can be explored with SD. What system
@@ -24,5 +24,6 @@ Description: Tool to visually create and edit system dynamics models.
 
 Package: opensim-doc
 Architecture: all
+Section: doc
 Description: documentation for opensim
  This package installs the documentation for opensim.

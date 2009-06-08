@@ -11,13 +11,5 @@ version=3
 #http://www.example.com/downloads.php opensim-(.*)\.tar\.gz
 
 # Uncomment to examine a Webserver directory
-#http://www.example.com/pub/opensim-(.*)\.tar\.gz
+http://dev.laptop.org/~bobbyp/sources/opensim-(.*)\.tar\.gz
 
-# Uncommment to examine a FTP server
-#ftp://ftp.example.com/pub/opensim-(.*)\.tar\.gz debian uupdate
-
-# Uncomment to find new files on sourceforge, for devscripts >= 2.9
-# http://sf.net/opensim/opensim-(.*)\.tar\.gz
-
-# Uncomment to find new files on GooglePages
-# http://example.googlepages.com/foo.html opensim-(.*)\.tar\.gz
