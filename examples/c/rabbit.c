@@ -25,7 +25,7 @@
  *===--------------------------------------------------------------------===//
  */
 
-#include "opensim_runtime.h"
+#include "opensim/c_runtime.h"
 
 
 //==--- generated sim-specific code --------------------------------------==//

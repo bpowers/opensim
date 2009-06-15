@@ -25,7 +25,7 @@
  *===--------------------------------------------------------------------===//
  */
 
-#include "opensim_runtime.h"
+#include "opensim/c_runtime.h"
 
 
 //==--- generated sim-specific code --------------------------------------==//
@@ -113,7 +113,8 @@ infection_new ()
   return opensim_sim_new (&infection_ops,
                           &infection_info,
                           &infection_def_control,
-                          &infection_defaults);
+                          &infection_defaults,
+                          NULL);
 }
 
 
