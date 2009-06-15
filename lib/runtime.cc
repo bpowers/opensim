@@ -31,6 +31,8 @@
 #include <iostream>
 #include <exception>
 
+#include <pthread.h>
+
 using namespace opensim;
 using namespace std;
 

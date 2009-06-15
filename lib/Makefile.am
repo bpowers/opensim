@@ -1,6 +1,7 @@
 
-AM_CXXFLAGS             = $(OPENSIM_LLVM_CXXFLAGS)
-AM_LDFLAGS              = $(OPENSIM_LLVM_LDFLAGS) $(OPENSIM_LLVM_LIBS)
+AM_CXXFLAGS             = $(OPENSIM_LLVM_CXXFLAGS) $(PTHREAD_CFLAGS)
+AM_LDFLAGS              = $(OPENSIM_LLVM_LDFLAGS) \
+                          $(OPEMSIM_LLVM_LIBS) $(PTHREAD_LIBS)
 
 INCLUDES                = -I$(top_srcdir)/include -I$(top_builddir)/include
 
