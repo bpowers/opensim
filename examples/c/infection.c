@@ -130,8 +130,8 @@ infection_init (sim_t *self)
   // simulations, there might be some maths in here, so that
   // the initial values of stocks can be based on an equation
   // involving constants.
-  *susceptible = self->constants[3];
-  *infected = self->constants[4];
+  *susceptible = self->constants->values[3];
+  *infected = self->constants->values[4];
 
   return 0;
 }
@@ -142,9 +142,9 @@ infection_simulate_flows (sim_t *self)
 {
   // these are convience aliases to make the equations readable.  they
   // get completely optimized away when compiled
-  real_t *number_of_contacts_per_day   = &self->constants[0];
-  real_t *prob_of_infection            = &self->constants[1];
-  real_t *total_population             = &self->constants[2];
+  real_t *number_of_contacts_per_day   = &self->constants->values[0];
+  real_t *prob_of_infection            = &self->constants->values[1];
+  real_t *total_population             = &self->constants->values[2];
   real_t *time                         = &self->curr->values[0];
   real_t *daily_contacts_per_infected  = &self->curr->values[1];
   real_t *proportion_susceptible       = &self->curr->values[2];
@@ -193,7 +193,11 @@ int
 main (int argc, char *argv[])
 {
   sim_t *sim;
-  int ret;
+  int err;
+
+  err = opensim_init ();
+  if (err)
+    return err;
 
   // allocate space for a new simulation.
   sim = infection_new ();
@@ -205,21 +209,23 @@ main (int argc, char *argv[])
   // before we simulate, we have to initialize the sim.  This means that
   // we allocate space to store the values for auxiliary and flow
   // variables, and set the initial values for the stocks.
-  ret = infection_init (sim);
-  if (ret != 0)
-    return ret;
+  err = infection_init (sim);
+  if (err)
+    return err;
 
   // now that we have an initialized sim object, we can simulate it
   // from start to finish using this convenience function.
-  ret = opensim_simulate_euler (sim);
-  if (ret != 0)
-    return ret;
+  err = opensim_simulate_euler (sim);
+  if (err)
+    return err;
 
 
   // finally, its good practice to free the simulation to get back its
   // memory.  Not so important here, but if this were embedded in a
   // larger program, you would begin to leak memory.
   opensim_sim_free (sim);
+
+  opensim_exit ();
 
   return 0;
 }

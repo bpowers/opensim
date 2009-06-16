@@ -168,8 +168,8 @@ rabbit_init (sim_t *self)
 {
   opensim_sim_init (self);
 
-  real_t *initial_rabbit_population = &self->constants[0];
-  real_t *initial_fox_population = &self->constants[3];
+  real_t *initial_rabbit_population = &self->constants->values[0];
+  real_t *initial_fox_population = &self->constants->values[3];
   real_t *fox_population = &self->curr->values[8];
   real_t *rabbit_population = &self->curr->values[9];
 
@@ -189,14 +189,14 @@ rabbit_simulate_flows (sim_t *self)
 {
   // these are convience aliases to make the equations readable.  they
   // get completely optimized away when compiled
-  real_t *initial_rabbit_population  = &self->constants[0];
-  real_t *average_rabbit_life        = &self->constants[1];
-  real_t *rabbit_birth_rate          = &self->constants[2];
-  real_t *initial_fox_population     = &self->constants[3];
-  real_t *average_fox_life           = &self->constants[4];
-  real_t *fox_birth_rate             = &self->constants[5];
-  real_t *fox_food_requirements      = &self->constants[6];
-  real_t *carrying_capacity          = &self->constants[7];
+  real_t *initial_rabbit_population  = &self->constants->values[0];
+  real_t *average_rabbit_life        = &self->constants->values[1];
+  real_t *rabbit_birth_rate          = &self->constants->values[2];
+  real_t *initial_fox_population     = &self->constants->values[3];
+  real_t *average_fox_life           = &self->constants->values[4];
+  real_t *fox_birth_rate             = &self->constants->values[5];
+  real_t *fox_food_requirements      = &self->constants->values[6];
+  real_t *carrying_capacity          = &self->constants->values[7];
   real_t *time                       = &self->curr->values[0];
   real_t *rabbit_crowding            = &self->curr->values[1];
   real_t *fox_consumption_of_rabbits = &self->curr->values[2];
@@ -270,7 +270,11 @@ int
 main (int argc, char *argv[])
 {
   sim_t *sim;
-  int ret;
+  int err;
+
+  err = opensim_init ();
+  if (err)
+    return err;
 
   // allocate space for a new simulation.
   sim = rabbit_new ();
@@ -282,21 +286,23 @@ main (int argc, char *argv[])
   // before we simulate, we have to initialize the sim.  This means that
   // we allocate space to store the values for auxiliary and flow
   // variables, and set the initial values for the stocks.
-  ret = rabbit_init (sim);
-  if (ret != 0)
-    return ret;
+  err = rabbit_init (sim);
+  if (err != 0)
+    return err;
 
   // now that we have an initialized sim object, we can simulate it
   // from start to finish using this convenience function.
-  ret = opensim_simulate_euler (sim);
-  if (ret != 0)
-    return ret;
+  err = opensim_simulate_euler (sim);
+  if (err != 0)
+    return err;
 
 
   // finally, its good practice to free the simulation to get back its
   // memory.  Not so important here, but if this were embedded in a
   // larger program, you would begin to leak memory.
   opensim_sim_free (sim);
+
+  opensim_exit ();
 
   return 0;
 }

@@ -25,7 +25,7 @@
  */
 
 #include "opensim/c_runtime.h"
-
+#include <pthread.h>
 
 /**
  * opensim_data_free:
@@ -61,7 +61,7 @@ opensim_sim_free (sim_t *sim)
     opensim_data_free (sim->next);
 
   if (sim->constants)
-    free (sim->constants);
+    opensim_data_free (sim->constants);
 
   free (sim);
 }
@@ -124,6 +124,7 @@ opensim_data_new (uint32_t count)
  * @info: class information
  * @control: time variables
  * @defaults: default constants
+ * @lookups: lookup tables
  *
  * This function does the common tasks associated with creating a
  * correctly sized new sim_t.  It requires a number of parameters and
@@ -155,8 +156,7 @@ opensim_sim_new (sim_ops *ops,
 
   sim->lookups = lookups;
 
-  sim->num_constants = defaults->count;
-  sim->constants = (real_t *)malloc (defaults->count * sizeof (real_t));
+  sim->constants = opensim_data_new (defaults->count);
   if (!sim->constants)
   {
     fprintf (stderr, "couldn't allocate memory for constants.\n");
@@ -164,8 +164,8 @@ opensim_sim_new (sim_ops *ops,
   }
 
   // initialize our instances constant values from the defaults
-  for (uint32_t i=0; i<defaults->count; ++i)
-    sim->constants[i] = defaults->values[i];
+  for (uint32_t i=0; i<sim->constants->count; ++i)
+    sim->constants->values[i] = defaults->values[i];
 
   return sim;
 }
@@ -235,6 +235,48 @@ opensim_sim_init (sim_t *sim)
   }
 
   return 0;
+}
+
+
+void *
+opensim_output_thread (void *param)
+{
+
+  return NULL;
+}
+
+
+pthread_mutex_t data_mutex;
+pthread_cond_t data_present_condition;
+uint8_t data_present;
+
+
+/**
+ * opensim_init:
+ *
+ * This initializes the opensim runtime system.  Its used for getting
+ * threading and any state necessary set up.
+ *
+ * Returns: 0 on success, a negative error code on error.
+ */
+int32_t
+opensim_init ()
+{
+  
+
+  return 0;
+}
+
+
+/**
+ * opensim_exit:
+ *
+ * This exits the opensim runtime system, cleaning up state and theading.
+ */
+void
+opensim_exit ()
+{
+
 }
 
 

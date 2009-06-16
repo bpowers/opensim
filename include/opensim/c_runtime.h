@@ -122,12 +122,15 @@ struct _sim_t
 
   control_t time;
 
-  uint32_t num_constants;
-  real_t *constants;
+  data_t *constants;
 
   tables_t *lookups;
 };
 
+
+/* initialize and exit from the opensim runtime */
+int32_t opensim_init();
+void opensim_exit();
 
 /* functions to free memory created during the course of simulating */
 void opensim_data_free (data_t *sim);
