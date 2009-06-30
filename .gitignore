@@ -21,6 +21,8 @@ dolt*
 config.h.in
 config.h.in~
 
+autom4te.cache/
+
 src/opensim2
 
 autoconf/config.guess
@@ -37,5 +39,7 @@ config.log
 config.status
 include/opensim/config.h
 
+examples/c/infection
+examples/c/rabbit
 
 .DS_Store
