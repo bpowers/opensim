@@ -153,8 +153,8 @@ Token *Scanner::getToken() {
     if (getChar('=')) {
       // eat the second '=', since we matched
       getChar();
-      return new Word("==", Tag::Eq, fileName,
-                      startLoc, SourceLoc(line, start+2));
+      return new Token("==", Tag::Eq, fileName,
+                       startLoc, SourceLoc(line, start+2));
     } else
       return new Token('=', fileName,
                        startLoc, SourceLoc(line, start+2));
@@ -190,8 +190,8 @@ inline Token *Scanner::LexIdentifier(SourceLoc startLoc) {
   if (!t)
     t = Tag::Id;
 
-  return new Word(s, t, fileName, startLoc, SourceLoc(startLoc.line,
-                                                      pos-lineStart));
+  return new Token(s, t, fileName, startLoc, SourceLoc(startLoc.line,
+                                                       pos-lineStart));
 }
 
 
@@ -205,7 +205,7 @@ inline Token *Scanner::LexNumber(SourceLoc startLoc) {
   getChar();
 
   // finally, return our new number token.
-  return new Number(string(startPos, pos-startPos), num, fileName,
-                    startLoc, SourceLoc(startLoc.line, pos-lineStart));
+  return new Token(string(startPos, pos-startPos), num, fileName,
+                   startLoc, SourceLoc(startLoc.line, pos-lineStart));
 }
 

@@ -40,7 +40,6 @@ namespace llvm {
 
 namespace opensim {
 
-class Word;
 struct Token;
 struct SourceLoc;
 

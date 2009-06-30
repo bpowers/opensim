@@ -33,22 +33,32 @@
 
 namespace opensim {
 
+typedef uint32_t TagKind;
+
 struct Tag {
-  static const uint32_t And      = 256,
-                        Else     = 257,
-                        Eq       = 258,
-                        False    = 259,
-                        Id       = 260,
-                        If       = 261,
-                        Index    = 262,
-                        Le       = 263,
-                        Minus    = 264,
-                        Ne       = 265,
-                        Num      = 266,
-                        Or       = 267,
-                        True     = 268,
-                        TypeName = 269,
-                        Class    = 270;
+  static const TagKind And      = 256,
+                       Else     = 257,
+                       Eq       = 258,
+                       False    = 259,
+                       Id       = 260,
+                       If       = 261,
+                       Index    = 262,
+                       Le       = 263,
+                       Minus    = 264,
+                       Ne       = 265,
+                       Num      = 266,
+                       Or       = 267,
+                       True     = 268,
+                       TypeName = 269,
+                       Class    = 270;
+};
+
+typedef uint16_t TokKind;
+
+struct TokType {
+  static const TokKind Tok      = 512,
+                       Word     = 513,
+                       Number   = 514;
 };
 
 struct SourceLoc {
@@ -65,43 +75,36 @@ struct Token
   SourceLoc end;
   std::string file;
 
-  uint32_t tag;
+  TagKind tag;
   std::string iden;
-
-  Token(uint32_t t, std::string f, SourceLoc s, SourceLoc e) : tag(t) {
-    file = f;
-    start = s;
-    end = e;
-  }
-  Token() {}
-  virtual void dump();
-};
-
-
-struct Word: public Token
-{
-  Word(std::string lexeme, uint32_t t, std::string f,
-       SourceLoc s, SourceLoc e) {
-    tag = t;
-    iden = lexeme;
-    file = f;
-    start = s;
-    end = e;
-  }
-  Word(std::string lexeme, uint32_t t) {
-    tag = t;
-    iden = lexeme;
-  }
-  virtual void dump();
-};
-
-
-struct Number: public Token
-{
   real_t value;
 
-  Number(std::string lexeme, real_t val, std::string f,
+  TokKind kind;
+
+  Token(uint32_t t, std::string f, SourceLoc s, SourceLoc e) {
+    kind = TokType::Tok;
+    tag = (TagKind)t;
+    file = f;
+    start = s;
+    end = e;
+  }
+  Token(std::string lexeme, uint32_t t, std::string f,
+       SourceLoc s, SourceLoc e) {
+    kind = TokType::Word;
+    tag = (TagKind)t;
+    iden = lexeme;
+    file = f;
+    start = s;
+    end = e;
+  }
+  Token(std::string lexeme, uint32_t t) {
+    kind = TokType::Word;
+    tag = (TagKind)t;
+    iden = lexeme;
+  }
+  Token(std::string lexeme, real_t val, std::string f,
          SourceLoc s, SourceLoc e) {
+    kind = TokType::Number;
     tag = Tag::Num;
     iden = lexeme;
     value = val;
@@ -109,7 +112,9 @@ struct Number: public Token
     start = s;
     end = e;
   }
-  virtual void dump();
+  Token() {}
+  void dump();
+  const char *getTokenKindAsString();
 };
 
 }
