@@ -1,7 +1,6 @@
 //===--- main.cpp - OpenSim command line driver --------------------------===//
 //
-// Copyright 2008 Bobby Powers, portions copyright Free Software 
-//   Foundation, Inc.
+// Copyright 2008 Bobby Powers.
 //
 // This file is part of OpenSim.
 // 
@@ -24,27 +23,26 @@
 // allowing you to open OpenSim XML models and translate them to standard
 // output in one of several languages.
 //
-// The argument parsing is largly copied from the GNU Hello World project.
-//
 //===---------------------------------------------------------------------===//
 
 // project specific defines
 #include "opensim/config.h"
 #include "opensim/runtime.h"
 
-// standard library
-#include "stdio.h"
-#include "string.h"
-#include "unistd.h"
-#include "sys/time.h"
-
-#include "llvm/Support/ManagedStatic.h"
-#include "llvm/System/Signals.h"
-using namespace llvm;
-
 #include <iostream>
 #include <memory>
 using std::cerr;
+
+// standard library
+#include <cstdio>
+#include <cstring>
+#include <unistd.h>
+#include <sys/time.h>
+
+#include <llvm/Support/ManagedStatic.h>
+#include <llvm/System/Signals.h>
+using namespace llvm;
+
 
 const char *program_name;
 

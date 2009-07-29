@@ -97,11 +97,6 @@ struct Token
     start = s;
     end = e;
   }
-  Token(std::string lexeme, uint32_t t) {
-    kind = TokType::Word;
-    tag = (TagKind)t;
-    iden = lexeme;
-  }
   Token(std::string lexeme, real_t val, std::string f,
          SourceLoc s, SourceLoc e) {
     kind = TokType::Number;

@@ -96,6 +96,7 @@ inline bool Scanner::getChar() {
   if (pos < fileEnd)
     peek = *++pos;
 
+  // XXX: do we really want this implicit cast to bool?
   return peek;
 }
 
@@ -107,7 +108,7 @@ inline bool Scanner::getChar(const char c) {
 }
 
 
-inline void Scanner::reserve(std::string lexeme, uint32_t t) {
+void Scanner::reserve(std::string lexeme, uint32_t t) {
 
   (*reservedWords)[lexeme] = t;
 }
@@ -158,6 +159,8 @@ Token *Scanner::getToken() {
     } else
       return new Token('=', fileName,
                        startLoc, SourceLoc(line, start+2));
+  default:
+    break;
   }
 
   // match numbers first, which either begin with a digit or a decimal
@@ -201,6 +204,10 @@ inline Token *Scanner::LexNumber(SourceLoc startLoc) {
   char *end;
   real_t num = strtod(pos, &end);
 
+  // by advancing to one before the end of the number and calling
+  // getChar(), we set peek to be whatever the char after the number
+  // is.  Since getChar is inlined, its not really a performance
+  // problem.
   pos = end - 1;
   getChar();
 

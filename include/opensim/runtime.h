@@ -50,6 +50,5 @@ public:
 
 }
 
-
 #endif // OPENSIM_RUN_H
 

@@ -1,0 +1,30 @@
+current state of things -
+
+complete:
+- lexer
+
+to do:
+- parser:
+  - 
+- runtime:
+  - implement builtin classes
+    - base classes like 'stock, flow, aux, etc'
+    - standard modeling library
+  - populate runtime with builtin classes
+    - so that the parser can instantiate models
+- arrays?!?
+  - at least carry out some thought experiments so that we don't end up
+    having to rewrite a bunch of this crap again.
+
+notes:
+- parser
+  - i don't know if allocating space for a new token in the lexer and
+    deleting it in the parser is the best way to go about it.  LLVM seems
+    to pass the lexer an allocated token, and have the lexer fill it in.
+    This is definitely not what I need to worry about at this juncture in
+    time.
+- runtime
+  - added objects should be tagged with the file they came from, so that it
+    will be possible to remove everything from a file from the runtime
+    instance.  This opens up a can of worms in that other objects might
+    depend on objects from that file, so put it off for now.
