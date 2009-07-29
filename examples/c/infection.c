@@ -61,21 +61,23 @@ static sim_ops infection_ops = {
   .update_stocks  = infection_update_stocks
 };
 
-static char *infection_var_names[] = {"time",
-                                      "daily_contacts_per_infected",
-                                      "proportion_susceptible",
-                                      "susceptibles_contacted_daily",
-                                      "infection_rate",
-                                      "susceptible",
-                                      "infected"
-                                     };
+static const char *infection_var_names[] = {
+  "time",
+  "daily_contacts_per_infected",
+  "proportion_susceptible",
+  "susceptibles_contacted_daily",
+  "infection_rate",
+  "susceptible",
+  "infected"
+};
 
-static char *infection_const_names[] = {"number_of_contacts_per_day",
-                                        "prob_of_infection",
-                                        "total_population",
-                                        "susceptible",
-                                        "infected"
-                                       };
+static const char *infection_const_names[] = {
+  "number_of_contacts_per_day",
+  "prob_of_infection",
+  "total_population",
+  "susceptible",
+  "infected"
+};
 
 static class_info infection_info = {
   .var_names = infection_var_names,

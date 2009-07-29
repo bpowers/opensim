@@ -103,10 +103,10 @@ typedef struct _control_t control_t;
 struct _class_info
 {
   uint32_t num_vars;
-  char **var_names;
+  const char **var_names;
 
   uint32_t num_constants;
-  char **constant_names;
+  const char **constant_names;
 };
 typedef struct _class_info class_info;
 
@@ -156,7 +156,7 @@ int32_t opensim_sim_init (sim_t *sim);
 
 /* functions to print out data */
 int32_t opensim_data_print (FILE *file, data_t *data);
-int32_t opensim_header_print (FILE *file, char *names[], uint32_t count);
+int32_t opensim_header_print (FILE *file, const char *names[], uint32_t count);
 
 /* run a simulation using euler integration */
 int32_t opensim_simulate_euler (sim_t *sim);

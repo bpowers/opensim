@@ -32,7 +32,7 @@
  * @data: the data_t object to be freed
  *
  * This function frees the given data_t object. It is undefined to call
- * this function with @sim being NULL.
+ * this function with @data being NULL.
  */
 void
 opensim_data_free (data_t *data)
@@ -196,6 +196,7 @@ opensim_table_new (uint32_t size)
   if (!new_table->x || !new_table->y)
   {
     fprintf (stderr, "couldn't allocate array for new table_t.\n");
+    // make sure we cleanup anything we managed to allocate.
     if (new_table->x)
       free (new_table->x);
     if (new_table->y)
@@ -322,7 +323,7 @@ opensim_data_print (FILE *file, data_t *data)
  * Returns: 0 on success, a negative number on failure.
  */
 int32_t
-opensim_header_print (FILE *file, char *names[], uint32_t count)
+opensim_header_print (FILE *file, const char *names[], uint32_t count)
 {
   // gracefully handle NULL and zero-length data.
   if (!names || count == 0)
@@ -360,7 +361,7 @@ opensim_simulate_euler (sim_t *sim)
 
   opensim_header_print (stdout, sim->info->var_names, sim->info->num_vars);
 
-  for (double time = start; time <= end; time = time + step)
+  for (real_t time = start; time <= end; time = time + step)
   {
     // set the time variable in the data here, so we don't have
     // to pass time explicitly to simulate functions.
@@ -389,6 +390,9 @@ opensim_simulate_euler (sim_t *sim)
     else
       do_save = false;
 
+    // for now we just shuffle curr and next back and forth.  if we get
+    // around to having a seperate thread for writing out the data, this
+    // part will change
     data_t *tmp = sim->curr;
     sim->curr = sim->next;
     sim->next = tmp;

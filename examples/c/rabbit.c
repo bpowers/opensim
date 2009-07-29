@@ -67,27 +67,29 @@ static sim_ops rabbit_ops = {
   .update_stocks  = rabbit_update_stocks
 };
 
-static char *rabbit_var_names[] = {"time",
-                                   "rabbit_crowding",
-                                   "fox_consumption_of_rabbits",
-                                   "rabbit_deaths",
-                                   "rabbit_births",
-                                   "fox_births",
-                                   "fox_food_availability",
-                                   "fox_deaths",
-                                   "fox_population",
-                                   "rabbit_population"
-                                  };
+static const char *rabbit_var_names[] = {
+  "time",
+  "rabbit_crowding",
+  "fox_consumption_of_rabbits",
+  "rabbit_deaths",
+  "rabbit_births",
+  "fox_births",
+  "fox_food_availability",
+  "fox_deaths",
+  "fox_population",
+  "rabbit_population"
+};
 
-static char *rabbit_const_names[] = {"initial_rabbit_population",
-                                     "average_rabbit_life",
-                                     "rabbit_birth_rate",
-                                     "initial_fox_population",
-                                     "average_fox_life",
-                                     "fox_birth_rate",
-                                     "fox_food_requirements",
-                                     "carrying_capacity"
-                                    };
+static const char *rabbit_const_names[] = {
+  "initial_rabbit_population",
+  "average_rabbit_life",
+  "rabbit_birth_rate",
+  "initial_fox_population",
+  "average_fox_life",
+  "fox_birth_rate",
+  "fox_food_requirements",
+  "carrying_capacity"
+};
 
 static class_info rabbit_info = {
   .var_names = rabbit_var_names,
