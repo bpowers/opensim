@@ -43,6 +43,9 @@ extern "C" {
 #define ERRINIT 2
 #define ERRSIM  3
 
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
 
 // easily switch between double and float
 typedef double real_t;

@@ -412,19 +412,20 @@ real_t
 lookup (table_t *table, real_t index)
 {
   uint32_t size = table->size;
-  if (table->size == 0) return 0;
+  if (unlikely(table->size == 0)) return 0;
 
   // if the request is outside the min or max, then we return
   // the nearest element of the array
-  if (index < table->x[0])
+  if (unlikely(index < table->x[0]))
     return table->y[0];
-  else if (index > table->x[size-1])
+  else if (unlikely(index > table->x[size-1]))
     return table->y[size-1];
 
   for (uint32_t i=1; i < size; ++i)
   {
-    if (index == table->x[i])
-      return table->y[i];
+    // XXX: this shouldn't matter
+    //if (index == table->x[i])
+    //  return table->y[i];
 
     if (index < table->x[i])
     {

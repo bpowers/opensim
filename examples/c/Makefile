@@ -3,7 +3,7 @@
 # see COPYING for details. Written by Bobby Powers <bobbypowers@gmail.com>
 
 CC=gcc -std=c99
-CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include
+CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include -g
 RUNTIME=../../lib/c_runtime.c
 
 all: rabbit infection
