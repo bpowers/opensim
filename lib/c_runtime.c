@@ -414,42 +414,27 @@ lookup (table_t *table, real_t index)
   uint32_t size = table->size;
   if (unlikely(table->size == 0)) return 0;
 
-  real_t *x = table->x;
-  real_t *y = table->y;
-
   // if the request is outside the min or max, then we return
   // the nearest element of the array
-  if (unlikely(index < x[0]))
-    return y[0];
-  else if (unlikely(index > x[size-1]))
-    return y[size-1];
+  if (unlikely(index < table->x[0]))
+    return table->y[0];
+  else if (unlikely(index > table->x[size-1]))
+    return table->y[size-1];
 
-  // binary search makes more sense here
-  uint32_t low = 0;
-  uint32_t high = size;
-  uint32_t mid;
-  while (low < high)
+  for (uint32_t i=1; i < size; ++i)
   {
-    mid = low + ((high-low)/2);
+    // XXX: this shouldn't matter
+    //if (index == table->x[i])
+    //  return table->y[i];
 
-    if (x[mid] < index)
-      low = mid + 1;
-    else
-      high = mid;
-  }
+    if (index < table->x[i])
+    {
+      // slope = deltaY/deltaX
+      real_t slope = (table->y[i] - table->y[i-1])
+                    /(table->x[i] - table->x[i-1]);
 
-  // at this point low == high, so using 'i' seems more readable.
-  uint32_t i = low;
-  if (unlikely(x[i] == index))
-  {
-    return y[i];
-  }
-  else
-  {
-    // slope = deltaY/deltaX
-    real_t slope = (y[i] - y[i-1]) / (x[i] - x[i-1]);
-
-    return (index-x[i-1])*slope + y[i-1];
+      return (index-table->x[i-1])*slope + table->y[i-1];
+    }
   }
 
   return 0;
