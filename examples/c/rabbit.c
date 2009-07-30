@@ -298,7 +298,6 @@ main (int argc, char *argv[])
   if (err != 0)
     return err;
 
-
   // finally, its good practice to free the simulation to get back its
   // memory.  Not so important here, but if this were embedded in a
   // larger program, you would begin to leak memory.
