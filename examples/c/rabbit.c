@@ -64,7 +64,8 @@ int32_t rabbit_update_stocks (sim_t *);
 // bitcode.
 static sim_ops rabbit_ops = {
   .simulate_flows = rabbit_simulate_flows,
-  .update_stocks  = rabbit_update_stocks
+  .update_stocks  = rabbit_update_stocks,
+  .integ_method   = opensim_simulate_euler
 };
 
 static const char *rabbit_var_names[] = {
@@ -89,21 +90,6 @@ static const char *rabbit_const_names[] = {
   "fox_birth_rate",
   "fox_food_requirements",
   "carrying_capacity"
-};
-
-static class_info rabbit_info = {
-  .var_names = rabbit_var_names,
-  .num_vars = sizeof (rabbit_var_names) / sizeof (char *),
-
-  .constant_names = rabbit_const_names,
-  .num_constants = sizeof (rabbit_const_names) / sizeof (char *)
-};
-
-static control_t rabbit_def_control = {
-  .start     = 0.0,
-  .end       = 50.0,
-  .step      = 0.015625,
-  .save_step = 1.0
 };
 
 static real_t rabbit_constants[] = {500.0, // initial_rabbit_population
@@ -151,17 +137,32 @@ static tables_t rabbit_lookups = {
   .count = sizeof (tables) / sizeof (table_t *)
 };
 
+static class_t rabbit_class = {
+  .var_names = rabbit_var_names,
+  .num_vars = sizeof (rabbit_var_names) / sizeof (char *),
+
+  .constant_names = rabbit_const_names,
+  .num_constants = sizeof (rabbit_const_names) / sizeof (char *),
+
+  .ops = &rabbit_ops,
+
+  .def_control.start     = 0.0,
+  .def_control.end       = 50.0,
+  .def_control.step      = 0.015625,
+  .def_control.save_step = 1.0,
+
+  .defaults = &rabbit_defaults,
+  .def_lookups = &rabbit_lookups
+};
+
+
 
 sim_t *
 rabbit_new ()
 {
   // basically all we have to do here is call the runtime sim_new function
-  // with pointers to our infection specific structures
-  return opensim_sim_new (&rabbit_ops,
-                          &rabbit_info,
-                          &rabbit_def_control,
-                          &rabbit_defaults,
-                          &rabbit_lookups);
+  // with a pointer to our class
+  return opensim_sim_new (&rabbit_class);
 }
 
 
@@ -293,8 +294,8 @@ main (int argc, char *argv[])
     return err;
 
   // now that we have an initialized sim object, we can simulate it
-  // from start to finish using this convenience function.
-  err = opensim_simulate_euler (sim);
+  // from start to finish using this function.
+  err = opensim_simulate (sim);
   if (err != 0)
     return err;
 

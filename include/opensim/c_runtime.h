@@ -59,14 +59,16 @@ struct _data_t
 };
 typedef struct _data_t data_t;
 
+
 // the data structure representing a lookup table
 struct _table_t
 {
-  uint32_t size;
+  uint16_t size;
   real_t *x;
   real_t *y;
 };
 typedef struct _table_t table_t;
+
 
 // the data structure representing a lookup table
 struct _tables_t
@@ -76,6 +78,9 @@ struct _tables_t
 };
 typedef struct _tables_t tables_t;
 
+
+// forward declaration so we can use it in the function prototypes for
+// sim_ops
 struct _sim_t;
 typedef struct _sim_t sim_t;
 
@@ -87,8 +92,10 @@ struct _sim_ops
 {
   int32_t (*simulate_flows) (sim_t *);
   int32_t (*update_stocks) (sim_t *);
+  int32_t (*integ_method) (sim_t *);
 };
 typedef struct _sim_ops sim_ops;
+
 
 // control keeps track of the start, end,step and save_step constants.
 // I'm putting these in their own structure because they aren't really
@@ -103,22 +110,31 @@ struct _control_t
 typedef struct _control_t control_t;
 
 
-struct _class_info
+struct _class_t
 {
   uint32_t num_vars;
   const char **var_names;
 
   uint32_t num_constants;
   const char **constant_names;
-};
-typedef struct _class_info class_info;
 
+  sim_ops *ops;
+
+  // the class provides defaults for the creation of new instances.
+  control_t def_control;
+  data_t *defaults;
+  tables_t *def_lookups;
+};
+typedef struct _class_t class_t;
+
+
+struct _thread_info;
+typedef struct _thread_info thread_info;
 
 // the sim structure represents an instance of a simulation
 struct _sim_t
 {
-  sim_ops *ops;
-  class_info *info;
+  class_t *_class;
 
   data_t *curr;
   data_t *next;
@@ -145,11 +161,7 @@ data_t *opensim_data_new (uint32_t count);
 
 /* create a new sim_t structure, usually wrapped by a sim-specific
  * sim_new function */
-sim_t *opensim_sim_new (sim_ops *ops,
-                        class_info *info,
-                        control_t *control,
-                        data_t *defaults,
-                        tables_t *lookups);
+sim_t *opensim_sim_new (class_t *_class);
 
 /* create a new table to store lookup data */
 table_t *opensim_table_new (uint32_t size);
@@ -163,6 +175,9 @@ int32_t opensim_header_print (FILE *file, const char *names[], uint32_t count);
 
 /* run a simulation using euler integration */
 int32_t opensim_simulate_euler (sim_t *sim);
+
+/* simulate an instantiated model */
+int32_t opensim_simulate (sim_t *sim);
 
 
 real_t max (real_t a, real_t b);

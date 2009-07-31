@@ -58,7 +58,8 @@ int32_t infection_update_stocks (sim_t *);
 // bitcode.
 static sim_ops infection_ops = {
   .simulate_flows = infection_simulate_flows,
-  .update_stocks  = infection_update_stocks
+  .update_stocks  = infection_update_stocks,
+  .integ_method   = opensim_simulate_euler
 };
 
 static const char *infection_var_names[] = {
@@ -79,21 +80,6 @@ static const char *infection_const_names[] = {
   "infected"
 };
 
-static class_info infection_info = {
-  .var_names = infection_var_names,
-  .num_vars = sizeof (infection_var_names) / sizeof (char *),
-
-  .constant_names = infection_const_names,
-  .num_constants = sizeof (infection_const_names) / sizeof (char *)
-};
-
-static control_t infection_def_control = {
-  .start     = 0.0,
-  .end       = 20.0,
-  .step      = 0.5,
-  .save_step = 1.0
-};
-
 static real_t infection_constants[] = {1.0,  // number_of_contacts_per_day
                                        0.5,  // prob_of_infection
                                        23.0, // total_population
@@ -107,16 +93,31 @@ static data_t infection_defaults = {
 };
 
 
+static class_t infection_class = {
+  .var_names = infection_var_names,
+  .num_vars = sizeof (infection_var_names) / sizeof (char *),
+
+  .constant_names = infection_const_names,
+  .num_constants = sizeof (infection_const_names) / sizeof (char *),
+
+  .ops = &infection_ops,
+
+  .def_control.start     = 0.0,
+  .def_control.end       = 20.0,
+  .def_control.step      = 0.5,
+  .def_control.save_step = 1.0,
+
+  .defaults = &infection_defaults,
+  .def_lookups = NULL
+};
+
+
 sim_t *
 infection_new ()
 {
   // basically all we have to do here is call the runtime sim_new function
   // with pointers to our infection specific structures
-  return opensim_sim_new (&infection_ops,
-                          &infection_info,
-                          &infection_def_control,
-                          &infection_defaults,
-                          NULL);
+  return opensim_sim_new (&infection_class);
 }
 
 
@@ -216,8 +217,8 @@ main (int argc, char *argv[])
     return err;
 
   // now that we have an initialized sim object, we can simulate it
-  // from start to finish using this convenience function.
-  err = opensim_simulate_euler (sim);
+  // from start to finish using this function.
+  err = opensim_simulate (sim);
   if (err)
     return err;
 

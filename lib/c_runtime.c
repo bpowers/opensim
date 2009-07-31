@@ -27,6 +27,13 @@
 #include "opensim/c_runtime.h"
 #include <pthread.h>
 
+
+enum _flags
+{
+  QUIT = 0x1,
+  OUTPUT = 0x2
+};
+
 /**
  * opensim_data_free:
  * @data: the data_t object to be freed
@@ -133,11 +140,7 @@ opensim_data_new (uint32_t count)
  * Returns: a pointer to a correctly formed sim_t on success, NULL on error.
  */
 sim_t *
-opensim_sim_new (sim_ops *ops,
-                 class_info *info,
-                 control_t *control,
-                 data_t *defaults,
-                 tables_t *lookups)
+opensim_sim_new (class_t *_class)
 {
   sim_t *sim = (sim_t *)malloc (sizeof (sim_t));
   if (!sim)
@@ -146,17 +149,16 @@ opensim_sim_new (sim_ops *ops,
     return NULL;
   }
 
-  sim->ops = ops;
-  sim->info = info;
+  sim->_class = _class;
 
-  sim->time.start     = control->start;
-  sim->time.end       = control->end;
-  sim->time.step      = control->step;
-  sim->time.save_step = control->save_step;
+  sim->time.start     = _class->def_control.start;
+  sim->time.end       = _class->def_control.end;
+  sim->time.step      = _class->def_control.step;
+  sim->time.save_step = _class->def_control.save_step;
 
-  sim->lookups = lookups;
+  sim->lookups = _class->def_lookups;
 
-  sim->constants = opensim_data_new (defaults->count);
+  sim->constants = opensim_data_new (_class->defaults->count);
   if (!sim->constants)
   {
     fprintf (stderr, "couldn't allocate memory for constants.\n");
@@ -165,7 +167,7 @@ opensim_sim_new (sim_ops *ops,
 
   // initialize our instances constant values from the defaults
   for (uint32_t i=0; i<sim->constants->count; ++i)
-    sim->constants->values[i] = defaults->values[i];
+    sim->constants->values[i] = _class->defaults->values[i];
 
   return sim;
 }
@@ -227,8 +229,8 @@ opensim_sim_init (sim_t *sim)
   if (sim->next)
     opensim_data_free (sim->next);
 
-  sim->curr = opensim_data_new (sim->info->num_vars);
-  sim->next = opensim_data_new (sim->info->num_vars);
+  sim->curr = opensim_data_new (sim->_class->num_vars);
+  sim->next = opensim_data_new (sim->_class->num_vars);
   if (!sim->curr || !sim->next)
   {
     fprintf (stderr, "couldn't allocate memory for 'curr' or 'next'.\n");
@@ -247,10 +249,6 @@ opensim_output_thread (void *param)
 }
 
 
-pthread_mutex_t data_mutex;
-pthread_cond_t data_present_condition;
-uint8_t data_present;
-
 
 /**
  * opensim_init:
@@ -263,7 +261,11 @@ uint8_t data_present;
 int32_t
 opensim_init ()
 {
-  
+  pthread_t output_thread;
+  pthread_attr_t attr;
+
+  pthread_attr_init (&attr);
+  pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
 
   return 0;
 }
@@ -359,7 +361,8 @@ opensim_simulate_euler (sim_t *sim)
   uint32_t save_count = 0;
   uint32_t save_iterations = save_step / step;
 
-  opensim_header_print (stdout, sim->info->var_names, sim->info->num_vars);
+  opensim_header_print (stdout, sim->_class->var_names,
+                        sim->_class->num_vars);
 
   for (real_t time = start; time <= end; time = time + step)
   {
@@ -370,11 +373,11 @@ opensim_simulate_euler (sim_t *sim)
 
     // now simulate the flows. by definition this should only effect
     // the 'curr' member of sim.
-    sim->ops->simulate_flows (sim);
+    sim->_class->ops->simulate_flows (sim);
 
     // update our stocks in preperation for the next iteration. this
     // should only effect the 'next' member of sim.
-    sim->ops->update_stocks (sim);
+    sim->_class->ops->update_stocks (sim);
 
     // if we're suppose to 'save' or print the values from this
     // timestep, then we do it here.
@@ -401,6 +404,22 @@ opensim_simulate_euler (sim_t *sim)
 }
 
 
+/**
+ * opensim_simulate:
+ * @sim: the initialized simulation to be run.
+ *
+ * This function simulates an instantiated model.
+ *
+ * It uses the simulation method specified in _class->ops->integ_method.
+ *
+ * Returns: 0 on success, a negative number on failure.
+ */
+int32_t
+opensim_simulate (sim_t *sim)
+{
+  return sim->_class->ops->integ_method (sim);
+}
+
 inline real_t
 max (real_t a, real_t b)
 {
@@ -425,9 +444,9 @@ lookup (table_t *table, real_t index)
     return y[size-1];
 
   // binary search makes more sense here
-  uint32_t low = 0;
-  uint32_t high = size;
-  uint32_t mid;
+  uint16_t low = 0;
+  uint16_t high = size;
+  uint16_t mid;
   while (low < high)
   {
     mid = low + ((high-low)/2);
