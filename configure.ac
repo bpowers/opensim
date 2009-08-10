@@ -63,8 +63,6 @@ AC_PROG_INSTALL
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
-AC_C_CONST
-AC_TYPE_SIZE_T
 
 ACX_PTHREAD([])
 OPENSIM_LLVM_SETFLAGS([])
