@@ -25,13 +25,13 @@
  */
 
 #include "opensim/c_runtime.h"
-#include <pthread.h>
 
 
 enum _flags
 {
-  QUIT = 0x1,
-  OUTPUT = 0x2
+  SIM = 0x0,
+  OUTPUT = 0x1,
+  QUIT = 0x2
 };
 
 /**
@@ -54,6 +54,8 @@ opensim_data_free (data_t *data)
 /**
  * opensim_sim_free:
  * @sim: the sim_t object to be freed
+ *
+ * Free the given sim_t object.
  *
  * This function frees the given sim_t object and any associated data_t
  * objects.  It is undefined to call this function with @sim being NULL.

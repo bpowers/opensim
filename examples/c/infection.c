@@ -31,21 +31,21 @@
 //==--- generated sim-specific code --------------------------------------==//
 
 /*
-    sim variables:
-      0: number_of_contacts_per_day
-      1: prob_of_infection
-      2: total_population
-      3: susceptible
-      4: infected
+  sim variables:
+    0: number_of_contacts_per_day
+    1: prob_of_infection
+    2: total_population
+    3: susceptible
+    4: infected
 
-    data variables:
-      0: time
-      1: daily_contacts_per_infected
-      2: proportion_susceptible
-      3: susceptibles_contacted_daily
-      4: infection_rate
-      5: susceptible
-      6: infected
+  data variables:
+    0: time
+    1: daily_contacts_per_infected
+    2: proportion_susceptible
+    3: susceptibles_contacted_daily
+    4: infection_rate
+    5: susceptible
+    6: infected
  */
 
 // forward declarations of some functions, so we can point to them in
@@ -80,12 +80,13 @@ static const char *infection_const_names[] = {
   "infected"
 };
 
-static real_t infection_constants[] = {1.0,  // number_of_contacts_per_day
-                                       0.5,  // prob_of_infection
-                                       23.0, // total_population
-                                       21.0, // susceptible
-                                       2.0,  // infected
-                                      };
+static real_t infection_constants[] = {
+  1.0,  // number_of_contacts_per_day
+  0.5,  // prob_of_infection
+  23.0, // total_population
+  21.0, // susceptible
+  2.0,  // infected
+};
 
 static data_t infection_defaults = {
   .values = (real_t *)infection_constants,

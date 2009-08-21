@@ -51,7 +51,7 @@ Parser::Parser(std::string fName) {
 
   fprintf(stderr, "opensim: DEBUG: Parser mapped '%s' at %p (len:%d).\n",
           fileName.c_str(), fileBuffer->getBufferStart(),
-          fileBuffer->getBufferSize());
+          (int)fileBuffer->getBufferSize());
 
   scanner = new Scanner(fName, fileBuffer->getBufferStart(),
                         fileBuffer->getBufferEnd());

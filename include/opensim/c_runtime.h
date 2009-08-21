@@ -32,19 +32,21 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
 
+// help the compiler do better branch prediction
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
+
 // different runtime errors we might be faced with
 #define ERRNEW  1
 #define ERRINIT 2
 #define ERRSIM  3
-
-#define likely(x)       __builtin_expect((x),1)
-#define unlikely(x)     __builtin_expect((x),0)
 
 
 // easily switch between double and float
@@ -128,8 +130,13 @@ struct _class_t
 typedef struct _class_t class_t;
 
 
-struct _thread_info;
+struct _thread_info
+{
+
+  pthread_t threads[2];
+};
 typedef struct _thread_info thread_info;
+
 
 // the sim structure represents an instance of a simulation
 struct _sim_t
@@ -148,8 +155,8 @@ struct _sim_t
 
 
 /* initialize and exit from the opensim runtime */
-int32_t opensim_init();
-void opensim_exit();
+int32_t opensim_init ();
+void opensim_exit ();
 
 /* functions to free memory created during the course of simulating */
 void opensim_data_free (data_t *sim);
