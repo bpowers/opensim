@@ -40,7 +40,7 @@ using std::cerr;
 #include <sys/time.h>
 
 #include <llvm/Support/ManagedStatic.h>
-#include <llvm/System/Signals.h>
+#include <llvm/System/Threading.h>
 using namespace llvm;
 
 
@@ -55,7 +55,10 @@ main (int argc, char *argv[])
 {
   program_name = argv[0];
 
-  // Call llvm_shutdown() on exit.
+  // enable concurrent access to LLVM API
+  llvm_start_multithreaded();
+
+  // Calls llvm_shutdown() on exit.
   llvm_shutdown_obj shutdown;
   try
   {
@@ -87,7 +90,7 @@ main (int argc, char *argv[])
 
 
 static int
-print_help()
+print_help ()
 {
   printf("\
 Usage: %s [-htvop] input_file\n", program_name);
@@ -132,7 +135,7 @@ print_version ()
 Copyright (C) %s Bobby Powers.\n\
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
-There is NO WARRANTY, to the extent permitted by law.\n\n", "2008");
+There is NO WARRANTY, to the extent permitted by law.\n\n", "2008-2009");
 
   return 0;
 }
