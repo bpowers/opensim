@@ -29,13 +29,7 @@
 #include <inttypes.h>
 #include <string>
 
-// forward declaration so that we don't have to #include a bunch of LLVM
-// in our own headers, that should be done in the source files themselves.
-namespace llvm {
-  template<typename ValueT, typename AllocatorTy>
-  class StringMap;
-  struct MallocAllocator;
-}
+#include <llvm/ADT/StringMap.h>
 
 
 namespace opensim {

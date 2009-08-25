@@ -26,7 +26,6 @@
 #ifndef OPENSIM_PARSE_H
 #define OPENSIM_PARSE_H
 
-#include <iostream>
 #include <string>
 
 namespace llvm {

@@ -31,19 +31,10 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include <llvm/ADT/StringMap.h>
-
 #include <cstdio>
-#include <iostream>
-
 
 using namespace opensim;
-using std::cout;
-using std::cerr;
-using std::string;
 using std::exception;
-using llvm::StringMap;
-using llvm::StringMapIterator;
 
 // I imagine that it would be nice for some Europeans to have decimal
 // represented as ',', but time will tell...
@@ -78,7 +69,7 @@ Scanner::Scanner(std::string fName,
   peek = *pos;
   line = 1;
 
-  reservedWords = new StringMap<uint32_t>(16);
+  reservedWords = new llvm::StringMap<uint32_t>(16);
 
   reserve("if", Tag::If);
   reserve("class", Tag::Class);
@@ -182,7 +173,7 @@ Token *Scanner::getToken() {
 
 inline Token *Scanner::LexIdentifier(SourceLoc startLoc) {
 
-  string s;
+  std::string s;
   do {
     s += peek;
     getChar();
@@ -212,7 +203,7 @@ inline Token *Scanner::LexNumber(SourceLoc startLoc) {
   getChar();
 
   // finally, return our new number token.
-  return new Token(string(startPos, pos-startPos), num, fileName,
+  return new Token(std::string(startPos, pos-startPos), num, fileName,
                    startLoc, SourceLoc(startLoc.line, pos-lineStart));
 }
 

@@ -3,10 +3,14 @@
 # see COPYING for details. Written by Bobby Powers <bobbypowers@gmail.com>
 
 CC=gcc -std=c99
-CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include -g
+CXX=g++
+CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include -g -D_GNU_SOURCE
+CXXFLAGS=$(CFLAGS) -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 RUNTIME=../../lib/c_runtime.c
 
-all: rabbit infection
+TARGETS=rabbit infection types
+
+all: $(TARGETS)
 
 rabbit: rabbit.c $(RUNTIME)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -14,6 +18,9 @@ rabbit: rabbit.c $(RUNTIME)
 infection: infection.c $(RUNTIME)
 	$(CC) $(CFLAGS) -o $@ $^
 
+types: type_test.cc
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
 clean:
-	$(RM) infection rabbit
+	$(RM) $(TARGETS)
 

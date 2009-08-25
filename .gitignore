@@ -18,6 +18,8 @@ m4/libtool.m4
 libtool
 dolt*
 
+build/
+
 config.h.in
 config.h.in~
 
@@ -41,5 +43,6 @@ include/opensim/config.h
 
 examples/c/infection
 examples/c/rabbit
+examples/c/types
 
 .DS_Store

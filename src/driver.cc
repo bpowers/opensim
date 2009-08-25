@@ -29,9 +29,7 @@
 #include "opensim/config.h"
 #include "opensim/runtime.h"
 
-#include <iostream>
 #include <memory>
-using std::cerr;
 
 // standard library
 #include <cstdio>

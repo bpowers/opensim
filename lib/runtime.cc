@@ -28,14 +28,17 @@
 #include "opensim/c_runtime.h"
 #include "opensim/parse.h"
 
-#include <iostream>
-#include <exception>
+#include <llvm/Support/raw_ostream.h>
 
 #include <pthread.h>
 
-using namespace opensim;
-using namespace std;
+#include <exception>
 
+
+using namespace opensim;
+// use llvm's faster raw_ostream implementation
+#define cerr llvm::raw_stderr_ostream::raw_stderr_ostream()
+#define cout llvm::raw_stdout_ostream::raw_stdout_ostream()
 
 Runtime::Runtime() {
 
@@ -56,7 +59,7 @@ int Runtime::loadFile(std::string fileName)
     Parser parser(fileName);
     parser.parse();
   }
-  catch (exception& e)
+  catch (std::exception& e)
   {
     cerr << "opensim: ERROR: Problem loading '" << fileName << "'\n";
     return -1;

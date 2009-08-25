@@ -26,24 +26,50 @@
 
 #include "opensim/types.h"
 
-#include <iostream>
-
-#include <llvm/ADT/StringMap.h>
 
 using namespace opensim;
 using namespace opensim::types;
-using namespace llvm;
-using namespace std;
 
 
-Object::Object() {
-
-  members = new StringMap<Object *>();
-}
-
-
+//===--- Object ---------------------------------------------------------===//
 Object::~Object() {
 
 }
+
+
+void Object::baseInit() {
+
+  members = new llvm::StringMap<Object *>();
+}
+
+
+const llvm::StringRef Object::getName() {
+
+  return name;
+}
+
+
+bool Object::isValueType() {
+
+  throw "isValueType() not implemented for base Object.";
+};
+
+
+bool Object::isVirtual() {
+
+  throw "isVirtual() only valid for Model and Value objects.";
+};
+
+
+//===--- Namespace ------------------------------------------------------===//
+Namespace::Namespace() {
+
+  baseInit();
+}
+
+Namespace::~Namespace() {
+
+}
+
 
 

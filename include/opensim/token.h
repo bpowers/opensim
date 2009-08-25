@@ -27,7 +27,6 @@
 #define OPENSIM_TOKEN_H
 
 #include "opensim/c_runtime.h"
-#include <iostream>
 #include <string>
 
 
