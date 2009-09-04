@@ -68,6 +68,8 @@ protected:
   void baseInit();
 
 public:
+  // no public constructor because you can't directly instantiate an
+  // Object - it wouldn't make sense
   virtual ~Object();
 
   /// Returns the name of this object.
@@ -177,6 +179,21 @@ public:
 
   virtual bool isValueType();
   virtual bool isVirtual();
+};
+
+
+/// Defines an object that can be used as a lval or rval
+class Value : public Object {
+protected:
+  Kind *kind;
+  Unit *unit;
+
+public:
+  // no public constructor because you can't directly instantiate a
+  // Value - it wouldn't make sense
+  virtual ~Value();
+
+  
 };
 
 

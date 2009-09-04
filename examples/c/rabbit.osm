@@ -1,45 +1,48 @@
 
-class rabbit_fox (Model) {
+
+
+Model rabbit_fox {
 
   time.start     = 0;
   time.end       = 50;
   time.step      = 0.015625;
   time.save_step = 1;
 
-  initial_fox_population    = Aux (30);
-  average_fox_life          = Aux (4);
-  fox_birth_rate            = Aux (.25);
-  fox_food_requirements     = Aux (25);
+  Aux initial_fox_population    = 30
+  Aux average_fox_life          = 4
+  Aux fox_birth_rate            = .25
+  Aux fox_food_requirements     = 25
 
-  initial_rabbit_population = Aux (500);
-  average_rabbit_life       = Aux (2);
-  rabbit_birth_rate         = Aux (2);
+  Aux initial_rabbit_population = 500
+  Aux average_rabbit_life       = 2
+  Aux rabbit_birth_rate         = 2
 
-  carrying_capacity         = Aux (500);
+  Aux carrying_capacity         = 500;
 
-  fox_rabbit_consumption_lookup       = Table ((0, 0), (1, 1), (2, 2), (6, 2));
-  fox_mortality_lookup                = Table ((0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5));
-  effect_of_crowding_on_deaths_lookup = Table ((0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20));
-
-
-  fox_consumption_of_rabbits = Aux (fox_population * fox_food_requirements *
-                                    fox_rabbit_consumption_lookup[rabbit_crowding]);
-
-  fox_births = Flow (fox_population * fox_birth_rate);
-  fox_deaths = Flow (fox_population / average_fox_life * fox_mortality_lookup[fox_food_availability]);
-
-  fox_food_availability = Aux (fox_consumption_of_rabbits/fox_population/fox_food_requirements);
+  Table fox_rabbit_consumption_lookup       = (0, 0), (1, 1), (2, 2), (6, 2);
+  Table fox_mortality_lookup                = (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5);
+  Table effect_of_crowding_on_deaths_lookup = (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20);
 
 
-  rabbit_crowding = Aux (rabbit_population/carrying_capacity);
+  # explicit '\' required for continuation
+  Aux fox_consumption_of_rabbits = fox_population * fox_food_requirements * \
+                                   fox_rabbit_consumption_lookup[rabbit_crowding]
 
-  rabbit_births = Flow (rabbit_population * rabbit_birth_rate);
-  rabbit_deaths = Flow (max (rabbit_population / average_rabbit_life *
-                       effect_of_crowding_on_deaths_lookup[rabbit_crowding],
-                       fox_consumption_of_rabbits);
+  Flow fox_births = fox_population * fox_birth_rate
+  Flow fox_deaths = fox_population / average_fox_life * fox_mortality_lookup[fox_food_availability]
+
+  Aux fox_food_availability = fox_consumption_of_rabbits/fox_population/fox_food_requirements
 
 
-  rabbit_population = Stock (rabbit_births - rabbit_deaths, initial_rabbit_population);
-  fox_population    = Stock (fox_births - fox_deaths,       initial_fox_population);
-};
+  Aux rabbit_crowding = Aux (rabbit_population/carrying_capacity);
+
+  Aux rabbit_births = rabbit_population * rabbit_birth_rate
+  Aux rabbit_deaths = max (rabbit_population / average_rabbit_life * \
+                       effect_of_crowding_on_deaths_lookup[rabbit_crowding], \
+                       fox_consumption_of_rabbits
+
+
+  Stock rabbit_population = rabbit_births - rabbit_deaths, initial_rabbit_population
+  Stock fox_population    = fox_births - fox_deaths,       initial_fox_population
+}
 
