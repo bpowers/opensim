@@ -114,7 +114,7 @@ class Unit;
 
 
 /// Represents the units of a Value type.
-class Kind : public Object {
+class Kind: public Object {
 protected:
   Unit *referenceUnit;
 
@@ -131,7 +131,7 @@ public:
 
 
 /// Represents the units of a Value type.
-class Unit : public Object {
+class Unit: public Object {
 protected:
   /// This units value, normalized against the reference unit of the Kind.
   ///
@@ -154,7 +154,7 @@ public:
 
 
 /// Defines a namespace in which to store objects.
-class Namespace : public Object {
+class Namespace: public Object {
 protected:
 
 public:
@@ -166,7 +166,7 @@ public:
 
 
 /// Defines a model.
-class Model : public Namespace {
+class Model: public Namespace {
 protected:
   Time time;
 
@@ -183,19 +183,32 @@ public:
 
 
 /// Defines an object that can be used as a lval or rval
-class Value : public Object {
+class Value: public Object {
 protected:
   Kind *kind;
-  Unit *unit;
+  Unit *units;
 
 public:
   // no public constructor because you can't directly instantiate a
   // Value - it wouldn't make sense
   virtual ~Value();
 
-  
+  Kind *getKind();
+  Unit *getUnits();
 };
 
+/// Defines stock objects
+class Stock: public Value {
+protected:
+  StringRef equation;
+
+public:
+  Stock();
+  ~Stock();
+
+  virtual StringRef getEquation();
+  virtual void setEquation(StringRef newEquation);
+};
 
 // end namespace opensim::types
 }
