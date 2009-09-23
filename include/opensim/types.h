@@ -67,6 +67,11 @@ protected:
   /// Initialization common to all BOOSD object types.
   void baseInit();
 
+  /// Base Object Cleanup
+  ///
+  /// Cleanup/destruction common to all BOOSD object types
+  void baseDel();
+
 public:
   // no public constructor because you can't directly instantiate an
   // Object - it wouldn't make sense

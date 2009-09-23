@@ -43,6 +43,12 @@ void Object::baseInit() {
 }
 
 
+void Object::baseDel() {
+
+  delete members;
+}
+
+
 const llvm::StringRef Object::getName() {
 
   return name;
