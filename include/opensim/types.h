@@ -27,13 +27,13 @@
 #ifndef OPENSIM_TYPES_H
 #define OPENSIM_TYPES_H
 
-#include <exception>
-
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/ADT/ilist.h>
 #include <llvm/ADT/ilist_node.h>
 using llvm::StringRef;
+
+#include <exception>
 
 
 /**
@@ -109,7 +109,7 @@ public:
   double saveStep;
 
   // XXX: I don't know if this is the right place for it, but I'm not
-  //      sure of a better place.
+  //      sure of a better place.  Maybe 'Time' should be renamed?
   integrationKind integrationMethod;
 };
 
@@ -200,6 +200,22 @@ public:
 
   Kind *getKind();
   Unit *getUnits();
+};
+
+
+/// Defines a model function, such as smooth()
+class ModelFunction : public Model, public Value {
+protected:
+
+  /// A pointer to the object whose value will be returned
+  Object *returnObject;
+public:
+  ModelFunction();
+  ~ModelFunction();
+
+  virtual bool isValueType();
+  // XXX: does it make any sense to have virtual model functions?
+  virtual bool isVirtual();
 };
 
 /// Defines stock objects
