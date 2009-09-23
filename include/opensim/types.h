@@ -75,7 +75,7 @@ protected:
 public:
   // no public constructor because you can't directly instantiate an
   // Object - it wouldn't make sense
-  virtual ~Object();
+  virtual ~Object() = 0;
 
   /// Returns the name of this object.
   const StringRef getName();

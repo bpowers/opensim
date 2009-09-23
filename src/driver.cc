@@ -56,7 +56,8 @@ main (int argc, char *argv[])
   // enable concurrent access to LLVM API
   llvm_start_multithreaded();
 
-  // Calls llvm_shutdown() on exit.
+  // Calls llvm_shutdown() when it goes out of scope (which happens to be
+  // when main returns, which is program exit)
   llvm_shutdown_obj shutdown;
   try
   {
@@ -67,6 +68,7 @@ main (int argc, char *argv[])
       return print_version ();
 
     opensim::Runtime model;
+
     for (int i=1; i<argc; ++i)
       model.loadFile(argv[i]);
 

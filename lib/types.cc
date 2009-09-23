@@ -32,11 +32,6 @@ using namespace opensim::types;
 
 
 //===--- Object ---------------------------------------------------------===//
-Object::~Object() {
-
-}
-
-
 void Object::baseInit() {
 
   members = new llvm::StringMap<Object *>();
@@ -75,6 +70,7 @@ Namespace::Namespace() {
 
 Namespace::~Namespace() {
 
+  baseDel();
 }
 
 
