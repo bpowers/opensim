@@ -1,0 +1,3 @@
+#!/bin/sh
+
+(emacs $(find . -name "*.c" -or -name "*.cc" -or -name "*.h") &)
