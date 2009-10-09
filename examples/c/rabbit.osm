@@ -25,7 +25,7 @@ Model rabbit_fox {
   Aux rabbit_birth_rate         = 2
       rabbit_birth_rate.units   = Rabbits/year
 
-  Aux<Rabbits> carrying_capacity            = 500;
+  Aux<Rabbits> carrying_capacity            = 500
 
   Table fox_rabbit_consumption_lookup       = (0, 0), (1, 1), (2, 2), (6, 2)
   Table fox_mortality_lookup                = (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)
