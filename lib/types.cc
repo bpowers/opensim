@@ -26,6 +26,8 @@
 
 #include "opensim/types.h"
 
+#include <llvm/Support/raw_ostream.h>
+using namespace llvm;
 
 using namespace opensim;
 using namespace opensim::types;
@@ -38,7 +40,7 @@ void Object::baseInit() {
 }
 
 
-void Object::baseDel() {
+Object::~Object() {
 
   delete members;
 }
@@ -53,24 +55,35 @@ const llvm::StringRef Object::getName() {
 bool Object::isValueType() {
 
   throw "isValueType() not implemented for base Object.";
-};
+}
 
 
 bool Object::isVirtual() {
 
   throw "isVirtual() only valid for Model and Value objects.";
-};
+}
 
 
 //===--- Namespace ------------------------------------------------------===//
-Namespace::Namespace() {
+Namespace::Namespace(Namespace *parent) {
+
+  this->parent = parent;
 
   baseInit();
 }
 
+
+Namespace::Namespace(Namespace *parent, StringRef name) {
+
+  this->parent = parent;
+  this->name = name.str();
+
+  baseInit();
+}
+
+
 Namespace::~Namespace() {
 
-  baseDel();
 }
 
 

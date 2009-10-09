@@ -33,6 +33,7 @@
 #include <llvm/ADT/ilist_node.h>
 using llvm::StringRef;
 
+#include <string>
 #include <exception>
 
 
@@ -59,7 +60,7 @@ enum integrationKind {
 /// Base class for the BOOSD object hierarchy.
 class Object: public llvm::ilist_node<Object> {
 protected:
-  StringRef name;
+  std::string name;
   llvm::StringMap<Object *, llvm::MallocAllocator> *members;
 
   /// Basic Object Initialization.
@@ -70,12 +71,10 @@ protected:
   /// Base Object Cleanup
   ///
   /// Cleanup/destruction common to all BOOSD object types
-  void baseDel();
-
+  virtual ~Object();
 public:
   // no public constructor because you can't directly instantiate an
   // Object - it wouldn't make sense
-  virtual ~Object() = 0;
 
   /// Returns the name of this object.
   const StringRef getName();
@@ -161,9 +160,11 @@ public:
 /// Defines a namespace in which to store objects.
 class Namespace: public Object {
 protected:
+  Namespace *parent;
 
 public:
-  Namespace();
+  Namespace(Namespace *parent);
+  Namespace(Namespace *parent, StringRef name);
   virtual ~Namespace();
 
   Object *getObject(StringRef qualifiedName);
@@ -217,6 +218,7 @@ public:
   // XXX: does it make any sense to have virtual model functions?
   virtual bool isVirtual();
 };
+
 
 /// Defines stock objects
 class Stock: public Value {
