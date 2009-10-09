@@ -48,7 +48,15 @@ public:
   int simulate();
 };
 
-}
+// put these in a nested namespace so they don't conflict with the
+// c-api functions of the same name when we're using namespace opensim.
+namespace startup {
+
+  void opensim_init();
+  void opensim_exit();
+
+} // end namespace startup
+} // end namespace opensim
 
 #endif // OPENSIM_RUN_H
 

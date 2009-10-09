@@ -29,6 +29,8 @@
 #include "opensim/parse.h"
 
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/ManagedStatic.h>
+#include <llvm/System/Threading.h>
 
 #include <pthread.h>
 
@@ -69,10 +71,21 @@ int Runtime::loadFile(std::string fileName)
 }
 
 
-int
-Runtime::simulate() {
+int Runtime::simulate() {
 
   cout << "simulate stub\n";
   return 0;
 }
 
+
+void startup::opensim_init() {
+
+  // enable concurrent access to LLVM API
+  llvm::llvm_start_multithreaded();
+}
+
+
+void startup::opensim_exit() {
+
+  llvm::llvm_shutdown();
+}

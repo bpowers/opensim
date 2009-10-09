@@ -29,8 +29,6 @@
 #include "opensim/config.h"
 #include "opensim/runtime.h"
 
-#include <memory>
-
 // standard library
 #include <cstdio>
 #include <cstring>
@@ -73,7 +71,6 @@ main (int argc, char *argv[])
       model.loadFile(argv[i]);
 
     model.simulate();
-
   }
   catch (const std::string& msg)
   {
@@ -112,10 +109,6 @@ Options:\n");
                           interpret [DEFUALT]\n");
   printf("\
   -o, --output=FILE   output model to the specified file\n");
-
-  printf("\
-  -p, --performance   output time taken to run model in ms\n");
-
   printf("\n");
   printf("\
 Report bugs to <%s>.\n", PACKAGE_BUGREPORT);
