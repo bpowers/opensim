@@ -25,6 +25,7 @@
 //===--------------------------------------------------------------------===//
 
 #include "opensim/types.h"
+#include "opensim/runtime.h"
 
 #include <llvm/Support/raw_ostream.h>
 using namespace llvm;
@@ -65,25 +66,42 @@ bool Object::isVirtual() {
 
 
 //===--- Namespace ------------------------------------------------------===//
-Namespace::Namespace(Namespace *parent) {
-
-  this->parent = parent;
+Namespace::Namespace() {
 
   baseInit();
+
+  outs() << "namespace init\n";
+}
+
+
+Namespace::Namespace(Namespace *parent) {
+
+  baseInit();
+
+  this->parent = parent;
 }
 
 
 Namespace::Namespace(Namespace *parent, StringRef name) {
 
+  baseInit();
+
   this->parent = parent;
   this->name = name.str();
-
-  baseInit();
 }
 
 
 Namespace::~Namespace() {
 
+}
+
+
+//===--- Model ----------------------------------------------------------===//
+Model::Model(StringRef name) {
+
+  baseInit();
+
+  this->name = name;
 }
 
 

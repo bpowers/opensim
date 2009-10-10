@@ -39,8 +39,9 @@ main (int argc, char *argv[])
   startup::opensim_init();
   //try
   {
-    Namespace goats(NULL, "goats");
+    Namespace root(NULL);
 
+    Model goats("goats");
   }
   /*
   catch (const std::string& msg)

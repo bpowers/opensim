@@ -78,6 +78,20 @@ int Runtime::simulate() {
 }
 
 
+/// outs() - This returns a reference to a raw_ostream for standard output.
+/// Use it like: outs() << "foo" << "bar";
+llvm::raw_ostream &outs() {
+  return llvm::outs();
+}
+
+
+/// errs() - This returns a reference to a raw_ostream for standard error.
+/// Use it like: errs() << "foo" << "bar";
+llvm::raw_ostream &errs() {
+  return llvm::errs();
+}
+
+
 void startup::opensim_init() {
 
   // enable concurrent access to LLVM API

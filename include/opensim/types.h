@@ -68,11 +68,12 @@ protected:
   /// Initialization common to all BOOSD object types.
   void baseInit();
 
+public:
   /// Base Object Cleanup
   ///
   /// Cleanup/destruction common to all BOOSD object types
   virtual ~Object();
-public:
+
   // no public constructor because you can't directly instantiate an
   // Object - it wouldn't make sense
 
@@ -162,6 +163,7 @@ class Namespace: public Object {
 protected:
   Namespace *parent;
 
+  Namespace();
 public:
   Namespace(Namespace *parent);
   Namespace(Namespace *parent, StringRef name);
@@ -174,13 +176,14 @@ public:
 /// Defines a model.
 class Model: public Namespace {
 protected:
+  std::string name;
   Time time;
 
   /// A list of the statements that define the model, in order of execution.
   llvm::ilist<Object> statements;
 
 public:
-  Model();
+  Model(StringRef name);
   virtual ~Model();
 
   virtual bool isValueType();

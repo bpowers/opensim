@@ -28,6 +28,7 @@
 #define OPENSIM_RUN_H
 
 #include <string>
+#include <llvm/Support/raw_ostream.h>
 
 
 namespace opensim {
@@ -47,6 +48,15 @@ public:
   int loadFile(std::string fileName);
   int simulate();
 };
+
+
+/// outs() - This returns a reference to a raw_ostream for standard output.
+/// Use it like: outs() << "foo" << "bar";
+llvm::raw_ostream &outs();
+
+/// errs() - This returns a reference to a raw_ostream for standard error.
+/// Use it like: errs() << "foo" << "bar";
+llvm::raw_ostream &errs();
 
 // put these in a nested namespace so they don't conflict with the
 // c-api functions of the same name when we're using namespace opensim.
