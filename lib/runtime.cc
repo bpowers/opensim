@@ -38,9 +38,6 @@
 
 
 using namespace opensim;
-// use llvm's faster raw_ostream implementation
-#define cerr llvm::raw_stderr_ostream::raw_stderr_ostream()
-#define cout llvm::raw_stdout_ostream::raw_stdout_ostream()
 
 Runtime::Runtime() {
 
@@ -63,7 +60,7 @@ int Runtime::loadFile(std::string fileName)
   }
   catch (std::exception& e)
   {
-    cerr << "opensim: ERROR: Problem loading '" << fileName << "'\n";
+    errs() << "opensim: ERROR: Problem loading '" << fileName << "'\n";
     return -1;
   }
 
@@ -73,22 +70,8 @@ int Runtime::loadFile(std::string fileName)
 
 int Runtime::simulate() {
 
-  cout << "simulate stub\n";
+  errs() << "simulate stub\n";
   return 0;
-}
-
-
-/// outs() - This returns a reference to a raw_ostream for standard output.
-/// Use it like: outs() << "foo" << "bar";
-llvm::raw_ostream &outs() {
-  return llvm::outs();
-}
-
-
-/// errs() - This returns a reference to a raw_ostream for standard error.
-/// Use it like: errs() << "foo" << "bar";
-llvm::raw_ostream &errs() {
-  return llvm::errs();
 }
 
 
