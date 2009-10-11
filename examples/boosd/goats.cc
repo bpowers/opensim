@@ -1,4 +1,4 @@
-//===--- main.cpp - OpenSim command line driver --------------------------===//
+//===--- goats.cc - BOOSD class test driver ------------------------------===//
 //
 // Copyright 2008 Bobby Powers.
 //
@@ -39,9 +39,11 @@ main (int argc, char *argv[])
   startup::opensim_init();
   //try
   {
-    Namespace root(NULL);
+    Namespace *root = new Namespace(NULL);
+    Model *goats = new Model("goats");
+    root->add(goats);
 
-    Model goats("goats");
+    Model *model = dyn_cast<Model>(root->get("goats"));
   }
   /*
   catch (const std::string& msg)

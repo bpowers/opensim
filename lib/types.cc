@@ -28,14 +28,13 @@
 #include "opensim/runtime.h"
 
 #include <llvm/Support/raw_ostream.h>
-using namespace llvm;
 
 using namespace opensim;
 using namespace opensim::types;
 
 
 //===--- Object ---------------------------------------------------------===//
-void Object::baseInit() {
+Object::Object() {
 
   members = new llvm::StringMap<Object *>();
 }
@@ -65,28 +64,39 @@ bool Object::isVirtual() {
 }
 
 
+bool Object::classof(const Object *obj) {
+
+  // XXX: implement
+  return false;
+}
+
+
+//===--- Time -----------------------------------------------------------===//
+Time::Time() {
+
+}
+
+
+Time::~Time() {
+
+}
+
+
 //===--- Namespace ------------------------------------------------------===//
 Namespace::Namespace() {
 
-  baseInit();
-
-  outs() << "namespace init\n";
 }
 
 
-Namespace::Namespace(Namespace *parent) {
+Namespace::Namespace(Namespace *parent)
+  : parent(parent) {
 
-  baseInit();
-
-  this->parent = parent;
 }
 
 
-Namespace::Namespace(Namespace *parent, StringRef name) {
+Namespace::Namespace(Namespace *parent, const StringRef name)
+  : parent(parent) {
 
-  baseInit();
-
-  this->parent = parent;
   this->name = name.str();
 }
 
@@ -96,12 +106,27 @@ Namespace::~Namespace() {
 }
 
 
+Object* Namespace::get(const StringRef name) {
+
+  return NULL;
+}
+
+
+bool Namespace::add(Object *) {
+
+  return false;
+}
+
+
 //===--- Model ----------------------------------------------------------===//
 Model::Model(StringRef name) {
 
-  baseInit();
-
   this->name = name;
+}
+
+
+Model::~Model() {
+
 }
 
 

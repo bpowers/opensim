@@ -50,11 +50,32 @@ namespace types {
 
 
 /// Defines the types of integration methods OpenSim supports.
-enum integrationKind {
+enum IntegrationKind {
   Euler,
   RK2,
   RK4
 };
+
+
+// for use with the classof() function
+namespace classes {
+  enum {
+    Object,
+    Namespace,
+    Model,
+    ModelFunction,
+    Time,
+    Kind,
+    Unit,
+    Value,
+    Subrange,
+    Table,
+    Stock,
+    Flow,
+    Auxiliary,
+    Array
+  };
+}
 
 
 /// Base class for the BOOSD object hierarchy.
@@ -63,12 +84,12 @@ protected:
   std::string name;
   llvm::StringMap<Object *, llvm::MallocAllocator> *members;
 
-  /// Basic Object Initialization.
-  ///
-  /// Initialization common to all BOOSD object types.
-  void baseInit();
-
 public:
+  /// Base Object initialization
+  ///
+  /// The empty constructor is called by each subclass upon
+  /// instantiation.
+  Object();
   /// Base Object Cleanup
   ///
   /// Cleanup/destruction common to all BOOSD object types
@@ -94,6 +115,8 @@ public:
   /// (are members of the object in question) are themselves virtual,
   /// the object itself becomes virtual.
   virtual bool isVirtual();
+
+  static bool classof(const Object *obj);
 };
 
 
@@ -110,7 +133,7 @@ public:
 
   // XXX: I don't know if this is the right place for it, but I'm not
   //      sure of a better place.  Maybe 'Time' should be renamed?
-  integrationKind integrationMethod;
+  IntegrationKind integrationMethod;
 };
 
 
@@ -162,21 +185,26 @@ public:
 class Namespace: public Object {
 protected:
   Namespace *parent;
+  llvm::StringMap<Object, llvm::MallocAllocator> *children;
+  llvm::ilist<Object> *childrenList;
 
   Namespace();
 public:
   Namespace(Namespace *parent);
-  Namespace(Namespace *parent, StringRef name);
+  Namespace(Namespace *parent, const StringRef name);
   virtual ~Namespace();
 
-  Object *getObject(StringRef qualifiedName);
+  // This is only defined for references, which makes it pretty useless.
+  //virtual Object *operator[](const StringRef name);
+
+  virtual bool add(Object *obj);
+  virtual Object *get(const StringRef qualifiedName);
 };
 
 
 /// Defines a model.
 class Model: public Namespace {
 protected:
-  std::string name;
   Time time;
 
   /// A list of the statements that define the model, in order of execution.
@@ -185,9 +213,12 @@ protected:
 public:
   Model(StringRef name);
   virtual ~Model();
-
+  /*
   virtual bool isValueType();
   virtual bool isVirtual();
+
+  virtual Object *operator[](const StringRef name);
+  virtual bool add(Object *obj);*/
 };
 
 
@@ -233,7 +264,7 @@ public:
   ~Stock();
 
   virtual StringRef getEquation();
-  virtual void setEquation(StringRef newEquation);
+  virtual void setEquation(const StringRef newEquation);
 };
 
 // end namespace opensim::types
