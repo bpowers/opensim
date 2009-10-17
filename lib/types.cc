@@ -63,14 +63,6 @@ bool Object::isVirtual() {
   throw "isVirtual() only valid for Model and Value objects.";
 }
 
-
-bool Object::classof(const Object *obj) {
-
-  // XXX: implement
-  return false;
-}
-
-
 //===--- Time -----------------------------------------------------------===//
 Time::Time() {
 
@@ -83,19 +75,20 @@ Time::~Time() {
 
 
 //===--- Namespace ------------------------------------------------------===//
-Namespace::Namespace() {
+Namespace::Namespace()
+  : parent(NULL), children(), childrenList() {
 
 }
 
 
 Namespace::Namespace(Namespace *parent)
-  : parent(parent) {
+  : parent(parent), children(), childrenList() {
 
 }
 
 
 Namespace::Namespace(Namespace *parent, const StringRef name)
-  : parent(parent) {
+  : parent(parent), children(), childrenList() {
 
   this->name = name.str();
 }
@@ -108,13 +101,21 @@ Namespace::~Namespace() {
 
 Object* Namespace::get(const StringRef name) {
 
-  return NULL;
+  if (children.find(name) == children.end())
+    return NULL;
+
+  return children[name];
 }
 
 
-bool Namespace::add(Object *) {
+bool Namespace::add(Object *obj) {
 
-  return false;
+  // if it already exists, fail
+  if (children.find(obj->getName()) != children.end())
+    return false;
+
+  children[obj->getName()] = obj;
+  return true;
 }
 
 

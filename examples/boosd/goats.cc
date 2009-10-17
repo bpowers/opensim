@@ -26,24 +26,28 @@
 //===---------------------------------------------------------------------===//
 
 // project specific defines
-//#include "opensim/config.h"
 #include "opensim/runtime.h"
 #include "opensim/types.h"
 using namespace opensim;
 using namespace opensim::types;
 
 
-int 
-main (int argc, char *argv[]) 
-{
+int main (int argc, char *argv[]) {
+
   startup::opensim_init();
   //try
   {
-    Namespace *root = new Namespace(NULL);
+    Namespace *root = new Namespace();
     Model *goats = new Model("goats");
-    root->add(goats);
+
+    if (!root->add(goats))
+      outs() << "add failed\n";
 
     Model *model = dyn_cast<Model>(root->get("goats"));
+    if (model)
+      outs() << "worked!\n";
+    else
+      outs() << "didn't\n";
   }
   /*
   catch (const std::string& msg)

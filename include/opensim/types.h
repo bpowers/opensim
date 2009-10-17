@@ -59,7 +59,7 @@ enum IntegrationKind {
 
 // for use with the classof() function
 namespace classes {
-  enum {
+  enum ClassEnum {
     Object,
     Namespace,
     Model,
@@ -73,7 +73,7 @@ namespace classes {
     Stock,
     Flow,
     Auxiliary,
-    Array
+    Array,
   };
 }
 
@@ -116,7 +116,11 @@ public:
   /// the object itself becomes virtual.
   virtual bool isVirtual();
 
-  static bool classof(const Object *obj);
+  virtual classes::ClassEnum getType() const {return classes::Object;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Object;
+  }
 };
 
 
@@ -134,6 +138,12 @@ public:
   // XXX: I don't know if this is the right place for it, but I'm not
   //      sure of a better place.  Maybe 'Time' should be renamed?
   IntegrationKind integrationMethod;
+
+  virtual classes::ClassEnum getType() const {return classes::Time;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Time;
+  }
 };
 
 
@@ -155,6 +165,12 @@ protected:
 public:
   Kind();
   virtual ~Kind();
+
+  virtual classes::ClassEnum getType() const {return classes::Kind;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Kind;
+  }
 };
 
 
@@ -178,6 +194,12 @@ protected:
 public:
   Unit();
   virtual ~Unit();
+
+  virtual classes::ClassEnum getType() const {return classes::Unit;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Unit;
+  }
 };
 
 
@@ -185,11 +207,11 @@ public:
 class Namespace: public Object {
 protected:
   Namespace *parent;
-  llvm::StringMap<Object, llvm::MallocAllocator> *children;
-  llvm::ilist<Object> *childrenList;
+  llvm::StringMap<Object *, llvm::MallocAllocator> children;
+  llvm::ilist<Object> childrenList;
 
-  Namespace();
 public:
+  Namespace();
   Namespace(Namespace *parent);
   Namespace(Namespace *parent, const StringRef name);
   virtual ~Namespace();
@@ -199,6 +221,12 @@ public:
 
   virtual bool add(Object *obj);
   virtual Object *get(const StringRef qualifiedName);
+
+  virtual classes::ClassEnum getType() const {return classes::Namespace;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Namespace;
+  }
 };
 
 
@@ -219,6 +247,12 @@ public:
 
   virtual Object *operator[](const StringRef name);
   virtual bool add(Object *obj);*/
+
+  virtual classes::ClassEnum getType() const {return classes::Model;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Model;
+  }
 };
 
 
@@ -235,6 +269,12 @@ public:
 
   Kind *getKind();
   Unit *getUnits();
+
+  virtual classes::ClassEnum getType() const {return classes::Value;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Value;
+  }
 };
 
 
@@ -251,6 +291,12 @@ public:
   virtual bool isValueType();
   // XXX: does it make any sense to have virtual model functions?
   virtual bool isVirtual();
+
+  virtual classes::ClassEnum getType() const {return classes::ModelFunction;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::ModelFunction;
+  }
 };
 
 
@@ -265,6 +311,12 @@ public:
 
   virtual StringRef getEquation();
   virtual void setEquation(const StringRef newEquation);
+
+  virtual classes::ClassEnum getType() const {return classes::Stock;}
+
+  static bool classof(const Object *obj) {
+    return obj->getType() == classes::Stock;
+  }
 };
 
 // end namespace opensim::types
