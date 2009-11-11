@@ -59,8 +59,8 @@ public:
 // c-api functions of the same name when we're using namespace opensim.
 namespace startup {
 
-  void opensim_init();
-  void opensim_exit();
+  void init();
+  void exit();
 
 } // end namespace startup
 } // end namespace opensim

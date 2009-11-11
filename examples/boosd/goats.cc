@@ -34,9 +34,10 @@ using namespace opensim::types;
 
 int main (int argc, char *argv[]) {
 
-  startup::opensim_init();
-  //try
-  {
+  startup::init();
+
+  try {
+
     Namespace *root = new Namespace();
     Model *goats = new Model("goats");
 
@@ -45,22 +46,21 @@ int main (int argc, char *argv[]) {
 
     Model *model = dyn_cast<Model>(root->get("goats"));
     if (model)
-      outs() << "worked!\n";
+      outs() << "worked: model '" << model->getName() << "'!\n";
     else
       outs() << "didn't\n";
-  }
-  /*
-  catch (const std::string& msg)
-  {
-    fprintf(stderr, "%s: %s\n", argv[0], msg.c_str());
-  }
-  catch (...)
-  {
-    fprintf(stderr, "%s: Unexpected unknown exception occurred.\n", argv[0]);
-  }
-  */
 
-  startup::opensim_exit();
+  } catch (const std::string& msg) {
+
+    outs() << argv[0] << ": " << msg << "\n";
+  }
+  catch (...) {
+
+    outs() << argv[0] << ": Unexpected unknown exception occurred.\n";
+  }
+
+  startup::exit();
+
   return 0;
 }
 

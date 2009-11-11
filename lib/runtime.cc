@@ -75,14 +75,14 @@ int Runtime::simulate() {
 }
 
 
-void startup::opensim_init() {
+void startup::init() {
 
   // enable concurrent access to LLVM API
   llvm::llvm_start_multithreaded();
 }
 
 
-void startup::opensim_exit() {
+void startup::exit() {
 
   llvm::llvm_shutdown();
 }
