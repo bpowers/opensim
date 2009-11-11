@@ -90,6 +90,8 @@ Namespace::Namespace(Namespace *parent)
 Namespace::Namespace(Namespace *parent, const StringRef name)
   : parent(parent), children(), childrenList() {
 
+  // do this here because C++ doesn't like initializing
+  // inherited member object in initialization list
   this->name = name.str();
 }
 
@@ -115,6 +117,7 @@ bool Namespace::add(Object *obj) {
     return false;
 
   children[obj->getName()] = obj;
+  childrenList.push_back(obj);
   return true;
 }
 

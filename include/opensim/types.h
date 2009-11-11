@@ -29,12 +29,11 @@
 
 #include <llvm/ADT/StringMap.h>
 #include <llvm/ADT/StringRef.h>
-#include <llvm/ADT/ilist.h>
-#include <llvm/ADT/ilist_node.h>
 using llvm::StringRef;
 
 #include <string>
 #include <exception>
+#include <vector>
 
 
 /**
@@ -79,7 +78,7 @@ namespace classes {
 
 
 /// Base class for the BOOSD object hierarchy.
-class Object: public llvm::ilist_node<Object> {
+class Object {
 protected:
   std::string name;
   llvm::StringMap<Object *, llvm::MallocAllocator> *members;
@@ -208,7 +207,7 @@ class Namespace: public Object {
 protected:
   Namespace *parent;
   llvm::StringMap<Object *, llvm::MallocAllocator> children;
-  llvm::ilist<Object> childrenList;
+  std::vector<Object *> childrenList;
 
 public:
   Namespace();
@@ -236,17 +235,14 @@ protected:
   Time time;
 
   /// A list of the statements that define the model, in order of execution.
-  llvm::ilist<Object> statements;
+  std::vector<Object *> statements;
 
 public:
   Model(StringRef name);
   virtual ~Model();
-  /*
+
   virtual bool isValueType();
   virtual bool isVirtual();
-
-  virtual Object *operator[](const StringRef name);
-  virtual bool add(Object *obj);*/
 
   virtual classes::ClassEnum getType() const {return classes::Model;}
 
