@@ -66,6 +66,7 @@ AC_HEADER_STDBOOL
 
 ACX_PTHREAD([])
 OPENSIM_LLVM_SETFLAGS([])
+GTEST_LIB_CHECK([1.3])
 
 
 AC_CONFIG_FILES([
@@ -81,7 +82,7 @@ AC_CONFIG_FILES([
   share/Makefile
   lib/Makefile
   src/Makefile
-  tests/Makefile
+  tests/python/Makefile
   Makefile
 ])
 
