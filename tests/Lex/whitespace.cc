@@ -32,16 +32,114 @@ using std::string;
 #define STR_END(x) x + sizeof(x)/sizeof(x[0])
 
 
+TEST(ScannerTest, NoSpace) {
+
+  const char testStr[] = "test";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(0, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
 TEST(ScannerTest, LeadingSpace) {
 
-  const char leading[] = "   test";
-  Scanner scanner("", leading, STR_END(leading));
+  const char testStr[] = "   test";
+  Scanner scanner("", testStr, STR_END(testStr));
 
   Token *tok = scanner.getToken();
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
   EXPECT_EQ(3, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
+TEST(ScannerTest, TrailingSpace) {
+
+  const char testStr[] = "test   ";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(0, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
+TEST(ScannerTest, LeadingTabs) {
+
+  const char testStr[] =  "			test";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(3, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
+TEST(ScannerTest, TrailingTabs) {
+
+  const char testStr[] =  "test			";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(0, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
+TEST(ScannerTest, LeadingMixed) {
+
+  const char testStr[] =  "		 	  test";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(6, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
 
   EXPECT_EQ(0, tok->iden.compare("test"));
 
