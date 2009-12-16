@@ -41,7 +41,7 @@ TEST(ScannerTest, NoSpace) {
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(0, tok->start.pos);
+  EXPECT_EQ(1, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
@@ -60,7 +60,7 @@ TEST(ScannerTest, LeadingSpace) {
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(3, tok->start.pos);
+  EXPECT_EQ(4, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
@@ -79,7 +79,7 @@ TEST(ScannerTest, TrailingSpace) {
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(0, tok->start.pos);
+  EXPECT_EQ(1, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
@@ -91,14 +91,14 @@ TEST(ScannerTest, TrailingSpace) {
 
 TEST(ScannerTest, LeadingTabs) {
 
-  const char testStr[] =  "			test";
+  const char testStr[] =  "\t\t\ttest";
   Scanner scanner("", testStr, STR_END(testStr));
 
   Token *tok = scanner.getToken();
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(3, tok->start.pos);
+  EXPECT_EQ(4, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
@@ -110,14 +110,33 @@ TEST(ScannerTest, LeadingTabs) {
 
 TEST(ScannerTest, TrailingTabs) {
 
-  const char testStr[] =  "test			";
+  const char testStr[] =  "test\t\t\t";
   Scanner scanner("", testStr, STR_END(testStr));
 
   Token *tok = scanner.getToken();
 
   // lines are indexed from 1...
   EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(0, tok->start.pos);
+  EXPECT_EQ(1, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos+4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
+
+TEST(ScannerTest, LeadingMixed) {
+
+  const char testStr[] =  "\t\t  \t   test";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(1, tok->start.line);
+  EXPECT_EQ(9, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
@@ -127,16 +146,16 @@ TEST(ScannerTest, TrailingTabs) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingMixed) {
+TEST(ScannerTest, LeadingNewlines) {
 
-  const char testStr[] =  "		 	  test";
+  const char testStr[] =  "\n\n\ntest";
   Scanner scanner("", testStr, STR_END(testStr));
 
   Token *tok = scanner.getToken();
 
   // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(6, tok->start.pos);
+  EXPECT_EQ(4, tok->start.line);
+  EXPECT_EQ(1, tok->start.pos);
 
   EXPECT_EQ(tok->start.line, tok->end.line);
   EXPECT_EQ(tok->start.pos + 4, tok->end.pos);

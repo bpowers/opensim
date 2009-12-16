@@ -119,9 +119,9 @@ inline void Scanner::skipWhitespace() {
   do {
     if (_peek == '\n') {
       ++_line;
-      _lineStart = _pos;
+      _lineStart = _pos + 1;
     }
-    // finally, break when we don't have anymore whitespace
+    // finally, break when we don't have any more whitespace
     if (!isspace(_peek)) break;
   } while (getChar());
 }
@@ -137,7 +137,7 @@ Token *Scanner::getToken() {
 
   // keep track of the start of the token, relative to the start of
   // the current line
-  uint32_t start = _pos - _lineStart;
+  uint32_t start = _pos - _lineStart + 1;
   SourceLoc startLoc = SourceLoc(_line, start);
 
   // XXX: additional two-char tokens like '==' should be matched here
@@ -148,9 +148,11 @@ Token *Scanner::getToken() {
       getChar();
       return new Token("==", Tag::Eq, _fileName,
                        startLoc, SourceLoc(_line, start+2));
-    } else
+    } else {
       return new Token('=', _fileName,
-                       startLoc, SourceLoc(_line, start+2));
+                       startLoc, SourceLoc(_line, start+1));
+    }
+    break;
   default:
     break;
   }
@@ -163,8 +165,7 @@ Token *Scanner::getToken() {
     return lexIdentifier(startLoc);
 
   // if we haven't matched by here, its a simple one character token
-  Token *tok = new Token(_peek, _fileName,
-                         SourceLoc(_line, start),
+  Token *tok = new Token(_peek, _fileName, startLoc,
                          SourceLoc(_line, start+1));
   getChar();
 
@@ -186,7 +187,7 @@ inline Token *Scanner::lexIdentifier(SourceLoc startLoc) {
     t = Tag::Id;
 
   return new Token(s, t, _fileName, startLoc, SourceLoc(startLoc.line,
-							_pos-_lineStart));
+							_pos-_lineStart+1));
 }
 
 
@@ -205,5 +206,5 @@ inline Token *Scanner::lexNumber(SourceLoc startLoc) {
 
   // finally, return our new number token.
   return new Token(std::string(startPos, _pos-startPos), num, _fileName,
-                   startLoc, SourceLoc(startLoc.line, _pos-_lineStart));
+                   startLoc, SourceLoc(startLoc.line, _pos-_lineStart+1));
 }
