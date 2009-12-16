@@ -1,4 +1,4 @@
-//===--- run.h - run manager for OpenSim mark 2 interface ---------------===//
+//===--- runtime.h - run manager for OpenSim mark 2 interface -----------===//
 //
 // Copyright 2009 Bobby Powers
 //
@@ -24,8 +24,8 @@
 //
 //===--------------------------------------------------------------------===//
 
-#ifndef OPENSIM_RUN_H
-#define OPENSIM_RUN_H
+#ifndef OPENSIM_RUNTIME_H
+#define OPENSIM_RUNTIME_H
 
 #include <string>
 #include <llvm/Support/raw_ostream.h>
@@ -65,5 +65,5 @@ namespace startup {
 } // end namespace startup
 } // end namespace opensim
 
-#endif // OPENSIM_RUN_H
+#endif // OPENSIM_RUNTIME_H
 
