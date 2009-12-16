@@ -59,17 +59,17 @@ static inline bool isIdentifierBody(uint32_t character) {
 }
 
 
-Scanner::Scanner(std::string fName,
-                 const char *fStart,
-                 const char *fEnd) : fileName(fName),
-                                     fileStart(fStart),
-                                     fileEnd(fEnd) {
+Scanner::Scanner(std::string fileName,
+                 const char *fileStart,
+                 const char *fileEnd) : _fileName(fileName),
+					_fileStart(fileStart),
+					_fileEnd(fileEnd) {
 
-  pos = fStart;
-  peek = *pos;
-  line = 1;
+  _pos = fileStart;
+  _peek = *_pos;
+  _line = 1;
 
-  reservedWords = new llvm::StringMap<uint32_t>(16);
+  _reservedWords = new llvm::StringMap<uint32_t>(16);
 
   reserve("if", Tag::If);
   reserve("class", Tag::Class);
@@ -78,36 +78,36 @@ Scanner::Scanner(std::string fName,
 
 Scanner::~Scanner() {
 
-  delete reservedWords;
+  delete _reservedWords;
 }
 
 
 inline bool Scanner::getChar() {
 
-  if (pos < fileEnd)
-    peek = *++pos;
+  if (_pos < _fileEnd)
+    _peek = *++_pos;
 
   // XXX: do we really want this implicit cast to bool?
-  return peek;
+  return _peek;
 }
 
 
 inline bool Scanner::getChar(const char c) {
 
   getChar();
-  return c == (char)peek;
+  return c == (char)_peek;
 }
 
 
 void Scanner::reserve(std::string lexeme, uint32_t t) {
 
-  (*reservedWords)[lexeme] = t;
+  (*_reservedWords)[lexeme] = t;
 }
 
 
 inline uint32_t Scanner::getReserved(std::string lexeme) {
 
-  return (*reservedWords)[lexeme];
+  return (*_reservedWords)[lexeme];
 }
 
 
@@ -116,12 +116,12 @@ inline void Scanner::skipWhitespace() {
   // skip any whitespace we might encounter, but keep track of our
   // line and where the curent line begins
   do {
-    if (peek == '\n') {
-      ++line;
-      lineStart = pos;
+    if (_peek == '\n') {
+      ++_line;
+      _lineStart = _pos;
     }
     // finally, break when we don't have anymore whitespace
-    if (!isspace(peek)) break;
+    if (!isspace(_peek)) break;
   } while (getChar());
 }
 
@@ -131,79 +131,79 @@ Token *Scanner::getToken() {
   skipWhitespace();
 
   // if we've reached the end of the input, peek is null
-  if (!peek)
+  if (!_peek)
     return NULL;
 
   // keep track of the start of the token, relative to the start of
   // the current line
-  uint32_t start = pos - lineStart;
-  SourceLoc startLoc = SourceLoc(line, start);
+  uint32_t start = _pos - _lineStart;
+  SourceLoc startLoc = SourceLoc(_line, start);
 
   // XXX: additional two-char tokens like '==' should be matched here
-  switch (peek) {
+  switch (_peek) {
   case '=':
     if (getChar('=')) {
       // eat the second '=', since we matched
       getChar();
-      return new Token("==", Tag::Eq, fileName,
-                       startLoc, SourceLoc(line, start+2));
+      return new Token("==", Tag::Eq, _fileName,
+                       startLoc, SourceLoc(_line, start+2));
     } else
-      return new Token('=', fileName,
-                       startLoc, SourceLoc(line, start+2));
+      return new Token('=', _fileName,
+                       startLoc, SourceLoc(_line, start+2));
   default:
     break;
   }
 
   // match numbers first, which either begin with a digit or a decimal
-  if (isNumberStart(peek))
-    return LexNumber(startLoc);
+  if (isNumberStart(_peek))
+    return lexNumber(startLoc);
 
-  if (isIdentifierStart(peek))
-    return LexIdentifier(startLoc);
+  if (isIdentifierStart(_peek))
+    return lexIdentifier(startLoc);
 
   // if we haven't matched by here, its a simple one character token
-  Token *tok = new Token(peek, fileName,
-                         SourceLoc(line, start),
-                         SourceLoc(line, start+1));
+  Token *tok = new Token(_peek, _fileName,
+                         SourceLoc(_line, start),
+                         SourceLoc(_line, start+1));
   getChar();
 
   return tok;
 }
 
 
-inline Token *Scanner::LexIdentifier(SourceLoc startLoc) {
+inline Token *Scanner::lexIdentifier(SourceLoc startLoc) {
 
   std::string s;
   do {
-    s += peek;
+    s += _peek;
     getChar();
-  } while (isalnum(peek) || peek == '_' || peek == '.');
+  } while (isalnum(_peek) || _peek == '_' || _peek == '.');
 
   // check if its a reserved word
   uint32_t t = getReserved(s);
   if (!t)
     t = Tag::Id;
 
-  return new Token(s, t, fileName, startLoc, SourceLoc(startLoc.line,
-                                                       pos-lineStart));
+  return new Token(s, t, _fileName, startLoc, SourceLoc(startLoc.line,
+                                                       _pos-_lineStart));
 }
 
 
-inline Token *Scanner::LexNumber(SourceLoc startLoc) {
+inline Token *Scanner::lexNumber(SourceLoc startLoc) {
 
-  const char *startPos = pos;
+  const char *startPos = _pos;
   char *end;
-  real_t num = strtod(pos, &end);
+  real_t num = strtod(_pos, &end);
 
   // by advancing to one before the end of the number and calling
   // getChar(), we set peek to be whatever the char after the number
   // is.  Since getChar is inlined, its not really a performance
   // problem.
-  pos = end - 1;
+  _pos = end - 1;
   getChar();
 
   // finally, return our new number token.
-  return new Token(std::string(startPos, pos-startPos), num, fileName,
-                   startLoc, SourceLoc(startLoc.line, pos-lineStart));
+  return new Token(std::string(startPos, _pos-startPos), num, _fileName,
+                   startLoc, SourceLoc(startLoc.line, _pos-_lineStart));
 }
 

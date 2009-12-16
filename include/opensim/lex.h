@@ -38,16 +38,16 @@ struct Token;
 struct SourceLoc;
 
 class Scanner {
-  std::string fileName;
-  const char *fileStart;
-  const char *fileEnd;
+  std::string _fileName;
+  const char *_fileStart;
+  const char *_fileEnd;
 
-  const char *pos;
-  uint32_t peek;
-  uint32_t line;
-  const char *lineStart;
+  const char *_pos;
+  uint32_t _peek;
+  uint32_t _line;
+  const char *_lineStart;
 
-  llvm::StringMap<uint32_t, llvm::MallocAllocator> *reservedWords;
+  llvm::StringMap<uint32_t, llvm::MallocAllocator> *_reservedWords;
 
   bool getChar();
   bool getChar(const char c);
@@ -55,11 +55,11 @@ class Scanner {
   uint32_t getReserved(std::string lexeme);
   void skipWhitespace();
 
-  Token *LexIdentifier(SourceLoc startLoc);
-  Token *LexNumber(SourceLoc startLoc);
+  Token *lexIdentifier(SourceLoc startLoc);
+  Token *lexNumber(SourceLoc startLoc);
 
 public:
-  Scanner(std::string fName, const char *fStart, const char *fEnd);
+  Scanner(std::string fileName, const char *fileStart, const char *fileEnd);
   ~Scanner();
 
   void reserve(std::string lexeme, uint32_t t);
