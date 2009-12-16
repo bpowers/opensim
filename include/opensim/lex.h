@@ -38,6 +38,7 @@ struct Token;
 struct SourceLoc;
 
 class Scanner {
+
   std::string _fileName;
   const char *_fileStart;
   const char *_fileEnd;

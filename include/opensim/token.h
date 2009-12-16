@@ -1,4 +1,4 @@
-//===--- token.cc - token definitions for Objective OpenSim -------------===//
+//===--- token.h - token definitions for Objective OpenSim --------------===//
 //
 // Copyright 2009 Bobby Powers
 //
@@ -19,7 +19,7 @@
 //
 //===--------------------------------------------------------------------===//
 //
-// This file contains the implementation of Tokens for Objective OpenSim.
+// This file contains the interface for lexical Tokens in OpenSim.
 //
 //===--------------------------------------------------------------------===//
 

@@ -28,6 +28,7 @@
 #include "opensim/lex.h"
 #include "opensim/token.h"
 
+#include <cstring>
 #include <ctype.h>
 #include <assert.h>
 
@@ -61,13 +62,13 @@ static inline bool isIdentifierBody(uint32_t character) {
 
 Scanner::Scanner(std::string fileName,
                  const char *fileStart,
-                 const char *fileEnd) : _fileName(fileName),
-					_fileStart(fileStart),
-					_fileEnd(fileEnd) {
-
+                 const char *fileEnd)
+  : _fileName(fileName), _fileStart(fileStart), _fileEnd(fileEnd)
+{
   _pos = fileStart;
   _peek = *_pos;
   _line = 1;
+  _lineStart = fileStart;
 
   _reservedWords = new llvm::StringMap<uint32_t>(16);
 
@@ -185,7 +186,7 @@ inline Token *Scanner::lexIdentifier(SourceLoc startLoc) {
     t = Tag::Id;
 
   return new Token(s, t, _fileName, startLoc, SourceLoc(startLoc.line,
-                                                       _pos-_lineStart));
+							_pos-_lineStart));
 }
 
 
@@ -206,4 +207,3 @@ inline Token *Scanner::lexNumber(SourceLoc startLoc) {
   return new Token(std::string(startPos, _pos-startPos), num, _fileName,
                    startLoc, SourceLoc(startLoc.line, _pos-_lineStart));
 }
-
