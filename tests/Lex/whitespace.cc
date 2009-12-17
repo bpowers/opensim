@@ -19,167 +19,122 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-#include "opensim/lex.h"
+#include <opensim/lex.h>
+#include <opensim/token.h>
 using opensim::Scanner;
-#include "opensim/token.h"
 using opensim::Token;
 
 #include <gtest/gtest.h>
 
-#include <string>
-using std::string;
+#include <cstring>
+
 
 #define STR_END(x) x + sizeof(x)/sizeof(x[0])
 
 
-TEST(WhitespaceTest, NoSpace) {
+class WhitespaceTest: public testing::Test {
+protected:
 
-  const char testStr[] = "test";
-  Scanner scanner("", testStr, STR_END(testStr));
+  Token *firstToken(const char *str) {
 
-  Token *tok = scanner.getToken();
+    Scanner scanner("", str, str+strlen(str));
 
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(1, tok->start.pos);
+    return scanner.getToken();
+  }
 
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+  void validateToken(Token *tok, const char *str,
+		     uint32_t line, uint32_t pos) {
 
-  EXPECT_EQ(0, tok->iden.compare("test"));
+    size_t len = strlen(str);
+    ASSERT_NE((void *)NULL, tok);
 
-  delete tok;
-}
+    // lines are indexed from 1...
+    EXPECT_EQ(line, tok->start.line);
+    EXPECT_EQ(pos, tok->start.pos);
 
-TEST(WhitespaceTest, LeadingSpace) {
+    EXPECT_EQ(tok->start.line, tok->end.line);
+    EXPECT_EQ(tok->start.pos + len, tok->end.pos);
 
-  const char testStr[] = "   test";
-  Scanner scanner("", testStr, STR_END(testStr));
+    EXPECT_EQ(0, tok->iden.compare(str));
+  }
+};
 
-  Token *tok = scanner.getToken();
 
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(4, tok->start.pos);
+TEST_F(WhitespaceTest, NoSpace) {
 
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+  Token *tok = firstToken("test");
 
-  EXPECT_EQ(0, tok->iden.compare("test"));
-
-  delete tok;
-}
-
-TEST(WhitespaceTest, TrailingSpace) {
-
-  const char testStr[] = "test   ";
-  Scanner scanner("", testStr, STR_END(testStr));
-
-  Token *tok = scanner.getToken();
-
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(1, tok->start.pos);
-
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
-
-  EXPECT_EQ(0, tok->iden.compare("test"));
+  validateToken(tok, "test", 1, 1);
 
   delete tok;
 }
 
-TEST(WhitespaceTest, LeadingTabs) {
 
-  const char testStr[] =  "\t\t\ttest";
-  Scanner scanner("", testStr, STR_END(testStr));
+TEST_F(WhitespaceTest, LeadingSpace) {
 
-  Token *tok = scanner.getToken();
+  Token *tok = firstToken("   test");
 
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(4, tok->start.pos);
-
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
-
-  EXPECT_EQ(0, tok->iden.compare("test"));
+  validateToken(tok, "test", 1, 4);
 
   delete tok;
 }
 
-TEST(WhitespaceTest, TrailingTabs) {
 
-  const char testStr[] =  "test\t\t\t";
-  Scanner scanner("", testStr, STR_END(testStr));
+TEST_F(WhitespaceTest, TrailingSpace) {
 
-  Token *tok = scanner.getToken();
+  Token *tok = firstToken("test   ");
 
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(1, tok->start.pos);
-
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos+4, tok->end.pos);
-
-  EXPECT_EQ(0, tok->iden.compare("test"));
+  validateToken(tok, "test", 1, 1);
 
   delete tok;
 }
 
-TEST(WhitespaceTest, LeadingMixed) {
 
-  const char testStr[] =  "\t\t  \t   test";
-  Scanner scanner("", testStr, STR_END(testStr));
+TEST_F(WhitespaceTest, LeadingTabs) {
 
-  Token *tok = scanner.getToken();
+  Token *tok = firstToken("\t\t\ttest");
 
-  // lines are indexed from 1...
-  EXPECT_EQ(1, tok->start.line);
-  EXPECT_EQ(9, tok->start.pos);
-
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
-
-  EXPECT_EQ(0, tok->iden.compare("test"));
+  validateToken(tok, "test", 1, 4);
 
   delete tok;
 }
 
-TEST(WhitespaceTest, LeadingNewlines) {
 
-  const char testStr[] =  "\n\n\ntest";
-  Scanner scanner("", testStr, STR_END(testStr));
+TEST_F(WhitespaceTest, TrailingTabs) {
 
-  Token *tok = scanner.getToken();
+  Token *tok = firstToken("test\t\t\t");
 
-  // lines are indexed from 1...
-  EXPECT_EQ(4, tok->start.line);
-  EXPECT_EQ(1, tok->start.pos);
-
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
-
-  EXPECT_EQ(0, tok->iden.compare("test"));
+  validateToken(tok, "test", 1, 1);
 
   delete tok;
 }
 
-TEST(WhitespaceTest, LeadingNewlinesAndSpaces) {
 
-  const char testStr[] =  "\n\n\n\t   test";
-  Scanner scanner("", testStr, STR_END(testStr));
+TEST_F(WhitespaceTest, LeadingMixed) {
 
-  Token *tok = scanner.getToken();
+  Token *tok = firstToken("\t\t  \t   test");
 
-  // lines are indexed from 1...
-  EXPECT_EQ(4, tok->start.line);
-  EXPECT_EQ(5, tok->start.pos);
+  validateToken(tok, "test", 1, 9);
 
-  EXPECT_EQ(tok->start.line, tok->end.line);
-  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+  delete tok;
+}
 
-  EXPECT_EQ(0, tok->iden.compare("test"));
+
+TEST_F(WhitespaceTest, LeadingNewlines) {
+
+  Token *tok = firstToken("\n\n\ntest");
+
+  validateToken(tok, "test", 4, 1);
+
+  delete tok;
+}
+
+
+TEST_F(WhitespaceTest, LeadingNewlinesAndSpaces) {
+
+  Token *tok = firstToken("\n\n\n\t   test");
+
+  validateToken(tok, "test", 4, 5);
 
   delete tok;
 }
