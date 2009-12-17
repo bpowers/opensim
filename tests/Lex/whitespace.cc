@@ -29,9 +29,6 @@ using opensim::Token;
 #include <cstring>
 
 
-#define STR_END(x) x + sizeof(x)/sizeof(x[0])
-
-
 class WhitespaceTest: public testing::Test {
 protected:
 
