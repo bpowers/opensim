@@ -164,3 +164,22 @@ TEST(ScannerTest, LeadingNewlines) {
 
   delete tok;
 }
+
+TEST(ScannerTest, LeadingNewlinesAndSpaces) {
+
+  const char testStr[] =  "\n\n\n\t   test";
+  Scanner scanner("", testStr, STR_END(testStr));
+
+  Token *tok = scanner.getToken();
+
+  // lines are indexed from 1...
+  EXPECT_EQ(4, tok->start.line);
+  EXPECT_EQ(5, tok->start.pos);
+
+  EXPECT_EQ(tok->start.line, tok->end.line);
+  EXPECT_EQ(tok->start.pos + 4, tok->end.pos);
+
+  EXPECT_EQ(0, tok->iden.compare("test"));
+
+  delete tok;
+}
