@@ -32,7 +32,7 @@ using std::string;
 #define STR_END(x) x + sizeof(x)/sizeof(x[0])
 
 
-TEST(ScannerTest, NoSpace) {
+TEST(WhitespaceTest, NoSpace) {
 
   const char testStr[] = "test";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -51,7 +51,7 @@ TEST(ScannerTest, NoSpace) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingSpace) {
+TEST(WhitespaceTest, LeadingSpace) {
 
   const char testStr[] = "   test";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -70,7 +70,7 @@ TEST(ScannerTest, LeadingSpace) {
   delete tok;
 }
 
-TEST(ScannerTest, TrailingSpace) {
+TEST(WhitespaceTest, TrailingSpace) {
 
   const char testStr[] = "test   ";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -89,7 +89,7 @@ TEST(ScannerTest, TrailingSpace) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingTabs) {
+TEST(WhitespaceTest, LeadingTabs) {
 
   const char testStr[] =  "\t\t\ttest";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -108,7 +108,7 @@ TEST(ScannerTest, LeadingTabs) {
   delete tok;
 }
 
-TEST(ScannerTest, TrailingTabs) {
+TEST(WhitespaceTest, TrailingTabs) {
 
   const char testStr[] =  "test\t\t\t";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -127,7 +127,7 @@ TEST(ScannerTest, TrailingTabs) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingMixed) {
+TEST(WhitespaceTest, LeadingMixed) {
 
   const char testStr[] =  "\t\t  \t   test";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -146,7 +146,7 @@ TEST(ScannerTest, LeadingMixed) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingNewlines) {
+TEST(WhitespaceTest, LeadingNewlines) {
 
   const char testStr[] =  "\n\n\ntest";
   Scanner scanner("", testStr, STR_END(testStr));
@@ -165,7 +165,7 @@ TEST(ScannerTest, LeadingNewlines) {
   delete tok;
 }
 
-TEST(ScannerTest, LeadingNewlinesAndSpaces) {
+TEST(WhitespaceTest, LeadingNewlinesAndSpaces) {
 
   const char testStr[] =  "\n\n\n\t   test";
   Scanner scanner("", testStr, STR_END(testStr));
