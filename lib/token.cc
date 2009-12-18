@@ -53,7 +53,7 @@ const TokKind TokType::Word;
 const TokKind TokType::Number;
 
 
-const char *Token::getTokenKindAsString() {
+const char *Token::getKindAsString() {
   switch (kind) {
   case TokType::Tok:
     return "Token";
@@ -66,19 +66,31 @@ const char *Token::getTokenKindAsString() {
 
 void Token::dump() {
 
-  switch (kind) {
-  case TokType::Tok:
-    fprintf(stderr, "%s %d:%d-%d:  \tToken (%3d):  '%c'\n", file.c_str(),
-            start.line, start.pos, end.pos, tag, tag);
-    break;
-  case TokType::Word:
-    fprintf(stderr, "%s %d:%d-%d:  \tWord (%3d):   '%s'\n", file.c_str(),
-            start.line, start.pos, end.pos, tag, iden.c_str());
-    break;
-  case TokType::Number:
-    fprintf(stderr, "%s %d:%d-%d:  \tNumber (%3d): '%f'\n", file.c_str(),
-            start.line, start.pos, end.pos, tag, value);
-    break;
-  }
+  llvm::errs() << *this;
 }
 
+
+raw_ostream &opensim::operator<<(raw_ostream &stream, Token &tok) {
+
+  std::string val;
+
+  switch (tok.kind) {
+  case TokType::Tok:
+    val = tok.tag;
+    break;
+  case TokType::Word:
+    val = tok.iden;
+    break;
+  case TokType::Number:
+    char c_val[32];
+    snprintf(c_val, 32, "%f", tok.value);
+    val = c_val;
+    break;
+  }
+
+  stream << tok.file << " " << tok.start.line << ":" << tok.start.pos
+	 << "-" << tok.end.pos << ": " << tok.getKindAsString() << " ("
+	 << (uint32_t)tok.tag << ") '" << val << "'\n";
+
+  return stream;
+}

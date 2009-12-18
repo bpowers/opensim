@@ -28,6 +28,8 @@
 
 #include "opensim/c_runtime.h"
 #include <string>
+#include <llvm/Support/raw_ostream.h>
+using llvm::raw_ostream;
 
 
 namespace opensim {
@@ -93,9 +95,13 @@ struct Token
 
   Token() {}
   void dump();
-  const char *getTokenKindAsString();
+  const char *getKindAsString();
+
+  friend raw_ostream &operator<<(raw_ostream &stream, Token &tok);
 };
 
+
+raw_ostream &operator<<(raw_ostream &stream, Token &tok);
 }
 
 
