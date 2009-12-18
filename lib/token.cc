@@ -29,6 +29,30 @@
 
 using namespace opensim;
 
+
+// needed to make GCC behave, as noted here:
+// http://hellewell.homeip.net/phillip/blogs/index.php?entry=entry060314-000000
+const TagKind Tag::And;
+const TagKind Tag::Else;
+const TagKind Tag::Eq;
+const TagKind Tag::False;
+const TagKind Tag::Id;
+const TagKind Tag::If;
+const TagKind Tag::Index;
+const TagKind Tag::Le;
+const TagKind Tag::Minus;
+const TagKind Tag::Ne;
+const TagKind Tag::Num;
+const TagKind Tag::Or;
+const TagKind Tag::True;
+const TagKind Tag::TypeName;
+const TagKind Tag::Class;
+
+const TokKind TokType::Tok;
+const TokKind TokType::Word;
+const TokKind TokType::Number;
+
+
 const char *Token::getTokenKindAsString() {
   switch (kind) {
   case TokType::Tok:
