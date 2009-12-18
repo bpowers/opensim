@@ -26,6 +26,8 @@
 #include <opensim/token.h>
 using opensim::Scanner;
 using opensim::Token;
+using opensim::TokType;
+using opensim::Tag;
 
 #include <gtest/gtest.h>
 

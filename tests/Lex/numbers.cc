@@ -20,8 +20,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 #include "lex-tests.h"
-using opensim::TokType;
-using opensim::Tag;
 
 class NumbersTest: public LexTest {
 protected:
@@ -43,6 +41,8 @@ protected:
   }
 };
 
+// XXX: We don't test negative numbers, because that gets lexed as
+//      two tokens, a '-' and a number.
 
 TEST_F(NumbersTest, Zero) {
 
@@ -59,6 +59,46 @@ TEST_F(NumbersTest, ZeroPointZero) {
   Token *tok = firstToken("0.0");
 
   validateNumToken(tok, 0, 1, 1, 3);
+
+  delete tok;
+}
+
+
+TEST_F(NumbersTest, PointZero) {
+
+  Token *tok = firstToken(".0");
+
+  validateNumToken(tok, 0, 1, 1, 2);
+
+  delete tok;
+}
+
+
+TEST_F(NumbersTest, Decimal) {
+
+  Token *tok = firstToken("123.456");
+
+  validateNumToken(tok, 123.456, 1, 1, 7);
+
+  delete tok;
+}
+
+
+TEST_F(NumbersTest, Whole) {
+
+  Token *tok = firstToken("5.0");
+
+  validateNumToken(tok, 5.0, 1, 1, 3);
+
+  delete tok;
+}
+
+
+TEST_F(NumbersTest, LeadingDecimal) {
+
+  Token *tok = firstToken(".123456");
+
+  validateNumToken(tok, 0.123456, 1, 1, 7);
 
   delete tok;
 }
