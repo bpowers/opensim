@@ -31,6 +31,7 @@
 
 #include <llvm/Support/MemoryBuffer.h>
 
+#include <iostream>
 #include <cstdio>
 #include <exception>
 
@@ -44,14 +45,13 @@ Parser::Parser(std::string fName) {
   fileName = fName;
   fileBuffer = llvm::MemoryBuffer::getFile(fName.c_str());
   if (!fileBuffer) {
-    fprintf(stderr, "opensim: ERROR: Problem mapping '%s'\n",
-            fileName.c_str());
+    errs() << "opensim: ERROR: Problem mapping '" << fileName << "'\n";
     throw exception();
   }
 
-  fprintf(stderr, "opensim: DEBUG: Parser mapped '%s' at %p (len:%d).\n",
-          fileName.c_str(), fileBuffer->getBufferStart(),
-          (int)fileBuffer->getBufferSize());
+  errs() << "opensim: DEBUG: Parser mapped '" << fileName << "' at 0x";
+  errs().write_hex((unsigned long)fileBuffer->getBufferStart());
+  errs() << " (len:" << fileBuffer->getBufferSize() << ").\n";
 
   scanner = new Scanner(fName, fileBuffer->getBufferStart(),
                         fileBuffer->getBufferEnd());
