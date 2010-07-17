@@ -42,12 +42,13 @@ Model rabbit_fox {
   Aux fox_food_availability = fox_consumption_of_rabbits/fox_population/fox_food_requirements
 
 
-  Aux<Rabbits> rabbit_crowding = Aux (rabbit_population/carrying_capacity);
+  # UGGGGLY - example of BAD syntax
+  Aux<Rabbits> rabbit_crowding = Aux(rabbit_population/carrying_capacity);
 
   Aux<Rabbits> rabbit_births = rabbit_population * rabbit_birth_rate
-  Aux<Rabbits> rabbit_deaths = max (rabbit_population / average_rabbit_life * \
-                               effect_of_crowding_on_deaths_lookup[rabbit_crowding], \
-                               fox_consumption_of_rabbits
+  Aux<Rabbits> rabbit_deaths = max(rabbit_population / average_rabbit_life * \
+                                   effect_of_crowding_on_deaths_lookup[rabbit_crowding], \
+                                   fox_consumption_of_rabbits)
 
 
   Stock<Rabbits> rabbit_population = rabbit_births - rabbit_deaths, initial_rabbit_population

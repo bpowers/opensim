@@ -22,3 +22,7 @@ object-oriented system dynamics ideas.
 
 the infection.c file has a detailed example of how this will look.
 
+
+#===--- next steps -------------------------------------------------------===#
+
+
