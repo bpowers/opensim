@@ -12,16 +12,16 @@ Model rabbit_fox {
   time.save_step = 1
 
   Aux<Foxes> initial_fox_population = 30
-  Aux average_fox_life          = 4
-      average_fox_life.units    = years
+  Aux<Time> average_fox_life          = 4
+            average_fox_life.units    = years
   Aux fox_birth_rate            = .25
       fox_birth_rate.units      = Foxes/year
   Aux fox_food_requirements     = 25
       fox_food_requirements.units = Rabbits/year
 
   Aux<Rabbits> initial_rabbit_population = 500
-  Aux average_rabbit_life       = 2
-      average_rabbit_life.units = years
+  Aux<Time>    average_rabbit_life       = 2
+       	       average_rabbit_life.units = years
   Aux rabbit_birth_rate         = 2
       rabbit_birth_rate.units   = Rabbits/year
 
