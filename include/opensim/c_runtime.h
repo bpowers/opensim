@@ -38,6 +38,7 @@
 extern "C" {
 #endif 
 
+#define uint unsigned int
 
 // help the compiler do better branch prediction
 #define likely(x)       __builtin_expect((x),1)
@@ -54,145 +55,137 @@ typedef double real_t;
 
 
 // the data structure is for each 'frame' of our simulation
-struct _data_t
+struct data
 {
-  uint32_t count;
-  real_t *values;
+	uint32_t count;
+	real_t *values;
 };
-typedef struct _data_t data_t;
 
 
 // the data structure representing a lookup table
-struct _table_t
+struct table
 {
-  uint16_t size;
-  real_t *x;
-  real_t *y;
+	uint16_t size;
+	real_t *x;
+	real_t *y;
 };
-typedef struct _table_t table_t;
 
 
 // the data structure representing a lookup table
-struct _tables_t
+struct tables
 {
-  uint32_t count;
-  table_t **tables;
+	uint32_t count;
+	struct table **tables;
 };
-typedef struct _tables_t tables_t;
 
 
 // forward declaration so we can use it in the function prototypes for
 // sim_ops
-struct _sim_t;
-typedef struct _sim_t sim_t;
+struct sim;
 
 // each different simulation will have different functions for these
 // operations, so by storing the function pointers here, we can abstract
 // most of the simulate funcion into the runtime, making the simulation
 // code independent of the integration type (I think) (rk4, euler, etc)
-struct _sim_ops
+struct sim_ops
 {
-  int32_t (*simulate_flows) (sim_t *);
-  int32_t (*update_stocks) (sim_t *);
-  int32_t (*integ_method) (sim_t *);
+	int32_t (*simulate_flows) (struct sim *);
+	int32_t (*update_stocks) (struct sim *);
+	int32_t (*integ_method) (struct sim *);
 };
-typedef struct _sim_ops sim_ops;
 
 
 // control keeps track of the start, end,step and save_step constants.
 // I'm putting these in their own structure because they aren't really
 // appropriate to expose as constants to the rest of the model.
-struct _control_t
+struct control
 {
-  real_t start;
-  real_t end;
-  real_t step;
-  real_t save_step;
+	real_t start;
+	real_t end;
+	real_t step;
+	real_t save_step;
 };
-typedef struct _control_t control_t;
 
 
-struct _class_t
+struct _class
 {
-  uint32_t num_vars;
-  const char **var_names;
+	uint32_t num_vars;
+	const char **var_names;
 
-  uint32_t num_constants;
-  const char **constant_names;
+	uint32_t num_constants;
+	const char **constant_names;
 
-  sim_ops *ops;
+	struct sim_ops *ops;
 
-  // the class provides defaults for the creation of new instances.
-  control_t def_control;
-  data_t *defaults;
-  tables_t *def_lookups;
+	// the class provides defaults for the creation of new instances.
+	struct control def_control;
+	struct data *defaults;
+	struct tables *def_lookups;
 };
 typedef struct _class_t class_t;
 
 
-struct _thread_info
+struct thread_info
 {
-
-  pthread_t threads[2];
+	pthread_t threads[2];
 };
-typedef struct _thread_info thread_info;
 
 
 // the sim structure represents an instance of a simulation
-struct _sim_t
+struct sim
 {
-  class_t *_class;
+	struct _class *_class;
 
-  data_t *curr;
-  data_t *next;
+	struct data *curr;
+	struct data *next;
 
-  control_t time;
+	struct control time;
 
-  data_t *constants;
+	struct data *constants;
 
-  tables_t *lookups;
+	struct tables *lookups;
 };
 
 
 /* initialize and exit from the opensim runtime */
-int32_t opensim_init ();
-void opensim_exit ();
+int opensim_init();
+void opensim_exit();
 
 /* functions to free memory created during the course of simulating */
-void opensim_data_free (data_t *sim);
-void opensim_sim_free (sim_t *data);
-void opensim_table_free (table_t *table);
+void opensim_data_free(struct data *sim);
+void opensim_sim_free(struct sim *data);
+void opensim_table_free(struct table *table);
 
 /* create a new data_t structure to hold 'count' number of variables */
-data_t *opensim_data_new (uint32_t count);
+struct data *opensim_data_new(size_t count);
 
 /* create a new sim_t structure, usually wrapped by a sim-specific
  * sim_new function */
-sim_t *opensim_sim_new (class_t *_class);
+struct sim *opensim_sim_new(struct class *_class);
 
 /* create a new table to store lookup data */
-table_t *opensim_table_new (uint32_t size);
+struct table *opensim_table_new(size_t size);
 
 /* perform the sim-independent initialization of a sim_t */
-int32_t opensim_sim_init (sim_t *sim);
+int opensim_sim_init(struct sim *sim);
 
 /* functions to print out data */
-int32_t opensim_data_print (FILE *file, data_t *data);
-int32_t opensim_header_print (FILE *file, const char *names[], uint32_t count);
+int opensim_data_print(FILE *file, data_t *data);
+int opensim_header_print(FILE *file, const char *names[], size_t count);
 
 /* run a simulation using euler integration */
-int32_t opensim_simulate_euler (sim_t *sim);
+int opensim_simulate_euler(struct sim *sim);
 
 /* simulate an instantiated model */
-int32_t opensim_simulate (sim_t *sim);
+int opensim_simulate(struct sim *sim);
 
 
-real_t max (real_t a, real_t b);
-real_t lookup (table_t *table, real_t index);
+real_t max(real_t a, real_t b);
+real_t lookup(struct table *table, real_t index);
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 #endif /* __OPENSIM_RUNTIME_H__ */
 

@@ -1,57 +1,71 @@
 
 Kind Individuals;
 
-Kind Rabbits : Individuals;
-Kind Foxes : Individuals;
+Kind Rabbits: Individuals;
+Kind Foxes: Individuals;
 
-Model rabbit_fox {
+Model<Individuals> Population
+{
+	Aux initial_population;
 
-  time.start     = 0
-  time.end       = 50
-  time.step      = 0.015625
-  time.save_step = 1
+	Aux</Time> birth_rate;
+	Aux<Time> average_lifespan;
 
-  Aux<Foxes> initial_fox_population = 30
-  Aux<Time> average_fox_life          = 4
-            average_fox_life.units    = years
-  Aux fox_birth_rate            = .25
-      fox_birth_rate.units      = Foxes/year
-  Aux fox_food_requirements     = 25
-      fox_food_requirements.units = Rabbits/year
+	Flow births = population * birth_rate;
+	Flow deaths = population / avg_lifespan;
 
-  Aux<Rabbits> initial_rabbit_population = 500
-  Aux<Time>    average_rabbit_life       = 2
-       	       average_rabbit_life.units = years
-  Aux rabbit_birth_rate         = 2
-      rabbit_birth_rate.units   = Rabbits/year
-
-  Aux<Rabbits> carrying_capacity            = 500
-
-  Table fox_rabbit_consumption_lookup       = (0, 0), (1, 1), (2, 2), (6, 2)
-  Table fox_mortality_lookup                = (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)
-  Table effect_of_crowding_on_deaths_lookup = (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)
-
-
-  # explicit '\' required for continuation
-  Aux fox_consumption_of_rabbits = fox_population * fox_food_requirements * \
-                                   fox_rabbit_consumption_lookup[rabbit_crowding]
-
-  Flow<Foxes> fox_births = fox_population * fox_birth_rate
-  Flow<Foxes> fox_deaths = fox_population / average_fox_life * fox_mortality_lookup[fox_food_availability]
-
-  Aux fox_food_availability = fox_consumption_of_rabbits/fox_population/fox_food_requirements
-
-
-  # UGGGGLY - example of BAD syntax
-  Aux<Rabbits> rabbit_crowding = Aux(rabbit_population/carrying_capacity);
-
-  Aux<Rabbits> rabbit_births = rabbit_population * rabbit_birth_rate
-  Aux<Rabbits> rabbit_deaths = max(rabbit_population / average_rabbit_life * \
-                                   effect_of_crowding_on_deaths_lookup[rabbit_crowding], \
-                                   fox_consumption_of_rabbits)
-
-
-  Stock<Rabbits> rabbit_population = rabbit_births - rabbit_deaths, initial_rabbit_population
-  Stock<Foxes> fox_population      = fox_births - fox_deaths,       initial_fox_population
+	Stock population = births - deaths, initial_population;
 }
 
+Model<Rabbits> RabbitPopulation: Populaion
+{
+	Aux carrying_capacity;
+
+	Aux initial_population = 500 Rabbits;
+	Aux birth_rate         = 2 Rabbits/year;
+	Aux avg_lifespan       = 2 years;
+	Aux crowding           = population/carrying_capacity;
+
+	Table effect_of_crowding_on_deaths_lookup = (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20);
+
+	Flow deaths = max(population/avg_lifespan*effect_of_crowding_on_deaths_lookup[crowding],
+	                  consumption_of_rabbits);
+}
+
+Model<Foxes> FoxPopulation: Population
+{
+	Aux consumption_of_rabbits;
+
+	Aux initial_population = 30 Foxes;
+	Aux birth_rate         = .25 Foxes/year;
+	Aux avg_lifespan       = 4 years;
+	Aux food_requirements  = 25 Rabbits/year;
+	Aux food_availability  = consumption_of_rabbits/population/food_requirements;
+
+	Table mortality_lookup = (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5);
+
+	Flow deaths = population/avg_lifespan*mortality_lookup[food_availability]
+}
+
+Model RabbitFox
+{
+	sim.integration = "euler";
+
+	time.start      = 0 Years;
+	time.end        = 50 Years;
+	time.step       = .5 Months;
+	time.save_step  = 1 Years;
+
+	RabbitPopulation rabbits;
+	FoxPopulation foxes;
+
+	rabbits.carrying_capacity = 500 Rabbits;
+
+	foxes.consumption_of_rabbits = fox_consumption_of_rabbits;
+	rabbits.consumption_of_rabbits = fox_consumption_of_rabbits;
+
+	Table fox_rabbit_consumption_lookup  = (0, 0), (1, 1), (2, 2), (6, 2);
+
+	Aux fox_consumption_of_rabbits = foxes.population * foxes.food_requirements *
+                                         fox_rabbit_consumption_lookup[rabbits.crowding];
+}
