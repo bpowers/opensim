@@ -10,9 +10,6 @@ tokens {
 	MULT = '*';
 	DIV = '/';
 	EXP = '^';
-    LPAREN = '(';
-    RPAREN = ')';
-    COMMA = ','
 }
 
 
@@ -44,7 +41,7 @@ expon
 term
     : ID
     | FLOAT
-    | (LPAREN! expr RPAREN!)
+    | ('('! expr ')'!)
     ;
 
 ID 
@@ -92,6 +89,10 @@ OCTAL_ESC
 fragment
 UNICODE_ESC
     : '\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+    ;
+
+NEWLINE
+    : '\r'? '\n'
     ;
 
 /** Skip whitespace */
