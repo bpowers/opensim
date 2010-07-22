@@ -1,21 +1,26 @@
 grammar donella1;
 
 options {
-    language="Cpp";
-}
-
-tokens {
-	ADD = '+';
-	SUB = '-';
-	MULT = '*';
-	DIV = '/';
-	EXP = '^';
+    language = C;
+    output = AST;
 }
 
 
-FN_CALL	
-    : ID  LPAREN! expr (COMMA! expr)* RPAREN!
-	| expr
+statements
+    : statement+ EOF
+    ;
+
+statement
+    : fn_call
+    | assign
+    ;
+
+assign
+    : ID '=' expr ';'
+    ;
+
+fn_call
+    : ID  '('! expr (','! expr)* ')'!
 	;
 
 expr
@@ -23,19 +28,19 @@ expr
     ;
 
 loose
-    : tight ((ADD|SUB) loose)?
+    : tight (('+'|'-') tight)*
 	;
 
 tight
-	: unary ((DIV|MULT) tight)?
+	: unary (('*'|'/') unary)*
 	;
 
 unary
-    : (ADD|SUB)? expon
+    : ('+'|'-')^ expon
     ;
 
 expon
-    : term (EXP expon)?
+    : term ('^' expon)?
 	;
 
 term
@@ -96,4 +101,4 @@ NEWLINE
     ;
 
 /** Skip whitespace */
-WS : (' ' | '\t' | '\r' | '\n') {skip();} ;
+WS : (' ' | '\t' | '\r' | '\n') {SKIP();} ;
