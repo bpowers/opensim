@@ -1,27 +1,22 @@
 grammar donella1;
 
 options {
-    language = C;
+    language = Python;
     output = AST;
 }
 
 
 statements
-    : statement+ EOF
+    : statement*
     ;
 
 statement
-    : fn_call
-    | assign
+    : assignment
     ;
 
-assign
-    : ID '=' expr ';'
+assignment
+    : ID '='^ expr ';' NEWLINE?
     ;
-
-fn_call
-    : ID  '('! expr (','! expr)* ')'!
-	;
 
 expr
     : loose
@@ -29,24 +24,25 @@ expr
 
 loose
     : tight (('+'|'-') tight)*
-	;
+    ;
 
 tight
-	: unary (('*'|'/') unary)*
-	;
-
-unary
-    : ('+'|'-')^ expon
+    : expon (('*'|'/') expon)*
     ;
 
 expon
-    : term ('^' expon)?
-	;
+    : fn_call ('^' fn_call)*
+    ;
+
+fn_call
+    : ID '(' (expr (',' expr)*)? ')'
+    | term
+    ;
 
 term
-    : ID
-    | FLOAT
-    | ('('! expr ')'!)
+    : FLOAT
+    | ID
+    | '(' expr ')'
     ;
 
 ID 
@@ -56,20 +52,20 @@ ID
 FLOAT
     : ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
     | '.' ('0'..'9')+ EXPONENT?
-    | ('0'..'9')+ EXPONENT
+    | ('0'..'9')+ EXPONENT?
     ;
 
 COMMENT
     : '#' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
     ;
 
-STRING
-    : '\'' ( ESC_SEQ | ~('\\'|'\'') )* '\''
-    ;
-
 fragment
 EXPONENT
     : ('e'|'E') ('+'|'-')? ('0'..'9')+
+    ;
+
+STRING
+    : '\'' ( ESC_SEQ | ~('\\'|'\'') )* '\''
     ;
 
 fragment
@@ -100,5 +96,7 @@ NEWLINE
     : '\r'? '\n'
     ;
 
-/** Skip whitespace */
-WS : (' ' | '\t' | '\r' | '\n') {SKIP();} ;
+// skip whitespace
+WS
+    : (' '|'\t'|'\n'|'\r')+ {skip();}
+    ;
