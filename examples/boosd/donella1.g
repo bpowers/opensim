@@ -1,7 +1,7 @@
 grammar donella1;
 
 options {
-    language = Python;
+    language = C;
     output = AST;
 }
 
@@ -64,39 +64,11 @@ EXPONENT
     : ('e'|'E') ('+'|'-')? ('0'..'9')+
     ;
 
-STRING
-    : '\'' ( ESC_SEQ | ~('\\'|'\'') )* '\''
-    ;
-
-fragment
-HEX_DIGIT
-    : ('0'..'9'|'a'..'f'|'A'..'F')
-    ;
-
-fragment
-ESC_SEQ
-    : '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
-    | UNICODE_ESC
-    | OCTAL_ESC
-    ;
-
-fragment
-OCTAL_ESC
-    : '\\' ('0'..'3') ('0'..'7') ('0'..'7')
-    | '\\' ('0'..'7') ('0'..'7')
-    | '\\' ('0'..'7')
-    ;
-
-fragment
-UNICODE_ESC
-    : '\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
-    ;
-
 NEWLINE
     : '\r'? '\n'
     ;
 
 // skip whitespace
 WS
-    : (' '|'\t'|'\n'|'\r')+ {skip();}
+    : (' '|'\t'|'\n'|'\r')+ {SKIP();}
     ;
