@@ -1,4 +1,4 @@
-grammar donella1;
+grammar boosd;
 
 options {
     language = C;
