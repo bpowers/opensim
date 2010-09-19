@@ -21,10 +21,20 @@ MAKEFLAGS = -s
 endif
 
 
+# clear out all suffixes
+.SUFFIXES:
+# list only those we use
+.SUFFIXES: .c .g
 
 TARGETS=boosd
 
 all: $(TARGETS)
+
+.g.c:
+	@echo "  ANTLR $@"
+	antlr3 $<
+
+boosd: boosd.c
 
 types: main.c
 	@echo "  CXX   $@"
@@ -32,8 +42,4 @@ types: main.c
 
 clean:
 	$(RM) $(TARGETS)
-
-.c.g:
-	@echo "  ANTLR $@"
-	antlr3 $@
 

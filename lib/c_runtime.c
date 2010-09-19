@@ -42,7 +42,7 @@ enum _flags
  * this function with @data being NULL.
  */
 void
-opensim_data_free (data_t *data)
+opensim_data_free (struct data *data)
 {
   if (data->values)
     free (data->values);
@@ -61,7 +61,7 @@ opensim_data_free (data_t *data)
  * objects.  It is undefined to call this function with @sim being NULL.
  */
 void
-opensim_sim_free (sim_t *sim)
+opensim_sim_free (struct sim *sim)
 {
   if (sim->curr)
     opensim_data_free (sim->curr);
@@ -84,7 +84,7 @@ opensim_sim_free (sim_t *sim)
  * this function with @table being NULL.
  */
 void
-opensim_table_free (table_t *table)
+opensim_table_free (struct table *table)
 {
   if (table->x)
     free (table->x);
@@ -104,10 +104,10 @@ opensim_table_free (table_t *table)
  *
  * Returns: a pointer to the new data_t on success, NULL on failure.
  */
-data_t *
-opensim_data_new (uint32_t count)
+struct data *
+opensim_data_new (size_t count)
 {
-  data_t *new_data = (data_t *)malloc (sizeof (data_t));
+  struct data *new_data = (struct data *)malloc(sizeof(struct data));
   if (!new_data)
   {
     fprintf (stderr, "couldn't allocate space for new data_t.\n");
@@ -141,10 +141,10 @@ opensim_data_new (uint32_t count)
  *
  * Returns: a pointer to a correctly formed sim_t on success, NULL on error.
  */
-sim_t *
-opensim_sim_new (class_t *_class)
+struct sim *
+opensim_sim_new (struct klass *_class)
 {
-  sim_t *sim = (sim_t *)malloc (sizeof (sim_t));
+  struct sim *sim = (struct sim *)malloc(sizeof(struct sim));
   if (!sim)
   {
     fprintf (stderr, "couldn't allocate memory for instance.\n");
@@ -184,10 +184,10 @@ opensim_sim_new (class_t *_class)
  *
  * Returns: a pointer to the new table_t on success, NULL on failure.
  */
-table_t *
-opensim_table_new (uint32_t size)
+struct table *
+opensim_table_new (size_t size)
 {
-  table_t *new_table = (table_t *)malloc (sizeof (table_t));
+  struct table *new_table = (struct table *)malloc(sizeof(struct table));
   if (!new_table)
   {
     fprintf (stderr, "couldn't allocate space for new table_t.\n");
@@ -224,7 +224,7 @@ opensim_table_new (uint32_t size)
  * Returns: 0 on success, a negative error code on error.
  */
 int32_t
-opensim_sim_init (sim_t *sim)
+opensim_sim_init (struct sim *sim)
 {
   if (sim->curr)
     opensim_data_free (sim->curr);
@@ -297,8 +297,8 @@ opensim_exit ()
  *
  * Returns: 0 on success, a negative number on failure.
  */
-int32_t
-opensim_data_print (FILE *file, data_t *data)
+int
+opensim_data_print (FILE *file, struct data *data)
 {
   // gracefully handle NULL and zero-length data.
   if (!data || data->count == 0)
@@ -326,8 +326,8 @@ opensim_data_print (FILE *file, data_t *data)
  *
  * Returns: 0 on success, a negative number on failure.
  */
-int32_t
-opensim_header_print (FILE *file, const char *names[], uint32_t count)
+int
+opensim_header_print (FILE *file, const char *names[], size_t count)
 {
   // gracefully handle NULL and zero-length data.
   if (!names || count == 0)
@@ -351,8 +351,8 @@ opensim_header_print (FILE *file, const char *names[], uint32_t count)
  *
  * Returns: 0 on success, a negative number on failure.
  */
-int32_t
-opensim_simulate_euler (sim_t *sim)
+int
+opensim_simulate_euler (struct sim *sim)
 {
   real_t start     = sim->time.start;
   real_t end       = sim->time.end;
@@ -398,7 +398,7 @@ opensim_simulate_euler (sim_t *sim)
     // for now we just shuffle curr and next back and forth.  if we get
     // around to having a seperate thread for writing out the data, this
     // part will change
-    data_t *tmp = sim->curr;
+    struct data *tmp = sim->curr;
     sim->curr = sim->next;
     sim->next = tmp;
   }
@@ -417,23 +417,24 @@ opensim_simulate_euler (sim_t *sim)
  * Returns: 0 on success, a negative number on failure.
  */
 int32_t
-opensim_simulate (sim_t *sim)
+opensim_simulate (struct sim *sim)
 {
-  return sim->_class->ops->integ_method (sim);
+  return sim->_class->ops->integ_method(sim);
 }
 
 inline real_t
-max (real_t a, real_t b)
+max(real_t a, real_t b)
 {
   return a > b ? a : b;
 }
 
 
 real_t
-lookup (table_t *table, real_t index)
+lookup(struct table *table, real_t index)
 {
   uint32_t size = table->size;
-  if (unlikely(table->size == 0)) return 0;
+  if (unlikely(table->size == 0))
+	  return 0;
 
   real_t *x = table->x;
   real_t *y = table->y;

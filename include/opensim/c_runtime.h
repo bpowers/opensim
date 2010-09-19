@@ -107,7 +107,7 @@ struct control
 };
 
 
-struct _class
+struct klass
 {
 	uint32_t num_vars;
 	const char **var_names;
@@ -122,7 +122,6 @@ struct _class
 	struct data *defaults;
 	struct tables *def_lookups;
 };
-typedef struct _class_t class_t;
 
 
 struct thread_info
@@ -134,7 +133,7 @@ struct thread_info
 // the sim structure represents an instance of a simulation
 struct sim
 {
-	struct _class *_class;
+	struct klass *_class;
 
 	struct data *curr;
 	struct data *next;
@@ -161,7 +160,7 @@ struct data *opensim_data_new(size_t count);
 
 /* create a new sim_t structure, usually wrapped by a sim-specific
  * sim_new function */
-struct sim *opensim_sim_new(struct class *_class);
+struct sim *opensim_sim_new(struct klass *_class);
 
 /* create a new table to store lookup data */
 struct table *opensim_table_new(size_t size);
@@ -170,7 +169,7 @@ struct table *opensim_table_new(size_t size);
 int opensim_sim_init(struct sim *sim);
 
 /* functions to print out data */
-int opensim_data_print(FILE *file, data_t *data);
+int opensim_data_print(FILE *file, struct data *data);
 int opensim_header_print(FILE *file, const char *names[], size_t count);
 
 /* run a simulation using euler integration */
