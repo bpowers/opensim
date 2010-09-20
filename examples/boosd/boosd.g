@@ -3,6 +3,9 @@ grammar boosd;
 options {
     language = C;
     output = AST;
+    // as suggested here:
+    // http://www.antlr.org/wiki/display/ANTLR3/Using+the+ANTLR3+C+Target
+    ASTLabelType=pANTLR3_BASE_TREE;
 }
 
 
