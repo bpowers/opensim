@@ -32,38 +32,33 @@ all: $(TARGETS)
 
 .c.o:
 	@echo "  CC  $@"
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $<
 
 .cc.o:
 	@echo "  CXX $@"
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) -c $<
 
-boosd_lexer.c: boosd.g
+grammar: boosd.g
 	@echo "  ANTLR $^"
 	antlr3 $^ && \
 	mv boosdLexer.c boosd_lexer.c && \
 	mv boosdParser.c boosd_parser.c && \
 	mv boosdLexer.h boosd_lexer.h && \
 	mv boosdParser.h boosd_parser.h && \
-	perl -pi -e "s/boosdLexer/boosd_lexer/g" boosd_lexer.c && \
-	perl -pi -e "s/boosdParser/boosd_parser/g" boosd_parser.c
+	perl -pi -e "s/boosdLexer.h/boosd_lexer.h/g" boosd_lexer.c && \
+	perl -pi -e "s/boosdParser.h/boosd_parser.h/g" boosd_parser.c
 
-boosd_parser.c: boosd.g
-	@echo "  ANTLR $^"
-	antlr3 $^ && \
-	mv boosdLexer.c boosd_lexer.c && \
-	mv boosdParser.c boosd_parser.c
+boosd_lexer.c: grammar
+boosd_parser.c: grammar
 
-grammar: boosd_lexer.c boosd_parser.c
-
-boosd: grammar
-
-types: main.c boosd_lexer.o boosd_parser.o
+boosd: main.c boosd_lexer.o boosd_parser.o
 	@echo "  CXX   $@"
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lsim -L$(OPENSIM_LIBDIR) $(LLVM_LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ -lsim -lantlr3c -L$(OPENSIM_LIBDIR) $(LLVM_LDFLAGS)
 
 clean:
-	$(RM) $(TARGETS)
-	rm boosd*.c
-	rm boosd*.h
+	$(RM) -f $(TARGETS)
+	rm -f boosd*.c
+	rm -f boosd*.h
+	rm -f *.o
+
 
