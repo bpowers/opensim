@@ -11,12 +11,13 @@ options {
 
 
 compilation_unit
-    : whitespace?
-      kind_decls?
+    : whitespace
+      kind_decls
+      model_decls
     ;
 
 whitespace
-    : NEWLINE*
+    : NEWLINE?
     ;
 
 kind_decls
@@ -24,11 +25,15 @@ kind_decls
     ;
 
 kind_decl
-    : 'kind' ID aka_list? specializes? NEWLINE*
+    : 'kind' ID aka_list? (specializes conversion?)? NEWLINE
     ;
 
 specializes
-    : 'specializes' ID ('(' expr ID ')')?
+    : 'specializes' ID
+    ;
+
+conversion
+    : '(' expr ID ')'
     ;
 
 aka_list
@@ -36,7 +41,23 @@ aka_list
     ;
 
 id_list
-    : ID ((',' ID)*)?
+    : ID (','^ ID)*
+    ;
+
+model_decls
+    : model_decl
+    ;
+
+model_decl
+    : 'model' ID of_type? ('(' specializes ')')? defs
+    ;
+
+of_type
+    : '(' 'of' ID ')'
+    ;
+
+defs
+    : '{' statements '}'
     ;
 
 statements
@@ -48,7 +69,7 @@ statement
     ;
 
 assignment
-    : ID '='^ expr NEWLINE
+    : ID ASSIGN^ expr NEWLINE
     ;
 
 expr
@@ -78,6 +99,10 @@ term
     | '(' expr ')'
     ;
 
+ASSIGN
+    : ':='
+    ;
+
 ID 
     : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
@@ -98,7 +123,7 @@ EXPONENT
     ;
 
 NEWLINE
-    : '\r'? '\n'
+    : ('\r'? '\n')*
     ;
 
 // skip whitespace
