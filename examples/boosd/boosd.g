@@ -45,11 +45,11 @@ id_list
     ;
 
 model_decls
-    : model_decl
+    : model_decl*
     ;
 
 model_decl
-    : 'model' ID of_type? specializes? defs
+    : 'model' ID of_type? specializes? defs whitespace
     ;
 
 of_type
@@ -73,15 +73,14 @@ declaration
     ;
 
 assignment
-    : typed_expr (',' typed_expr)?
-    | '[' pair (',' pair)* ']'
+    : call (',' call)*
     ;
 
 pair
     : '(' FLOAT ',' FLOAT ')'
     ;
 
-typed_expr
+call
     : expr expr?
     ;
 
@@ -102,22 +101,26 @@ tight
     ;
 
 expon
-    : fn_call ('^' fn_call)*
+    : term ('^' term)*
     ;
 
-fn_call
-    : (ID '(') => call
-    | term
-    ;
-
-call
-    : ID '(' (expr (',' expr)*)? ')'
+expr_list
+    : (call (',' whitespace call)*)?
     ;
 
 term
     : FLOAT
-    | ID ('[' expr ']')?
-    | '(' expr ')'
+    | '(' expr_list ')'
+    | ident lookup?
+    ;
+
+ident
+    :  ID
+    | '[' pair (',' pair)* ']'
+    ;
+
+lookup
+    : '[' expr ']'
     ;
 
 TYPE

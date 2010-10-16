@@ -58,10 +58,10 @@ model RabbitFox {
 		save_step := 1 year
 	}
 
-	Table fox_rabbit_consumption_lookup := [(0, 0), (1, 1), (2, 2), (6, 2)]
+	Table crowding_effect := [(0, 0), (1, 1), (2, 2), (6, 2)][rabbits.crowding]
 
 	fox_consumption_of_rabbits := foxes.population * foxes.food_requirements *
-                                     fox_rabbit_consumption_lookup[rabbits.crowding]
+                                      crowding_effect
 
 	RabbitPopulation rabbits := {
 		carrying_capacity := 500 Rabbits
