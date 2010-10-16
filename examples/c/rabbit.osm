@@ -7,8 +7,7 @@ kind Individuals (aka Individual)
 kind Rabbits (aka Rabbit, Rab) specializes Individuals
 kind Foxes specializes Individuals
 
-model Population (of Individuals)
-{
+model Population (of Individuals) {
 	initial_population
 
 	birth_rate (1/time)
@@ -20,8 +19,7 @@ model Population (of Individuals)
 	Stock population := births - deaths, initial_population
 }
 
-model RabbitPopulation (of Rabbits) specializes Population
-{
+model RabbitPopulation (of Rabbits) specializes Population {
 	carrying_capacity
 	consumption_of_rabbits
 
@@ -36,8 +34,7 @@ model RabbitPopulation (of Rabbits) specializes Population
 	                   consumption_of_rabbits)
 }
 
-model FoxPopulation (of Foxes) specializes Population
-{
+model FoxPopulation (of Foxes) specializes Population {
 	consumption_of_rabbits (Rabbits)
 
 	initial_population := 30 Foxes
@@ -51,8 +48,7 @@ model FoxPopulation (of Foxes) specializes Population
 	Flow deaths := population/avg_lifespan*mortality_lookup[food_availability]
 }
 
-model RabbitFox
-{
+model RabbitFox {
 	sim.integration := "euler"
 
 	time := {
@@ -62,7 +58,7 @@ model RabbitFox
 		save_step := 1 Years
 	}
 
-	Table fox_rabbit_consumption_lookup  := (0, 0), (1, 1), (2, 2), (6, 2)
+	Table fox_rabbit_consumption_lookup := (0, 0), (1, 1), (2, 2), (6, 2)
 
 	fox_consumption_of_rabbits := foxes.population * foxes.food_requirements *
                                      fox_rabbit_consumption_lookup[rabbits.crowding]
