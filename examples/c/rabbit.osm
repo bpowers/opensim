@@ -52,10 +52,10 @@ model RabbitFox {
 	sim.integration := "euler"
 
 	time := {
-		start     := 0 Years,
-		end       := 50 Years,
-		step      := .5 Months,
-		save_step := 1 Years
+		start     := 0 years
+		end       := 50 years
+		step      := .5 months
+		save_step := 1 year
 	}
 
 	Table fox_rabbit_consumption_lookup := (0, 0), (1, 1), (2, 2), (6, 2)
@@ -64,7 +64,7 @@ model RabbitFox {
                                      fox_rabbit_consumption_lookup[rabbits.crowding]
 
 	RabbitPopulation rabbits := {
-		carrying_capacity := 500 Rabbits,
+		carrying_capacity := 500 Rabbits
 		consumption_of_rabbits := fox_consumption_of_rabbits
 	}
 	FoxPopulation foxes := {
