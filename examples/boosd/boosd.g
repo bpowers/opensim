@@ -49,7 +49,7 @@ model_decls
     ;
 
 model_decl
-    : 'model' ID of_type? ('(' specializes ')')? defs
+    : 'model' ID of_type? specializes? defs
     ;
 
 of_type
@@ -65,7 +65,7 @@ statements
     ;
 
 statement
-    : declaration assignment?
+    : declaration (ASSIGN^ assignment)? NEWLINE
     ;
 
 declaration
@@ -73,8 +73,16 @@ declaration
     ;
 
 assignment
-    : ASSIGN^ expr (',' expr)? NEWLINE
-    | NEWLINE
+    : typed_expr (',' typed_expr)?
+    | '[' pair (',' pair)* ']'
+    ;
+
+pair
+    : '(' FLOAT ',' FLOAT ')'
+    ;
+
+typed_expr
+    : expr expr?
     ;
 
 type_decl
@@ -98,8 +106,12 @@ expon
     ;
 
 fn_call
-    : ID '(' (expr (',' expr)*)? ')'
+    : (ID '(') => call
     | term
+    ;
+
+call
+    : ID '(' (expr (',' expr)*)? ')'
     ;
 
 term

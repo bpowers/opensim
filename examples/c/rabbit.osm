@@ -13,10 +13,10 @@ model Population (of Individuals) {
 	birth_rate (1/time)
 	average_lifespan (time)
 
-	Flow births := population * birth_rate
-	Flow deaths := population / avg_lifespan
+	flow births := population * birth_rate
+	flow deaths := population / avg_lifespan
 
-	Stock population := births - deaths, initial_population
+	stock population := births - deaths, initial_population
 }
 
 model RabbitPopulation (of Rabbits) specializes Population {
@@ -28,9 +28,9 @@ model RabbitPopulation (of Rabbits) specializes Population {
 	avg_lifespan       := 2 years
 	crowding (dmnl)    := population/carrying_capacity
 
-	Table effect_on_deaths (dmnl) := (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)
+	table effect_on_deaths (dmnl) := [(0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)]
 
-	Flow deaths := max(population/avg_lifespan * effect_on_deaths[crowding],
+	flow deaths := max(population/avg_lifespan * effect_on_deaths[crowding],
 	                   consumption_of_rabbits)
 }
 
@@ -43,9 +43,9 @@ model FoxPopulation (of Foxes) specializes Population {
 	food_requirements  := 25 Rabbits/year
 	food_availability  := consumption_of_rabbits/population/food_requirements
 
-	Table mortality_lookup := (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)
+	table mortality_lookup := [(0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)]
 
-	Flow deaths := population/avg_lifespan*mortality_lookup[food_availability]
+	flow deaths := population/avg_lifespan*mortality_lookup[food_availability]
 }
 
 model RabbitFox {
@@ -58,7 +58,7 @@ model RabbitFox {
 		save_step := 1 year
 	}
 
-	Table fox_rabbit_consumption_lookup := (0, 0), (1, 1), (2, 2), (6, 2)
+	Table fox_rabbit_consumption_lookup := [(0, 0), (1, 1), (2, 2), (6, 2)]
 
 	fox_consumption_of_rabbits := foxes.population * foxes.food_requirements *
                                      fox_rabbit_consumption_lookup[rabbits.crowding]
