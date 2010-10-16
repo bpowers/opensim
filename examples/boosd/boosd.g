@@ -57,7 +57,7 @@ of_type
     ;
 
 defs
-    : '{' statements '}'
+    : '{' whitespace statements '}'
     ;
 
 statements
@@ -65,11 +65,20 @@ statements
     ;
 
 statement
-    : assignment
+    : declaration assignment?
+    ;
+
+declaration
+    : TYPE? ID type_decl?
     ;
 
 assignment
-    : ID ASSIGN^ expr NEWLINE
+    : ASSIGN^ expr (',' expr)? NEWLINE
+    | NEWLINE
+    ;
+
+type_decl
+    : '(' expr ')'
     ;
 
 expr
@@ -95,8 +104,15 @@ fn_call
 
 term
     : FLOAT
-    | ID
+    | ID ('[' expr ']')?
     | '(' expr ')'
+    ;
+
+TYPE
+    : 'stock'
+    | 'table'
+    | 'flow'
+    | 'aux'
     ;
 
 ASSIGN
