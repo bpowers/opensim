@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <stdarg.h>
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -31,8 +32,6 @@
 #include <fcntl.h>
 
 #include <openssl/sha.h>
-
-#include <event2/event.h>
 
 
 // backlog arg for listen(2); max clients to keep in queue
@@ -157,10 +156,4 @@ sha256_hex_file(const char *path, size_t len)
 	close(fd);
 
 	return ret;
-}
-
-
-void ccgi_state_init(struct ccgi_state *state)
-{
-	memset(state, 0, sizeof(*state));
 }
