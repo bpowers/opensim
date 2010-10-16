@@ -11,7 +11,12 @@ options {
 
 
 compilation_unit
-    : kind_decls?
+    : whitespace?
+      kind_decls?
+    ;
+
+whitespace
+    : NEWLINE*
     ;
 
 kind_decls
@@ -19,7 +24,15 @@ kind_decls
     ;
 
 kind_decl
-    : KIND^ ID ('(' AKA id_list ')')? (SPECIALIZES ID)? NEWLINE
+    : 'kind' ID aka_list? specializes? NEWLINE*
+    ;
+
+specializes
+    : 'specializes' ID ('(' expr ID ')')?
+    ;
+
+aka_list
+    : '(' 'aka' id_list ')'
     ;
 
 id_list
@@ -63,18 +76,6 @@ term
     : FLOAT
     | ID
     | '(' expr ')'
-    ;
-
-AKA
-    : 'aka'
-    ;
-
-SPECIALIZES
-    : 'specializes'
-    ;
-
-KIND
-    : 'kind'
     ;
 
 ID 
