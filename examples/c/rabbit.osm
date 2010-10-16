@@ -1,71 +1,77 @@
+kind years (aka year) specializes time
+kind months (aka month) specializes year (12 months)
+kind days (aka day) specializes month (30 days)
 
-Kind Individuals;
+kind Individuals (aka Individual)
 
-Kind Rabbits: Individuals;
-Kind Foxes: Individuals;
+kind Rabbits (aka Rabbit, Rab) specializes Individuals
+kind Foxes specializes Individuals
 
-Model<Individuals> Population
+model Population (of Individuals)
 {
-	Aux initial_population;
+	initial_population
 
-	Aux</Time> birth_rate;
-	Aux<Time> average_lifespan;
+	birth_rate (1/time)
+	average_lifespan (time)
 
-	Flow births = population * birth_rate;
-	Flow deaths = population / avg_lifespan;
+	Flow births := population * birth_rate
+	Flow deaths := population / avg_lifespan
 
-	Stock population = births - deaths, initial_population;
+	Stock population := births - deaths, initial_population
 }
 
-Model<Rabbits> RabbitPopulation: Populaion
+model RabbitPopulation (of Rabbits) specializes Population
 {
-	Aux carrying_capacity;
+	carrying_capacity
+	consumption_of_rabbits
 
-	Aux initial_population = 500 Rabbits;
-	Aux birth_rate         = 2 Rabbits/year;
-	Aux avg_lifespan       = 2 years;
-	Aux crowding           = population/carrying_capacity;
+	initial_population := 500 Rabbits
+	birth_rate         := 2 Rabbits/year
+	avg_lifespan       := 2 years
+	crowding (dmnl)    := population/carrying_capacity
 
-	Table effect_of_crowding_on_deaths_lookup = (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20);
+	Table effect_on_deaths (dmnl) := (0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)
 
-	Flow deaths = max(population/avg_lifespan*effect_of_crowding_on_deaths_lookup[crowding],
-	                  consumption_of_rabbits);
+	Flow deaths := max(population/avg_lifespan * effect_on_deaths[crowding],
+	                   consumption_of_rabbits)
 }
 
-Model<Foxes> FoxPopulation: Population
+model FoxPopulation (of Foxes) specializes Population
 {
-	Aux consumption_of_rabbits;
+	consumption_of_rabbits (Rabbits)
 
-	Aux initial_population = 30 Foxes;
-	Aux birth_rate         = .25 Foxes/year;
-	Aux avg_lifespan       = 4 years;
-	Aux food_requirements  = 25 Rabbits/year;
-	Aux food_availability  = consumption_of_rabbits/population/food_requirements;
+	initial_population := 30 Foxes
+	birth_rate         := .25 Foxes/year
+	avg_lifespan       := 4 years
+	food_requirements  := 25 Rabbits/year
+	food_availability  := consumption_of_rabbits/population/food_requirements
 
-	Table mortality_lookup = (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5);
+	Table mortality_lookup := (0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)
 
-	Flow deaths = population/avg_lifespan*mortality_lookup[food_availability]
+	Flow deaths := population/avg_lifespan*mortality_lookup[food_availability]
 }
 
-Model RabbitFox
+model RabbitFox
 {
-	sim.integration = "euler";
+	sim.integration := "euler"
 
-	time.start      = 0 Years;
-	time.end        = 50 Years;
-	time.step       = .5 Months;
-	time.save_step  = 1 Years;
+	time := {
+		start     := 0 Years,
+		end       := 50 Years,
+		step      := .5 Months,
+		save_step := 1 Years
+	}
 
-	RabbitPopulation rabbits;
-	FoxPopulation foxes;
+	Table fox_rabbit_consumption_lookup  := (0, 0), (1, 1), (2, 2), (6, 2)
 
-	rabbits.carrying_capacity = 500 Rabbits;
+	fox_consumption_of_rabbits := foxes.population * foxes.food_requirements *
+                                     fox_rabbit_consumption_lookup[rabbits.crowding]
 
-	foxes.consumption_of_rabbits = fox_consumption_of_rabbits;
-	rabbits.consumption_of_rabbits = fox_consumption_of_rabbits;
-
-	Table fox_rabbit_consumption_lookup  = (0, 0), (1, 1), (2, 2), (6, 2);
-
-	Aux fox_consumption_of_rabbits = foxes.population * foxes.food_requirements *
-                                         fox_rabbit_consumption_lookup[rabbits.crowding];
+	RabbitPopulation rabbits := {
+		carrying_capacity := 500 Rabbits,
+		consumption_of_rabbits := fox_consumption_of_rabbits
+	}
+	FoxPopulation foxes := {
+		consumption_of_rabbits := fox_consumption_of_rabbits
+	}
 }

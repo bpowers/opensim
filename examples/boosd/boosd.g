@@ -1,13 +1,30 @@
 grammar boosd;
 
 options {
-    language = C;
+    language = Java;
+    //language = C;
     output = AST;
     // as suggested here:
     // http://www.antlr.org/wiki/display/ANTLR3/Using+the+ANTLR3+C+Target
-    ASTLabelType=pANTLR3_BASE_TREE;
+    //ASTLabelType=pANTLR3_BASE_TREE;
 }
 
+
+compilation_unit
+    : kind_decls?
+    ;
+
+kind_decls
+    : kind_decl*
+    ;
+
+kind_decl
+    : KIND^ ID ('(' AKA id_list ')')? (SPECIALIZES ID)? NEWLINE
+    ;
+
+id_list
+    : ID ((',' ID)*)?
+    ;
 
 statements
     : statement*
@@ -18,7 +35,7 @@ statement
     ;
 
 assignment
-    : ID '='^ expr ';' NEWLINE?
+    : ID '='^ expr NEWLINE
     ;
 
 expr
@@ -48,6 +65,18 @@ term
     | '(' expr ')'
     ;
 
+AKA
+    : 'aka'
+    ;
+
+SPECIALIZES
+    : 'specializes'
+    ;
+
+KIND
+    : 'kind'
+    ;
+
 ID 
     : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
@@ -73,5 +102,6 @@ NEWLINE
 
 // skip whitespace
 WS
-    : (' '|'\t'|'\n'|'\r')+ {SKIP();}
+    : (' '|'\t')+ {skip();}
+//    : (' '|'\t'|'\n'|'\r')+ {SKIP();}
     ;
