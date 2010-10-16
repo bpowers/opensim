@@ -5,7 +5,7 @@
 
 CC=clang
 CXX=clang++
-CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include -g -D_GNU_SOURCE -I.
+CFLAGS=-O3 -Wall -Wno-unused-variable -pthread -I../../include -g -D_GNU_SOURCE -I. $(CFUNC_CFLAGS)
 CXXFLAGS=$(CFLAGS) -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 OPENSIM_SOURCE=$(`find ../../lib -name "*.h"`)
 OPENSIM_HEADERS=$(`find ../../include -name "*.h"`)
@@ -53,7 +53,7 @@ boosd_parser.c: grammar
 
 boosd: main.c boosd_lexer.o boosd_parser.o
 	@echo "  CXX   $@"
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lsim -lantlr3c -L$(OPENSIM_LIBDIR) $(LLVM_LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ -lantlr3c -L$(OPENSIM_LIBDIR) $(LLVM_LDFLAGS) -lsim
 
 clean:
 	$(RM) -f $(TARGETS)
@@ -61,4 +61,4 @@ clean:
 	rm -f boosd*.h
 	rm -f *.o
 
-
+.PHONY: grammar clean
