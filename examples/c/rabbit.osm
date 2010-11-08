@@ -1,73 +1,98 @@
+kind time
 kind years (aka year) specializes time
 kind months (aka month) specializes year (12 months)
 kind days (aka day) specializes month (30 days)
+
+kind distance
+kind meter (aka m) specializes distance
+kind kilometer (aka km) specializes meter (1/1000 kilometer)
+kind centimeter (aka cm) specializes meter (1000 centimeters)
 
 kind Individuals (aka Individual)
 
 kind Rabbits (aka Rabbit, Rab) specializes Individuals
 kind Foxes specializes Individuals
 
-model Population (of Individuals) {
+model Smooth callable (variable, delay, initial) {
+	stock smooth = {
+		equation = (variable - smooth)/delay
+		intial = initial
+	}
+}
+
+model Population (Individuals) {
 	initial_population
 
 	birth_rate (1/time)
 	average_lifespan (time)
 
-	flow births := population * birth_rate
-	flow deaths := population / avg_lifespan
+	flow births = population * birth_rate
+	flow deaths = population / avg_lifespan
 
-	stock population := births - deaths, initial_population
+	stock population = {
+		equation = births - deaths
+		initial = initial_population
+	}
+
+	# can't happen, because the variables are only defined in callable
+	smooth avg_population = {
+		variable = population
+		delay = 3
+		initial = 20
+	}
+
+	avg_population = smooth(population, delay, initial)
 }
 
-model RabbitPopulation (of Rabbits) specializes Population {
+model RabbitPopulation (Rabbits) extends Population {
 	carrying_capacity
 	consumption_of_rabbits
 
-	initial_population := 500 Rabbits
-	birth_rate         := 2 Rabbits/year
-	avg_lifespan       := 2 years
-	crowding (dmnl)    := population/carrying_capacity
+	initial_population = 500 Rabbits
+	birth_rate         = 2 m^2/s
+	avg_lifespan       = 2 years
+	crowding           = population/carrying_capacity
 
-	table effect_on_deaths (dmnl) := [(0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)]
+	table effect_on_deaths (dmnl) = [(0, 0.75), (3, 2.5), (6, 6), (8, 11), (10, 20)]
 
-	flow deaths := max(population/avg_lifespan * effect_on_deaths[crowding],
+	flow deaths = max(population/avg_lifespan * effect_on_deaths[crowding],
 	                   consumption_of_rabbits)
 }
 
-model FoxPopulation (of Foxes) specializes Population {
+model FoxPopulation (Foxes) extends Population {
 	consumption_of_rabbits (Rabbits)
 
-	initial_population := 30 Foxes
-	birth_rate         := .25 Foxes/year
-	avg_lifespan       := 4 years
-	food_requirements  := 25 Rabbits/year
-	food_availability  := consumption_of_rabbits/population/food_requirements
+	initial_population = 30 Foxes
+	birth_rate         = .25 Foxes/year
+	avg_lifespan       = 4 years
+	food_requirements  = 25 Rabbits/year
+	food_availability  = consumption_of_rabbits/population/food_requirements
 
-	table mortality_lookup := [(0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)]
+	table mortality_lookup = [(0, 20), (.3, 5), (.5, 2), (1, 1), (2, .5)]
 
-	flow deaths := population/avg_lifespan*mortality_lookup[food_availability]
+	flow deaths = population/avg_lifespan*mortality_lookup[food_availability]
 }
 
 model RabbitFox {
-	sim.integration := "euler"
+	sim.integration = "euler"
 
-	time := {
-		start     := 0 years
-		end       := 50 years
-		step      := .5 months
-		save_step := 1 year
+	time = {
+		start     = 0 years
+		end       = 50 years
+		step      = .5 months
+		save_step = 1 year
 	}
 
-	Table crowding_effect := [(0, 0), (1, 1), (2, 2), (6, 2)][rabbits.crowding]
+	Table crowding_effect = [(0, 0), (1, 1), (2, 2), (6, 2)][rabbits.crowding]
 
-	fox_consumption_of_rabbits := foxes.population * foxes.food_requirements *
+	fox_consumption_of_rabbits = foxes * foxes.food_requirements *
                                       crowding_effect
 
-	RabbitPopulation rabbits := {
-		carrying_capacity := 500 Rabbits
-		consumption_of_rabbits := fox_consumption_of_rabbits
+	RabbitPopulation rabbits = {
+		carrying_capacity = 500 Rabbits
+		consumption_of_rabbits = fox_consumption_of_rabbits
 	}
-	FoxPopulation foxes := {
-		consumption_of_rabbits := fox_consumption_of_rabbits
+	FoxPopulation foxes = {
+		consumption_of_rabbits = fox_consumption_of_rabbits
 	}
 }
