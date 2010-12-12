@@ -49,11 +49,15 @@ model_decls
     ;
 
 model_decl
-    : 'model' ID of_type? specializes? defs whitespace
+    : 'model' ID of_type? specializes? callable? defs whitespace
+    ;
+
+callable
+    : 'callable' '(' id_list ')'
     ;
 
 of_type
-    : '(' 'of' ID ')'
+    : '(' ID ')'
     ;
 
 defs
@@ -69,23 +73,36 @@ statement
     ;
 
 declaration
-    : TYPE? ID type_decl?
+    : ID? ID type_decl?
     ;
 
 assignment
-    : call (',' call)*
+    : initializer
+    | qualified_expr
+    ;
+
+initializer
+    : '{' whitespace initializer_expr* '}'
+    ;
+
+initializer_expr
+    : ID (ASSIGN^ qualified_expr) NEWLINE
     ;
 
 pair
     : '(' FLOAT ',' FLOAT ')'
     ;
 
+qualified_expr
+    : call (',' expr_u)?
+    ;
+
 call
-    : expr expr?
+    : expr
     ;
 
 type_decl
-    : '(' expr ')'
+    : '(' expr_u ')'
     ;
 
 expr
@@ -105,14 +122,39 @@ expon
     ;
 
 expr_list
-    : (call (',' whitespace call)*)?
+    : (call (',' call)*)?
     ;
 
 term
     : FLOAT
-    | '(' expr_list ')'
-    | ident lookup?
+    | '(' expr ')'
+    | ident (lookup|'(' expr_list ')')?
     ;
+
+
+
+expr_u
+    : loose_u
+    ;
+
+loose_u
+    : tight_u (('+'|'-') tight_u)*
+    ;
+
+tight_u
+    : expon_u (('*'|'/') expon_u)*
+    ;
+
+expon_u
+    : term_u ('^' term_u)*
+    ;
+
+term_u
+    : '1'
+    | '(' expr_u ')'
+    | ID
+    ;
+
 
 ident
     :  ID
@@ -123,15 +165,8 @@ lookup
     : '[' expr ']'
     ;
 
-TYPE
-    : 'stock'
-    | 'table'
-    | 'flow'
-    | 'aux'
-    ;
-
 ASSIGN
-    : ':='
+    : '='
     ;
 
 ID 
@@ -139,9 +174,8 @@ ID
     ;
 
 FLOAT
-    : ('0'..'9')+ '.' ('0'..'9')* EXPONENT?
-    | '.' ('0'..'9')+ EXPONENT?
-    | ('0'..'9')+ EXPONENT?
+    : DIGITS+ ('.' DIGITS*)? EXPONENT?
+    | '.' DIGITS+ EXPONENT?
     ;
 
 COMMENT
@@ -150,7 +184,12 @@ COMMENT
 
 fragment
 EXPONENT
-    : ('e'|'E') ('+'|'-')? ('0'..'9')+
+    : ('e'|'E') ('+'|'-')? DIGITS+
+    ;
+
+fragment
+DIGITS
+    : ('0'..'9')
     ;
 
 NEWLINE

@@ -5,7 +5,7 @@ kind days (aka day) specializes month (30 days)
 
 kind distance
 kind meter (aka m) specializes distance
-kind kilometer (aka km) specializes meter (1/1000 kilometer)
+kind kilometer (aka km) specializes meter (1./1000 kilometer)
 kind centimeter (aka cm) specializes meter (1000 centimeters)
 
 kind Individuals (aka Individual)
@@ -23,7 +23,7 @@ model Smooth callable (variable, delay, initial) {
 model Population (Individuals) {
 	initial_population
 
-	birth_rate (1/time)
+	birth_rate (time) #(1./time)
 	average_lifespan (time)
 
 	flow births = population * birth_rate
@@ -44,7 +44,7 @@ model Population (Individuals) {
 	avg_population = smooth(population, delay, initial)
 }
 
-model RabbitPopulation (Rabbits) extends Population {
+model RabbitPopulation (Rabbits) specializes Population {
 	carrying_capacity
 	consumption_of_rabbits
 
@@ -59,7 +59,7 @@ model RabbitPopulation (Rabbits) extends Population {
 	                   consumption_of_rabbits)
 }
 
-model FoxPopulation (Foxes) extends Population {
+model FoxPopulation (Foxes) specializes Population {
 	consumption_of_rabbits (Rabbits)
 
 	initial_population = 30 Foxes
