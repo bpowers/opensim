@@ -77,8 +77,9 @@ declaration
     ;
 
 assignment
-    : initializer
-    | qualified_expr
+    : qualified_expr
+    | initializer
+    | STRING
     ;
 
 initializer
@@ -94,7 +95,7 @@ pair
     ;
 
 qualified_expr
-    : call (',' expr_u)?
+    : call (expr_u)?
     ;
 
 call
@@ -110,11 +111,11 @@ expr
     ;
 
 loose
-    : tight (('+'|'-') tight)*
+    : tight (('+'|'-') NEWLINE? tight)*
     ;
 
 tight
-    : expon (('*'|'/') expon)*
+    : expon (('*'|'/') NEWLINE? expon)*
     ;
 
 expon
@@ -122,7 +123,7 @@ expon
     ;
 
 expr_list
-    : (call (',' call)*)?
+    : (call (',' NEWLINE? call)*)?
     ;
 
 term
@@ -150,8 +151,7 @@ expon_u
     ;
 
 term_u
-    : '1'
-    | '(' expr_u ')'
+    : FLOAT
     | ID
     ;
 
@@ -170,12 +170,16 @@ ASSIGN
     ;
 
 ID 
-    : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+    : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'.')*
     ;
 
 FLOAT
     : DIGITS+ ('.' DIGITS*)? EXPONENT?
     | '.' DIGITS+ EXPONENT?
+    ;
+
+STRING
+    : '"' ~'"'+ '"'
     ;
 
 COMMENT
