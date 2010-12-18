@@ -1,7 +1,7 @@
 grammar boosd;
 
 options {
-    language = Java;
+    language = Python;
     //language = C;
     output = AST;
     // as suggested here:
