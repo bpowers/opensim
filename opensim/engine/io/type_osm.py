@@ -49,6 +49,8 @@ def can_handle(model_path):
   # cheat and only look at the extension for now
   if len(model_path) > 4 and model_path[-3:] == 'osm':
     return True
+  if 'org.laptop.Model' in model_path:
+    return True
 
   return False
 
