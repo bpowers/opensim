@@ -72,12 +72,6 @@ GTEST_LIB_CHECK([1.3])
 AC_CONFIG_FILES([
   autoconf/shave
   autoconf/shave-libtool
-  opensim/engine/Makefile
-  opensim/engine/io/Makefile
-  opensim/engine/passes/Makefile
-  opensim/visuals/widgets/Makefile
-  opensim/visuals/Makefile
-  opensim/Makefile
   icons/Makefile
   share/Makefile
   lib/Makefile

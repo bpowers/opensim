@@ -31,7 +31,6 @@ import unittest
 class TestParserCase(unittest.TestCase):
 
   def setUp(self):
-    self.sim = engine.Simulator()
     self.eqn_empty = ''
     self.eqn_none = None
     self.eqn_num = 3.14
