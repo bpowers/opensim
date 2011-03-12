@@ -36,7 +36,7 @@
 #include <sys/time.h>
 
 #include <llvm/Support/ManagedStatic.h>
-#include <llvm/System/Threading.h>
+#include <llvm/Support/Threading.h>
 using namespace llvm;
 
 

@@ -29,7 +29,7 @@
 #include "opensim/lex.h"
 #include "opensim/token.h"
 
-#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/system_error.h>
 
 #include <iostream>
 #include <cstdio>
@@ -43,8 +43,8 @@ using namespace std;
 Parser::Parser(std::string fName) {
 
   fileName = fName;
-  fileBuffer = llvm::MemoryBuffer::getFile(fName.c_str());
-  if (!fileBuffer) {
+  llvm::error_code err = llvm::MemoryBuffer::getFile(fName.c_str(), fileBuffer);
+  if (err.value()) {
     errs() << "opensim: ERROR: Problem mapping '" << fileName << "'\n";
     throw exception();
   }
@@ -62,9 +62,6 @@ Parser::~Parser() {
 
   if (scanner)
     delete scanner;
-
-  if (fileBuffer)
-    delete fileBuffer;
 }
 
 

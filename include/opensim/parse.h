@@ -27,10 +27,11 @@
 #define OPENSIM_PARSE_H
 
 #include <string>
+#include <llvm/ADT/OwningPtr.h>
+#include <llvm/Support/MemoryBuffer.h>
 
-namespace llvm {
-class MemoryBuffer;
-}
+using llvm::OwningPtr;
+using llvm::MemoryBuffer;
 
 namespace opensim {
 
@@ -39,7 +40,7 @@ struct Token;
 
 class Parser {
   std::string fileName;
-  llvm::MemoryBuffer *fileBuffer;
+  OwningPtr<MemoryBuffer> fileBuffer;
   Scanner *scanner;
   Token *curTok;
 
