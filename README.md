@@ -18,6 +18,11 @@ should work, after which you can run the model editor:
 
 and you should get a visual system dynamics model editor.
 
+beautiful screenshot
+--------------------
+
+![screenshot](/bpowers/opensim/raw/master/doc/screenshot.png)
+
 current status
 --------------
 
