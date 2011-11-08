@@ -24,7 +24,13 @@
 #
 #===-----------------------------------------------------------------------===#
 
-import sys, logging, getopt
+import sys
+# on fedora, this doesn't seem to be on there, but its the default
+# install path for us.
+sys.path.append('/usr/local/lib/python2.7/site-packages')
+
+import logging
+import getopt
 import opensim
 from opensim import engine
 

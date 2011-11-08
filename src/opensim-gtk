@@ -25,12 +25,27 @@
 #===-----------------------------------------------------------------------===#
 
 
+import sys
+# on fedora, this doesn't seem to be on there, but its the default
+# install path for us.
+sys.path.append('/usr/local/lib/python2.7/site-packages')
+
+import os
+import os.path
+
 import pygtk
 pygtk.require ("2.0")
+import gtk
+import gtk.glade
+import gobject
 
-import os, os.path, sys, gtk, gtk.glade, gobject, goocanvas, math
+import goocanvas
+
+import math
 import logging
+
 import opensim.visuals as sim
+
 
 # mac-native gtk doesn't like svg icons
 ICON_NAME = 'model-icon'
